@@ -1,7 +1,7 @@
-import { Home } from "./Home";
+import { DemoConnect } from "./features/ao/test/DemoConnect";
 
 export function App() {
   return (
-    <Home />
+    <DemoConnect />
   )
 }
