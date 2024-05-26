@@ -31,7 +31,7 @@ export const createAoContractClient = (
   processId: string,
   aoClient: AoClient,
   aoWallet: AoWallet,
-) => {
+): AoContractClient => {
   const dryrunReadReplyOptional = async (readArgs: ReadArgs) => {
     const result = await aoClient.dryrun({
       ...readArgs,
@@ -40,7 +40,7 @@ export const createAoContractClient = (
     const messages = result.Messages as Array<Message>;
 
     if (messages.length === 0) {
-      return null;
+      return undefined;
     }
 
     const reply = messages.find((msg) => msg.Target === aoWallet.address);

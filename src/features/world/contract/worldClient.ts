@@ -18,33 +18,29 @@ export type WorldClient = {
 
 export const createWorldClient = (
   aoContractClient: AoContractClient,
-) => {
-  const worldClient: WorldClient = {
-    aoContractClient: aoContractClient,
+): WorldClient => ({
+  aoContractClient: aoContractClient,
 
-    // Read
-    readInfo: () => aoContractClient.dryrunReadReplyOneJson<WorldInfo>({
-      tags: [{ name: "Action", value: "WorldInfo" }]
-    }, WorldInfo),
-    readParameters: () => aoContractClient.dryrunReadReplyOneJson<WorldParameters>({
-      tags: [{ name: "Action", value: "WorldParameters" }]
-    }, WorldParameters),
-    readAllEntities: () => aoContractClient.dryrunReadReplyOneJson<WorldEntities>({
-      tags: [{ name: "Action", value: "WorldEntities" }]
-    }, WorldEntities),
-    readEntities: (entityIds: Array<ArweaveId>) => aoContractClient.dryrunReadReplyOneJson<WorldEntities>({
-      tags: [{ name: "Action", value: "WorldParameters" }],
-      data: JSON.stringify({
-        EntityIds: entityIds,
-      }),
-    }, WorldEntities),
-
-    // Write
-    writePosition: (position: WorldEntityPosition) => aoContractClient.message({
-      tags: [{ name: "Action", value: "WorldUpdatePosition" }],
-      data: JSON.stringify(position),
+  // Read
+  readInfo: () => aoContractClient.dryrunReadReplyOneJson<WorldInfo>({
+    tags: [{ name: "Action", value: "WorldInfo" }]
+  }, WorldInfo),
+  readParameters: () => aoContractClient.dryrunReadReplyOneJson<WorldParameters>({
+    tags: [{ name: "Action", value: "WorldParameters" }]
+  }, WorldParameters),
+  readAllEntities: () => aoContractClient.dryrunReadReplyOneJson<WorldEntities>({
+    tags: [{ name: "Action", value: "WorldEntities" }]
+  }, WorldEntities),
+  readEntities: (entityIds: Array<ArweaveId>) => aoContractClient.dryrunReadReplyOneJson<WorldEntities>({
+    tags: [{ name: "Action", value: "WorldParameters" }],
+    data: JSON.stringify({
+      EntityIds: entityIds,
     }),
-  }
+  }, WorldEntities),
 
-  return worldClient;
-}
+  // Write
+  writePosition: (position: WorldEntityPosition) => aoContractClient.message({
+    tags: [{ name: "Action", value: "WorldUpdatePosition" }],
+    data: JSON.stringify(position),
+  }),
+});
