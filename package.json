@@ -12,6 +12,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@permaweb/aoconnect": "^0.0.54",
     "@radix-ui/react-slot": "^1.0.2",
     "arweave-wallet-kit": "^1.0.4",
     "class-variance-authority": "^0.7.0",
