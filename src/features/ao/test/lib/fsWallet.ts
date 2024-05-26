@@ -3,7 +3,7 @@ import { defaultArweave } from "../../../arweave/lib/arweave";
 import { ArweaveSigner, createData } from "warp-arbundles";
 import { readFileSync } from "node:fs"
 
-export const createFsWallet = (path: string): AoWalletConnector => async () => {
+export const createFsWallet = (path: string, anonymous: boolean = false): AoWalletConnector => async () => {
   try {
     const wallet = JSON.parse(readFileSync(path, "utf-8"))
     const address = await defaultArweave.wallets.getAddress(wallet);
@@ -36,8 +36,8 @@ export const createFsWallet = (path: string): AoWalletConnector => async () => {
     return {
       success: true,
       result: {
-        type: "Anonymous",
-        anonymous: true,
+        type: "Keyfile",
+        anonymous,
         address,
         signer: dataItemSigner,
       }
