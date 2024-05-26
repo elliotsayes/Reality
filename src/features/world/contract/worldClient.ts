@@ -3,7 +3,7 @@ import { MessageId } from "../../ao/lib/aoClient";
 import { AoContractClient } from "../../ao/lib/aoContractClient";
 import { WorldEntities, WorldEntityPosition, WorldInfo, WorldParameters } from "./model";
 
-export type WeaveWorldClient = {
+export type WorldClient = {
   aoContractClient: AoContractClient;
 
   // Reads
@@ -16,10 +16,10 @@ export type WeaveWorldClient = {
   writePosition(position: WorldEntityPosition): Promise<MessageId>;
 }
 
-export const createWeaveWorldClient = (
+export const createWorldClient = (
   aoContractClient: AoContractClient,
 ) => {
-  const weaveWorldClient: WeaveWorldClient = {
+  const worldClient: WorldClient = {
     aoContractClient: aoContractClient,
 
     // Read
@@ -46,5 +46,5 @@ export const createWeaveWorldClient = (
     }),
   }
 
-  return weaveWorldClient;
+  return worldClient;
 }
