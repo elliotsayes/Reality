@@ -1,8 +1,11 @@
 import { createDataItemSigner } from "@permaweb/aoconnect";
+import { WalletType } from "./wallets";
 
 export type AoSigner = ReturnType<typeof createDataItemSigner>
 
 export type AoWallet = {
+  type: WalletType;
+  anonymous: boolean;
   address: string;
   signer: AoSigner;
 }

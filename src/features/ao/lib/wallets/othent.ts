@@ -11,6 +11,8 @@ export const connectOthentWallet: AoWalletConnector = async () => {
     return {
       success: true,
       result: {
+        type: "Othent",
+        anonymous: false,
         address,
         signer: createDataItemSigner(Othent),
       }

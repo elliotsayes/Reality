@@ -22,6 +22,8 @@ export const connectInjectedWallet: AoWalletConnector = async (
     return {
       success: true,
       result: {
+        type: "Injected",
+        anonymous: false,
         address,
         signer: createDataItemSigner(window.arweaveWallet),
       }

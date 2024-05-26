@@ -1,27 +1,19 @@
 import { useState } from "react";
-import { AoWallet, AoWalletConnector } from "../lib/aoWallet";
-import { createAnonymousWallet } from "../lib/wallets/anonymous";
-import { connectInjectedWallet } from "../lib/wallets/injected";
-import { connectOthentWallet } from "../lib/wallets/othent";
+import { AoWallet } from "../lib/aoWallet";
 import { DemoAo } from "./DemoAo";
 import { requestedPermissions } from "../lib/config";
-
-const walletOptions: Record<string, AoWalletConnector> = {
-  "Anonymous": createAnonymousWallet,
-  "Injected": connectInjectedWallet,
-  "Othent": connectOthentWallet,
-};
+import { WalletType, wallets } from "../lib/wallets";
 
 export function DemoConnect() {
   const [aoWallet, setAoWallet] = useState<AoWallet | null>(null);
-  const [walletOption, setWalletOption] = useState<string>(Object.keys(walletOptions)[0]);
+  const [walletOption, setWalletOption] = useState<WalletType>(WalletType[0]);
 
   return (
     <div>
       <h1>Demo Connect</h1>
-      <select onChange={(e) => setWalletOption(e.target.value)} value={walletOption}>
+      <select onChange={(e) => setWalletOption(e.target.value as WalletType)} value={walletOption}>
         {
-          Object.keys(walletOptions).map((option) => (
+          WalletType.map((option) => (
             <option key={option} value={option}>{option}</option>
           ))
         }
@@ -32,7 +24,7 @@ export function DemoConnect() {
           return;
         }
         setAoWallet(null);
-        const walletConnector = walletOptions[walletOption];
+        const walletConnector = wallets[walletOption];
         const res = await walletConnector(requestedPermissions);
         if (res.success) {
           setAoWallet(res.result);
