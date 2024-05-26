@@ -1,17 +1,19 @@
+import { ArweaveId } from "@/features/arweave/lib/model";
 import { MessageId } from "../../ao/lib/aoClient";
 import { AoContractClient } from "../../ao/lib/aoContractClient";
+import { WorldEntities, WorldEntityPosition, WorldInfo, WorldParameters } from "./model";
 
 export type WeaveWorldClient = {
   aoContractClient: AoContractClient;
 
   // Reads
-  readInfo(): Promise<WeaveWorldInfo>;
-  readParameters(): Promise<WeaveWorldParameters>;
-  readAllEntities(): Promise<WeaveWorldEntity[]>;
-  readEntity(entityId: string): Promise<WeaveWorldEntity>;
+  readInfo(): Promise<WorldInfo>;
+  readParameters(): Promise<WorldParameters>;
+  readAllEntities(): Promise<WorldEntities>;
+  readEntities(entityIds: Array<ArweaveId>): Promise<WorldEntities>;
 
   // Writes
-  writePosition(position: WeaveWorldPosition): Promise<MessageId>;
+  writePosition(position: WorldEntityPosition): Promise<MessageId>;
 }
 
 export const createWeaveWorldClient = (
@@ -20,22 +22,25 @@ export const createWeaveWorldClient = (
   const weaveWorldClient: WeaveWorldClient = {
     aoContractClient: aoContractClient,
 
-    readInfo: () => aoContractClient.dryrunReadReplyOneJson<WeaveWorldInfo>({
+    // Read
+    readInfo: () => aoContractClient.dryrunReadReplyOneJson<WorldInfo>({
       tags: [{ name: "Action", value: "WorldInfo" }]
-    }),
-    readParameters: () => aoContractClient.dryrunReadReplyOneJson<WeaveWorldParameters>({
+    }, WorldInfo),
+    readParameters: () => aoContractClient.dryrunReadReplyOneJson<WorldParameters>({
       tags: [{ name: "Action", value: "WorldParameters" }]
-    }),
-    readAllEntities: () => aoContractClient.dryrunReadReplyOneJson<WeaveWorldEntity[]>({
+    }, WorldParameters),
+    readAllEntities: () => aoContractClient.dryrunReadReplyOneJson<WorldEntities>({
       tags: [{ name: "Action", value: "WorldEntities" }]
-    }),
-    readEntity: (entityId: string) => aoContractClient.dryrunReadReplyOneJson<WeaveWorldEntity>({
-      tags: [
-        { name: "Action", value: "WorldParameters" },
-        { name: "EntityId", value: entityId },
-      ]
-    }),
-    writePosition: (position: WeaveWorldPosition) => aoContractClient.message({
+    }, WorldEntities),
+    readEntities: (entityIds: Array<ArweaveId>) => aoContractClient.dryrunReadReplyOneJson<WorldEntities>({
+      tags: [{ name: "Action", value: "WorldParameters" }],
+      data: JSON.stringify({
+        EntityIds: entityIds,
+      }),
+    }, WorldEntities),
+
+    // Write
+    writePosition: (position: WorldEntityPosition) => aoContractClient.message({
       tags: [{ name: "Action", value: "WorldUpdatePosition" }],
       data: JSON.stringify(position),
     }),

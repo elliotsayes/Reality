@@ -1,5 +1,5 @@
 import { AoSigner, AoWalletConnector } from "../aoWallet";
-import { defaultArweave } from "../arweave";
+import { defaultArweave } from "../../../arweave/lib/arweave";
 import { ArweaveSigner, createData } from "warp-arbundles";
 
 export const createAnonymousWallet: AoWalletConnector = async () => {
