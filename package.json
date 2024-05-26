@@ -12,7 +12,10 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@othent/kms": "^1.0.12",
+    "@permaweb/aoconnect": "^0.0.54",
     "@radix-ui/react-slot": "^1.0.2",
+    "arweave": "^1.15.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.379.0",
