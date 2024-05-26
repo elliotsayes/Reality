@@ -8,7 +8,6 @@ export const createAnonymousWallet: AoWalletConnector = async () => {
     const address = await defaultArweave.wallets.getAddress(wallet);
 
     const arweaveSigner = new ArweaveSigner(wallet);
-    console.log(arweaveSigner);
 
     const dataItemSigner: AoSigner = async (...args: Parameters<AoSigner>) => {
       const transactionArgs = args[0];
