@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { AoWallet } from "../lib/aoWallet";
+import { AoWallet } from "../../lib/aoWallet";
 import { DemoAo } from "./DemoAo";
-import { requestedPermissions } from "../lib/config";
-import { WalletType, wallets } from "../lib/wallets";
+import { requestedPermissions } from "../../lib/config";
+import { WalletType, wallets } from "../../lib/wallets";
 
 export function DemoConnect() {
   const [aoWallet, setAoWallet] = useState<AoWallet | null>(null);

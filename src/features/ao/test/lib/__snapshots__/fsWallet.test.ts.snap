@@ -1,0 +1,22 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`createFsWallet > loads jwk 1`] = `
+{
+  "result": {
+    "address": "HHz5nNVEzkALjmZq8cdIdubMBJCpIFOvzO5uHfU5nQI",
+    "anonymous": true,
+    "signer": [Function],
+    "type": "Anonymous",
+  },
+  "success": true,
+}
+`;
+
+exports[`loadTestWallet > loads test wallet 1`] = `
+{
+  "address": "HHz5nNVEzkALjmZq8cdIdubMBJCpIFOvzO5uHfU5nQI",
+  "anonymous": true,
+  "signer": [Function],
+  "type": "Anonymous",
+}
+`;

@@ -1,5 +1,5 @@
 import { connect } from "@permaweb/aoconnect";
-import { AoWallet } from "../lib/aoWallet";
+import { AoWallet } from "../../lib/aoWallet";
 
 type UserNew = {
   name: string;
