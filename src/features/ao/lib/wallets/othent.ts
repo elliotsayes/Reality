@@ -5,13 +5,15 @@ import * as Othent from "@othent/kms";
 
 export const connectOthentWallet: AoWalletConnector = async () => {
   try {
-    const result = await connect();
-    const address = result.walletAddress;
+    const othentConnection = await connect();
+    const address = othentConnection.walletAddress;
     
     return {
       success: true,
-      address,
-      aoSigner: createDataItemSigner(Othent),
+      result: {
+        address,
+        signer: createDataItemSigner(Othent),
+      }
     }
   } catch (error) {
     return {

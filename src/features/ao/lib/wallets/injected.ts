@@ -1,4 +1,4 @@
-import { createDataItemSigner } from "node_modules/@permaweb/aoconnect/dist/client/node/wallet";
+import { createDataItemSigner } from "@permaweb/aoconnect";
 import { AppInfo, GatewayConfig, PermissionType, AoWalletConnector } from "../aoWallet";
 
 export const connectInjectedWallet: AoWalletConnector = async (
@@ -15,12 +15,16 @@ export const connectInjectedWallet: AoWalletConnector = async (
 
   try {
     await window.arweaveWallet.connect(permissions, appInfo, gateway);
+    // TODO: Confirm that permissions have been granted
+
     const address = await window.arweaveWallet.getActiveAddress();
 
     return {
       success: true,
-      address,
-      aoSigner: createDataItemSigner(window.arweaveWallet),
+      result: {
+        address,
+        signer: createDataItemSigner(window.arweaveWallet),
+      }
     }
   } catch (error) {
     return {

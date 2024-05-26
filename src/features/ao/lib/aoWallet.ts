@@ -1,17 +1,21 @@
 import { createDataItemSigner } from "@permaweb/aoconnect";
 
+export type AoSigner = ReturnType<typeof createDataItemSigner>
+
+export type AoWallet = {
+  address: string;
+  signer: AoSigner;
+}
+
 export type AoWalletConnectionResult = {
   success: true;
-  address: string;
-  aoSigner: ReturnType<typeof createDataItemSigner>;
+  result: AoWallet;
 } | {
   success: false;
   error: unknown;
 }
 
-/**
- * Arweave wallet permission types
- */
+// TODO: Import these from somewhere more official
 export type PermissionType =
   | "ACCESS_ADDRESS"
   | "ACCESS_PUBLIC_KEY"
@@ -22,7 +26,6 @@ export type PermissionType =
   | "SIGNATURE"
   | "ACCESS_ARWEAVE_CONFIG"
   | "DISPATCH";
-
 
 export interface AppInfo {
   name?: string;
