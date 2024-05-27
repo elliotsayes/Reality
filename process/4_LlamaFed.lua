@@ -16,13 +16,13 @@ VerseParameters = {
     Tileset = {
       Type = 'Fixed',
       Format = 'PNG',
-      TxId = 'todo', -- TxId of the tileset in PNG format
+      TxId = 'gxNTOop1jamIJQzAvtSB4KgEVdh-eRi56taSgIFtVlM', -- TxId of the tileset in PNG format
     },
     -- This will be a tilemap the interior of the llama fed
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = 'todo', -- TxId of the tilemap in TMJ format
+      TxId = 'U2TkWnv6ZOkMt8HcPW3GRZLTIm1LFA7tc67y9t3OpCc', -- TxId of the tilemap in TMJ format
     },
   },
 }

@@ -22,13 +22,13 @@ VerseParameters = {
     Tileset = {
       Type = 'Fixed',
       Format = 'PNG',
-      TxId = 'todo', -- TxId of the tileset in PNG format
+      TxId = 'gxNTOop1jamIJQzAvtSB4KgEVdh-eRi56taSgIFtVlM', -- TxId of the tileset in PNG format
     },
     -- This is a tilemap of origin island & building exteriors
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = 'todo', -- TxId of the tilemap in TMJ format
+      TxId = 'EqC9HS1H0jz_NHb5Zha1oZqoAcNxAPXSCaGLiA1kjzE', -- TxId of the tilemap in TMJ format
     },
   },
 }
@@ -68,7 +68,7 @@ VerseInherit = {
       Tileset = {
         Type = 'Fixed',
         Format = 'PNG',
-        TxId = 'todo', -- TxId of the interiors tileset in PNG format
+        TxId = 'gxNTOop1jamIJQzAvtSB4KgEVdh-eRi56taSgIFtVlM', -- TxId of the interiors tileset in PNG format
       },
     },
   },
