@@ -40,11 +40,11 @@ function VerseNav({ wallet }: VerseNavProps) {
     <div>
       <h1>Verse: {processId}</h1>
       <h2>Info</h2>
-      <pre>{JSON.stringify(info.data, null, 2)}</pre>
+      <pre className="text-sm">{JSON.stringify(info.data, null, 2)}</pre>
       <h2>Parameters</h2>
-      <pre className="text-xs">{JSON.stringify(params.data, null, 2)}</pre>
+      <pre className="text-xs max-h-32 overflow-y-scroll">{JSON.stringify(params.data, null, 2)}</pre>
       <h2>Entities</h2>
-      <pre className="text-xs">{JSON.stringify(entities.data, null, 2)}</pre>
+      <pre className="text-xs max-h-32 overflow-y-scroll">{JSON.stringify(entities.data, null, 2)}</pre>
 
       <Suspense fallback={<div>Loading warps...</div>}>
       {

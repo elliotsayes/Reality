@@ -36,6 +36,7 @@ export const createAoContractClient = (
     const result = await aoClient.dryrun({
       ...readArgs,
       process: processId,
+      Target: processId,
       Owner: aoWallet.address,
     });
     const messages = result.Messages as Array<Message>;

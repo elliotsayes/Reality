@@ -26,7 +26,7 @@ export const createVerseClient = (
   // Read
   readInfo: () => aoContractClient.dryrunReadReplyOneJson<VerseInfo>({
     tags: [{ name: "Action", value: "VerseInfo" }]
-  }, VerseInfo),
+  }, /* VerseInfo */),
   readParameters: () => aoContractClient.dryrunReadReplyOneJson<VerseParameters>({
     tags: [{ name: "Action", value: "VerseParameters" }]
   }, /* VerseParameters */), // TODO: Define VerseParameters properly

@@ -20,11 +20,7 @@ exports[`createVerseClient > Universe readInfo 1`] = `
 }
 `;
 
-exports[`createVerseClient > Universe readParameters 1`] = `
-{
-  "Version": 0,
-}
-`;
+exports[`createVerseClient > Universe readParameters 1`] = `[]`;
 
 exports[`createVerseClient > creates client 1`] = `
 {
