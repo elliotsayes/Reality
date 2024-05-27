@@ -1,16 +1,16 @@
 -- Fixed
-WorldInfo = {
+VerseInfo = {
   Parent = 'OriginIslandProcessId',
   Name = 'Llama Fed',
   Dimensions = 2,
   ['Render-With'] = '2D-Tile-0',
 }
 
--- Manually defined by the world owner
-WorldParameters = {
+-- Manually defined by the verse owner
+VerseParameters = {
   ['2D-Tile-0'] = {
     Version = 0,
-    -- This is the interior tileset enforced by origin island world
+    -- This is the interior tileset enforced by origin island verse
     Tileset = {
       Type = 'Fixed',
       Format = 'PNG',
@@ -26,7 +26,7 @@ WorldParameters = {
 }
 
 -- Updated by player actions
-WorldEntities = {
+VerseEntities = {
   ['OriginIslandProcessId'] = {
     Position = { 0, 0 },
     Type = 'Warp', -- 'Warp'/'Avatar' types are understood by `2D-Tile-0` renderer

@@ -1,13 +1,13 @@
 -- Fixed
-WorldInfo = {
+VerseInfo = {
   Parent = 'UniverseProcessId',
   Name = 'WeaveWorld',
   Dimensions = 2,
   ['Render-With'] = '2D-Tile-0',
 }
 
--- Manually defined by the world owner
-WorldParameters = {
+-- Manually defined by the verse owner
+VerseParameters = {
   ['2D-Tile-0'] = {
     Version = 0,
     -- This will be a tileset themed with a sea & islands
@@ -41,7 +41,7 @@ WorldParameters = {
 }
 
 -- Player entities can be updated by player actions, i.e. movement
-WorldEntities = {
+VerseEntities = {
   ['OriginIslandProcessId'] = {
     Position = { 0, 0 },
     Type = 'Warp', -- These types are understood by the `2D-Tile-0` renderer

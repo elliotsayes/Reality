@@ -1,16 +1,16 @@
 -- Fixed
-WorldInfo = {
+VerseInfo = {
   Parent = 'WeaveWorldProcessId',
   Name = 'Origin Island',
   Dimensions = 2,
   ['Render-With'] = '2D-Tile-0',
 }
 
--- Manually defined by the world owner
-WorldParameters = {
+-- Manually defined by the verse owner
+VerseParameters = {
   ['2D-Tile-0'] = {
     Version = 0,
-    -- Icon for world that shows up on parents
+    -- Icon for verse that shows up on parents
     Icon = {
       Type = 'Fixed',
       Format = 'PNG',
@@ -31,24 +31,24 @@ WorldParameters = {
   },
 }
 
--- Registered Child worlds
+-- Registered Child verses
 -- These can be warped to without any additional confirmation from the User
--- Warps to worlds not in this list will require confirmation from the User
--- (The exception being the parent world, which also can be freely warped to)
-WorldRegistry = {
+-- Warps to verses not in this list will require confirmation from the User
+-- (The exception being the parent verse, which also can be freely warped to)
+VerseRegistry = {
   ['LlamaFedProcessId'] = {
-    BypassParameters = true, -- Does not inherit `WorldParametersInherit`
+    BypassParameters = true, -- Does not inherit `VerseParametersInherit`
   },
   ['SomeOtherProcessId'] = {
-    -- BypassParameters = false, -- By default inherit `WorldParametersInherit`?
+    -- BypassParameters = false, -- By default inherit `VerseParametersInherit`?
   },
 }
 
--- These are the parameters that child worlds inherits by default
--- This is in addition to any passed down from parent worlds
-WorldInherit = {
+-- These are the parameters that child verses inherits by default
+-- This is in addition to any passed down from parent verses
+VerseInherit = {
   Info = {
-    -- This will limit the dimensions for children world to 2
+    -- This will limit the dimensions for children verse to 2
     Dimensions = 2,
     -- This will restrict the renderer to the same as Origin Island
     ['Render-With'] = '2D-Tile-0',
@@ -72,7 +72,7 @@ WorldInherit = {
 }
 
 -- Updated by player actions
-WorldEntities = {
+VerseEntities = {
   ['WeaveWorldProcessId'] = {
     Position = { 0, 0 },
     Type = 'Warp', -- understood by `2D-Tile-0` renderer

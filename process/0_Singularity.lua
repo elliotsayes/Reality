@@ -1,4 +1,4 @@
-WorldInfo = {
+VerseInfo = {
   Parent = nil,
   Name = 'Singularity',
   Dimensions = 0,
@@ -6,9 +6,9 @@ WorldInfo = {
   ['Render-With'] = '0D-Null',
 }
 
-WorldParameters = {}
+VerseParameters = {}
 
-WorldEntities = {
+VerseEntities = {
   ['UniverseProcessId'] = {
     Position = {},
   }
