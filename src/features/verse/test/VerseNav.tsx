@@ -45,21 +45,20 @@ function VerseNav({ wallet }: VerseNavProps) {
       <pre className="text-xs max-h-32 overflow-y-scroll">{JSON.stringify(params.data, null, 2)}</pre>
       <h2>Entities</h2>
       <pre className="text-xs max-h-32 overflow-y-scroll">{JSON.stringify(entities.data, null, 2)}</pre>
-
-      <Suspense fallback={<div>Loading warps...</div>}>
-      {
-        Object.keys(entities.data)
-          .filter((entityId) => entities.data[entityId].Type === "Warp")
-          .map((entityId) => (
-            <VerseLink
-              key={`${processId}-${entityId}`}
-              verseId={entityId}
-              verseClient={verseClientBuilder(entityId)}
-              onClick={() => setProcessId(entityId)}
-            />
-          ))
-      }
-      </Suspense>
+      <div className="flex flex-col items-start">
+        {
+          Object.keys(entities.data)
+            .filter((entityId) => entities.data[entityId].Type === "Warp")
+            .map((entityId) => (
+              <VerseLink
+                key={`${processId}-${entityId}`}
+                verseId={entityId}
+                verseClient={verseClientBuilder(entityId)}
+                onClick={() => setProcessId(entityId)}
+              />
+            ))
+        }
+      </div>
     </div>
   )
 }
