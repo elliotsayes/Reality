@@ -7,9 +7,7 @@ VerseInfo = {
   ['Render-With'] = '1D-Directory',
 }
 
-VerseParameters = {
-  Version = 0,
-}
+VerseParameters = {}
 
 VerseEntities = {
   -- WeaveWorldProcess
