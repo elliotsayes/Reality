@@ -35,7 +35,7 @@ export const createAnonymousWallet: AoWalletConnector = async () => {
     return {
       success: true,
       result: {
-        type: "Anonymous",
+        type: "Keyfile",
         anonymous: true,
         address,
         signer: dataItemSigner,
