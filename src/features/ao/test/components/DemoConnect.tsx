@@ -25,7 +25,9 @@ export function DemoConnect() {
         }
         setAoWallet(null);
         const walletConnector = wallets[walletOption];
-        const res = await walletConnector(requestedPermissions);
+        const res = await walletConnector({
+          permissions: requestedPermissions,
+        }, () => setAoWallet(null));
         if (res.success) {
           setAoWallet(res.result);
         } else {

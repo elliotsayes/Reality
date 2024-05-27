@@ -3,7 +3,9 @@ import { createFsWallet, loadTestWallet } from './fsWallet'
 
 describe('createFsWallet', () => {
   test('loads jwk', async () => {
-    const wallet = await createFsWallet('./fixtures/test_jwk.json')([]);
+    const wallet = await createFsWallet('./fixtures/test_jwk.json')({
+      permissions: [],
+    });
     expect(wallet.success).toBe(true)
     expect(wallet).toMatchSnapshot()
   })  

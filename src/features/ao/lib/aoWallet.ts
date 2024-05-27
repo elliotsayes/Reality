@@ -42,7 +42,10 @@ export interface GatewayConfig {
 }
 
 export type AoWalletConnector = (
-  permissions: PermissionType[],
-  appInfo?: AppInfo,
-  gateway?: GatewayConfig,
+  config: {
+    permissions: PermissionType[],
+    appInfo?: AppInfo,
+    gateway?: GatewayConfig,
+  },
+  onDisconnect?: () => void,
 ) => Promise<AoWalletConnectionResult>;
