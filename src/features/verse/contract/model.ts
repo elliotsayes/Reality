@@ -16,7 +16,7 @@ export const VerseParameterBounds = z.object({
 });
 
 export const VerseParameters = z.object({
-  Bounds: VerseParameterBounds,
+  Bounds: z.optional(VerseParameterBounds),
   '2D-Tile-0': z.optional(_2dTile),
 });
 export type VerseParameters = z.infer<typeof VerseParameters>;

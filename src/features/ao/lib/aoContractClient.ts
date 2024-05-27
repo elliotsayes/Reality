@@ -36,6 +36,7 @@ export const createAoContractClient = (
     const result = await aoClient.dryrun({
       ...readArgs,
       process: processId,
+      Owner: aoWallet.address,
     });
     const messages = result.Messages as Array<Message>;
 
@@ -57,19 +58,22 @@ export const createAoContractClient = (
 
   const dryrunReadReplyOneJson = async (readArgs: ReadArgs, schema?: z.Schema) => {
     const reply = await dryrunReadReplyOne(readArgs);
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let json: any;
     try {
-      const json = JSON.parse(reply.Data);
-      if (schema) {
-        const result = schema.safeParse(json);
-        if (!result.success) {
-          throw new AoContractError("JSON does not match schema", result.error);
-        }
-        return result.data;
-      }
-      return json;
+      json = JSON.parse(reply.Data);
     } catch (error) {
       throw new AoContractError("Invalid JSON", error);
     }
+    if (schema) {
+      const result = schema.safeParse(json);
+      if (!result.success) {
+        throw new AoContractError("JSON does not match schema", result.error);
+      }
+      return result.data;
+    }
+    return json;
   }
 
   const message = async (sendArgs: SendArgs) => 

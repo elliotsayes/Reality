@@ -7,12 +7,15 @@ VerseInfo = {
   ['Render-With'] = '1D-Directory',
 }
 
-VerseParameters = {}
+VerseParameters = {
+  Version = 0,
+}
 
 VerseEntities = {
   -- WeaveWorldProcess
   ['BSs3O9QCfi61LihXOBQn8I3uyS_bsoFHa8cccBmfuYY'] = {
     Position = { 0 },
+    Type = 'Warp',
   },
 }
 
