@@ -1,6 +1,8 @@
+-- ProcessId: jd2qig6cLYNiq1Nn_9sAuEax3sONMZA1u0oXzbh08Fw
+
 -- Fixed
 VerseInfo = {
-  Parent = 'WeaveWorldProcessId',
+  Parent = 'BSs3O9QCfi61LihXOBQn8I3uyS_bsoFHa8cccBmfuYY', -- WeaveWorldProcessId
   Name = 'Origin Island',
   Dimensions = 2,
   ['Render-With'] = '2D-Tile-0',
@@ -36,7 +38,8 @@ VerseParameters = {
 -- Warps to verses not in this list will require confirmation from the User
 -- (The exception being the parent verse, which also can be freely warped to)
 VerseRegistry = {
-  ['LlamaFedProcessId'] = {
+  -- LlamaFedProcessId
+  ['a9kEYc1DdJRVMg-V8DuwKNgcfzACsLDQiHlCVfSu1e0'] = {
     BypassParameters = true, -- Does not inherit `VerseParametersInherit`
   },
   ['SomeOtherProcessId'] = {
@@ -73,8 +76,14 @@ VerseInherit = {
 
 -- Updated by player actions
 VerseEntities = {
-  ['WeaveWorldProcessId'] = {
+  -- WeaveWorldProcess
+  ['BSs3O9QCfi61LihXOBQn8I3uyS_bsoFHa8cccBmfuYY'] = {
     Position = { 0, 0 },
+    Type = 'Warp', -- understood by `2D-Tile-0` renderer
+  },
+  -- LlamaFedProcess
+  ['a9kEYc1DdJRVMg-V8DuwKNgcfzACsLDQiHlCVfSu1e0'] = {
+    Position = { 2, 2 },
     Type = 'Warp', -- understood by `2D-Tile-0` renderer
   },
   ['SomePlayerProcessId'] = {

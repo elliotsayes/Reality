@@ -1,6 +1,8 @@
+-- ProcessId: BSs3O9QCfi61LihXOBQn8I3uyS_bsoFHa8cccBmfuYY
+
 -- Fixed
 VerseInfo = {
-  Parent = 'UniverseProcessId',
+  Parent = '3RJ-bOltNmn5r4VR3OmZAPAaoLGYCD7HA7cUoDWPt-4',
   Name = 'WeaveWorld',
   Dimensions = 2,
   ['Render-With'] = '2D-Tile-0',
@@ -42,7 +44,8 @@ VerseParameters = {
 
 -- Player entities can be updated by player actions, i.e. movement
 VerseEntities = {
-  ['OriginIslandProcessId'] = {
+  -- OriginIslandProcess
+  ['jd2qig6cLYNiq1Nn_9sAuEax3sONMZA1u0oXzbh08Fw'] = {
     Position = { 0, 0 },
     Type = 'Warp', -- These types are understood by the `2D-Tile-0` renderer
   },

@@ -1,6 +1,8 @@
+-- ProcessId: a9kEYc1DdJRVMg-V8DuwKNgcfzACsLDQiHlCVfSu1e0
+
 -- Fixed
 VerseInfo = {
-  Parent = 'OriginIslandProcessId',
+  Parent = 'jd2qig6cLYNiq1Nn_9sAuEax3sONMZA1u0oXzbh08Fw', -- OriginIslandProcessId
   Name = 'Llama Fed',
   Dimensions = 2,
   ['Render-With'] = '2D-Tile-0',
@@ -27,9 +29,19 @@ VerseParameters = {
 
 -- Updated by player actions
 VerseEntities = {
-  ['OriginIslandProcessId'] = {
+  -- OriginIslandProcess
+  ['jd2qig6cLYNiq1Nn_9sAuEax3sONMZA1u0oXzbh08Fw'] = {
     Position = { 0, 0 },
     Type = 'Warp', -- 'Warp'/'Avatar' types are understood by `2D-Tile-0` renderer
+  },
+  -- LlamaAssistantProcess
+  ['8_jPBME4fI3mDXSYriPcb3RfvyQxCHWe6meEh5KJdDw'] = {
+    Position = { 0, 0 },
+    Type = 'Avatar',
+    Interaction = {
+      Type = 'MessageApi',
+      Id = 'Petition',
+    },
   },
   ['SomePlayerProcessId'] = {
     Position = { 0, 0 },
@@ -38,13 +50,5 @@ VerseEntities = {
   ['SomeBotProcessId'] = {
     Position = { 0, 0 },
     Type = 'Avatar',
-  },
-  ['LlamaAssistantProcessId'] = {
-    Position = { 0, 0 },
-    Type = 'Avatar',
-    Interaction = {
-      Type = 'MessageApi',
-      Id = 'Petition',
-    },
   },
 }
