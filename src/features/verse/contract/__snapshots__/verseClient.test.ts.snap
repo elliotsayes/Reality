@@ -54,12 +54,3 @@ exports[`createVerseClient > creates client 1`] = `
   "writePosition": [Function],
 }
 `;
-
-exports[`createVerseClient > univrese readInfo 1`] = `
-{
-  "Dimensions": 1,
-  "Name": "Universe",
-  "Parent": "An5_4dya7LA2PICud62nxu9k-d7UgnUlvMsU6mIdknI",
-  "Render-With": "1D-Directory",
-}
-`;
