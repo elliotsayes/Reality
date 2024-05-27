@@ -1,5 +1,17 @@
 local json = require("json")
 
+VerseInfo = VerseInfo or {
+  Parent = nil,
+  Name = 'UnknownVerse',
+  Dimensions = 0,
+  -- TODO: Test this works
+  ['Render-With'] = Inbox[0].Tags['Render-With'],
+}
+
+VerseParameters = VerseParameters or {}
+
+VerseEntities = VerseEntities or {}
+
 Handlers.add(
   "VerseInfo",
   Handlers.utils.hasMatchingTag("Action", "VerseInfo"),
