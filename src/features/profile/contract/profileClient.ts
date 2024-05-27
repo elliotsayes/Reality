@@ -7,7 +7,7 @@ export type ProfileClient = {
   aoContractClient: AoContractClient;
 
   // Reads
-  readProfile(profileId: ArweaveId): Promise<ProfileInfo>;
+  readProfiles(profileIds: Array<ArweaveId>): Promise<ProfileInfo>;
 
   // Writes
   writeProfile(profile: ProfileInfoWritable): Promise<MessageId>;
@@ -17,15 +17,15 @@ export type ProfileClient = {
 // TODO: Define these methods properly
 export const createProfileClient = (
   aoContractClient: AoContractClient,
-) => ({
+): ProfileClient => ({
   aoContractClient: aoContractClient,
 
   // Read
-  readProfile: (profileId: string) => aoContractClient.dryrunReadReplyOneJson<ProfileInfo>({
-    tags: [
-      { name: "Action", value: "ProfileGet" },
-      { name: "ProfileId", value: profileId }
-    ],
+  readProfiles: (profileIds: Array<ArweaveId>) => aoContractClient.dryrunReadReplyOneJson<ProfileInfo>({
+    tags: [{ name: "Action", value: "ProfileGet" }],
+    data: JSON.stringify({
+      ProfileIds: profileIds,
+    }),
   }, ProfileInfo),
 
   // Write

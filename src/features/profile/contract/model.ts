@@ -4,8 +4,8 @@ import { z } from "zod";
 // TODO: Define this properly
 export const ProfileInfo = z.object({
   Name: z.string(),
-  Description: z.string(),
-  Avatar: z.string(),
+  Status: z.string(),
+  AvatarSeed: z.string(),
 });
 export type ProfileInfo = z.infer<typeof ProfileInfo>;
 
