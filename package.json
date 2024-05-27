@@ -16,6 +16,7 @@
     "@othent/kms": "^1.0.12",
     "@permaweb/aoconnect": "^0.0.54",
     "@radix-ui/react-slot": "^1.0.2",
+    "@tanstack/react-query": "^5.39.0",
     "arweave": "^1.15.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
