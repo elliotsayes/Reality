@@ -49,12 +49,12 @@ function VerseNav({ wallet }: VerseNavProps) {
         {
           Object.keys(entities.data)
             .filter((entityId) => entities.data[entityId].Type === "Warp")
-            .map((entityId) => (
+            .map((verseId) => (
               <VerseLink
-                key={`${processId}-${entityId}`}
-                verseId={entityId}
-                verseClient={verseClientBuilder(entityId)}
-                onClick={() => setProcessId(entityId)}
+                key={`${processId}-${verseId}`}
+                verseId={verseId}
+                verseClient={verseClientBuilder(verseId)}
+                onClick={() => setProcessId(verseId)}
               />
             ))
         }
