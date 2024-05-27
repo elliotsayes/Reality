@@ -14,9 +14,9 @@ exports[`createAoContractClient > creates client 1`] = `
   },
   "aoWallet": {
     "address": "HHz5nNVEzkALjmZq8cdIdubMBJCpIFOvzO5uHfU5nQI",
-    "anonymous": true,
+    "anonymous": false,
     "signer": [Function],
-    "type": "Anonymous",
+    "type": "Keyfile",
   },
   "dryrunReadReplyOne": [Function],
   "dryrunReadReplyOneJson": [Function],

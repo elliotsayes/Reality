@@ -4,9 +4,9 @@ exports[`createFsWallet > loads jwk 1`] = `
 {
   "result": {
     "address": "HHz5nNVEzkALjmZq8cdIdubMBJCpIFOvzO5uHfU5nQI",
-    "anonymous": true,
+    "anonymous": false,
     "signer": [Function],
-    "type": "Anonymous",
+    "type": "Keyfile",
   },
   "success": true,
 }
@@ -15,8 +15,8 @@ exports[`createFsWallet > loads jwk 1`] = `
 exports[`loadTestWallet > loads test wallet 1`] = `
 {
   "address": "HHz5nNVEzkALjmZq8cdIdubMBJCpIFOvzO5uHfU5nQI",
-  "anonymous": true,
+  "anonymous": false,
   "signer": [Function],
-  "type": "Anonymous",
+  "type": "Keyfile",
 }
 `;
