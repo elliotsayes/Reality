@@ -1,11 +1,11 @@
 local json = require("json")
 
 ChatHistory = ChatHistory or {
-  ['msgId'] = {
-    Timestamp = 0,
-    Author = 'SomeTxId',
-    Content = 'Hello World!',
-  }
+  -- ['msgId'] = {
+  --   Timestamp = 0,
+  --   Author = 'SomeTxId',
+  --   Content = 'Hello World!',
+  -- }
 }
 
 Handlers.add(
