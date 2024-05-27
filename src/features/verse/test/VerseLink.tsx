@@ -15,6 +15,8 @@ export default function VerseLink({ verseId, verseClient, onClick }: VerseLinkPr
   })
 
   return (
-    <Button onClick={onClick}>Switch to {verseInfo.data?.Name ?? '...'}</Button>
+    <Button onClick={onClick}>
+      Warp to {verseInfo.data?.Name ?? '...'}
+    </Button>
   )
 }

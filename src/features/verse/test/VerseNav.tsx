@@ -45,7 +45,7 @@ function VerseNav({ wallet }: VerseNavProps) {
       <pre className="text-xs max-h-32 overflow-y-scroll">{JSON.stringify(params.data, null, 2)}</pre>
       <h2>Entities</h2>
       <pre className="text-xs max-h-32 overflow-y-scroll">{JSON.stringify(entities.data, null, 2)}</pre>
-      <div className="flex flex-col items-start">
+      <div className="flex flex-col items-start gap-2 py-2">
         {
           Object.keys(entities.data)
             .filter((entityId) => entities.data[entityId].Type === "Warp")
