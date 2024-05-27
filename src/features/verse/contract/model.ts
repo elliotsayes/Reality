@@ -2,44 +2,44 @@ import { z } from "zod";
 import { _2dTile } from "./_2dTile";
 import { ArweaveAddress } from "@/features/arweave/lib/model";
 
-export const WorldInfo = z.object({
+export const VerseInfo = z.object({
   Parent: z.string(),
   Name: z.string(),
   Dimensions: z.number(),
   'Render-With': z.string(),
 });
-export type WorldInfo = z.infer<typeof WorldInfo>;
+export type VerseInfo = z.infer<typeof VerseInfo>;
 
-export const WorldParameterBounds = z.object({
+export const VerseParameterBounds = z.object({
   Lower: z.array(z.number()),
   Upper: z.array(z.number()),
 });
 
-export const WorldParameters = z.object({
-  Bounds: WorldParameterBounds,
+export const VerseParameters = z.object({
+  Bounds: VerseParameterBounds,
   '2D-Tile-0': z.optional(_2dTile),
 });
-export type WorldParameters = z.infer<typeof WorldParameters>;
+export type VerseParameters = z.infer<typeof VerseParameters>;
 
-export const WorldEntityType = z.enum(["Avatar", "Warp"]);
-export type WorldEntityType = z.infer<typeof WorldEntityType>;
+export const VerseEntityType = z.enum(["Avatar", "Warp"]);
+export type VerseEntityType = z.infer<typeof VerseEntityType>;
 
-export const WorldEntityPosition = z.array(z.number());
-export type WorldEntityPosition = z.infer<typeof WorldEntityPosition>;
+export const VerseEntityPosition = z.array(z.number());
+export type VerseEntityPosition = z.infer<typeof VerseEntityPosition>;
 
-export const WorldEntities = z.record(
+export const VerseEntities = z.record(
   ArweaveAddress,
   z.object({
-    Type: WorldEntityType,
-    Position: WorldEntityPosition,
+    Type: VerseEntityType,
+    Position: VerseEntityPosition,
   })
 );
-export type WorldEntities = z.infer<typeof WorldEntities>;
+export type VerseEntities = z.infer<typeof VerseEntities>;
 
-export const WorldEntity = WorldEntities.refine(
+export const VerseEntity = VerseEntities.refine(
   (entities) => Object.keys(entities).length === 1,
   {
     message: "Expected exactly one entity",
   }
 );
-export type WorldEntity = z.infer<typeof WorldEntity>;
+export type VerseEntity = z.infer<typeof VerseEntity>;

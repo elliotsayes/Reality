@@ -1,46 +1,46 @@
 import { ArweaveId } from "@/features/arweave/lib/model";
 import { MessageId } from "../../ao/lib/aoClient";
 import { AoContractClient } from "../../ao/lib/aoContractClient";
-import { WorldEntities, WorldEntityPosition, WorldInfo, WorldParameters } from "./model";
+import { VerseEntities, VerseEntityPosition, VerseInfo, VerseParameters } from "./model";
 
-export type WorldClient = {
+export type VerseClient = {
   aoContractClient: AoContractClient;
 
   // Reads
-  readInfo(): Promise<WorldInfo>;
-  readParameters(): Promise<WorldParameters>;
-  readAllEntities(): Promise<WorldEntities>;
-  readEntities(entityIds: Array<ArweaveId>): Promise<WorldEntities>;
+  readInfo(): Promise<VerseInfo>;
+  readParameters(): Promise<VerseParameters>;
+  readAllEntities(): Promise<VerseEntities>;
+  readEntities(entityIds: Array<ArweaveId>): Promise<VerseEntities>;
 
   // Writes
-  writePosition(position: WorldEntityPosition): Promise<MessageId>;
+  writePosition(position: VerseEntityPosition): Promise<MessageId>;
 }
 
-export const createWorldClient = (
+export const createVerseClient = (
   aoContractClient: AoContractClient,
-): WorldClient => ({
+): VerseClient => ({
   aoContractClient: aoContractClient,
 
   // Read
-  readInfo: () => aoContractClient.dryrunReadReplyOneJson<WorldInfo>({
-    tags: [{ name: "Action", value: "WorldInfo" }]
-  }, WorldInfo),
-  readParameters: () => aoContractClient.dryrunReadReplyOneJson<WorldParameters>({
-    tags: [{ name: "Action", value: "WorldParameters" }]
-  }, WorldParameters),
-  readAllEntities: () => aoContractClient.dryrunReadReplyOneJson<WorldEntities>({
-    tags: [{ name: "Action", value: "WorldEntities" }]
-  }, WorldEntities),
-  readEntities: (entityIds: Array<ArweaveId>) => aoContractClient.dryrunReadReplyOneJson<WorldEntities>({
-    tags: [{ name: "Action", value: "WorldParameters" }],
+  readInfo: () => aoContractClient.dryrunReadReplyOneJson<VerseInfo>({
+    tags: [{ name: "Action", value: "VerseInfo" }]
+  }, VerseInfo),
+  readParameters: () => aoContractClient.dryrunReadReplyOneJson<VerseParameters>({
+    tags: [{ name: "Action", value: "VerseParameters" }]
+  }, VerseParameters),
+  readAllEntities: () => aoContractClient.dryrunReadReplyOneJson<VerseEntities>({
+    tags: [{ name: "Action", value: "VerseEntities" }]
+  }, VerseEntities),
+  readEntities: (entityIds: Array<ArweaveId>) => aoContractClient.dryrunReadReplyOneJson<VerseEntities>({
+    tags: [{ name: "Action", value: "VerseParameters" }],
     data: JSON.stringify({
       EntityIds: entityIds,
     }),
-  }, WorldEntities),
+  }, VerseEntities),
 
   // Write
-  writePosition: (position: WorldEntityPosition) => aoContractClient.message({
-    tags: [{ name: "Action", value: "WorldUpdatePosition" }],
+  writePosition: (position: VerseEntityPosition) => aoContractClient.message({
+    tags: [{ name: "Action", value: "VerseUpdatePosition" }],
     data: JSON.stringify(position),
   }),
 });
