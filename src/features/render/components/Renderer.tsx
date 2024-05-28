@@ -139,7 +139,6 @@ export function Renderer({ verseClientForProcess, initialVerseId }: RendererProp
             console.log(`Navigating to /verse/${verseId}`);
             navigate({
                 to: `/app/verse/${verseId}`,
-                replace: true,
             });
         }
     }
