@@ -5,6 +5,7 @@ import { createVerseClientForProcess } from '@/features/verse/contract/verseClie
 import { WarpableScene } from '../lib/phaser/scenes/WarpableScene';
 import { VerseScene } from '../lib/phaser/scenes/VerseScene';
 import { createLoadVerse } from '../lib/load/verse';
+import { useNavigate } from '@tanstack/react-router';
 
 interface RendererProps {
     verseClientForProcess: ReturnType<typeof createVerseClientForProcess>
@@ -13,6 +14,8 @@ interface RendererProps {
 
 export function Renderer({ verseClientForProcess, initialVerseId }: RendererProps)
 {
+    const navigate = useNavigate();
+
     // The sprite can only be moved in the MainMenu Scene
     const [canMoveSprite, setCanMoveSprite] = useState(true);
 
@@ -128,6 +131,16 @@ export function Renderer({ verseClientForProcess, initialVerseId }: RendererProp
             } else {
                 scene.scene.start('MainMenu');
             }
+        }
+
+        if (scene.scene.key === 'VerseScene')
+        {
+            const verseId = (scene as VerseScene).verseId;
+            console.log(`Navigating to /verse/${verseId}`);
+            navigate({
+                to: `/app/verse/${verseId}`,
+                replace: true,
+            });
         }
     }
 
