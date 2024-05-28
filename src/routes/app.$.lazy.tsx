@@ -39,7 +39,7 @@ function VerseId() {
       {(wallet) => (
         <Renderer
           verseClientForProcess={createVerseClientForProcess(wallet)}
-          initialVerseId={verseId}
+          verseId={verseId}
         />
       )}
     </AnonymousLoader>

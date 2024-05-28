@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IRefPhaserGame, PhaserGame } from './../components/PhaserGame';
 import { MainMenu } from '../lib/phaser/scenes/MainMenu';
 import { createVerseClientForProcess } from '@/features/verse/contract/verseClient';
@@ -9,21 +9,36 @@ import { useNavigate } from '@tanstack/react-router';
 
 interface RendererProps {
     verseClientForProcess: ReturnType<typeof createVerseClientForProcess>
-    initialVerseId?: string
+    verseId?: string
 }
 
-export function Renderer({ verseClientForProcess, initialVerseId }: RendererProps)
+export function Renderer({ verseClientForProcess, verseId: verseIdParam }: RendererProps)
 {
     const navigate = useNavigate();
 
     // The sprite can only be moved in the MainMenu Scene
     const [canMoveSprite, setCanMoveSprite] = useState(true);
+    const [lastVerseIdParam, setLastVerseIdParam] = useState<string | undefined>(verseIdParam);
+    useEffect(() => {
+        setLastVerseIdParam(verseIdParam);
+    }, [verseIdParam]);
+    const [lastNavigatedVerseId, setLastNavigatedVerseId] = useState<string | undefined>(verseIdParam);
 
     //  References to the PhaserGame component (game and scene are exposed)
     const phaserRef = useRef<IRefPhaserGame | null>(null);
     const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
 
     const [currentScene, setCurrentScene] = useState<WarpableScene>();
+
+    useEffect(() => {
+        if (verseIdParam !== undefined && verseIdParam !== lastNavigatedVerseId && verseIdParam !== lastVerseIdParam) {
+            if (currentScene) {
+                const targetVerseId = verseIdParam;
+                const loadVerse = createLoadVerse(verseClientForProcess(targetVerseId));
+                currentScene.warpToVerse(targetVerseId, loadVerse);
+            }
+        }
+    }, [verseIdParam, lastNavigatedVerseId, lastVerseIdParam, currentScene, verseClientForProcess]);
 
     const changeScene = () => {
         if(phaserRef.current)
@@ -125,9 +140,9 @@ export function Renderer({ verseClientForProcess, initialVerseId }: RendererProp
 
         if (scene.scene.key === 'Preloader')
         {
-            if (initialVerseId) {
-                const loader = createLoadVerse(verseClientForProcess(initialVerseId));
-                (scene as WarpableScene).warpToVerse(initialVerseId, loader);
+            if (verseIdParam) {
+                const loader = createLoadVerse(verseClientForProcess(verseIdParam));
+                (scene as WarpableScene).warpToVerse(verseIdParam, loader);
             } else {
                 scene.scene.start('MainMenu');
             }
@@ -137,6 +152,7 @@ export function Renderer({ verseClientForProcess, initialVerseId }: RendererProp
         {
             const verseId = (scene as VerseScene).verseId;
             console.log(`Navigating to /verse/${verseId}`);
+            setLastNavigatedVerseId(verseId)
             navigate({
                 to: `/app/verse/${verseId}`,
             });
