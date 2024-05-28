@@ -47,6 +47,8 @@ export class VerseScene extends WarpableScene {
       this.load.image(phaserTilesetKey(this.tilesetTxId), fetchUrl(this.tilesetTxId));
       this.load.tilemapTiledJSON(phaserTilemapKey(this.tilemapTxId), fetchUrl(this.tilemapTxId));
     }
+    this.load.image('mona', 'assets/sprites/mona.png');
+    this.load.image('scream', 'assets/sprites/scream.png');
   }
 
   topLeft()
@@ -112,6 +114,22 @@ export class VerseScene extends WarpableScene {
     }).setOrigin(0.5);
 
     this.camera.centerOn(this.spawnPixel[0], this.spawnPixel[1])
+
+    Object.keys(this.verse.entities).forEach((entityId) => {
+      const entity = this.verse.entities[entityId];
+      if (entity.Type === 'Avatar')
+        this.add.image(
+          entity.Position[0] * this.tilemap.tileWidth,
+          entity.Position[1] * this.tilemap.tileHeight,
+          'mona',
+        );
+      if (entity.Type === 'Warp')
+        this.add.image(
+          entity.Position[0] * this.tilemap.tileWidth,
+          entity.Position[1] * this.tilemap.tileHeight,
+          'scream',
+        );
+    })
 
     const topLeft = this.topLeft();
     this.add.text(topLeft.x + 10, topLeft.y + 10, `Verse ID: ${this.verseId}`, { font: '16px Courier', color: '#ff0000' });
