@@ -16,10 +16,10 @@
     "aos-d-load-verse": "func() { npm run aos-d-load ${1} process/blueprint/Verse.lua ; }; func",
     "aos-d-load-chat": "func() { npm run aos-d-load ${1} process/blueprint/Chat.lua ; }; func",
     "aos-d-load-specific": "func() { npm run aos-d-load ${1} process/${2}_${1}.lua ; }; func",
-    "deploy-all-verse": "concurrently \"npm run aos-d-load-verse Singularity\" \"npm run aos-d-load-verse Universe\" \"npm run aos-d-load-verse WeaveWorld\" \"npm run aos-d-load-verse OriginIsland\" \"npm run aos-d-load-verse LlamaFed\"",
-    "deploy-all-chat": "concurrently \"npm run aos-d-load-chat WeaveWorld\" \"npm run aos-d-load-chat OriginIsland\" \"npm run aos-d-load-chat LlamaFed\"",
-    "deploy-all-specific": "concurrently \"npm run aos-d-load-specific Singularity 0\" \"npm run aos-d-load-specific Universe 1\" \"npm run aos-d-load-specific WeaveWorld 2\" \"npm run aos-d-load-specific OriginIsland 3\" \"npm run aos-d-load-specific LlamaFed 4\" \"npm run aos-d-load-specific LlamaAssistant 5\"",
-    "deploy-all": "concurrently \"npm run deploy-all-verse\" \"npm run deploy-all-chat\" \"npm run deploy-all-specific\""
+    "deploy-all-verse": "concurrently \"npm:aos-d-load-verse Singularity\" \"npm:aos-d-load-verse Universe\" \"npm:aos-d-load-verse WeaveWorld\" \"npm:aos-d-load-verse OriginIsland\" \"npm:aos-d-load-verse LlamaFed\"",
+    "deploy-all-chat": "concurrently \"npm:aos-d-load-chat WeaveWorld\" \"npm:aos-d-load-chat OriginIsland\" \"npm:aos-d-load-chat LlamaFed\"",
+    "deploy-all-specific": "concurrently \"npm:aos-d-load-specific Singularity 0\" \"npm:aos-d-load-specific Universe 1\" \"npm:aos-d-load-specific WeaveWorld 2\" \"npm:aos-d-load-specific OriginIsland 3\" \"npm:aos-d-load-specific LlamaFed 4\" \"npm:aos-d-load-specific LlamaAssistant 5\"",
+    "deploy-all": "concurrently \"npm:deploy-all-verse\" \"npm:deploy-all-chat\" \"npm:deploy-all-specific\""
   },
   "dependencies": {
     "@othent/kms": "^1.0.12",
