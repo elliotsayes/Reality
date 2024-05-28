@@ -8,6 +8,8 @@ import { connect } from "@permaweb/aoconnect";
 export type VerseClient = {
   aoContractClient: AoContractClient;
 
+  verseId: string;
+
   // Reads
   readInfo(): Promise<VerseInfo>;
   readParameters(): Promise<VerseParameters>;
@@ -22,6 +24,8 @@ export const createVerseClient = (
   aoContractClient: AoContractClient,
 ): VerseClient => ({
   aoContractClient: aoContractClient,
+
+  verseId: aoContractClient.processId,
 
   // Read
   readInfo: () => aoContractClient.dryrunReadReplyOneJson<VerseInfo>({

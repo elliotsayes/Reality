@@ -1,10 +1,11 @@
-import { GameObjects, Scene } from 'phaser';
+import { GameObjects } from 'phaser';
 
 import { EventBus } from '../EventBus';
 import ReactDOM from 'react-dom/client';
 import { Button } from '@/components/ui/button';
+import { WarpableScene } from './WarpableScene';
 
-export class MainMenu extends Scene
+export class MainMenu extends WarpableScene
 {
     background!: GameObjects.Image;
     logo!: GameObjects.Image;
@@ -49,18 +50,16 @@ export class MainMenu extends Scene
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    _cleanup() {
+    cleanUp() {
         if (this.logoTween)
         {
             this.logoTween.stop();
             this.logoTween = null;
         }
     }
-    
-    changeScene ()
-    {
-        this._cleanup();
-        this.scene.start('Preloader');
+
+    onWarpSuccess() {
+        this.cleanUp();
     }
 
     moveLogo (vueCallback: ({ x, y }: { x: number, y: number }) => void)

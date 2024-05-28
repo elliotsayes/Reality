@@ -1,8 +1,16 @@
 import { useRef, useState } from 'react';
 import { IRefPhaserGame, PhaserGame } from './../components/PhaserGame';
 import { MainMenu } from '../lib/phaser/scenes/MainMenu';
+import { createVerseClientForProcess } from '@/features/verse/contract/verseClient';
+import { WarpableScene } from '../lib/phaser/scenes/WarpableScene';
+import { VerseScene } from '../lib/phaser/scenes/VerseScene';
+import { createLoadVerse } from '../lib/load/verse';
 
-export function Renderer()
+interface RendererProps {
+    verseClientForProcess: ReturnType<typeof createVerseClientForProcess>
+}
+
+export function Renderer({ verseClientForProcess }: RendererProps)
 {
     // The sprite can only be moved in the MainMenu Scene
     const [canMoveSprite, setCanMoveSprite] = useState(true);
@@ -11,15 +19,47 @@ export function Renderer()
     const phaserRef = useRef<IRefPhaserGame | null>(null);
     const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
 
-    const changeScene = () => {
+    const [currentScene, setCurrentScene] = useState<WarpableScene>();
 
+    const changeScene = () => {
         if(phaserRef.current)
-        {     
-            const scene = phaserRef.current.scene as MainMenu;
+        {
+            // const scene = phaserRef.current.scene as WarpableScene;
             
-            if (scene)
+            if (currentScene)
             {
-                scene.changeScene();
+                let targetVerseId: string;
+
+                const currentSceneKey = currentScene.scene.key;
+                const currentVerseId = (currentScene as VerseScene).verseId;
+                console.log(`Current scene is ${currentSceneKey}`);
+                console.log(`Current verseId is ${currentVerseId}`);
+                switch (currentSceneKey)
+                {
+                    case 'MainMenu':
+                        targetVerseId = import.meta.env.VITE_ORIGIN_ISLAND_PROCESS_ID as string;
+                        break;
+                    case "VerseScene":
+                        switch (currentVerseId) {
+                            case import.meta.env.VITE_WEAVE_WORLD_PROCESS_ID:
+                                targetVerseId = import.meta.env.VITE_ORIGIN_ISLAND_PROCESS_ID;
+                                break;
+                            case import.meta.env.VITE_ORIGIN_ISLAND_PROCESS_ID:
+                                targetVerseId = import.meta.env.VITE_LLAMA_FED_PROCESS_ID;
+                                break;
+                            default:
+                                targetVerseId = import.meta.env.VITE_WEAVE_WORLD_PROCESS_ID as string;
+                                break;
+                        }
+                        break;
+                    default:
+                        targetVerseId = import.meta.env.VITE_WEAVE_WORLD_PROCESS_ID as string;
+                        break;
+                }
+                console.log(`Changing verseId to ${targetVerseId}`);
+
+                const loadVerse = createLoadVerse(verseClientForProcess(targetVerseId));
+                currentScene.warpToVerse(targetVerseId, loadVerse);
             }
         }
     }
@@ -74,10 +114,10 @@ export function Renderer()
     }
 
     // Event emitted from the PhaserGame component
-    const currentScene = (scene: Phaser.Scene) => {
-
+    const updateCurrencScene = (scene: Phaser.Scene) => {
+        console.log(`Scene changed to ${scene.scene.key}`);
+        setCurrentScene(scene as WarpableScene)
         setCanMoveSprite(scene.scene.key !== 'MainMenu');
-        
     }
 
     return (
@@ -89,7 +129,7 @@ export function Renderer()
             justifyContent: "center",
             alignItems: "center",
         }}>
-            <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
+            <PhaserGame ref={phaserRef} currentActiveScene={updateCurrencScene} />
             <div>
                 <div>
                     <button className="button" onClick={changeScene}>Change Scene</button>
