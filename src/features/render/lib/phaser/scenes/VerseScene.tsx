@@ -6,6 +6,8 @@ import { phaserTilemapKey, phaserTilesetKey } from "../../load/verse";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
 import { _2dTileParams } from "@/features/verse/contract/_2dTile";
 
+const DEFAULT_TILE_SIZE = 16;
+
 export class VerseScene extends WarpableScene {
   verseId!: string;
   verse!: VerseState;
@@ -19,7 +21,7 @@ export class VerseScene extends WarpableScene {
   loadText!: Phaser.GameObjects.Text;
 
   camera!: Phaser.Cameras.Scene2D.Camera;
-  tilemap!: Phaser.Tilemaps.Tilemap;
+  tilemap?: Phaser.Tilemaps.Tilemap;
 
   constructor() {
     super('VerseScene');
@@ -95,8 +97,8 @@ export class VerseScene extends WarpableScene {
         mapOffsetTiles[0] * this.tilemap.tileWidth - this.tilemap.tileWidth / 2,
         mapOffsetTiles[1] * this.tilemap.tileHeight - this.tilemap.tileWidth / 2,
       ];
-      bgLayers.forEach(bgLayer => this.tilemap.createLayer(bgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1]))
-      fgLayers.forEach(fgLayer => this.tilemap.createLayer(fgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1]))
+      bgLayers.forEach(bgLayer => this.tilemap!.createLayer(bgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1]))
+      fgLayers.forEach(fgLayer => this.tilemap!.createLayer(fgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1]))
 
       console.log(`Tilemap size: ${this.tilemap.widthInPixels}, ${this.tilemap.heightInPixels}`)
 
@@ -117,18 +119,11 @@ export class VerseScene extends WarpableScene {
 
     Object.keys(this.verse.entities).forEach((entityId) => {
       const entity = this.verse.entities[entityId];
-      if (entity.Type === 'Avatar')
-        this.add.image(
-          entity.Position[0] * this.tilemap.tileWidth,
-          entity.Position[1] * this.tilemap.tileHeight,
-          'mona',
-        );
-      if (entity.Type === 'Warp')
-        this.add.image(
-          entity.Position[0] * this.tilemap.tileWidth,
-          entity.Position[1] * this.tilemap.tileHeight,
-          'scream',
-        );
+      this.add.image(
+        entity.Position[0] * (this.tilemap?.tileWidth ?? DEFAULT_TILE_SIZE),
+        entity.Position[1] * (this.tilemap?.tileHeight ?? DEFAULT_TILE_SIZE),
+        entity.Type === 'Avatar' ? 'mona' : 'scream',
+      );
     })
 
     const topLeft = this.topLeft();
