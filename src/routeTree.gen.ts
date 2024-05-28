@@ -16,16 +16,12 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
-const AppLazyImport = createFileRoute('/app')()
 const AboutLazyImport = createFileRoute('/about')()
 const IndexLazyImport = createFileRoute('/')()
+const AppIndexLazyImport = createFileRoute('/app/')()
+const AppVerseIdLazyImport = createFileRoute('/app/$verseId')()
 
 // Create/Update Routes
-
-const AppLazyRoute = AppLazyImport.update({
-  path: '/app',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/app.lazy').then((d) => d.Route))
 
 const AboutLazyRoute = AboutLazyImport.update({
   path: '/about',
@@ -36,6 +32,16 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const AppIndexLazyRoute = AppIndexLazyImport.update({
+  path: '/app/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/app.index.lazy').then((d) => d.Route))
+
+const AppVerseIdLazyRoute = AppVerseIdLazyImport.update({
+  path: '/app/$verseId',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/app.$verseId.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -55,11 +61,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
-    '/app': {
-      id: '/app'
+    '/app/$verseId': {
+      id: '/app/$verseId'
+      path: '/app/$verseId'
+      fullPath: '/app/$verseId'
+      preLoaderRoute: typeof AppVerseIdLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/app/': {
+      id: '/app/'
       path: '/app'
       fullPath: '/app'
-      preLoaderRoute: typeof AppLazyImport
+      preLoaderRoute: typeof AppIndexLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -70,7 +83,8 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
   AboutLazyRoute,
-  AppLazyRoute,
+  AppVerseIdLazyRoute,
+  AppIndexLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -83,7 +97,8 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/",
         "/about",
-        "/app"
+        "/app/$verseId",
+        "/app/"
       ]
     },
     "/": {
@@ -92,8 +107,11 @@ export const routeTree = rootRoute.addChildren({
     "/about": {
       "filePath": "about.lazy.tsx"
     },
-    "/app": {
-      "filePath": "app.lazy.tsx"
+    "/app/$verseId": {
+      "filePath": "app.$verseId.lazy.tsx"
+    },
+    "/app/": {
+      "filePath": "app.index.lazy.tsx"
     }
   }
 }

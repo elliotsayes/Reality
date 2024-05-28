@@ -8,9 +8,10 @@ import { createLoadVerse } from '../lib/load/verse';
 
 interface RendererProps {
     verseClientForProcess: ReturnType<typeof createVerseClientForProcess>
+    initialVerseId?: string
 }
 
-export function Renderer({ verseClientForProcess }: RendererProps)
+export function Renderer({ verseClientForProcess, initialVerseId }: RendererProps)
 {
     // The sprite can only be moved in the MainMenu Scene
     const [canMoveSprite, setCanMoveSprite] = useState(true);
@@ -118,6 +119,16 @@ export function Renderer({ verseClientForProcess }: RendererProps)
         console.log(`Scene changed to ${scene.scene.key}`);
         setCurrentScene(scene as WarpableScene)
         setCanMoveSprite(scene.scene.key !== 'MainMenu');
+
+        if (scene.scene.key === 'Preloader')
+        {
+            if (initialVerseId) {
+                const loader = createLoadVerse(verseClientForProcess(initialVerseId));
+                (scene as WarpableScene).warpToVerse(initialVerseId, loader);
+            } else {
+                scene.scene.start('MainMenu');
+            }
+        }
     }
 
     return (

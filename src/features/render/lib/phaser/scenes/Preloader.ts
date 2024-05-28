@@ -1,6 +1,7 @@
-import { Scene } from 'phaser';
+import { EventBus } from '../EventBus';
+import { WarpableScene } from './WarpableScene';
 
-export class Preloader extends Scene
+export class Preloader extends WarpableScene
 {
     constructor ()
     {
@@ -42,6 +43,8 @@ export class Preloader extends Scene
         //  For example, you can define global animations here, so we can use them in other scenes.
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        this.scene.start('MainMenu');
+        // this.scene.start('MainMenu');
+
+        EventBus.emit('current-scene-ready', this);
     }
 }
