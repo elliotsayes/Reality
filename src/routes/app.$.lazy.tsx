@@ -1,32 +1,31 @@
 import AnonymousLoader from '@/features/ao/test/components/AnonymousLoader'
-import { ArweaveId } from '@/features/arweave/lib/model'
 import { Renderer } from '@/features/render/components/Renderer'
 import { createVerseClientForProcess } from '@/features/verse/contract/verseClient'
 import { createLazyFileRoute, useParams } from '@tanstack/react-router'
 
-export const Route = createLazyFileRoute('/app/verse/$verseId')({
+const versePathRegex = /^verse\/([a-zA-Z0-9_-]{43})$/
+
+export const Route = createLazyFileRoute('/app/$')({
   component: VerseId,
 })
 
 function VerseId() {
-  const { verseId } = useParams({
+  const { _splat } = useParams({
     // Not sure why I have to do this but whatever
     select: (params) => ({ 
-      verseId: Object.prototype.hasOwnProperty.call(params, 'verseId')
-        ? String((params as Record<"verseId", string>).verseId)
-        : undefined,
+      _splat: Object.prototype.hasOwnProperty.call(params, '_splat')
+        ? String((params as Record<'_splat', string>)._splat)
+        : '',
     }),
     strict: false,
   })
 
-  const isValidProcessId = ArweaveId.safeParse(verseId).success;
-
-  if (!isValidProcessId) {
-    return (
-      <div className="p-2">
-        <h3>Invalid process ID</h3>
-      </div>
-    )
+  let verseId = undefined;
+  if (_splat !== 'main') {
+    const match = versePathRegex.exec(_splat)
+    if (match) {
+      verseId = match[1]
+    }
   }
 
   return (
