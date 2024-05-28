@@ -1,10 +1,16 @@
 
 import { Scene } from 'phaser';
-import { LoadVerse } from '../../load/verse';
+import { CreateLoadVerse } from '../../load/verse';
 
 export class WarpableScene extends Scene
 {
   public isLoadingWarp: boolean = false;
+  public loadVerse?: CreateLoadVerse;
+
+  public setLoadVerse (loadVerse: CreateLoadVerse)
+  {
+    this.loadVerse = loadVerse;
+  }
 
   public onWarpBegin ()
   {
@@ -21,12 +27,18 @@ export class WarpableScene extends Scene
     // Override this method to clean up the scene
   }
 
-  public warpToVerse (verseId: string, loadVerse: LoadVerse)
+  public warpToVerse (verseId: string)
   {
     if (this.isLoadingWarp) {
       console.warn(`Already warping, ignoring warp to ${verseId}`);
       return;
     }
+
+    if (!this.loadVerse) {
+      console.error(`No loadVerse function provided for ${verseId}`);
+      return;
+    }
+
     this.isLoadingWarp = true;
 
     try {
@@ -37,7 +49,7 @@ export class WarpableScene extends Scene
       this.isLoadingWarp = false;
     }
 
-    loadVerse(this.load)
+    this.loadVerse!(verseId, this.load)
       .then((verse) => {
         this.onWarpSuccess();
         this.isLoadingWarp = false;

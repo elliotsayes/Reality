@@ -4,8 +4,8 @@ import { MainMenu } from '../lib/phaser/scenes/MainMenu';
 import { createVerseClientForProcess } from '@/features/verse/contract/verseClient';
 import { WarpableScene } from '../lib/phaser/scenes/WarpableScene';
 import { VerseScene } from '../lib/phaser/scenes/VerseScene';
-import { createLoadVerse } from '../lib/load/verse';
 import { useNavigate } from '@tanstack/react-router';
+import { createLoadVerseForProcess } from '../lib/load/verse';
 
 interface RendererProps {
     verseClientForProcess: ReturnType<typeof createVerseClientForProcess>
@@ -34,8 +34,7 @@ export function Renderer({ verseClientForProcess, verseId: verseIdParam }: Rende
         if (verseIdParam !== undefined && verseIdParam !== lastNavigatedVerseId && verseIdParam !== lastVerseIdParam) {
             if (currentScene) {
                 const targetVerseId = verseIdParam;
-                const loadVerse = createLoadVerse(verseClientForProcess(targetVerseId));
-                currentScene.warpToVerse(targetVerseId, loadVerse);
+                currentScene.warpToVerse(targetVerseId);
             }
         }
     }, [verseIdParam, lastNavigatedVerseId, lastVerseIdParam, currentScene, verseClientForProcess]);
@@ -77,8 +76,7 @@ export function Renderer({ verseClientForProcess, verseId: verseIdParam }: Rende
                 }
                 console.log(`Changing verseId to ${targetVerseId}`);
 
-                const loadVerse = createLoadVerse(verseClientForProcess(targetVerseId));
-                currentScene.warpToVerse(targetVerseId, loadVerse);
+                currentScene.warpToVerse(targetVerseId);
             }
         }
     }
@@ -138,11 +136,15 @@ export function Renderer({ verseClientForProcess, verseId: verseIdParam }: Rende
         setCurrentScene(scene as WarpableScene)
         setCanMoveSprite(scene.scene.key !== 'MainMenu');
 
+        if (scene.scene.key === 'Preloader' || scene.scene.key === 'MainMenu' || scene.scene.key === 'VerseScene')
+        {
+            (scene as MainMenu).setLoadVerse(createLoadVerseForProcess(verseClientForProcess))
+        }
+
         if (scene.scene.key === 'Preloader')
         {
             if (verseIdParam) {
-                const loader = createLoadVerse(verseClientForProcess(verseIdParam));
-                (scene as WarpableScene).warpToVerse(verseIdParam, loader);
+                (scene as WarpableScene).warpToVerse(verseIdParam);
             } else {
                 scene.scene.start('MainMenu');
             }

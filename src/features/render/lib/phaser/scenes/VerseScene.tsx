@@ -111,20 +111,34 @@ export class VerseScene extends WarpableScene {
       this.spawnPixel = [0, 0];
     }
 
-    this.add.text(this.spawnPixel[0], this.spawnPixel[1], 'X', {
-      font: '20px Courier', color: '#ff0000',
-    }).setOrigin(0.5);
-
     this.camera.centerOn(this.spawnPixel[0], this.spawnPixel[1])
 
-    Object.keys(this.verse.entities).forEach((entityId) => {
+    Object.keys(this.verse.entities).map((entityId) => {
       const entity = this.verse.entities[entityId];
-      this.add.image(
+      const sprite = this.add.sprite(
         entity.Position[0] * (this.tilemap?.tileWidth ?? DEFAULT_TILE_SIZE),
         entity.Position[1] * (this.tilemap?.tileHeight ?? DEFAULT_TILE_SIZE),
         entity.Type === 'Avatar' ? 'mona' : 'scream',
-      );
-    })
+      ).setOrigin(0.5);
+      sprite.setInteractive();
+      sprite.on('pointerdown', () => {
+        console.log(`Clicked on entity ${entityId}`)
+        if (entity.Type === 'Warp') {
+          this.warpToVerse(entityId);
+        }
+      }, this)
+      sprite.on('pointerover', () => {
+        console.log(`Hovered over entity ${entityId}`)
+      }, this)
+      return sprite;
+    });
+
+    this.add.text(0, 0, 'O', {
+      font: '20px Courier', color: '#0000ff',
+    }).setOrigin(0.5);
+    this.add.text(this.spawnPixel[0], this.spawnPixel[1], 'X', {
+      font: '20px Courier', color: '#ff0000',
+    }).setOrigin(0.5);
 
     const topLeft = this.topLeft();
     this.add.text(topLeft.x + 10, topLeft.y + 10, `Verse ID: ${this.verseId}`, { font: '20px Courier', color: '#ff0000' });

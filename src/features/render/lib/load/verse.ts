@@ -1,5 +1,5 @@
 import { queryClient } from "@/lib/query";
-import { VerseClient } from "@/features/verse/contract/verseClient";
+import { VerseClient, createVerseClientForProcess } from "@/features/verse/contract/verseClient";
 import PQueue from "p-queue";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
 import { VerseState } from "./model";
@@ -58,8 +58,8 @@ async function loadVersePhaser(verseClient: VerseClient, phaserLoader: Phaser.Lo
   } as VerseState;
 }
 
-export function createLoadVerse(verseClient: VerseClient) {
-  return async (loader: Phaser.Loader.LoaderPlugin) => loadVersePhaser(verseClient, loader)
+export function createLoadVerseForProcess(createVerseClient: ReturnType<typeof createVerseClientForProcess>) {
+  return async (processId: string, loader: Phaser.Loader.LoaderPlugin) => loadVersePhaser(createVerseClient(processId), loader)
 }
 
-export type LoadVerse = ReturnType<typeof createLoadVerse>
+export type CreateLoadVerse = ReturnType<typeof createLoadVerseForProcess>
