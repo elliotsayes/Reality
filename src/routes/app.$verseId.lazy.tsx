@@ -11,7 +11,15 @@ export const Route = createLazyFileRoute('/app/$verseId')({
 })
 
 function VerseId() {
-  const { verseId } = useParams({})
+  const { verseId } = useParams({
+    // Not sure why I have to do this but whatever
+    select: (params) => ({ 
+      verseId: Object.prototype.hasOwnProperty.call(params, 'verseId')
+        ? String((params as Record<"verseId", string>).verseId)
+        : undefined,
+    }),
+    strict: false,
+  })
 
   const isValidProcessId = ArweaveId.safeParse(verseId).success;
 
