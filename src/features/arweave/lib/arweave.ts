@@ -1,7 +1,10 @@
+import { base32, base64urlnopad } from "@scure/base";
 import Arweave from "arweave";
 
 export const defaultArweave = Arweave.init({});
 
 export function fetchUrl(txId: string) {
-  return `https://arweave.net/${txId}`;
+  const txIdData = base64urlnopad.decode(txId);
+  const base32TxId = base32.encode(txIdData).replace(/=/g, "");
+  return `https://${base32TxId}.arweave.net/${txId}`;
 }
