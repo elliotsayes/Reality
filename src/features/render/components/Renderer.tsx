@@ -81,7 +81,14 @@ export function Renderer()
     }
 
     return (
-        <div id="app">
+        <div style={{
+            width: "100%",
+            height: "100vh",
+            overflow: "hidden",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+        }}>
             <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
             <div>
                 <div>
