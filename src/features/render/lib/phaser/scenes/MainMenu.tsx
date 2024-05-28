@@ -30,19 +30,25 @@ export class MainMenu extends WarpableScene
         }).setOrigin(0.5).setDepth(100);
 
         const buttonSize = {
-            w: 200,
-            h: 80,
+            w: 40,
+            h: 30,
         }
         const memElement = document.createElement("div");
+        memElement.setAttribute('style', `width: ${buttonSize.w}px; height: ${buttonSize.h}px; display: flex; justify-content: center; align-items: center;`)
         ReactDOM.createRoot(memElement).render(
-            <Button>
+            <Button
+                className='flex'
+                onClick={() => {
+                    this.warpToVerse(import.meta.env.VITE_ORIGIN_ISLAND_PROCESS_ID)
+                }}
+            >
                Go
             </Button>
         );
 
         this.add.dom(
-            512 - buttonSize.w / 2,
-            500,
+            512,
+            600,
             memElement,
         )
 
