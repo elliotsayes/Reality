@@ -13,7 +13,7 @@ export function phaserTilemapKey(txId: string) {
 }
 
 async function loadVersePhaser(verseClient: VerseClient, phaserLoader: Phaser.Loader.LoaderPlugin) {
-  const processQueue = new PQueue({ concurrency: 2 });
+  const processQueue = new PQueue({ concurrency: 3 });
 
   processQueue.add(() => queryClient.ensureQueryData({
     queryKey: ['verseInfo', verseClient.verseId],
