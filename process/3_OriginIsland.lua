@@ -29,6 +29,7 @@ VerseParameters = {
       Type = 'Fixed',
       Format = 'TMJ',
       TxId = 'EqC9HS1H0jz_NHb5Zha1oZqoAcNxAPXSCaGLiA1kjzE', -- TxId of the tilemap in TMJ format
+      Offset = { -49, -49 },                                -- Offset for the tilemap
     },
   },
 }
@@ -39,7 +40,7 @@ VerseParameters = {
 -- (The exception being the parent verse, which also can be freely warped to)
 VerseRegistry = {
   -- LlamaFedProcessId
-  ['IN3T2l6QERA6d65XGW5asx2JWX7VrOQ3HIbwQvKVBQo'] = {
+  ['_ghCCK1S0B2_vwO6yHBMwcCDTl6Hj6uXA0oyXwFOza4'] = {
     BypassParameters = true, -- Does not inherit `VerseParametersInherit`
   },
   ['SomeOtherProcessId'] = {
@@ -82,7 +83,7 @@ VerseEntities = {
     Type = 'Warp', -- understood by `2D-Tile-0` renderer
   },
   -- LlamaFedProcess
-  ['IN3T2l6QERA6d65XGW5asx2JWX7VrOQ3HIbwQvKVBQo'] = {
+  ['_ghCCK1S0B2_vwO6yHBMwcCDTl6Hj6uXA0oyXwFOza4'] = {
     Position = { 2, 2 },
     Type = 'Warp', -- understood by `2D-Tile-0` renderer
   },

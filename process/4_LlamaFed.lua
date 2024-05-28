@@ -12,6 +12,7 @@ VerseInfo = {
 VerseParameters = {
   ['2D-Tile-0'] = {
     Version = 0,
+    Spawn = { 47, 47 },
     -- This is the interior tileset enforced by origin island verse
     Tileset = {
       Type = 'Fixed',

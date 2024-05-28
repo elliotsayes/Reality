@@ -4,13 +4,17 @@ import { EventBus } from "../EventBus";
 import { VerseState } from "../../load/model";
 import { phaserTilemapKey, phaserTilesetKey } from "../../load/verse";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
+import { _2dTileParams } from "@/features/verse/contract/_2dTile";
 
 export class VerseScene extends WarpableScene {
   verseId!: string;
   verse!: VerseState;
 
+  _2dTileParams?: _2dTileParams;
   tilesetTxId?: string;
   tilemapTxId?: string;
+
+  spawnPixel!: [number, number];
 
   loadText!: Phaser.GameObjects.Text;
 
@@ -32,8 +36,10 @@ export class VerseScene extends WarpableScene {
     this.verseId = verseId;
     this.verse = verse;
 
-    this.tilesetTxId = this.verse.parameters["2D-Tile-0"]?.Tileset.TxId;
-    this.tilemapTxId = this.verse.parameters["2D-Tile-0"]?.Tilemap.TxId;
+    this._2dTileParams = this.verse.parameters["2D-Tile-0"];
+
+    this.tilesetTxId = this._2dTileParams?.Tileset.TxId;
+    this.tilemapTxId = this._2dTileParams?.Tilemap.TxId;
   }
 
   preload() {
@@ -43,15 +49,29 @@ export class VerseScene extends WarpableScene {
     }
   }
 
-  create() {
+  topLeft()
+  {
+    const cameraCenter = {
+      x: this.spawnPixel[0],
+      y: this.spawnPixel[1],
+    };
+    const cameraSize = {
+      w: this.camera.width,
+      h: this.camera.height,
+    };
+    console.log(`Camera center: ${cameraCenter.x}, ${cameraCenter.y}`)
+    console.log(`Camera size: ${cameraSize.w}, ${cameraSize.h}`)
+
+    return {
+      x: cameraCenter.x - cameraSize.w / 2,
+      y: cameraCenter.y - cameraSize.h / 2,
+    }
+  }
+
+  create()
+  {
     this.camera = this.cameras.main
     this.camera.setBackgroundColor(0x107ab0);
-
-    let cameraOffset = {
-      x: 0, 
-      y: 0,
-    }
-
 
     if (this.tilesetTxId && this.tilemapTxId) {
       console.log(`[${this.verse.info.Name}] Loading tilemap ${this.tilemapTxId} and tileset ${this.tilesetTxId}`)
@@ -67,29 +87,24 @@ export class VerseScene extends WarpableScene {
       const bgLayers = this.tilemap.layers.filter((layer) => layer.name.startsWith('BG_'));
       const fgLayers = this.tilemap.layers.filter((layer) => layer.name.startsWith('FG_'));
 
-      bgLayers.forEach(bgLayer => this.tilemap.createLayer(bgLayer.name, tileset, 0, 0))
-      fgLayers.forEach(fgLayer => this.tilemap.createLayer(fgLayer.name, tileset, 0, 0))
+      const mapOffsetTiles = this.verse.parameters["2D-Tile-0"]?.Tilemap.Offset ?? [0, 0];
+      const mapOffsetPixels = [mapOffsetTiles[0] * this.tilemap.tileWidth, mapOffsetTiles[1] * this.tilemap.tileHeight];
+      bgLayers.forEach(bgLayer => this.tilemap.createLayer(bgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1]))
+      fgLayers.forEach(fgLayer => this.tilemap.createLayer(fgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1]))
 
       console.log(`Tilemap size: ${this.tilemap.widthInPixels}, ${this.tilemap.heightInPixels}`)
-      cameraOffset = {
-          x: this.tilemap.widthInPixels / 2, 
-          y: this.tilemap.heightInPixels / 2,
-      }
+
+      const spawnTile = this._2dTileParams?.Spawn ?? [0, 0];
+      this.spawnPixel = [spawnTile[0] * this.tilemap.tileWidth, spawnTile[1] * this.tilemap.tileHeight];
+    } else {
+      this.spawnPixel = [0, 0];
     }
 
-    console.log(`Camera offset: ${cameraOffset.x}, ${cameraOffset.y}`)
-    this.camera.centerOn(
-      cameraOffset.x,
-      cameraOffset.y,
-    )
+    this.camera.centerOn(this.spawnPixel[0], this.spawnPixel[1])
 
-    const phaserGameSize = {
-      w: this.game.config.width as number,
-      h: this.game.config.height as number,
-    }
-
-    this.add.text(cameraOffset.x - phaserGameSize.w / 2 + 10, cameraOffset.y - phaserGameSize.h / 2 + 10, `Verse ID: ${this.verseId}`, { font: '16px Courier', color: '#ff0000' });
-    this.add.text(cameraOffset.x - phaserGameSize.w / 2 + 10, cameraOffset.y - phaserGameSize.h / 2 + 30, `Verse Name: ${this.verse.info.Name}`, { font: '16px Courier', color: '#ff0000' });
+    const topLeft = this.topLeft();
+    this.add.text(topLeft.x + 10, topLeft.y + 10, `Verse ID: ${this.verseId}`, { font: '16px Courier', color: '#ff0000' });
+    this.add.text(topLeft.x + 10, topLeft.y + 30, `Verse Name: ${this.verse.info.Name}`, { font: '16px Courier', color: '#ff0000' });
 
     EventBus.emit('current-scene-ready', this);
   }
@@ -97,7 +112,8 @@ export class VerseScene extends WarpableScene {
   public onWarpBegin()
   {
     if (this.isLoadingWarp) {
-      this.loadText = this.add.text(10, 50, 'Loading...', { font: '16px Courier', color: '#00ff00' });
+      const topLeft = this.topLeft();
+      this.loadText = this.add.text(topLeft.x + 10, topLeft.y + 50, 'Loading...', { font: '16px Courier', color: '#00ff00' });
     }
   }
 
