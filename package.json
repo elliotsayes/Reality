@@ -12,8 +12,9 @@
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
     "aos-d": "func() { aos ${1} --wallet ./fixtures/deploy_jwk.json ; }; func",
-    "aos-d-load": "func() { aos ${1} --wallet ./fixtures/deploy_jwk.json --load process/${2}_${1}.lua ; }; func",
-    "aos-d-load-all": "concurrently \"npm run aos-d-load Singularity 0\" \"npm run aos-d-load Universe 1\" \"npm run aos-d-load WeaveWorld 2\" \"npm run aos-d-load OriginIsland 3\" \"npm run aos-d-load LlamaFed 4\" \"npm run aos-d-load LlamaAssistant 5\""
+    "aos-d-load": "func() { aos ${1} --wallet ./fixtures/deploy_jwk.json --load ${2} ; }; func",
+    "aos-d-load-specific": "func() { npm run aos-d-load ${1} process/${2}_${1}.lua ; }; func",
+    "aos-d-load-specific-all": "concurrently \"npm run aos-d-load-specific Singularity 0\" \"npm run aos-d-load-specific Universe 1\" \"npm run aos-d-load-specific WeaveWorld 2\" \"npm run aos-d-load-specific OriginIsland 3\" \"npm run aos-d-load-specific LlamaFed 4\" \"npm run aos-d-load-specific LlamaAssistant 5\""
   },
   "dependencies": {
     "@othent/kms": "^1.0.12",
