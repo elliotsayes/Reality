@@ -11,9 +11,7 @@ export const Route = createRootRoute({
         <Link to="/about" className="[&.active]:font-bold">
           About
         </Link>
-        <Link to="/app/$" params={{
-          _splat: 'main',
-        }} className="[&.active]:font-bold">
+        <Link to="/app" className="[&.active]:font-bold">
           App
         </Link>
       </div>
