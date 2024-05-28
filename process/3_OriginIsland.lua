@@ -79,11 +79,11 @@ VerseInherit = {
 VerseEntities = {
   -- WeaveWorldProcess
   ['w0UvMR1XlVEjjNSaBn9F1qSkDPoIaWHJXzp5G5jjdAo'] = {
-    Position = { 0, 0 },
+    Position = { -2, -2 },
     Type = 'Warp', -- understood by `2D-Tile-0` renderer
   },
   -- LlamaFedProcess
-  ['_ghCCK1S0B2_vwO6yHBMwcCDTl6Hj6uXA0oyXwFOza4'] = {
+  ['IN3T2l6QERA6d65XGW5asx2JWX7VrOQ3HIbwQvKVBQo'] = {
     Position = { 2, 2 },
     Type = 'Warp', -- understood by `2D-Tile-0` renderer
   },

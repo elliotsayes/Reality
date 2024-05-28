@@ -133,11 +133,11 @@ export class VerseScene extends WarpableScene {
       return sprite;
     });
 
-    this.add.text(0, 0, 'O', {
-      font: '20px Courier', color: '#0000ff',
-    }).setOrigin(0.5);
     this.add.text(this.spawnPixel[0], this.spawnPixel[1], 'X', {
       font: '20px Courier', color: '#ff0000',
+    }).setOrigin(0.5);
+    this.add.text(0, 0, 'O', {
+      font: '20px Courier', color: '#0000ff',
     }).setOrigin(0.5);
 
     const topLeft = this.topLeft();

@@ -46,7 +46,7 @@ VerseParameters = {
 VerseEntities = {
   -- OriginIslandProcess
   ['a1C-TCUNUKCaEup0BiCXNwcVWxOVOiRBfmKuBZwPWZg'] = {
-    Position = { 0, 0 },
+    Position = { 2, 2 },
     Type = 'Warp', -- These types are understood by the `2D-Tile-0` renderer
   },
   ['SomePlayerProcessId'] = {

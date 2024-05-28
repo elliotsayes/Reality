@@ -32,12 +32,12 @@ VerseParameters = {
 VerseEntities = {
   -- OriginIslandProcess
   ['a1C-TCUNUKCaEup0BiCXNwcVWxOVOiRBfmKuBZwPWZg'] = {
-    Position = { 0, 0 },
+    Position = { 46, 46 },
     Type = 'Warp', -- 'Warp'/'Avatar' types are understood by `2D-Tile-0` renderer
   },
   -- LlamaAssistantProcess
   ['y_obnQk5mkphKlulM7v1Xyn6IhJKZGhP_BC1qLJq46w'] = {
-    Position = { 0, 0 },
+    Position = { 49, 49 },
     Type = 'Avatar',
     Interaction = {
       Type = 'MessageApi',
