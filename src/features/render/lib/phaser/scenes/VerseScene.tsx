@@ -132,8 +132,8 @@ export class VerseScene extends WarpableScene {
     })
 
     const topLeft = this.topLeft();
-    this.add.text(topLeft.x + 10, topLeft.y + 10, `Verse ID: ${this.verseId}`, { font: '16px Courier', color: '#ff0000' });
-    this.add.text(topLeft.x + 10, topLeft.y + 30, `Verse Name: ${this.verse.info.Name}`, { font: '16px Courier', color: '#ff0000' });
+    this.add.text(topLeft.x + 10, topLeft.y + 10, `Verse ID: ${this.verseId}`, { font: '20px Courier', color: '#ff0000' });
+    this.add.text(topLeft.x + 10, topLeft.y + 40, `Verse Name: ${this.verse.info.Name}`, { font: '20px Courier', color: '#ff0000' });
 
     EventBus.emit('current-scene-ready', this);
   }
@@ -142,7 +142,7 @@ export class VerseScene extends WarpableScene {
   {
     if (this.isLoadingWarp) {
       const topLeft = this.topLeft();
-      this.loadText = this.add.text(topLeft.x + 10, topLeft.y + 50, 'Loading...', { font: '16px Courier', color: '#00ff00' });
+      this.loadText = this.add.text(topLeft.x + 10, topLeft.y + 70, 'Loading...', { font: '20px Courier', color: '#00ff00' });
     }
   }
 
