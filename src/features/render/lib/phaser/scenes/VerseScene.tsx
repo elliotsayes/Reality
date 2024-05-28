@@ -88,17 +88,28 @@ export class VerseScene extends WarpableScene {
       const fgLayers = this.tilemap.layers.filter((layer) => layer.name.startsWith('FG_'));
 
       const mapOffsetTiles = this.verse.parameters["2D-Tile-0"]?.Tilemap.Offset ?? [0, 0];
-      const mapOffsetPixels = [mapOffsetTiles[0] * this.tilemap.tileWidth, mapOffsetTiles[1] * this.tilemap.tileHeight];
+      // Center the tiles around the origins
+      const mapOffsetPixels = [
+        mapOffsetTiles[0] * this.tilemap.tileWidth - this.tilemap.tileWidth / 2,
+        mapOffsetTiles[1] * this.tilemap.tileHeight - this.tilemap.tileWidth / 2,
+      ];
       bgLayers.forEach(bgLayer => this.tilemap.createLayer(bgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1]))
       fgLayers.forEach(fgLayer => this.tilemap.createLayer(fgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1]))
 
       console.log(`Tilemap size: ${this.tilemap.widthInPixels}, ${this.tilemap.heightInPixels}`)
 
       const spawnTile = this._2dTileParams?.Spawn ?? [0, 0];
-      this.spawnPixel = [spawnTile[0] * this.tilemap.tileWidth, spawnTile[1] * this.tilemap.tileHeight];
+      this.spawnPixel = [
+        spawnTile[0] * this.tilemap.tileWidth,
+        spawnTile[1] * this.tilemap.tileHeight,
+      ];
     } else {
       this.spawnPixel = [0, 0];
     }
+
+    this.add.text(this.spawnPixel[0], this.spawnPixel[1], 'X', {
+      font: '20px Courier', color: '#ff0000',
+    }).setOrigin(0.5);
 
     this.camera.centerOn(this.spawnPixel[0], this.spawnPixel[1])
 
