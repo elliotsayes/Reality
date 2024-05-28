@@ -5,7 +5,7 @@ VerseInfo = VerseInfo or {
   Name = 'UnknownVerse',
   Dimensions = 0,
   -- TODO: Test this works
-  ['Render-With'] = Inbox[0].Tags['Render-With'],
+  ['Render-With'] = '0D-Null',
 }
 
 VerseParameters = VerseParameters or {}
