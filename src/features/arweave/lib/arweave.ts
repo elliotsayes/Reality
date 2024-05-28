@@ -5,6 +5,6 @@ export const defaultArweave = Arweave.init({});
 
 export function fetchUrl(txId: string) {
   const txIdData = base64urlnopad.decode(txId);
-  const base32TxId = base32.encode(txIdData).replace(/=/g, "");
-  return `https://${base32TxId}.arweave.net/${txId}`;
+  const base32UnpaddedTxId = base32.encode(txIdData).replace(/=/g, "");
+  return `https://${base32UnpaddedTxId}.arweave.net/${txId}`;
 }
