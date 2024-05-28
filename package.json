@@ -13,7 +13,7 @@
     "build-storybook": "storybook build",
     "aos-d": "func() { aos ${1} --wallet ./fixtures/deploy_jwk.json ; }; func",
     "aos-d-load": "func() { aos ${1} --wallet ./fixtures/deploy_jwk.json --load process/${2}_${1}.lua ; }; func",
-    "aos-d-load-all": "concurrently \"npm run aos-dload Singularity 0\" \"npm run aos-dload Universe 1\" \"npm run aos-dload WeaveWorld 2\" \"npm run aos-dload OriginIsland 3\" \"npm run aos-dload LlamaFed 4\" \"npm run aos-dload LlamaAssistant 5\""
+    "aos-d-load-all": "concurrently \"npm run aos-d-load Singularity 0\" \"npm run aos-d-load Universe 1\" \"npm run aos-d-load WeaveWorld 2\" \"npm run aos-d-load OriginIsland 3\" \"npm run aos-d-load LlamaFed 4\" \"npm run aos-d-load LlamaAssistant 5\""
   },
   "dependencies": {
     "@othent/kms": "^1.0.12",
