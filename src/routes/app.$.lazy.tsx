@@ -21,10 +21,16 @@ function VerseId() {
   })
 
   let verseId = undefined;
-  if (_splat !== 'main') {
+  if (_splat.startsWith('verse/')) {
     const match = versePathRegex.exec(_splat)
     if (match) {
       verseId = match[1]
+    } else {
+      return (
+        <div>
+          Invalid verse ID
+        </div>
+      )
     }
   }
 
