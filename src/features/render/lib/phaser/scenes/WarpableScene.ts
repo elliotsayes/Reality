@@ -12,6 +12,17 @@ export class WarpableScene extends Scene
     this.loadVerse = loadVerse;
   }
 
+  pixelateIn ()
+  {
+    this.cameras.main.fadeIn(400);
+    const fxCamera = this.cameras.main.postFX.addPixelate(20);
+    this.add.tween({
+        targets: fxCamera,
+        duration: 400,
+        amount: -1,
+    });
+  }
+
   public onWarpBegin ()
   {
     // Override this method to disable features in the scene
@@ -53,7 +64,20 @@ export class WarpableScene extends Scene
       .then((verse) => {
         this.onWarpSuccess();
         this.isLoadingWarp = false;
-        this.scene.start("VerseScene", { verseId, verse });
+
+        // FX
+        const pixelated = this.cameras.main.postFX.addPixelate(-1);
+        
+        // Transition to next scene
+        this.add.tween({
+            targets: pixelated,
+            duration: 400,
+            amount: 20,
+            onComplete: () => {
+                this.cameras.main.fadeOut(400);
+                this.scene.start('VerseScene', { verseId, verse });
+            },
+        })
       })
       .catch((error) => {
         console.error(`Error loading verse ${verseId}`, error);

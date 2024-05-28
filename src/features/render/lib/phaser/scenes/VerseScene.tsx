@@ -42,6 +42,8 @@ export class VerseScene extends WarpableScene {
 
     this.tilesetTxId = this._2dTileParams?.Tileset.TxId;
     this.tilemapTxId = this._2dTileParams?.Tilemap.TxId;
+
+    this.pixelateIn();
   }
 
   preload() {
