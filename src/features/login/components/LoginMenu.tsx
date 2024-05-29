@@ -21,7 +21,7 @@ const connectConfig: ConnectConfig = {
   },
 }
 
-const localKeyLocalStorageKey = "localKey";
+const localKeyLocalStorageKey = "tempArweaveKey";
 
 interface LoginMenuProps {
   onConnect: (wallet: AoWallet) => void;
@@ -46,7 +46,7 @@ export function LoginMenu({ onConnect, onDisconnect }: LoginMenuProps) {
 
       const newJwk = await defaultArweave.wallets.generate();
       createWalletFromJwk(newJwk, true)(connectConfig);
-      localStorage.setItem("localKey", JSON.stringify(newJwk));
+      localStorage.setItem(localKeyLocalStorageKey, JSON.stringify(newJwk));
 
       const creationResult = await createWalletFromJwk(newJwk, true)(connectConfig);
       if (creationResult.success) {
