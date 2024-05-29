@@ -106,18 +106,22 @@ export class VerseScene extends WarpableScene {
         mapOffsetTiles[1] * this.tileSizeScaled[1] - this.tileSizeScaled[1] / 2,
       ];
 
-      const bgLayers = this.tilemap.layers.filter((layer) => layer.name.startsWith('BG_'));
-      const fgLayers = this.tilemap.layers.filter((layer) => layer.name.startsWith('FG_'));
+      this.tilemap.layers.forEach((tilemapLayer, index) => {
+        const isBg = tilemapLayer.name.startsWith('BG_');
+        const isFg = tilemapLayer.name.startsWith('FG_');
+        if (!isBg && !isFg) return;
 
-      bgLayers.forEach((bgLayer, index) => {
-        this.tilemap!.createLayer(bgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1])!
+        const layer = this.tilemap!.createLayer(tilemapLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1])!
           .setScale(TILE_SCALE)
-          .setDepth(DEPTH_BG_BASE + index);
-      })
-      fgLayers.forEach((fgLayer, index) => {
-        this.tilemap!.createLayer(fgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1])!
-          .setScale(TILE_SCALE)
-          .setDepth(DEPTH_FG_BASE + index);
+          .setDepth((isFg ? DEPTH_FG_BASE : DEPTH_BG_BASE) + index);
+        layer.setCollisionByProperty({ collides: true })
+        
+        const debugGraphics = this.add.graphics().setAlpha(0.5)
+        layer.renderDebug(debugGraphics, {
+          tileColor: null,
+          collidingTileColor: new Phaser.Display.Color(243, 234, 48),
+          faceColor: new Phaser.Display.Color(40, 39, 37),
+        })
       })
     }
 
