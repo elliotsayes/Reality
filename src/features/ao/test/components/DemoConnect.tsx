@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AoWallet } from "../../lib/aoWallet";
 import { DemoAo } from "./DemoAo";
-import { requestedPermissions } from "../../lib/config";
+import { permissionsRequested } from "../../lib/config";
 import { WalletType, wallets } from "../../lib/wallets";
 
 export function DemoConnect() {
@@ -26,7 +26,7 @@ export function DemoConnect() {
         setAoWallet(null);
         const walletConnector = wallets[walletOption];
         const res = await walletConnector({
-          permissions: requestedPermissions,
+          permissionsRequested: permissionsRequested,
         }, () => setAoWallet(null));
         if (res.success) {
           setAoWallet(res.result);

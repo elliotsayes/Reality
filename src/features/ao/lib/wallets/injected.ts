@@ -1,13 +1,9 @@
 import { createDataItemSigner } from "@permaweb/aoconnect";
-import { AppInfo, GatewayConfig, PermissionType, AoWalletConnector } from "../aoWallet";
+import { AoWalletConnector, ConnectConfig } from "../aoWallet";
 import { ArweaveAddress } from "@/features/arweave/lib/model";
 
 export const connectInjectedWallet: AoWalletConnector = async (
-  config: {
-    permissions: PermissionType[],
-    appInfo?: AppInfo,
-    gateway?: GatewayConfig,
-  },
+  config: ConnectConfig,
   onDisconnect?: () => void,
 ) => {
   if (!window.arweaveWallet) {
@@ -18,8 +14,16 @@ export const connectInjectedWallet: AoWalletConnector = async (
   }
 
   try {
-    await window.arweaveWallet.connect(config.permissions, config.appInfo, config.gateway);
+    await window.arweaveWallet.connect(config.permissionsRequested, config.appInfo, config.gateway);
     // TODO: Confirm that permissions have been granted
+    const permissionsGranted = await window.arweaveWallet.getPermissions();
+    if (config.permissionsRequired && !config.permissionsRequired.every((permission) => permissionsGranted.includes(permission))){
+      await window.arweaveWallet.disconnect();
+      return {
+        success: false,
+        error: "Insufficient permissions granted",
+      }
+    }
 
     const address = await window.arweaveWallet.getActiveAddress();
 

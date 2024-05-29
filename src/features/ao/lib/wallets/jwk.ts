@@ -1,13 +1,13 @@
 import { AoSigner, AoWalletConnector } from "../aoWallet";
 import { defaultArweave } from "../../../arweave/lib/arweave";
 import { ArweaveSigner, createData } from "warp-arbundles";
+import { JWKInterface } from "arweave/node/lib/wallet";
 
-export const createAnonymousWallet: AoWalletConnector = async () => {
+export const createWalletFromJwk = (jwk: JWKInterface, anonymous: boolean): AoWalletConnector => async () => {
   try {
-    const wallet = await defaultArweave.wallets.generate();
-    const address = await defaultArweave.wallets.getAddress(wallet);
+    const address = await defaultArweave.wallets.getAddress(jwk);
 
-    const arweaveSigner = new ArweaveSigner(wallet);
+    const arweaveSigner = new ArweaveSigner(jwk);
 
     const dataItemSigner: AoSigner = async (...args: Parameters<AoSigner>) => {
       const transactionArgs = args[0];
@@ -36,7 +36,7 @@ export const createAnonymousWallet: AoWalletConnector = async () => {
       success: true,
       result: {
         type: "Keyfile",
-        anonymous: true,
+        anonymous,
         address,
         signer: dataItemSigner,
       }

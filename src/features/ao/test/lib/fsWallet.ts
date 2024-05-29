@@ -52,7 +52,7 @@ export const createFsWallet = (path: string, anonymous: boolean = false): AoWall
 
 export const loadTestWallet = async () => {
   const wallet = await createFsWallet('./fixtures/test_jwk.json')({
-    permissions: [],
+    permissionsRequested: [],
   });
   if (!wallet.success) {
     throw wallet.error;

@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
-import { createAnonymousWallet } from "../../lib/wallets/anonymous";
+import { createGeneratedWallet } from "../../lib/wallets/generated";
 import { AoWallet } from "../../lib/aoWallet";
 
 interface AnonymousProps {
@@ -11,8 +11,8 @@ function AnonymousGenerator({ children }: AnonymousProps) {
   const wallet = useSuspenseQuery({
     queryKey: ["anonymous"],
     queryFn: async () => 
-      createAnonymousWallet({
-        permissions: [],
+      createGeneratedWallet({
+        permissionsRequested: [],
       }).then((wallet) => {
         if (!wallet.success) {
           throw wallet.error;

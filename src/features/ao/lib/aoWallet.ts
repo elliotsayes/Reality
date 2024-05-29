@@ -41,11 +41,14 @@ export interface GatewayConfig {
   protocol: "http" | "https";
 }
 
+export type ConnectConfig = {
+  permissionsRequested: PermissionType[];
+  permissionsRequired?: PermissionType[];
+  appInfo?: AppInfo;
+  gateway?: GatewayConfig;
+}
+
 export type AoWalletConnector = (
-  config: {
-    permissions: PermissionType[],
-    appInfo?: AppInfo,
-    gateway?: GatewayConfig,
-  },
+  config: ConnectConfig,
   onDisconnect?: () => void,
 ) => Promise<AoWalletConnectionResult>;
