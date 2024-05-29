@@ -11,6 +11,9 @@ const TILE_SCALE = 2;
 const DEFAULT_TILE_SIZE_ORIGINAL = 16;
 const DEFAULT_TILE_SIZE_SCALED = DEFAULT_TILE_SIZE_ORIGINAL * TILE_SCALE;
 
+const DEPTH_BG_BASE = -200; // => 100
+const DEPTH_FG_BASE = 100; // => 200
+
 export class VerseScene extends WarpableScene {
   verseId!: string;
   verse!: VerseState;
@@ -94,9 +97,6 @@ export class VerseScene extends WarpableScene {
         phaserTilesetKey(this.tilesetTxId),
       )!;
 
-      const bgLayers = this.tilemap.layers.filter((layer) => layer.name.startsWith('BG_'));
-      const fgLayers = this.tilemap.layers.filter((layer) => layer.name.startsWith('FG_'));
-
       this.tileSizeScaled = [this.tilemap.tileWidth * TILE_SCALE, this.tilemap.tileHeight * TILE_SCALE];
 
       const mapOffsetTiles = this.verse.parameters["2D-Tile-0"]?.Tilemap.Offset ?? [0, 0];
@@ -105,6 +105,20 @@ export class VerseScene extends WarpableScene {
         mapOffsetTiles[0] * this.tileSizeScaled[0] - this.tileSizeScaled[0] / 2,
         mapOffsetTiles[1] * this.tileSizeScaled[1] - this.tileSizeScaled[1] / 2,
       ];
+
+      const bgLayers = this.tilemap.layers.filter((layer) => layer.name.startsWith('BG_'));
+      const fgLayers = this.tilemap.layers.filter((layer) => layer.name.startsWith('FG_'));
+
+      bgLayers.forEach((bgLayer, index) => {
+        this.tilemap!.createLayer(bgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1])!
+          .setScale(TILE_SCALE)
+          .setDepth(DEPTH_BG_BASE + index);
+      })
+      fgLayers.forEach((fgLayer, index) => {
+        this.tilemap!.createLayer(fgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1])!
+          .setScale(TILE_SCALE)
+          .setDepth(DEPTH_FG_BASE + index);
+      })
     }
 
     const spawnTile = this._2dTileParams?.Spawn ?? [0, 0];
