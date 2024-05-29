@@ -13,14 +13,17 @@ export const loginMachine = setup({
     events: {} as
       | { type: 'Connect', data: { wallet: AoWallet, disconnect: () => void } }
       | { type: 'Disconnect' }
+      | { type: 'ExternalDisconnect' }
   },
   actions: {
     setWalletAndDisconnect: assign(({ event }) => {
       assertEvent(event, 'Connect');
       return event.data;
     }),
-    clearWalletAndDisconnect: assign(({ context }) => {
+    runDisconnect: ({ context }) => {
       context.disconnect?.();
+    },
+    clearWalletAndDisconnect: assign(() => {
       return {
         wallet: undefined,
         disconnect: undefined
@@ -54,7 +57,7 @@ export const loginMachine = setup({
     },
   }
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QBsD2UCWA7AsgQwGMALbMAOgEksMAXDPZAYgG0AGAXUVAAdVZaMqLFxAAPRAEZWrMqwDMEgBwAWAKwA2RRNWqJ6gJwAaEAE9EmsuoBMy26ysS5Adk22Avm+NpMuQiSzkVAIMLBKcSCC8-HRCIuIIEk4y+laKiuqq+nJWrIkSVsZmCFYOZMpWTpX6ilb66spKih5e6Nj4xKRkADLoPlAABFRkACoATib9AEpgBEIBBDSMYKOjqKNk3Mh4NABmawC2ZN5tfp09UH2DWCPjUzNzMzQI2ABuqATbglhs7D8iUQJYhF4nIDGRVDZVHI0mksk5lOpCpJdOCNPplNkXIl6s0QMdfB0At1epArowACIYWCzLDzGh-CIAmLCYGIJwouQaGH6KQNVjKJHFDSyaqZPQOGwuXH49r+cjnS5URgAYQeCwZPD4gJZoHiTgqZH0qkUzl0ylYsNUgqsckNSWU6UxtXNJo8nhAWFQEDgIhlpwC-y1zLiiAAtFZ6mUTRb9E50RbEaYw44JGREi4IaxVEknHJlNLWgS5ZRqHQGIHol8Qwhw3oo3IY3GXYmiuVLHnFKpWPDWPUJGp8+6-YT5b1sAMhmMJtMaXSK9rq5zlIb9LHY8aJKLFIK2+oO12e333EPC7KziSIFd58HWQlcvoyJ3+9J9YlqgUkwlO4-2bVu+UdG0AsfDPIkFXHK4yAAZSIVAAHd+nObB+gAVQoa8q1vcorDIaEeXsaQKnRORrQsc0XD3JwtGqZxgJOEdiQuCCqAwoFdUQBt1BXNd2Woztt0-UMMUfVRlCcKRcnsTQJAkN03CAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QBsD2UCWA7AsgQwGMALbMAOgEksMAXDPZAYgG0AGAXUVAAdVZaMqLFxAAPRAEZWrMqwDMEgBwAWAKwA2RRNWqJ6gJwAaEAE9EmsuoBMy26ysS5Adk22Avm+NpMuQiSzkVAIMLBKcSCC8-HRCIuIIEsoSZIpW+qzKVlr6OXqKxmYIVg5kEmXqqvrqClrqiR5e6Nj4xKRkADLoMBAABFSMACIYsARCAQQ0bOE8fAKxEfEuVqVO+k6K+iqsTqtyBZIqsomK9nIVOolODSDezX5tnVDdfViMAKKiNGAATlgMPUMRmMwBMpiIonNhAtEE4NClMk45IpEaplKxVPlTIg5FY5GRlKlFIp1Bk5KwlKprrdfK0Ah0utgoC9GABhYGgjjg2YxKGgRZWJxkfQY5y6NFE4X7Ip4tYZYk4pxpcVyKlNGn+ciPHxMqhkAAq3xMPQASiD2TRGD9vqhvmRuMg8DQAGY2gC2ZGpLQ19KejJe+sNJrNWHGNAQ2AAbqgCI7BFgpmCIhCeXFsRiyKirBldCdYTipRIsikbHJVLDKoiMuoPJ4QFhUBA4CJPfcAlzonHUwgALRWaz45FlAXbOQ4qxS7vaRSlAlyYXo0tVK61lu0wLUOgMduQru9xIDpxDpwjsdSzKWOQEjHHhx6VQqldqr0PLqQF7blPQhLSPE2CoOS85zWCQC1SIV9D7apbEVbR6kfHxnzpLU-SoD9Oy-NJ1CORE0R2BxkVRCdj2LVFiVWdYJQkVUENbTUGSwHUsADI1TVGEMQRoND5j5bFbGwy9thggjlALLDlDWTJEjLLQiWreC7jXH1tX9ABlIhUAAdx6R5sB6ABVCguN5MREEyZYkX0KQs3sVZlD2LEigsXD1GqdYJE2ZwazcIA */
   id: 'loginMachine',
   context: {},
   initial: "Initial",
@@ -75,9 +78,13 @@ export const loginMachine = setup({
       on: {
         Disconnect: {
           target: "Logging In.Show Login UI",
-          actions: "clearWalletAndDisconnect"
-        }
-      }
+          actions: "runDisconnect"
+        },
+
+        "External Disconnect": "Logging In.Show Login UI"
+      },
+
+      exit: "clearWalletAndDisconnect"
     },
 
     "Logging In": {

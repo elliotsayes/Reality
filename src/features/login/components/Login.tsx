@@ -10,15 +10,13 @@ interface LoginProps {
 export function Login({ children }: LoginProps) {
   const [current, send] = useMachine(loginMachine)
 
-  const disconnect = () => send({ type: 'Disconnect' })
-
   if (current.matches({ "Logging In": "Show Login UI" })) {
     return (
       // show in center of parent element
       <div className="flex flex-col flex-grow justify-around items-center h-full">
         <LoginMenu
           onConnect={(wallet, disconnect) => send({ type: 'Connect', data: { wallet, disconnect: disconnect ?? (() => {}) } })} 
-          onDisconnect={disconnect}
+          onDisconnect={() => send({ type: 'ExternalDisconnect' })}
         />
         <div />
       </div>
@@ -29,7 +27,7 @@ export function Login({ children }: LoginProps) {
     if (current.context.wallet === undefined) {
       throw new Error("Wallet is undefined")
     } 
-    return children(current.context.wallet, disconnect)
+    return children(current.context.wallet, () => send({ type: 'Disconnect' }))
   }
 
   return null;
