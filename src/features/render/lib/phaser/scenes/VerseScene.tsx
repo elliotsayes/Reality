@@ -37,6 +37,8 @@ export class VerseScene extends WarpableScene {
   player!: Phaser.Physics.Arcade.Sprite;
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
 
+  activeEntityEvent?: Phaser.GameObjects.GameObject;
+
   constructor() {
     super('VerseScene');
   }
@@ -49,6 +51,10 @@ export class VerseScene extends WarpableScene {
     verse: VerseState,
   })
   {
+    // reset some vars
+    this.isLoadingWarp = false;
+    this.activeEntityEvent = undefined;
+
     this.verseId = verseId;
     this.verse = verse;
 
@@ -147,11 +153,28 @@ export class VerseScene extends WarpableScene {
 
     this.camera.centerOn(this.spawnPixel[0], this.spawnPixel[1])
 
+    this.player = this.physics.add.sprite(
+      this.spawnPixel[0],
+      this.spawnPixel[1],
+      'faune',
+      'walk-down-3.png',
+    )
+      .setOrigin(0.5)
+      .setDepth(DEPTH_PLAYER_BASE);
+    
+    if (this.layers) {
+      this.physics.add.collider(
+        this.player,
+        // Not sure why I have to do this filtering... if I don't it breaks when Warping *back* to WeaveWorld
+        this.layers.filter((layer) => layer.layer !== undefined),
+      );
+    }
+
     Object.keys(this.verse.entities).map((entityId) => {
       // TODO: Ignore player character
 
       const entity = this.verse.entities[entityId];
-      const sprite = this.add.sprite(
+      const sprite = this.physics.add.sprite(
         entity.Position[0] * (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
         entity.Position[1] * (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
         entity.Type === 'Avatar' ? 'mona' : 'scream',
@@ -168,21 +191,19 @@ export class VerseScene extends WarpableScene {
       sprite.on('pointerover', () => {
         console.log(`Hovered over entity ${entityId}`)
       }, this)
+
+      if (entity.Type === 'Warp') {
+        this.physics.add.overlap(this.player, sprite, () => {
+          console.log(`Collided with entity ${entityId}`)
+          if (this.activeEntityEvent === undefined) {
+            this.activeEntityEvent = sprite;
+            this.warpToVerse(entityId);
+          }
+        }, undefined, this);
+      }
+
       return sprite;
     });
-
-    this.player = this.physics.add.sprite(
-      this.spawnPixel[0],
-      this.spawnPixel[1],
-      'faune',
-      'walk-down-3.png',
-    )
-      .setOrigin(0.5)
-      .setDepth(DEPTH_PLAYER_BASE);
-    
-    if (this.layers) {
-      this.physics.add.collider(this.player, this.layers.filter((layer) => layer.layer !== undefined));
-    }
 
     this.add.text(this.spawnPixel[0], this.spawnPixel[1], 'X', {
       font: '20px Courier', color: '#ff0000',
