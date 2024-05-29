@@ -105,17 +105,13 @@ export class VerseScene extends WarpableScene {
         mapOffsetTiles[0] * this.tileSizeScaled[0] - this.tileSizeScaled[0] / 2,
         mapOffsetTiles[1] * this.tileSizeScaled[1] - this.tileSizeScaled[1] / 2,
       ];
-      bgLayers.forEach(bgLayer => this.tilemap!.createLayer(bgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1])?.setScale(TILE_SCALE))
-      fgLayers.forEach(fgLayer => this.tilemap!.createLayer(fgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1])?.setScale(TILE_SCALE))
-
-      console.log(`Tilemap size: ${this.tilemap.widthInPixels}, ${this.tilemap.heightInPixels}`)
-
-      const spawnTile = this._2dTileParams?.Spawn ?? [0, 0];
-      this.spawnPixel = [
-        spawnTile[0] * DEFAULT_TILE_SIZE_SCALED,
-        spawnTile[1] * DEFAULT_TILE_SIZE_SCALED,
-      ];
     }
+
+    const spawnTile = this._2dTileParams?.Spawn ?? [0, 0];
+    this.spawnPixel = [
+      spawnTile[0] * this.tileSizeScaled[0],
+      spawnTile[1] * this.tileSizeScaled[1],
+    ];
 
     this.camera.centerOn(this.spawnPixel[0], this.spawnPixel[1])
 
