@@ -14,10 +14,7 @@ export function Login({ children }: LoginProps) {
 
   if (current.matches({ "Logging In": "Show Login UI" })) {
     return (
-      <LoginMenu
-        onConnect={(wallet) => send({ type: 'Connect', data: { wallet, disconnect } })} 
-        onDisconnect={disconnect}
-      />
+          onConnect={(wallet, disconnect) => send({ type: 'Connect', data: { wallet, disconnect: disconnect ?? (() => {}) } })} 
     )
   }
 

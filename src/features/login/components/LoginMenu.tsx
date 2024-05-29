@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { connectConfig, localKeyLocalStorageKey } from "../lib/config";
 
 interface LoginMenuProps {
-  onConnect: (wallet: AoWallet) => void;
+  onConnect: (wallet: AoWallet, disconnect?: () => void) => void;
   onDisconnect: () => void;
 }
 
@@ -60,7 +60,7 @@ export function LoginMenu({ onConnect, onDisconnect }: LoginMenuProps) {
                 onClick={async () => {
                   const wallet = await connectInjectedWallet(connectConfig, onDisconnect)
                   if (wallet.success) {
-                    onConnect(wallet.result)
+                    onConnect(wallet.result, wallet.disconnect)
                   } else {
                     toast(`Failed to connect: ${wallet.error}`)
                   }
@@ -87,7 +87,7 @@ export function LoginMenu({ onConnect, onDisconnect }: LoginMenuProps) {
               onClick={async () => {
                 const wallet = await connectOthentWallet(connectConfig, onDisconnect)
                 if (wallet.success) {
-                  onConnect(wallet.result)
+                  onConnect(wallet.result, wallet.disconnect)
                 } else {
                   toast(`Failed to connect: ${wallet.error}`)
                 }
