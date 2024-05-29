@@ -71,10 +71,10 @@ export class WarpableScene extends Scene
         // Transition to next scene
         this.add.tween({
             targets: pixelated,
-            duration: 400,
+            duration: 200,
             amount: 20,
             onComplete: () => {
-                this.cameras.main.fadeOut(400);
+                this.cameras.main.fadeOut(200);
                 this.scene.start('VerseScene', { verseId, verse });
             },
         })
