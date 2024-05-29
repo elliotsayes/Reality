@@ -18,6 +18,10 @@ const config: Phaser.Types.Core.GameConfig = {
         MainMenu,
         VerseScene,
     ],
+    physics: {
+        default: 'arcade',
+        arcade: { debug: true }
+    },
 	dom: {
 		createContainer: true,
 	},
