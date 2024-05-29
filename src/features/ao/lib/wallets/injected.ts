@@ -58,7 +58,8 @@ export const connectInjectedWallet: AoWalletConnector = async (
         anonymous: false,
         address,
         signer: createDataItemSigner(window.arweaveWallet),
-      }
+      },
+      disconnect: () => window.arweaveWallet.disconnect(),
     }
   } catch (error) {
     return {

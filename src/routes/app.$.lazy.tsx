@@ -1,4 +1,5 @@
-import AnonymousLoader from '@/features/ao/test/components/AnonymousLoader'
+import { Button } from '@/components/ui/button'
+import { Login } from '@/features/login/components/Login'
 import { Renderer } from '@/features/render/components/Renderer'
 import { createVerseClientForProcess } from '@/features/verse/contract/verseClient'
 import { createLazyFileRoute, useParams } from '@tanstack/react-router'
@@ -35,13 +36,17 @@ function VerseId() {
   }
 
   return (
-    <AnonymousLoader>
-      {(wallet) => (
-        <Renderer
-          verseClientForProcess={createVerseClientForProcess(wallet)}
-          verseId={verseId}
-        />
+    <Login>
+      {(wallet, disconnect) => (
+        <>
+          <p>Logged in as: {wallet.address}</p>
+          <Button onClick={disconnect}>Log out</Button>
+          <Renderer
+            verseClientForProcess={createVerseClientForProcess(wallet)}
+            verseId={verseId}
+          />
+        </>
       )}
-    </AnonymousLoader>
+    </Login>
   )
 }

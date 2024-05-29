@@ -13,6 +13,7 @@ export type AoWallet = {
 export type AoWalletConnectionResult = {
   success: true;
   result: AoWallet;
+  disconnect?: () => void;
 } | {
   success: false;
   error: unknown;

@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { AoWallet, ConnectConfig } from "@/features/ao/lib/aoWallet";
-import { permissionsRequested, permissionsRequired } from "@/features/ao/lib/config";
+import { AoWallet } from "@/features/ao/lib/aoWallet";
 import { connectInjectedWallet } from "@/features/ao/lib/wallets/injected";
 import { createWalletFromJwk } from "@/features/ao/lib/wallets/jwk";
 import { connectOthentWallet } from "@/features/ao/lib/wallets/othent";
@@ -10,18 +9,7 @@ import { defaultArweave } from "@/features/arweave/lib/arweave";
 import { useQuery } from "@tanstack/react-query";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { toast } from "sonner";
-
-const connectConfig: ConnectConfig = {
-  permissionsRequested,
-  permissionsRequired,
-  appInfo: {
-    name: "WeaveWorld",
-    // TODO: Add logo
-    // logo: 
-  },
-}
-
-const localKeyLocalStorageKey = "tempArweaveKey";
+import { connectConfig, localKeyLocalStorageKey } from "../lib/config";
 
 interface LoginMenuProps {
   onConnect: (wallet: AoWallet) => void;

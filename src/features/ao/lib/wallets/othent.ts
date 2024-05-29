@@ -40,7 +40,8 @@ export const connectOthentWallet: AoWalletConnector = async (_, onDisconnect) =>
         anonymous: false,
         address,
         signer: createDataItemSigner(Othent),
-      }
+      },
+      disconnect: async () => Othent.disconnect(),
     }
   } catch (error) {
     return {
