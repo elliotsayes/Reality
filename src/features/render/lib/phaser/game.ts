@@ -21,6 +21,7 @@ const config: Phaser.Types.Core.GameConfig = {
 	dom: {
 		createContainer: true,
 	},
+    pixelArt: true,
 };
 
 const StartGame = (parent: string) => {

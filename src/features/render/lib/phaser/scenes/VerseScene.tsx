@@ -6,7 +6,10 @@ import { phaserTilemapKey, phaserTilesetKey } from "../../load/verse";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
 import { _2dTileParams } from "@/features/verse/contract/_2dTile";
 
-const DEFAULT_TILE_SIZE = 16;
+const DEFAULT_TILE_SIZE_ORIGINAL = 16;
+const TILE_SCALE = 2;
+
+const DEFAULT_TILE_SIZE_SCALED = DEFAULT_TILE_SIZE_ORIGINAL * TILE_SCALE;
 
 export class VerseScene extends WarpableScene {
   verseId!: string;
@@ -16,7 +19,8 @@ export class VerseScene extends WarpableScene {
   tilesetTxId?: string;
   tilemapTxId?: string;
 
-  spawnPixel!: [number, number];
+  tileSizeScaled: [number, number] = [DEFAULT_TILE_SIZE_SCALED, DEFAULT_TILE_SIZE_SCALED];
+  spawnPixel: [number, number] = [0, 0];
 
   loadText!: Phaser.GameObjects.Text;
 
@@ -93,24 +97,24 @@ export class VerseScene extends WarpableScene {
       const bgLayers = this.tilemap.layers.filter((layer) => layer.name.startsWith('BG_'));
       const fgLayers = this.tilemap.layers.filter((layer) => layer.name.startsWith('FG_'));
 
+      this.tileSizeScaled = [this.tilemap.tileWidth * TILE_SCALE, this.tilemap.tileHeight * TILE_SCALE];
+
       const mapOffsetTiles = this.verse.parameters["2D-Tile-0"]?.Tilemap.Offset ?? [0, 0];
       // Center the tiles around the origins
       const mapOffsetPixels = [
-        mapOffsetTiles[0] * this.tilemap.tileWidth - this.tilemap.tileWidth / 2,
-        mapOffsetTiles[1] * this.tilemap.tileHeight - this.tilemap.tileWidth / 2,
+        mapOffsetTiles[0] * this.tileSizeScaled[0] - this.tileSizeScaled[0] / 2,
+        mapOffsetTiles[1] * this.tileSizeScaled[1] - this.tileSizeScaled[1] / 2,
       ];
-      bgLayers.forEach(bgLayer => this.tilemap!.createLayer(bgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1]))
-      fgLayers.forEach(fgLayer => this.tilemap!.createLayer(fgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1]))
+      bgLayers.forEach(bgLayer => this.tilemap!.createLayer(bgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1])?.setScale(TILE_SCALE))
+      fgLayers.forEach(fgLayer => this.tilemap!.createLayer(fgLayer.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1])?.setScale(TILE_SCALE))
 
       console.log(`Tilemap size: ${this.tilemap.widthInPixels}, ${this.tilemap.heightInPixels}`)
 
       const spawnTile = this._2dTileParams?.Spawn ?? [0, 0];
       this.spawnPixel = [
-        spawnTile[0] * this.tilemap.tileWidth,
-        spawnTile[1] * this.tilemap.tileHeight,
+        spawnTile[0] * DEFAULT_TILE_SIZE_SCALED,
+        spawnTile[1] * DEFAULT_TILE_SIZE_SCALED,
       ];
-    } else {
-      this.spawnPixel = [0, 0];
     }
 
     this.camera.centerOn(this.spawnPixel[0], this.spawnPixel[1])
@@ -118,8 +122,8 @@ export class VerseScene extends WarpableScene {
     Object.keys(this.verse.entities).map((entityId) => {
       const entity = this.verse.entities[entityId];
       const sprite = this.add.sprite(
-        entity.Position[0] * (this.tilemap?.tileWidth ?? DEFAULT_TILE_SIZE),
-        entity.Position[1] * (this.tilemap?.tileHeight ?? DEFAULT_TILE_SIZE),
+        entity.Position[0] * (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
+        entity.Position[1] * (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
         entity.Type === 'Avatar' ? 'mona' : 'scream',
       ).setOrigin(0.5);
       sprite.setInteractive();
