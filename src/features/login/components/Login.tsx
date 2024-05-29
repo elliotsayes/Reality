@@ -14,7 +14,14 @@ export function Login({ children }: LoginProps) {
 
   if (current.matches({ "Logging In": "Show Login UI" })) {
     return (
+      // show in center of parent element
+      <div className="flex flex-col flex-grow justify-around items-center h-full">
+        <LoginMenu
           onConnect={(wallet, disconnect) => send({ type: 'Connect', data: { wallet, disconnect: disconnect ?? (() => {}) } })} 
+          onDisconnect={disconnect}
+        />
+        <div />
+      </div>
     )
   }
 
