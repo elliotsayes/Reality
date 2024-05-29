@@ -54,6 +54,7 @@ export class VerseScene extends WarpableScene {
     // reset some vars
     this.isLoadingWarp = false;
     this.activeEntityEvent = undefined;
+    this.layers = undefined;
 
     this.verseId = verseId;
     this.verse = verse;
@@ -165,8 +166,7 @@ export class VerseScene extends WarpableScene {
     if (this.layers) {
       this.physics.add.collider(
         this.player,
-        // Not sure why I have to do this filtering... if I don't it breaks when Warping *back* to WeaveWorld
-        this.layers.filter((layer) => layer.layer !== undefined),
+        this.layers,
       );
     }
 
