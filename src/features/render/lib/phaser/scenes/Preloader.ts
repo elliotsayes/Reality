@@ -33,8 +33,10 @@ export class Preloader extends WarpableScene
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets');
 
-        this.load.image('logo', 'logo.png');
-        this.load.image('star', 'star.png');
+        this.load.image('mona', 'sprites/mona.png');
+        this.load.image('scream', 'sprites/scream.png');
+
+        this.load.atlas('faune', 'sprites/atlas/faune.png', 'sprites/atlas/faune.json');
     }
 
     create ()

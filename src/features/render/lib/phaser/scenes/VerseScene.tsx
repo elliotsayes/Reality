@@ -3,7 +3,6 @@ import { WarpableScene } from "./WarpableScene";
 import { EventBus } from "../EventBus";
 import { VerseState } from "../../load/model";
 import { phaserTilemapKey, phaserTilesetKey } from "../../load/verse";
-import { fetchUrl } from "@/features/arweave/lib/arweave";
 import { _2dTileParams } from "@/features/verse/contract/_2dTile";
 
 const TILE_SCALE = 2;
@@ -64,21 +63,10 @@ export class VerseScene extends WarpableScene {
     this.tilesetTxId = this._2dTileParams?.Tileset.TxId;
     this.tilemapTxId = this._2dTileParams?.Tilemap.TxId;
 
-    this.pixelateIn();
-  }
-
-  preload() {
-    if (this.tilesetTxId && this.tilemapTxId) {
-      this.load.image(phaserTilesetKey(this.tilesetTxId), fetchUrl(this.tilesetTxId));
-      this.load.tilemapTiledJSON(phaserTilemapKey(this.tilemapTxId), fetchUrl(this.tilemapTxId));
-    }
-    this.load.image('mona', 'assets/sprites/mona.png');
-    this.load.image('scream', 'assets/sprites/scream.png');
-
-    this.load.atlas('faune', 'assets/sprites/atlas/faune.png', 'assets/sprites/atlas/faune.json');
-    
     // TODO: Backup input?
     this.cursors = this.input.keyboard!.createCursorKeys();
+
+    this.pixelateIn();
   }
 
   topLeft()

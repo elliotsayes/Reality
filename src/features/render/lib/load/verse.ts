@@ -45,11 +45,11 @@ async function loadVersePhaser(verseClient: VerseClient, phaserLoader: Phaser.Lo
     queryFn: async () => verseClient.readAllEntities(),
   }))
 
+  await processQueue.onIdle()
   await new Promise((resolve) => {
     phaserLoader.on('complete', resolve)
     phaserLoader.start()
   });
-  await processQueue.onIdle()
   
   return {
     info: queryClient.getQueryData(['verseInfo', verseClient.verseId]),
