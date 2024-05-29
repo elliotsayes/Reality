@@ -6,9 +6,9 @@ import { phaserTilemapKey, phaserTilesetKey } from "../../load/verse";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
 import { _2dTileParams } from "@/features/verse/contract/_2dTile";
 
-const DEFAULT_TILE_SIZE_ORIGINAL = 16;
 const TILE_SCALE = 2;
 
+const DEFAULT_TILE_SIZE_ORIGINAL = 16;
 const DEFAULT_TILE_SIZE_SCALED = DEFAULT_TILE_SIZE_ORIGINAL * TILE_SCALE;
 
 export class VerseScene extends WarpableScene {
