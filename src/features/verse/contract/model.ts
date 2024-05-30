@@ -24,25 +24,34 @@ export const VerseParameters = z.object({
 });
 export type VerseParameters = z.infer<typeof VerseParameters>;
 
-export const VerseEntityType = z.enum(["Avatar", "Warp"]);
+export const VerseEntityType = z.enum(["Unknown", "Avatar", "Warp"]);
 export type VerseEntityType = z.infer<typeof VerseEntityType>;
 
 export const VerseEntityPosition = VerseVector;
 export type VerseEntityPosition = z.infer<typeof VerseEntityPosition>;
 
+export const VerseEntity = z.object({
+  Type: VerseEntityType,
+  Position: VerseEntityPosition,
+});
+export type VerseEntity = z.infer<typeof VerseEntity>;
+
+export const VerseEntityCreate = z.object({
+  Type: z.optional(VerseEntityType),
+  Position: z.optional(VerseEntityPosition),
+});
+export type VerseEntityCreate = z.infer<typeof VerseEntityCreate>;
+
 export const VerseEntities = z.record(
   ArweaveAddress,
-  z.object({
-    Type: VerseEntityType,
-    Position: VerseEntityPosition,
-  })
+  VerseEntity,
 );
 export type VerseEntities = z.infer<typeof VerseEntities>;
 
-export const VerseEntity = VerseEntities.refine(
+export const VerseEntityKeyed = VerseEntities.refine(
   (entities) => Object.keys(entities).length === 1,
   {
     message: "Expected exactly one entity",
   }
 );
-export type VerseEntity = z.infer<typeof VerseEntity>;
+export type VerseEntityKeyed = z.infer<typeof VerseEntityKeyed>;

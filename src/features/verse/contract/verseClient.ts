@@ -1,7 +1,7 @@
 import { ArweaveId } from "@/features/arweave/lib/model";
 import { MessageId } from "../../ao/lib/aoClient";
 import { AoContractClient, createAoContractClient } from "../../ao/lib/aoContractClient";
-import { VerseEntities, VerseEntityPosition, VerseInfo, VerseParameters } from "./model";
+import { VerseEntities, VerseEntity, VerseEntityCreate, VerseEntityPosition, VerseInfo, VerseParameters } from "./model";
 import { AoWallet } from "@/features/ao/lib/aoWallet";
 import { connect } from "@permaweb/aoconnect";
 
@@ -17,7 +17,8 @@ export type VerseClient = {
   readEntities(entityIds: Array<ArweaveId>): Promise<VerseEntities>;
 
   // Writes
-  writePosition(position: VerseEntityPosition): Promise<MessageId>;
+  createEntity(entity: VerseEntity): Promise<MessageId>;
+  updateEntityPosition(position: VerseEntityPosition): Promise<MessageId>;
 }
 
 export const createVerseClient = (
@@ -39,15 +40,17 @@ export const createVerseClient = (
   }, /* VerseEntities */), // TODO: Define VerseEntities properly
   readEntities: (entityIds: Array<ArweaveId>) => aoContractClient.dryrunReadReplyOneJson<VerseEntities>({
     tags: [{ name: "Action", value: "VerseParameters" }],
-    data: JSON.stringify({
-      EntityIds: entityIds,
-    }),
+    data: JSON.stringify({ EntityIds: entityIds }),
   }, /* VerseEntities */), // TODO: Define VerseEntities properly
 
   // Write
-  writePosition: (position: VerseEntityPosition) => aoContractClient.message({
-    tags: [{ name: "Action", value: "VerseUpdatePosition" }],
-    data: JSON.stringify(position),
+  createEntity: (entity: VerseEntityCreate) => aoContractClient.message({
+    tags: [{ name: "Action", value: "VerseEntityCreate" }],
+    data: JSON.stringify(entity),
+  }),
+  updateEntityPosition: (position: VerseEntityPosition) => aoContractClient.message({
+    tags: [{ name: "Action", value: "VerseEntityUpdatePosition" }],
+    data: JSON.stringify({ Position: position }),
   }),
 });
 

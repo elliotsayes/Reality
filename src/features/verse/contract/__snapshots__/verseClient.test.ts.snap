@@ -1,5 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`createVerseClient > Universe createEntity 1`] = `"9VcDDqeY6-fDJ6_5ntBhLIh5Q688Qz087AgIQbl2UpM"`;
+
 exports[`createVerseClient > Universe readAllEntities 1`] = `
 {
   "w0UvMR1XlVEjjNSaBn9F1qSkDPoIaWHJXzp5G5jjdAo": {
@@ -21,6 +23,8 @@ exports[`createVerseClient > Universe readInfo 1`] = `
 `;
 
 exports[`createVerseClient > Universe readParameters 1`] = `[]`;
+
+exports[`createVerseClient > Universe updateEntityPosition 1`] = `"1FbPQ2DWQf6mKF-ruLOqxrJQFRTq2SDejzv4-niTlr8"`;
 
 exports[`createVerseClient > creates client 1`] = `
 {
@@ -47,10 +51,12 @@ exports[`createVerseClient > creates client 1`] = `
     "message": [Function],
     "processId": "PHHOfjFPSbn7TQT1Z-dB4ndyIyppHV5haMPCg8dIccs",
   },
+  "createEntity": [Function],
   "readAllEntities": [Function],
   "readEntities": [Function],
   "readInfo": [Function],
   "readParameters": [Function],
-  "writePosition": [Function],
+  "updateEntityPosition": [Function],
+  "verseId": "PHHOfjFPSbn7TQT1Z-dB4ndyIyppHV5haMPCg8dIccs",
 }
 `;
