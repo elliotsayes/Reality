@@ -2,6 +2,7 @@ import { AoWallet } from "@/features/ao/lib/aoWallet"
 import { LoginMenu } from "./LoginMenu"
 import { useMachine } from "@xstate/react"
 import { loginMachine } from "../machines/loginMachine"
+import { Button } from "@/components/ui/button"
 
 interface LoginProps {
   children: (wallet: AoWallet, disconnect: () => void) => React.ReactNode
@@ -12,7 +13,6 @@ export function Login({ children }: LoginProps) {
 
   if (current.matches({ "Logging In": "Show Login UI" })) {
     return (
-      // show in center of parent element
       <div className="flex flex-col flex-grow justify-around items-center h-full">
         <LoginMenu
           onConnect={(wallet, disconnect) => send({ type: 'Connect', data: { wallet, disconnect: disconnect ?? (() => {}) } })} 
@@ -30,5 +30,15 @@ export function Login({ children }: LoginProps) {
     return children(current.context.wallet, () => send({ type: 'Disconnect' }))
   }
 
-  return null;
+  return (
+    <div className="flex flex-col flex-grow justify-center items-center h-full">
+      <div className="text-2xl">Logging in...</div>
+      <Button
+        onClick={() => window.location.reload()}
+        className="mt-4"
+      >
+        Reload
+      </Button>
+    </div>
+  )
 }
