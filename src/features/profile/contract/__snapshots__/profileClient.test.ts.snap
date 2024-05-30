@@ -1,0 +1,32 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`createProfileClient > creates client 1`] = `
+{
+  "aoContractClient": {
+    "aoClient": {
+      "assign": [Function],
+      "dryrun": [Function],
+      "message": [Function],
+      "monitor": [Function],
+      "result": [Function],
+      "results": [Function],
+      "spawn": [Function],
+      "unmonitor": [Function],
+    },
+    "aoWallet": {
+      "address": "HHz5nNVEzkALjmZq8cdIdubMBJCpIFOvzO5uHfU5nQI",
+      "anonymous": false,
+      "signer": [Function],
+      "type": "Keyfile",
+    },
+    "dryrunReadReplyOne": [Function],
+    "dryrunReadReplyOneJson": [Function],
+    "dryrunReadReplyOptional": [Function],
+    "message": [Function],
+    "processId": "PedKeBrusvwggeg3jzAhT7AMDJ4UtcbRk7UFPzQVFhU",
+  },
+  "createProfile": [Function],
+  "readProfiles": [Function],
+  "updateProfile": [Function],
+}
+`;

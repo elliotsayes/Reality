@@ -1,16 +1,17 @@
 import { ArweaveId } from "@/features/arweave/lib/model";
 import { MessageId } from "../../ao/lib/aoClient";
 import { AoContractClient } from "../../ao/lib/aoContractClient";
-import { ProfileInfo, ProfileInfoWritable } from "./model";
+import { ProfileInfoCreate, ProfileInfoKeyed, ProfileInfoUpdate } from "./model";
 
 export type ProfileClient = {
   aoContractClient: AoContractClient;
 
   // Reads
-  readProfiles(profileIds: Array<ArweaveId>): Promise<ProfileInfo>;
+  readProfiles(profileIds: Array<ArweaveId>): Promise<ProfileInfoKeyed>;
 
   // Writes
-  writeProfile(profile: ProfileInfoWritable): Promise<MessageId>;
+  createProfile(profile: ProfileInfoCreate): Promise<MessageId>;
+  updateProfile(profile: ProfileInfoUpdate): Promise<MessageId>;
 }
 
 // Placeholder
@@ -21,15 +22,19 @@ export const createProfileClient = (
   aoContractClient: aoContractClient,
 
   // Read
-  readProfiles: (profileIds: Array<ArweaveId>) => aoContractClient.dryrunReadReplyOneJson<ProfileInfo>({
-    tags: [{ name: "Action", value: "ProfileGet" }],
+  readProfiles: (profileIds: Array<ArweaveId>) => aoContractClient.dryrunReadReplyOneJson<ProfileInfoKeyed>({
+    tags: [{ name: "Action", value: "Profiles" }],
     data: JSON.stringify({
       ProfileIds: profileIds,
     }),
-  }, ProfileInfo),
+  }, /* ProfileInfoKeyed */),
 
   // Write
-  writeProfile: (profile: ProfileInfoWritable) => aoContractClient.message({
+  createProfile: (profile: ProfileInfoCreate) => aoContractClient.message({
+    tags: [{ name: "Action", value: "ProfileCreate" }],
+    data: JSON.stringify(profile),
+  }),
+  updateProfile: (profile: ProfileInfoUpdate) => aoContractClient.message({
     tags: [{ name: "Action", value: "ProfileUpdate" }],
     data: JSON.stringify(profile),
   }),
