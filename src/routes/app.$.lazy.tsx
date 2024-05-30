@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { truncateAddress } from '@/features/arweave/lib/utils'
 import { Login } from '@/features/login/components/Login'
 import { Renderer } from '@/features/render/components/Renderer'
 import { createVerseClientForProcess } from '@/features/verse/contract/verseClient'
@@ -38,14 +39,24 @@ function VerseId() {
   return (
     <Login>
       {(wallet, disconnect) => (
-        <>
-          <p>Logged in as: {wallet.address}</p>
-          <Button onClick={disconnect}>Log out</Button>
-          <Renderer
-            verseClientForProcess={createVerseClientForProcess(wallet)}
-            verseId={verseId}
-          />
-        </>
+        <div>
+          <div className='flex flex-row gap-4 items-baseline fixed top-0 right-0 py-2 px-2'>
+            <p>Wallet: <span className='font-mono text-sm text-muted-foreground'>{truncateAddress(wallet.address)}</span></p>
+            <Button
+              onClick={disconnect}
+              size={'sm'}
+              variant={'secondary'}
+            >
+              Log out
+            </Button>
+          </div>
+          <div className='fixed top-14 right-0 left-0 bottom-0'>
+            <Renderer
+              verseClientForProcess={createVerseClientForProcess(wallet)}
+              verseId={verseId}
+            />
+          </div>
+        </div>
       )}
     </Login>
   )

@@ -5,10 +5,11 @@ import { VerseState } from "../../load/model";
 import { phaserTilemapKey, phaserTilesetKey } from "../../load/verse";
 import { _2dTileParams } from "@/features/verse/contract/_2dTile";
 
-const TILE_SCALE = 2;
+const SCALE_TILES = 3;
+const SCALE_ENTITIES = 2;
 
 const DEFAULT_TILE_SIZE_ORIGINAL = 16;
-const DEFAULT_TILE_SIZE_SCALED = DEFAULT_TILE_SIZE_ORIGINAL * TILE_SCALE;
+const DEFAULT_TILE_SIZE_SCALED = DEFAULT_TILE_SIZE_ORIGINAL * SCALE_TILES;
 
 const DEPTH_BG_BASE = -200; // => -101
 const DEPTH_FG_BASE = 100; // => 199
@@ -104,7 +105,7 @@ export class VerseScene extends WarpableScene {
         phaserTilesetKey(this.tilesetTxId),
       )!;
 
-      this.tileSizeScaled = [this.tilemap.tileWidth * TILE_SCALE, this.tilemap.tileHeight * TILE_SCALE];
+      this.tileSizeScaled = [this.tilemap.tileWidth * SCALE_TILES, this.tilemap.tileHeight * SCALE_TILES];
 
       const mapOffsetTiles = this.verse.parameters["2D-Tile-0"]?.Tilemap.Offset ?? [0, 0];
       // Center the tiles around the origins
@@ -119,7 +120,7 @@ export class VerseScene extends WarpableScene {
         if (!isBg && !isFg) return;
 
         const layer = this.tilemap!.createLayer(layerData.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1])!
-          .setScale(TILE_SCALE)
+          .setScale(SCALE_TILES)
           .setDepth((isFg ? DEPTH_FG_BASE : DEPTH_BG_BASE) + index);
         layer.setCollisionByProperty({ collides: true })
         
@@ -148,6 +149,8 @@ export class VerseScene extends WarpableScene {
       'faune',
       'walk-down-3.png',
     )
+      .setSize(16, 22)
+      .setScale(SCALE_ENTITIES)
       .setOrigin(0.5)
       .setDepth(DEPTH_PLAYER_BASE);
     
@@ -167,6 +170,7 @@ export class VerseScene extends WarpableScene {
         entity.Position[1] * (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
         entity.Type === 'Avatar' ? 'mona' : 'scream',
       )
+        .setScale(SCALE_ENTITIES)
         .setOrigin(0.5)
         .setDepth(DEPTH_ENTITY_BASE + 1);
       sprite.setInteractive();

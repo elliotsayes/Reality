@@ -6,11 +6,11 @@ import { VerseScene } from './scenes/VerseScene';
 
 //  Find out more information about the Game Config at:
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
-const config: Phaser.Types.Core.GameConfig = {
+const config = (parent: string): Phaser.Types.Core.GameConfig => ({
     type: AUTO,
     width: 1024,
     height: 768,
-    parent: 'game-container',
+    parent,
     backgroundColor: '#028af8',
     scene: [
         Boot,
@@ -25,13 +25,19 @@ const config: Phaser.Types.Core.GameConfig = {
 	dom: {
 		createContainer: true,
 	},
+    scale: {
+        parent,
+        mode: Phaser.Scale.RESIZE,
+        resizeInterval: 100,
+        width: '100%',
+        height: '100%',
+        expandParent: true,
+    },
     pixelArt: true,
-};
+});
 
 const StartGame = (parent: string) => {
-
-    return new Game({ ...config, parent });
-
+    return new Game(config(parent));
 }
 
 export default StartGame;
