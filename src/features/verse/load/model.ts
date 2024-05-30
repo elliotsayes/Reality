@@ -1,4 +1,4 @@
-import { VerseClient } from "../../../../verse/contract/verseClient"
+import { VerseClient } from "../contract/verseClient";
 
 export type VerseState = {
   info: Awaited<ReturnType<VerseClient['readInfo']>>,

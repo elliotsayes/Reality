@@ -211,8 +211,7 @@ export class VerseScene extends WarpableScene {
     EventBus.emit('current-scene-ready', this);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public update(t: number, dt: number)
+  public update(/* t: number, dt: number */)
   {
     if (!this.player) return;
     if (!this.cursors) return;
