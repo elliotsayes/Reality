@@ -52,7 +52,7 @@ export class VerseScene extends WarpableScene {
   })
   {
     // reset some vars
-    this.isLoadingWarp = false;
+    this.isWarping = false;
     this.activeEntityEvent = undefined;
     this.layers = undefined;
 
@@ -216,7 +216,7 @@ export class VerseScene extends WarpableScene {
     if (!this.player) return;
     if (!this.cursors) return;
 
-    const speed = 100;
+    const speed = this.isWarping ? 50 : 100;
 
     if (this.cursors.left?.isDown)
     {
@@ -248,7 +248,7 @@ export class VerseScene extends WarpableScene {
 
   public onWarpBegin()
   {
-    if (this.isLoadingWarp) {
+    if (this.isWarping) {
       const topLeft = this.topLeft();
       this.loadText = this.add.text(topLeft.x + 10, topLeft.y + 70, 'Loading...', { font: '20px Courier', color: '#00ff00' });
     }
@@ -256,7 +256,7 @@ export class VerseScene extends WarpableScene {
 
   public onWarpAbort()
   {
-    if (!this.isLoadingWarp) {
+    if (!this.isWarping) {
       this.loadText.destroy();
     }
   }

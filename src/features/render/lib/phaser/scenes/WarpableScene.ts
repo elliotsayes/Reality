@@ -4,7 +4,7 @@ import { CreateLoadVerse } from '../../load/verse';
 
 export class WarpableScene extends Scene
 {
-  public isLoadingWarp: boolean = false;
+  public isWarping: boolean = false;
   public loadVerse?: CreateLoadVerse;
 
   public setLoadVerse (loadVerse: CreateLoadVerse)
@@ -40,7 +40,7 @@ export class WarpableScene extends Scene
 
   public warpToVerse (verseId: string)
   {
-    if (this.isLoadingWarp) {
+    if (this.isWarping) {
       console.warn(`Already warping, ignoring warp to ${verseId}`);
       return;
     }
@@ -50,20 +50,19 @@ export class WarpableScene extends Scene
       return;
     }
 
-    this.isLoadingWarp = true;
+    this.isWarping = true;
 
     try {
       this.onWarpBegin();
     } catch (error) {
       console.error(`Error running onWarpBegin for ${verseId}`, error);
       this.onWarpAbort();
-      this.isLoadingWarp = false;
+      this.isWarping = false;
     }
 
     this.loadVerse!(verseId, this.load)
       .then((verse) => {
         this.onWarpSuccess();
-        this.isLoadingWarp = false;
 
         // FX
         const pixelated = this.cameras.main.postFX.addPixelate(-1);
@@ -75,6 +74,7 @@ export class WarpableScene extends Scene
             duration: 200,
             amount: 20,
             onComplete: () => {
+                this.isWarping = false;
                 this.scene.start('VerseScene', { verseId, verse });
             },
         })
@@ -82,7 +82,7 @@ export class WarpableScene extends Scene
       .catch((error) => {
         console.error(`Error loading verse ${verseId}`, error);
         this.onWarpAbort();
-        this.isLoadingWarp = false;
+        this.isWarping = false;
       });
   }
 }
