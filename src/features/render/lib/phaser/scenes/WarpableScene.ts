@@ -2,6 +2,8 @@
 import { Scene } from 'phaser';
 import { CreateLoadVerse } from '../../load/verse';
 
+const profileProcessId = import.meta.env.VITE_PROFILETEST_PROCESS_ID as string;
+
 export class WarpableScene extends Scene
 {
   public isWarping: boolean = false;
@@ -60,7 +62,7 @@ export class WarpableScene extends Scene
       this.isWarping = false;
     }
 
-    this.loadVerse!(verseId, this.load)
+    this.loadVerse!(verseId, profileProcessId, this.load)
       .then((verse) => {
         this.onWarpSuccess();
 

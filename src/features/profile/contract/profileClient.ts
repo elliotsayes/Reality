@@ -1,7 +1,9 @@
 import { ArweaveId } from "@/features/arweave/lib/model";
 import { MessageId } from "../../ao/lib/aoClient";
-import { AoContractClient } from "../../ao/lib/aoContractClient";
+import { AoContractClient, createAoContractClient } from "../../ao/lib/aoContractClient";
 import { ProfileInfoCreate, ProfileInfoKeyed, ProfileInfoUpdate } from "./model";
+import { AoWallet } from "@/features/ao/lib/aoWallet";
+import { connect } from "@permaweb/aoconnect";
 
 export type ProfileClient = {
   aoContractClient: AoContractClient;
@@ -39,3 +41,8 @@ export const createProfileClient = (
     data: JSON.stringify(profile),
   }),
 });
+
+export const createProfileClientForProcess = (wallet: AoWallet) => (processId: string) => {
+  const aoContractClient = createAoContractClient(processId, connect(), wallet);
+  return createProfileClient(aoContractClient);
+}

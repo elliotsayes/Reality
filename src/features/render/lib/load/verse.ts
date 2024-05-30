@@ -3,6 +3,7 @@ import { VerseClient, createVerseClientForProcess } from "@/features/verse/contr
 import PQueue from "p-queue";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
 import { VerseState } from "./model";
+import { ProfileClient, createProfileClientForProcess } from "@/features/profile/contract/profileClient";
 
 export function phaserTilesetKey(txId: string) {
   return `Tileset-Primary-${txId}`
@@ -12,7 +13,7 @@ export function phaserTilemapKey(txId: string) {
   return `Tilemap-${txId}`
 }
 
-async function loadVersePhaser(verseClient: VerseClient, phaserLoader: Phaser.Loader.LoaderPlugin) {
+async function loadVersePhaser(verseClient: VerseClient, profileClient: ProfileClient, phaserLoader: Phaser.Loader.LoaderPlugin) {
   const processQueue = new PQueue({ concurrency: 3 });
 
   processQueue.add(() => queryClient.ensureQueryData({
@@ -40,26 +41,43 @@ async function loadVersePhaser(verseClient: VerseClient, phaserLoader: Phaser.Lo
 
     return data;
   })
-  processQueue.add(() => queryClient.ensureQueryData({
-    queryKey: ['verseEntities', verseClient.verseId],
-    queryFn: async () => verseClient.readAllEntities(),
-  }))
+  processQueue.add(async () => {
+    const entities = await queryClient.ensureQueryData({
+      queryKey: ['verseEntities', verseClient.verseId],
+      queryFn: async () => verseClient.readAllEntities(),
+    })
+
+    const profileEntites = Object.keys(entities).filter((entityId) => {
+      const entity = entities[entityId]
+      return entity.Type === "Avatar"
+    })
+
+    await queryClient.ensureQueryData({
+      queryKey: ['entityProfiles', verseClient.verseId],
+      queryFn: async () => profileClient.readProfiles(profileEntites),
+    })
+  })
 
   await processQueue.onIdle()
   await new Promise((resolve) => {
     phaserLoader.on('complete', resolve)
     phaserLoader.start()
   });
-  
+
   return {
     info: queryClient.getQueryData(['verseInfo', verseClient.verseId]),
     parameters: queryClient.getQueryData(['verseParameters', verseClient.verseId]),
     entities: queryClient.getQueryData(['verseEntities', verseClient.verseId]),
+    profiles: queryClient.getQueryData(['verseEntityProfiles', verseClient.verseId, profileClient.aoContractClient.processId]),
   } as VerseState;
 }
 
-export function createLoadVerseForProcess(createVerseClient: ReturnType<typeof createVerseClientForProcess>) {
-  return async (processId: string, loader: Phaser.Loader.LoaderPlugin) => loadVersePhaser(createVerseClient(processId), loader)
+export function createLoadVerseForProcess(
+  createVerseClient: ReturnType<typeof createVerseClientForProcess>,
+  createProfileClient: ReturnType<typeof createProfileClientForProcess>,
+) {
+  return async (verseProcessId: string, profileProcessId: string, loader: Phaser.Loader.LoaderPlugin) =>
+    loadVersePhaser(createVerseClient(verseProcessId), createProfileClient(profileProcessId), loader)
 }
 
 export type CreateLoadVerse = ReturnType<typeof createLoadVerseForProcess>

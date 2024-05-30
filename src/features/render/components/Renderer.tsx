@@ -6,13 +6,15 @@ import { WarpableScene } from '../lib/phaser/scenes/WarpableScene';
 import { VerseScene } from '../lib/phaser/scenes/VerseScene';
 import { useNavigate } from '@tanstack/react-router';
 import { createLoadVerseForProcess } from '../lib/load/verse';
+import { createProfileClientForProcess } from '@/features/profile/contract/profileClient';
 
 interface RendererProps {
     verseClientForProcess: ReturnType<typeof createVerseClientForProcess>
+    profileClientForProcess: ReturnType<typeof createProfileClientForProcess>
     verseId?: string
 }
 
-export function Renderer({ verseClientForProcess, verseId: verseIdParam }: RendererProps)
+export function Renderer({ verseClientForProcess, profileClientForProcess, verseId: verseIdParam }: RendererProps)
 {
     const navigate = useNavigate();
 
@@ -41,7 +43,7 @@ export function Renderer({ verseClientForProcess, verseId: verseIdParam }: Rende
 
         if (scene.scene.key === 'Preloader' || scene.scene.key === 'MainMenu' || scene.scene.key === 'VerseScene')
         {
-            (scene as MainMenu).setLoadVerse(createLoadVerseForProcess(verseClientForProcess))
+            (scene as MainMenu).setLoadVerse(createLoadVerseForProcess(verseClientForProcess, profileClientForProcess))
         }
 
         if (scene.scene.key === 'Preloader')

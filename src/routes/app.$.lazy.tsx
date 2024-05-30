@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { truncateAddress } from '@/features/arweave/lib/utils'
 import { Login } from '@/features/login/components/Login'
+import { createProfileClientForProcess } from '@/features/profile/contract/profileClient'
 import { Renderer } from '@/features/render/components/Renderer'
 import { createVerseClientForProcess } from '@/features/verse/contract/verseClient'
 import { createLazyFileRoute, useParams } from '@tanstack/react-router'
@@ -53,6 +54,7 @@ function VerseId() {
           <div className='fixed top-14 right-0 left-0 bottom-0'>
             <Renderer
               verseClientForProcess={createVerseClientForProcess(wallet)}
+              profileClientForProcess={createProfileClientForProcess(wallet)}
               verseId={verseId}
             />
           </div>
