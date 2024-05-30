@@ -37,3 +37,15 @@ type Story = StoryObj<typeof meta>;
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {};
+
+// More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
+export const WithFakeWallet: Story = {
+  args: {
+    localWallet: {
+      type: "Keyfile",
+      anonymous: true,
+      address: 'fakeAddress',
+      signer: async () => ({})
+    }
+  }
+};

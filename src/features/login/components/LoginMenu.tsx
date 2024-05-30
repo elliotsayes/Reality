@@ -3,48 +3,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AoWallet } from "@/features/ao/lib/aoWallet";
 import { connectInjectedWallet } from "@/features/ao/lib/wallets/injected";
-import { createWalletFromJwk } from "@/features/ao/lib/wallets/jwk";
 import { connectOthentWallet } from "@/features/ao/lib/wallets/othent";
-import { defaultArweave } from "@/features/arweave/lib/arweave";
-import { useQuery } from "@tanstack/react-query";
-import { JWKInterface } from "arweave/node/lib/wallet";
 import { toast } from "sonner";
-import { connectConfig, localKeyLocalStorageKey } from "../lib/config";
+import { defaultConnectConfig } from "../lib/config";
 
 interface LoginMenuProps {
   onConnect: (wallet: AoWallet, disconnect?: () => void) => void;
   onDisconnect: () => void;
+  localWallet?: AoWallet;
 }
 
-export function LoginMenu({ onConnect, onDisconnect }: LoginMenuProps) {
-  const localKey = useQuery({
-    queryKey: ["localKey"],
-    queryFn: async () => {
-      const storedJwkString = localStorage.getItem(localKeyLocalStorageKey);
-      
-      if (storedJwkString) {
-        const storedJwk: JWKInterface = JSON.parse(storedJwkString);
-        const creationResult = await createWalletFromJwk(storedJwk, true)(connectConfig);
-        if (creationResult.success) {
-          return creationResult.result;
-        } else {
-          throw new Error("Failed to process local key");
-        }
-      }
-
-      const newJwk = await defaultArweave.wallets.generate();
-      createWalletFromJwk(newJwk, true)(connectConfig);
-      localStorage.setItem(localKeyLocalStorageKey, JSON.stringify(newJwk));
-
-      const creationResult = await createWalletFromJwk(newJwk, true)(connectConfig);
-      if (creationResult.success) {
-        return creationResult.result;
-      } else {
-        throw new Error("Failed to process generated key");
-      }
-    },
-  })
-
+export function LoginMenu({ onConnect, onDisconnect, localWallet }: LoginMenuProps) {
+  const hasLocalWallet = localWallet !== undefined;
   const hasInjectedArweave = !!window.arweaveWallet;
 
   return (
@@ -58,7 +28,7 @@ export function LoginMenu({ onConnect, onDisconnect }: LoginMenuProps) {
             <TooltipTrigger className="flex flex-grow">
               <Button
                 onClick={async () => {
-                  const wallet = await connectInjectedWallet(connectConfig, onDisconnect)
+                  const wallet = await connectInjectedWallet(defaultConnectConfig, onDisconnect)
                   if (wallet.success) {
                     onConnect(wallet.result, wallet.disconnect)
                   } else {
@@ -85,7 +55,7 @@ export function LoginMenu({ onConnect, onDisconnect }: LoginMenuProps) {
             <TooltipTrigger
               asChild
               onClick={async () => {
-                const wallet = await connectOthentWallet(connectConfig, onDisconnect)
+                const wallet = await connectOthentWallet(defaultConnectConfig, onDisconnect)
                 if (wallet.success) {
                   onConnect(wallet.result, wallet.disconnect)
                 } else {
@@ -106,15 +76,13 @@ export function LoginMenu({ onConnect, onDisconnect }: LoginMenuProps) {
           <Tooltip disableHoverableContent>
             <TooltipTrigger
               asChild
-              disabled={localKey.isLoading}
+              disabled={!hasLocalWallet}
               onClick={() => {
-                if (localKey.data) {
-                  onConnect(localKey.data)
-                }
+                onConnect(localWallet!)
               }}
             >
               <Button>
-                {localKey.isLoading ? '⚙️' : '✨'} Temporary Wallet
+                {hasLocalWallet ? '🆕' : '⚙️'} Temporary Wallet
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">

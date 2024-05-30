@@ -1,7 +1,9 @@
 import { setup, assign, assertEvent, fromPromise } from 'xstate';
 import { AoWallet } from '@/features/ao/lib/aoWallet';
+import { getLocalWallet } from '../lib/localWallet';
 
-const lastUsedWalletTypeKey = 'lastUsedWalletType';
+const localKeyLocalStorageKey = "tempArweaveKey";
+const lastUsedWalletTypeLocalStorageKey = 'lastUsedWalletType';
 
 export const loginMachine = setup({
   types: {
@@ -9,6 +11,7 @@ export const loginMachine = setup({
       lastUsedWalletType?: string;
       wallet?: AoWallet;
       disconnect?: () => void;
+      localWallet?: AoWallet;
     },
     events: {} as
       | { type: 'Connect', data: { wallet: AoWallet, disconnect: () => void } }
@@ -20,6 +23,10 @@ export const loginMachine = setup({
       assertEvent(event, 'Connect');
       return event.data;
     }),
+    setLocalWallet: assign(({event}) => ({
+      // @ts-expect-error - event is not typed
+      localWallet: event.output,
+    })),
     runDisconnect: ({ context }) => {
       context.disconnect?.();
     },
@@ -30,17 +37,17 @@ export const loginMachine = setup({
       };
     }),
     loadLastUsedWalletType: assign(() => ({
-      lastUsedWalletType: localStorage.getItem(lastUsedWalletTypeKey) ?? undefined
+      lastUsedWalletType: localStorage.getItem(lastUsedWalletTypeLocalStorageKey) ?? undefined
     })),
     setAndPersistLastUsedWalletType: assign(({ event }) => {
       assertEvent(event, 'Connect');
-      localStorage.setItem(lastUsedWalletTypeKey, event.data.wallet.type);
+      localStorage.setItem(lastUsedWalletTypeLocalStorageKey, event.data.wallet.type);
       return {
         lastUsedWalletType: event.data.wallet.type
       };
     }),
     clearLastUsedWalletType: assign(() => {
-      localStorage.removeItem(lastUsedWalletTypeKey);
+      localStorage.removeItem(lastUsedWalletTypeLocalStorageKey);
       return {
         lastUsedWalletType: undefined
       };
@@ -50,6 +57,7 @@ export const loginMachine = setup({
     connectToLastUsedWallet: fromPromise(() => {
       throw new Error('Not implemented');
     }),
+    loadLocalWallet: fromPromise(() => getLocalWallet(localKeyLocalStorageKey)),
   },
   guards: {
     'hasLastUsedWallet': ({ context: { lastUsedWalletType } }) => {
@@ -57,7 +65,7 @@ export const loginMachine = setup({
     },
   }
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QBsD2UCWA7AsgQwGMALbMAOgEksMAXDPZAYgG0AGAXUVAAdVZaMqLFxAAPRAEZWrMqwDMEgBwAWAKwA2RRNWqJ6gJwAaEAE9EmsuoBMy26ysS5Adk22Avm+NpMuQiSzkVAIMLBKcSCC8-HRCIuIIEsoSZIpW+qzKVlr6OXqKxmYIVg5kEmXqqvrqClrqiR5e6Nj4xKRkADLoMBAABFSMACIYsARCAQQ0bOE8fAKxEfEuVqVO+k6K+iqsTqtyBZIqsomK9nIVOolODSDezX5tnVDdfViMAKKiNGAATlgMPUMRmMwBMpiIonNhAtEE4NClMk45IpEaplKxVPlTIg5FY5GRlKlFIp1Bk5KwlKprrdfK0Ah0utgoC9GABhYGgjjg2YxKGgRZWJxkfQY5y6NFE4X7Ip4tYZYk4pxpcVyKlNGn+ciPHxMqhkAAq3xMPQASiD2TRGD9vqhvmRuMg8DQAGY2gC2ZGpLQ19KejJe+sNJrNWHGNAQ2AAbqgCI7BFgpmCIhCeXFsRiyKirBldCdYTipRIsikbHJVLDKoiMuoPJ4QFhUBA4CJPfcAlzonHUwgALRWaz45FlAXbOQ4qxS7vaRSlAlyYXo0tVK61lu0wLUOgMduQru9xIDpxDpwjsdSzKWOQEjHHhx6VQqldqr0PLqQF7blPQhLSPE2CoOS85zWCQC1SIV9D7apbEVbR6kfHxnzpLU-SoD9Oy-NJ1CORE0R2BxkVRCdj2LVFiVWdYJQkVUENbTUGSwHUsADI1TVGEMQRoND5j5bFbGwy9thggjlALLDlDWTJEjLLQiWreC7jXH1tX9ABlIhUAAdx6R5sB6ABVCguN5MREEyZYkX0KQs3sVZlD2LEigsXD1GqdYJE2ZwazcIA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QBsD2UCWA7AsgQwGMALbMAOgEksMAXDPZAYgG0AGAXUVAAdVZaMqLFxAAPRAEZWrMqwDMEgBwAWAKwA2RRNWqJ6gJwAaEAE9EmsuoBMy26ysS5Adk22Avm+NpMuQiSzkVAIMLBKcSCC8-HRCIuIIEsoSZIpW+qzKVlr6OXqKxmYIVg5kEmXqqvrqClrqiR5e6Nj4xKRkADLoMBAABFSMACIYsARCAQQ0bOE8fAKxEfE5cqVyVjpyqpk2jgWIVnLLqi4ZcoqqVqyKTpsNIN7Nfm2dUN19WIwAoqI0YABOWAwekMRmMwBMpiIonNhAtEPormQnPodPZlHJNOonPlTIhnMsMkkrNc0jo1MpbvdfK0Ah0utgoG9GABhUHgjiQ2YxGGgRaqRRkfRlRyKFT7XSqXYIJyHBROIlaU5yVj1Tx3JpU-zkZ4+BlUMgAFV+Jh6ACUwayaIw-r9UL8yNxkHgaAAzW0AWzIlJamtpL3pbwNRtN5qw4xoCGwADdUAQnYIsFMIREoVy4ri+WRNhc1EpWNdVpKJFkUjYNtdKtKMuoKervU86VhdVgyABlIioADuPWe2B6AFUKLTY8gegB1BjIMA0buoPAQemMCBCchR1AAa3IXseNO1-r1bc7M58-cHnWHY4nU5nc-pEaw0djXMT7OTnPjaYQchyKX0ymVWXkBwKklWwnFKJxlEFJUHHRK4ax8OsdwbJtW3bLseywE8h0BcdkEnadOhvRsrV+G07QdJ1XV+D0t2pLVkIDA90PVLCzxwy8CNnedGzvB84yEZ9pkiN95h5cw1ksVQy2cfQnAJCRJXRVQVjlC4tGURRNCsDxVSwVAIDgERaM1DlonfWEEAAWisawyA0pwyiJPMDmKSVLO0flElFJJpQkJFLngh46Moag6AYUzoQ-azEjsq5HLk6VVisECrEsOQNL5OSHD0KTAo1esXkgN4ItTCyi3S0ociyVQMk2SpJX2VL1nSSCDmuIs8sQ+i-UbYrXzM0SxD2KpZD89K8zlJRrmUNy5JLFFlX0ZxlCcFxOu3bqdQDQ1jTNUZQzBGgSvMsTP1sUbpT-VaHCuTZC3UOzZMyRIji0EVq1VYyCq2-c0KPXsB2Owb4nS5SNBcdEHOuhScSKKSBVkkUqmsaoqnJT7aw230fubJj-swgdsJHXD8OvbioCB7khs-JbM0xapMT8ybFL-WKIMUeQvyZmx1uC3det+w8MNYmN2Lwq8zTnQoZgGqn4iSZYanOLIDGkMo5ElHR+VYfQgL0XWOb5XmfX5lC8eFwm2OJjieg+UjbUpj9rGU5R1DV655HSL9NYzHW9YMACjZ0oA */
   id: 'loginMachine',
   context: {},
   initial: "Initial",
@@ -103,7 +111,27 @@ export const loginMachine = setup({
           }
         },
 
-        "Show Login UI": {}
+        "Show Login UI": {
+          states: {
+            "Local Wallet Loading": {
+              invoke: {
+                src: "loadLocalWallet",
+
+                onDone: {
+                  target: "Local Wallet Ready",
+                  actions: "setLocalWallet"
+                },
+
+                onError: "Local Wallet Error"
+              }
+            },
+
+            "Local Wallet Ready": {},
+            "Local Wallet Error": {}
+          },
+
+          initial: "Local Wallet Loading"
+        }
       },
 
       on: {

@@ -1,7 +1,7 @@
 import { ConnectConfig } from "@/features/ao/lib/aoWallet";
 import { permissionsRequested, permissionsRequired } from "@/features/ao/lib/config";
 
-export const connectConfig: ConnectConfig = {
+export const defaultConnectConfig: ConnectConfig = {
   permissionsRequested,
   permissionsRequired,
   appInfo: {
@@ -11,4 +11,6 @@ export const connectConfig: ConnectConfig = {
   },
 }
 
-export const localKeyLocalStorageKey = "tempArweaveKey";
+export const dummyConnectConfig: ConnectConfig = {
+  permissionsRequested: [],
+}

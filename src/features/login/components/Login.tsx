@@ -17,6 +17,7 @@ export function Login({ children }: LoginProps) {
         <LoginMenu
           onConnect={(wallet, disconnect) => send({ type: 'Connect', data: { wallet, disconnect: disconnect ?? (() => {}) } })} 
           onDisconnect={() => send({ type: 'ExternalDisconnect' })}
+          localWallet={current.context.localWallet}
         />
         <div />
       </div>
