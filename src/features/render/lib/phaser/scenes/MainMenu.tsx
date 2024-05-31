@@ -3,7 +3,7 @@ import { GameObjects } from 'phaser';
 import ReactDOM from 'react-dom/client';
 import { Button } from '@/components/ui/button';
 import { WarpableScene } from './WarpableScene';
-import { emitSceneReady } from '../../EventBus';
+import { emitSceneEvent, emitSceneReady } from '../../EventBus';
 
 export class MainMenu extends WarpableScene
 {
@@ -34,12 +34,19 @@ export class MainMenu extends WarpableScene
             h: 30,
         }
         const memElement = document.createElement("div");
+        const cb = () => emitSceneEvent({
+            type: 'Warp Immediate',
+            verseId: import.meta.env.VITE_ORIGIN_ISLAND_PROCESS_ID,
+        })
+        
         memElement.setAttribute('style', `width: ${buttonSize.w}px; height: ${buttonSize.h}px; display: flex; justify-content: center; align-items: center;`)
         ReactDOM.createRoot(memElement).render(
             <Button
                 className='flex'
                 onClick={() => {
-                    
+                    console.log('Warping to Origin Island');
+                    console.log(cb)
+                    cb()
                 }}
             >
                Go

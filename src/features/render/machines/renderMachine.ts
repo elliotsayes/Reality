@@ -4,7 +4,7 @@ import { setup, assign, assertEvent, fromPromise } from 'xstate';
 import { Preloader } from '../lib/phaser/scenes/Preloader';
 import { MainMenu } from '../lib/phaser/scenes/MainMenu';
 import { VerseScene } from '../lib/phaser/scenes/VerseScene';
-import { listenScene } from '../lib/EventBus';
+import { listenScene, listenSceneEvent } from '../lib/EventBus';
 import { loadVersePhaser } from '../lib/load/verse';
 
 export const renderMachine = setup({
@@ -18,7 +18,7 @@ export const renderMachine = setup({
       setVerseIdUrl: (verseId: string) => void
     },
     context: {} as {
-      cleanupEventListener?: () => void,
+      cleanupGameEventListeners?: () => void,
 
       initialVerseId?: string,
       clients: {
@@ -31,19 +31,31 @@ export const renderMachine = setup({
         mainMenu?: MainMenu,
         verseScene?: VerseScene,
       },
+      targetVerseId?: string,
+      currentVerseId?: string,
     },
     events: {} as 
       | { type: 'Scene Ready', scene: Phaser.Scene }
+      | { type: 'Warp Immediate', verseId: string }
       | { type: 'Warp Overlap Start', verseId: string }
   },
   actions: {
-    activateEventListener: assign(({ self }) => ({
-      cleanupEventListener: listenScene('scene-ready', (scene: Phaser.Scene) => {
-        self.send({ type: 'Scene Ready', scene });
-      })
-    })),
-    cleanupEventListener: ({ context }) => {
-      context.cleanupEventListener?.();
+    activateGameEventListener: assign({
+      cleanupGameEventListeners: ({ self}) => {
+        const c1 = listenScene('scene-ready', (scene: Phaser.Scene) => {
+          self.send({ type: 'Scene Ready', scene });
+        });
+        const c2 = listenSceneEvent((event) => {
+          self.send(event);
+        });
+        return () => {
+          c1();
+          c2();
+        };
+      }
+    }),
+    cleanupGameEventListeners: ({ context }) => {
+      context.cleanupGameEventListeners?.();
     },
     assignPreloader: assign(({ event }) => {
       assertEvent(event, 'Scene Ready');
@@ -78,10 +90,18 @@ export const renderMachine = setup({
     },
     startVerseScene: ({ context, event }) => {
       // assertEvent(event, "done.invoke.loadVerse")
-      console.log('startVerseScene');
-      console.log(event);
       context.currentScene?.scene.start('VerseScene', event.output);
     },
+    assignTargetVerseId: assign(({ event }) => {
+      assertEvent(event, 'Warp Immediate');
+      return { targetVerseId: event.verseId };
+    }),
+    assignTargetVerseIdFromInitialVerseId: assign(({ context }) => ({
+      targetVerseId: context.initialVerseId
+    })),
+    assignCurrentVerseIdFromTargetVerseId: assign(({ context }) => ({
+      currentVerseId: context.targetVerseId
+    })),
   },
   guards: {
     hasIntialVerseId: ({ context }) => {
@@ -119,7 +139,7 @@ export const renderMachine = setup({
     ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QCcwDsJmQWQIYGMALASzTAGIBlfdMAAgCUxcIBPAbQAYBdRUABwD2sYgBdigtHxAAPRAGYALPIB0igGwBOdZ0UBWTQCYAjIoAcx+QBoQrRAHYzK9fL26Ne+fLNmDAXz8bVAwsPCJSCmpaRmY2dmNeJBAhEXFJaTkEdXVFFTNFXXt7eUMNbxs7BEVc6qL1Q3s9OuNjQ3UAoPRMHAISMioaMhiWDkNEgWExCSkkzONdPTytHQ18zQsKxC0VdcM9RXtFQ20TXQ6QYO6wvsjB+iYR9nlx5Mm0mdA52pVDU59VzjyTSaTZZThqaqaPRmTj7MxKLznS6hXoRFQASTQU1wABtyFwXikpulZogWqocpwXMDSupjD5DKC9uoVC1FJpimZNLDNAckV0UeEyBi0HQAOK4AC2YBFdAACqgcYIWFgRdi8QTpET3hkFPZDDsmo1AeofEZGbYtoYnJxfsY3PbFPbXPyQj0hTLMeKpZ7RQqwEqVcg1eJcfiElq3tNdVlqjsckD9iUDrpQTpFsdGp5jIcPIZXVdUcKvRLpbL-YHuioADLKiB0ABqWFg9Ci-QgkhlpAAboIANYy5Hum6y0u++WKuuq2ssRvN1t3BA9wT4XDvAmapLa6OkhDeFk8qFGdkwjnqUG+Jxmeym8xuMzHI4BQIgNCCTDwJJD64RSOpHefFsFLckUpjrE6OZ6KCAC0LSLPYnBUnoeilK46yaAWgojpi6p-sSHyyGSLTOCB9hgfkLSNKCliLGUmjyI0pStGcL7fkW45jnhOq7oYXgqCU+qwvInBGCUObUes-GcI0D50uoej1DmmHDmiJY+rKeCkHQ2DoAArlxAGEQghz2CoIm8sClKAhalTWosLiwra8lHAYgLKT+xaimOspNsgLZ0G2YAGSSgEIC0xgHtyxjAkYeiWBoTK+M4wluG0+x7Ny8juexo7qV6ADyoiEFgAV3MFBFfPoaj6sCyEOUU1iWggdnJY5aUuZl2UerlZZehWU7IOVMYlOCDGaPM0JReyiigk6TiJqU9F0vCyZddhXl5X6k5BiGxC4kNu5HMYOzeD4lHWsJpSgshBr7I0jQaC0dlrapG29VtAYDSolCiLgyCiNpuBaTpaD6VuUYhUZ1JqJBljZNyJgzU1938WYOjwvMVLXsYL2ed670Tp9O0-X9AO+f5gUHaF8imvx9jjbCXKcGBSOVOsqg3nd1kNPsii4xxm2E5W051nOfkLrQVNGQxLILdC2YofkoLFKoHI0cm+T0xhrECipePeeiEA4kF4P-pDmTWsdAmGEJIm8SY9igsJmhmfo0XSTb8zeHo-MYkbJsTGbFVESycUnkomP1GRTtFBCDQ5szCla1lz5AA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QCcwDsJmQWQIYGMALASzTAGIBlfdMAAgCUxcIBPAbQAYBdRUABwD2sYgBdigtHxAAPRAFYAHAHYAdIoCMGgCzKATIr0BmRQE5TegDQhWiZQDZVy00b1uT209s73FAXz9rVAwsPCJSCmpaRmY2dg1eJBAhEXFJaTkEDSNORVUNXyNdc2VFeS9rWwR7TlUjfXt5T1NOPWV5XwCg9EwcAhIyKhoyGJYOPUSBYTEJKSTMjQdTVXsNeR15cvtlfUqFDXVTbM8VDQN5Uq6QYN6wgcjh+iYx9iNJ5Om0udBM4x1VTxnQycIz1RT2Ix7BDrQ7HUync7+QLXHqhfoRVQASTQM1wABtyFx3ikZul5og2ssmooVCY9JxzGZ5FC2mp7G0QfDONoLqCrjc0eEyFi0HQAOK4AC2YBFdAACqg8YIWFgRbiCUTpCSvhkFNo8vZGtkzpx5JTITZEPZvHVOMp6q0LHpvKZ+ai+kKZdjxVKvaKFWAlSrkGrxPjCQktZ9ZrqEOC9OptHpfOsTCprVDrdoVkYzobk-plJ43SEPfdZRLpbKA0HeqoADLKiB0ABqWFgFAgkhlpAAboIANYygVljHeyt++WKpuqxssVvtsAIPuCfC4L5EzVJbUx8nVTgHTbOspuM76i1VFR5eSg5yNZxHHQl27o4Xj32yvCkOjYdAAV1DYhwwAdVwZB+DoTFJWlCAgNEMAtymVJdx+RAdBBVQD3pGlFk0O1lEzYwcy0cwk2UNZDGfQVy3fKtvS-UVfzQAC52bNtkA7cgu2FFch1UEc7jHUUJ0-XBvyYlimwXDilxXNcNx4RCPmQslUKybx5Fteo9AuZ1rWZS04wcOprRccj6lMHY9ACZE0EETB4CSATXzAKMVO+WQKT0KlzE4U0jC8ZwNFMKEAFoNFyVQdOUBlTHWTZFgMKjRzfHEwzxNzSQ834dlUcoWn8wKjhCwy1kcSyahBbQTFiu1ksE1KfWlTKdT3HkE0NVMTTNZwLwpYL1EUblNiKNx7AsZR6pcisP3osTGP-FqUM8rIjHkWptA0MxdGq7JbyhJNHE8AtxsWG9QW0KbPRmujRXYjs6CiMgltUlbFl8VQXDWUFuXtBkNAOnTE3IgwLCKLxLuRZzrtoycAHlREILBHseF7sopNaE1MVYchis1seTQHHHW+oIQZNxFEOq6aOE2b-WnYM0djdbak6416R6lxAeWar9D8lw9GyUjqaEprJxrGcQ2xdUmb3a0Np5IsRrMQwSqqDojDypkQSGgxTpFxqRO9CXg1UShRDA0Qf3mn9Fu3aNXsyMo1G8pQQXqJo2gMqo7ycYK72C8HxoNycjfpwNJbNi3kCt+76Ce1z7fc5mvBWbZ7SC8bnTVtDWgTLQdBisj9MmqH3Qa0O6anCPTdY6SO1ltTylqGLVmqob2XtHOECVzDsmdU0zGTNaQ5ur0IDxROkKy5mgcNFp7SaBlFFcKFcai93fB5ApNhcUfMQnqflJnvcDATJNXEWHIswMbQ1-hT6mlKbzvMaMp7H32nbut8T-0A-FG5vW0MA-I2NfJZz8g4KEu91BaEKBFHwRRIbdFLBXMeolf7MQbFJOOgCFjeAOHnZ+uY371ChO0Wo2RTSkUNDUHSn8xYYIWlg82lt67x1RknE+akhZ5E2ttIsuZQRkNKvzDeWh6T0gCsFD+NkgA */
   id: "renderMachine",
 
   context: ({ input }) => ({
@@ -134,12 +154,44 @@ export const renderMachine = setup({
     "In Game": {
       states: {
         "In Main Menu": {
-          exit: "clearScenes"
+          exit: "clearScenes",
+
+          states: {
+            Initial: {
+              on: {
+                "Warp Immediate": {
+                  target: "Load Verse",
+                  actions: "assignTargetVerseId"
+                }
+              }
+            },
+
+            "Load Verse": {
+              invoke: {
+                src: "loadVerse",
+                input: ({ context }) => ({
+                  verseClient: context.clients.verseClientForProcess(context.targetVerseId!),
+                  profileClient: context.clients.profileClient,
+                  phaserLoader: context.currentScene!.load
+                }),
+
+                onDone: {
+                  target: "Start Verse Scene",
+                  actions: "startVerseScene"
+                }
+              }
+            },
+
+            "Start Verse Scene": {}
+          },
+
+          initial: "Initial"
         },
 
         "In Verse Scene": {
           type: "parallel",
-          exit: "clearScenes"
+          exit: "clearScenes",
+          entry: "assignCurrentVerseIdFromTargetVerseId"
         },
 
         "In Other Scene": {
@@ -152,9 +204,10 @@ export const renderMachine = setup({
           states: {
             Initial: {
               always: [{
-                target: "Load Verse Scene",
+                target: "Load Verse",
                 reenter: true,
-                guard: "hasIntialVerseId"
+                guard: "hasIntialVerseId",
+                actions: "assignTargetVerseIdFromInitialVerseId"
               }, {
                 target: "Start Main Menu",
                 reenter: true,
@@ -164,7 +217,7 @@ export const renderMachine = setup({
 
             "Start Main Menu": {},
             "Start Verse Scene": {},
-            "Load Verse Scene": {
+            "Load Verse": {
               invoke: {
                 input: ({ context }) => ({
                   verseClient: context.clients.verseClientForProcess(context.initialVerseId!),
@@ -212,6 +265,6 @@ export const renderMachine = setup({
     }]
   },
 
-  entry: "activateEventListener",
-  exit: "cleanupEventListener"
+  entry: "activateGameEventListener",
+  exit: "cleanupGameEventListeners"
 })

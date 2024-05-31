@@ -21,15 +21,13 @@ export function listenScene(event: 'scene-ready' | 'scene-end', callback: (scene
   }
 }
 
-const SceneEventBus = new Events.EventEmitter();
-
 export function emitSceneEvent(event: EventFromLogic<typeof renderMachine>) {
-  SceneEventBus.emit('scene-event', event);
+  GameEventBus.emit('scene-event', event);
 }
 
 export function listenSceneEvent(callback: (event: EventFromLogic<typeof renderMachine>) => void) {
-  SceneEventBus.on('scene-event', callback);
+  GameEventBus.on('scene-event', callback);
   return () => {
-    SceneEventBus.off('scene-event', callback);
+    GameEventBus.off('scene-event', callback);
   }
 }
