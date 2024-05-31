@@ -16,7 +16,7 @@ export function Login({ children }: LoginProps) {
       <div className="flex flex-col flex-grow justify-around items-center h-full">
         <LoginMenu
           onConnect={(wallet, disconnect) => send({ type: 'Connect', data: { wallet, disconnect: disconnect ?? (() => {}) } })} 
-          onDisconnect={() => send({ type: 'ExternalDisconnect' })}
+          onDisconnect={() => send({ type: 'External Disconnect' })}
           localWallet={current.context.localWallet}
         />
         <div />

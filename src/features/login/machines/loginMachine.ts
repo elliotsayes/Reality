@@ -16,7 +16,7 @@ export const loginMachine = setup({
     events: {} as
       | { type: 'Connect', data: { wallet: AoWallet, disconnect: () => void } }
       | { type: 'Disconnect' }
-      | { type: 'ExternalDisconnect' }
+      | { type: 'External Disconnect' }
   },
   actions: {
     setWalletAndDisconnect: assign(({ event }) => {
