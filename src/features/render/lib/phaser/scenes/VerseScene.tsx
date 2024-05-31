@@ -185,7 +185,7 @@ export class VerseScene extends WarpableScene {
         this.physics.add.overlap(this.player, sprite, () => {
           console.log(`Collided with entity ${entityId}`)
           emitSceneEvent({
-            type: 'Warp Overlap Start',
+            type: 'Warp Immediate',
             verseId: entityId,
           })
         }, undefined, this);

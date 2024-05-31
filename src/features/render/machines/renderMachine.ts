@@ -92,6 +92,10 @@ export const renderMachine = setup({
       // assertEvent(event, "done.invoke.loadVerse")
       context.currentScene?.scene.start('VerseScene', event.output);
     },
+    warpVerseScene: ({ context, event }) => {
+      // assertEvent(event, "done.invoke.loadVerse")
+      context.typedScenes.verseScene!.warpToVerse(event.output.verseId, event.output.verse);
+    },
     assignTargetVerseId: assign(({ event }) => {
       assertEvent(event, 'Warp Immediate');
       return { targetVerseId: event.verseId };
@@ -139,7 +143,7 @@ export const renderMachine = setup({
     ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QCcwDsJmQWQIYGMALASzTAGIBlfdMAAgCUxcIBPAbQAYBdRUABwD2sYgBdigtHxAAPRAFYAHAHYAdIoCMGgCzKATIr0BmRQE5TegDQhWiZQDZVy00b1uT209s73FAXz9rVAwsPCJSCmpaRmY2dg1eJBAhEXFJaTkEDSNORVUNXyNdc2VFeS9rWwR7TlUjfXt5T1NOPWV5XwCg9EwcAhIyKhoyGJYOPUSBYTEJKSTMjQdTVXsNeR15cvtlfUqFDXVTbM8VDQN5Uq6QYN6wgcjh+iYx9iNJ5Om0udBM4x1VTxnQycIz1RT2Ix7BDrQ7HUync7+QLXHqhfoRVQASTQM1wABtyFx3ikZul5og2ssmooVCY9JxzGZ5FC2mp7G0QfDONoLqCrjc0eEyFi0HQAOK4AC2YBFdAACqg8YIWFgRbiCUTpCSvhkFNo8vZGtkzpx5JTITZEPZvHVOMp6q0LHpvKZ+ai+kKZdjxVKvaKFWAlSrkGrxPjCQktZ9ZrqEOC9OptHpfOsTCprVDrdoVkYzobk-plJ43SEPfdZRLpbKA0HeqoADLKiB0ABqWFgFAgkhlpAAboIANYygVljHeyt++WKpuqxssVvtsAIPuCfC4L5EzVJbUx8nVTgHTbOspuM76i1VFR5eSg5yNZxHHQl27o4Xj32yvCkOjYdAAV1DYhwwAdVwZB+DoTFJWlCAgNEMAtymVJdx+RAdBBVQD3pGlFk0O1lEzYwcy0cwk2UNZDGfQVy3fKtvS-UVfzQAC52bNtkA7cgu2FFch1UEc7jHUUJ0-XBvyYlimwXDilxXNcNx4RCPmQslUKybx5Fteo9AuZ1rWZS04wcOprRccj6lMHY9ACZE0EETB4CSATXzAKMVO+WQKT0KlzE4U0jC8ZwNFMKEAFoNFyVQdOUBlTHWTZFgMKjRzfHEwzxNzSQ834dlUcoWn8wKjhCwy1kcSyahBbQTFiu1ksE1KfWlTKdT3HkE0NVMTTNZwLwpYL1EUblNiKNx7AsZR6pcisP3osTGP-FqUM8rIjHkWptA0MxdGq7JbyhJNHE8AtxsWG9QW0KbPRmujRXYjs6CiMgltUlbFl8VQXDWUFuXtBkNAOnTE3IgwLCKLxLuRZzrtoycAHlREILBHseF7sopNaE1MVYchis1seTQHHHW+oIQZNxFEOq6aOE2b-WnYM0djdbak6416R6lxAeWar9D8lw9GyUjqaEprJxrGcQ2xdUmb3a0Np5IsRrMQwSqqDojDypkQSGgxTpFxqRO9CXg1UShRDA0Qf3mn9Fu3aNXsyMo1G8pQQXqJo2gMqo7ycYK72C8HxoNycjfpwNJbNi3kCt+76Ce1z7fc5mvBWbZ7SC8bnTVtDWgTLQdBisj9MmqH3Qa0O6anCPTdY6SO1ltTylqGLVmqob2XtHOECVzDsmdU0zGTNaQ5ur0IDxROkKy5mgcNFp7SaBlFFcKFcai93fB5ApNhcUfMQnqflJnvcDATJNXEWHIswMbQ1-hT6mlKbzvMaMp7H32nbut8T-0A-FG5vW0MA-I2NfJZz8g4KEu91BaEKBFHwRRIbdFLBXMeolf7MQbFJOOgCFjeAOHnZ+uY371ChO0Wo2RTSkUNDUHSn8xYYIWlg82lt67x1RknE+akhZ5E2ttIsuZQRkNKvzDeWh6T0gCsFD+NkgA */
+  /** @xstate-layout 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 */
   id: "renderMachine",
 
   context: ({ input }) => ({
@@ -188,12 +192,6 @@ export const renderMachine = setup({
           initial: "Initial"
         },
 
-        "In Verse Scene": {
-          type: "parallel",
-          exit: "clearScenes",
-          entry: "assignCurrentVerseIdFromTargetVerseId"
-        },
-
         "In Other Scene": {
           exit: "clearScenes"
         },
@@ -220,7 +218,7 @@ export const renderMachine = setup({
             "Load Verse": {
               invoke: {
                 input: ({ context }) => ({
-                  verseClient: context.clients.verseClientForProcess(context.initialVerseId!),
+                  verseClient: context.clients.verseClientForProcess(context.targetVerseId!),
                   profileClient: context.clients.profileClient,
                   phaserLoader: context.currentScene!.load
                 }),
@@ -236,7 +234,48 @@ export const renderMachine = setup({
 
           initial: "Initial"
         },
-        Idle: {}
+
+        Idle: {},
+
+        "In Verse Scene": {
+          exit: "clearScenes",
+          entry: "assignCurrentVerseIdFromTargetVerseId",
+
+          states: {
+            Warping: {
+              states: {
+                Initial: {
+                  on: {
+                    "Warp Immediate": {
+                      target: "Load Verse",
+                      actions: "assignTargetVerseId"
+                    }
+                  }
+                },
+
+                "Load Verse": {
+                  invoke: {
+                    src: "loadVerse",
+                    input: ({ context }) => ({
+                      verseClient: context.clients.verseClientForProcess(context.targetVerseId!),
+                      profileClient: context.clients.profileClient,
+                      phaserLoader: context.currentScene!.load
+                    }),
+                    onDone: {
+                      target: "Warp Verse Scene",
+                      actions: "warpVerseScene"
+                    }
+                  }
+                },
+                "Warp Verse Scene": {}
+              },
+
+              initial: "Initial"
+            }
+          },
+
+          type: "parallel"
+        }
       },
 
       initial: "Idle"
@@ -259,9 +298,6 @@ export const renderMachine = setup({
       target: ".In Game.In Verse Scene",
       guard: "sceneKeyIsVerseScene",
       actions: "assignVerseScene"
-    }, {
-      target: ".In Game.In Other Scene",
-      actions: "assignOtherScene"
     }]
   },
 
