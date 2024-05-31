@@ -6,6 +6,8 @@ import { Renderer } from '@/features/render/components/Renderer'
 import { createVerseClientForProcess } from '@/features/verse/contract/verseClient'
 import { createLazyFileRoute, useParams } from '@tanstack/react-router'
 
+const profileProcessId = import.meta.env.VITE_PROFILE_PROCESS_ID as string;
+
 const versePathRegex = /^verse\/([a-zA-Z0-9_-]{43})$/
 
 export const Route = createLazyFileRoute('/app/$')({
@@ -53,8 +55,8 @@ function VerseId() {
           </div>
           <div className='fixed top-14 right-0 left-0 bottom-0'>
             <Renderer
+              profileClient={createProfileClientForProcess(wallet)(profileProcessId)}
               verseClientForProcess={createVerseClientForProcess(wallet)}
-              profileClientForProcess={createProfileClientForProcess(wallet)}
               verseId={verseId}
             />
           </div>

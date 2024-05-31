@@ -54,7 +54,9 @@ export const createVerseClient = (
   }),
 });
 
-export const createVerseClientForProcess = (wallet: AoWallet) => (processId: string) => {
+export type VerseClientForProcess = (processId: string) => VerseClient;
+
+export const createVerseClientForProcess = (wallet: AoWallet): VerseClientForProcess => (processId: string) => {
   const aoContractClient = createAoContractClient(processId, connect(), wallet);
   return createVerseClient(aoContractClient);
 }

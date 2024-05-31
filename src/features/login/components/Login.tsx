@@ -3,13 +3,14 @@ import { LoginMenu } from "./LoginMenu"
 import { useMachine } from "@xstate/react"
 import { loginMachine } from "../machines/loginMachine"
 import { Button } from "@/components/ui/button"
+import { inspect } from "@/lib/xstate"
 
 interface LoginProps {
   children: (wallet: AoWallet, disconnect: () => void) => React.ReactNode
 }
 
 export function Login({ children }: LoginProps) {
-  const [current, send] = useMachine(loginMachine)
+  const [current, send] = useMachine(loginMachine, { inspect })
 
   if (current.matches({ "Logging In": "Show Login UI" })) {
     return (
@@ -27,7 +28,7 @@ export function Login({ children }: LoginProps) {
   if (current.matches("Logged In")) {
     if (current.context.wallet === undefined) {
       throw new Error("Wallet is undefined")
-    } 
+    }
     return children(current.context.wallet, () => send({ type: 'Disconnect' }))
   }
 

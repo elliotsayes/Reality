@@ -3,7 +3,7 @@ import { WarpableScene } from "./WarpableScene";
 import { VerseState } from "../../load/model";
 import { phaserTilemapKey, phaserTilesetKey } from "../../load/verse";
 import { _2dTileParams } from "@/features/verse/contract/_2dTile";
-import { emitSceneReady } from "../../EventBus";
+import { emitSceneReady, emitSceneEvent } from "../../EventBus";
 
 const SCALE_TILES = 3;
 const SCALE_ENTITIES = 2;
@@ -176,9 +176,6 @@ export class VerseScene extends WarpableScene {
       sprite.setInteractive();
       sprite.on('pointerdown', () => {
         console.log(`Clicked on entity ${entityId}`)
-        if (entity.Type === 'Warp') {
-          this.warpToVerse(entityId);
-        }
       }, this)
       sprite.on('pointerover', () => {
         console.log(`Hovered over entity ${entityId}`)
@@ -187,10 +184,10 @@ export class VerseScene extends WarpableScene {
       if (entity.Type === 'Warp') {
         this.physics.add.overlap(this.player, sprite, () => {
           console.log(`Collided with entity ${entityId}`)
-          if (this.activeEntityEvent === undefined) {
-            this.activeEntityEvent = sprite;
-            this.warpToVerse(entityId);
-          }
+          emitSceneEvent({
+            type: 'Warp Overlap Start',
+            verseId: entityId,
+          })
         }, undefined, this);
       }
 

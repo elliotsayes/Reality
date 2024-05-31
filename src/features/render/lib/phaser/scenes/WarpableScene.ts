@@ -1,18 +1,10 @@
 
 import { Scene } from 'phaser';
-import { CreateLoadVerse } from '../../load/verse';
-
-const profileProcessId = import.meta.env.VITE_PROFILE_PROCESS_ID as string;
+import { VerseState } from '@/features/verse/load/model';
 
 export class WarpableScene extends Scene
 {
   public isWarping: boolean = false;
-  public loadVerse?: CreateLoadVerse;
-
-  public setLoadVerse (loadVerse: CreateLoadVerse)
-  {
-    this.loadVerse = loadVerse;
-  }
 
   pixelateIn ()
   {
@@ -40,51 +32,20 @@ export class WarpableScene extends Scene
     // Override this method to clean up the scene
   }
 
-  public warpToVerse (verseId: string)
+  public warpToVerse (verseId: string, verse: VerseState)
   {
-    if (this.isWarping) {
-      console.warn(`Already warping, ignoring warp to ${verseId}`);
-      return;
-    }
-
-    if (!this.loadVerse) {
-      console.error(`No loadVerse function provided for ${verseId}`);
-      return;
-    }
-
-    this.isWarping = true;
-
-    try {
-      this.onWarpBegin();
-    } catch (error) {
-      console.error(`Error running onWarpBegin for ${verseId}`, error);
-      this.onWarpAbort();
-      this.isWarping = false;
-    }
-
-    this.loadVerse!(verseId, profileProcessId, this.load)
-      .then((verse) => {
-        this.onWarpSuccess();
-
-        // FX
-        const pixelated = this.cameras.main.postFX.addPixelate(-1);
-        
-        // Transition to next scene
-        this.cameras.main.fadeOut(200)
-        this.add.tween({
-            targets: pixelated,
-            duration: 200,
-            amount: 20,
-            onComplete: () => {
-                this.isWarping = false;
-                this.scene.start('VerseScene', { verseId, verse });
-            },
-        })
-      })
-      .catch((error) => {
-        console.error(`Error loading verse ${verseId}`, error);
-        this.onWarpAbort();
-        this.isWarping = false;
-      });
+    const pixelated = this.cameras.main.postFX.addPixelate(-1);
+    
+    // Transition to next scene
+    this.cameras.main.fadeOut(200)
+    this.add.tween({
+        targets: pixelated,
+        duration: 200,
+        amount: 20,
+        onComplete: () => {
+            this.isWarping = false;
+            this.scene.start('VerseScene', { verseId, verse });
+        },
+    })
   }
 }

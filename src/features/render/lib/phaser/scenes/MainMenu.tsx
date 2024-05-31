@@ -39,7 +39,7 @@ export class MainMenu extends WarpableScene
             <Button
                 className='flex'
                 onClick={() => {
-                    this.warpToVerse(import.meta.env.VITE_ORIGIN_ISLAND_PROCESS_ID)
+                    
                 }}
             >
                Go

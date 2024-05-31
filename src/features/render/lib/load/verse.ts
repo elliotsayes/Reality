@@ -1,9 +1,9 @@
 import { queryClient } from "@/lib/query";
-import { VerseClient, createVerseClientForProcess } from "@/features/verse/contract/verseClient";
+import { VerseClient } from "@/features/verse/contract/verseClient";
 import PQueue from "p-queue";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
 import { VerseState } from "./model";
-import { ProfileClient, createProfileClientForProcess } from "@/features/profile/contract/profileClient";
+import { ProfileClient } from "@/features/profile/contract/profileClient";
 
 export function phaserTilesetKey(txId: string) {
   return `Tileset-Primary-${txId}`
@@ -13,7 +13,7 @@ export function phaserTilemapKey(txId: string) {
   return `Tilemap-${txId}`
 }
 
-async function loadVersePhaser(verseClient: VerseClient, profileClient: ProfileClient, phaserLoader: Phaser.Loader.LoaderPlugin) {
+export async function loadVersePhaser(verseClient: VerseClient, profileClient: ProfileClient, phaserLoader: Phaser.Loader.LoaderPlugin) {
   const processQueue = new PQueue({ concurrency: 3 });
 
   processQueue.add(() => queryClient.ensureQueryData({
@@ -71,13 +71,3 @@ async function loadVersePhaser(verseClient: VerseClient, profileClient: ProfileC
     profiles: queryClient.getQueryData(['verseEntityProfiles', verseClient.verseId, profileClient.aoContractClient.processId]),
   } as VerseState;
 }
-
-export function createLoadVerseForProcess(
-  createVerseClient: ReturnType<typeof createVerseClientForProcess>,
-  createProfileClient: ReturnType<typeof createProfileClientForProcess>,
-) {
-  return async (verseProcessId: string, profileProcessId: string, loader: Phaser.Loader.LoaderPlugin) =>
-    loadVersePhaser(createVerseClient(verseProcessId), createProfileClient(profileProcessId), loader)
-}
-
-export type CreateLoadVerse = ReturnType<typeof createLoadVerseForProcess>

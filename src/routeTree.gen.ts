@@ -19,6 +19,7 @@ import { Route as rootRoute } from './routes/__root'
 const AboutLazyImport = createFileRoute('/about')()
 const IndexLazyImport = createFileRoute('/')()
 const AppIndexLazyImport = createFileRoute('/app/')()
+const DemoPhaserLazyImport = createFileRoute('/demo/phaser')()
 const AppSplatLazyImport = createFileRoute('/app/$')()
 
 // Create/Update Routes
@@ -37,6 +38,11 @@ const AppIndexLazyRoute = AppIndexLazyImport.update({
   path: '/app/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/app.index.lazy').then((d) => d.Route))
+
+const DemoPhaserLazyRoute = DemoPhaserLazyImport.update({
+  path: '/demo/phaser',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/demo/phaser.lazy').then((d) => d.Route))
 
 const AppSplatLazyRoute = AppSplatLazyImport.update({
   path: '/app/$',
@@ -68,6 +74,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSplatLazyImport
       parentRoute: typeof rootRoute
     }
+    '/demo/phaser': {
+      id: '/demo/phaser'
+      path: '/demo/phaser'
+      fullPath: '/demo/phaser'
+      preLoaderRoute: typeof DemoPhaserLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/app/': {
       id: '/app/'
       path: '/app'
@@ -84,6 +97,7 @@ export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
   AboutLazyRoute,
   AppSplatLazyRoute,
+  DemoPhaserLazyRoute,
   AppIndexLazyRoute,
 })
 
@@ -98,6 +112,7 @@ export const routeTree = rootRoute.addChildren({
         "/",
         "/about",
         "/app/$",
+        "/demo/phaser",
         "/app/"
       ]
     },
@@ -109,6 +124,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/app/$": {
       "filePath": "app.$.lazy.tsx"
+    },
+    "/demo/phaser": {
+      "filePath": "demo/phaser.lazy.tsx"
     },
     "/app/": {
       "filePath": "app.index.lazy.tsx"
