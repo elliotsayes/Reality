@@ -18,13 +18,15 @@ export const renderMachine = setup({
       setVerseIdUrl: (verseId: string) => void
     },
     context: {} as {
-      cleanupGameEventListeners?: () => void,
-
       initialVerseId?: string,
       clients: {
         profileClient: ProfileClient,
         verseClientForProcess: VerseClientForProcess,
       }
+      setVerseIdUrl: (verseId: string) => void
+
+      cleanupGameEventListeners?: () => void,
+
       currentScene?: Phaser.Scene,
       typedScenes: {
         preloader?: Preloader,
@@ -106,6 +108,9 @@ export const renderMachine = setup({
     assignCurrentVerseIdFromTargetVerseId: assign(({ context }) => ({
       currentVerseId: context.targetVerseId
     })),
+    updateUrl: ({ context }) => {
+      context.setVerseIdUrl(context.currentVerseId!);
+    },
   },
   guards: {
     hasIntialVerseId: ({ context }) => {
@@ -143,7 +148,7 @@ export const renderMachine = setup({
     ),
   },
 }).createMachine({
-  /** @xstate-layout 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 */
+  /** @xstate-layout N4IgpgJg5mDOIC5QCcwDsJmQWQIYGMALASzTAGIBlfdMAAgCUxcIBPAbQAYBdRUABwD2sYgBdigtHxAAPRAFYAHAHYAdIoCMGgCzKATIr0BmRQE5TegDQhWiZQDZVy00b1uT209s73FAXz9rVAwsPCJSCmpaRmY2dg1eJBAhEXFJaTkEDSNORVUNXyNdc2VFeS9rWwR7TlUjfXt5T1NOPWV5XwCg9EwcAhIyKhoyGJYOPUSBYTEJKSTMjQdTVXsNeR15cvtlfUqFDXVTbM8VDQN5Uq6QYN6wgbBVAEk0GdwAG3IuSeTptLnQTJtZZNRQqEx6TjmMzyPYINpqextThGUyKTjaC5GIxXG6hfoRJ5oOgAcVwAFsHs86HhSNT0ABXQmvD4AdVwyH4dEeZIpEGIuFEYC+0hSM3S80QOmRqk4Z1ymlKGk4O1hiKMKyMWnM2jaa0MOJ6ePCZEJJPJlKJNMtDNUABlBCw6AA1LCwCgQSQPUgAN0EAGsHri+saLWaKaarXS0Iz7Y6Xcg3QgfYJ8ALZl9hUlRX8MpLvPI6sj9Bc9Np7BjYSpHEZyy5lNlnDs9AaQsH7qbSeGqQAFVBvB29Jnid6fHgi36zXMIEErRrZOXyIFGVXeQvKeqtCylyEt274k1Uzuh3tgfssLBD-kfeLfbOTiUIRSI9Q63zrExV7Qr7Qas72RHbG0ni7ka7aHuaponmeg6xhAzquu6nqqMmAaqEGdwEuBXZElBA4XrB8EJmASZoL6qZ-BmY5ZhO4oAogNQHJspZlG4ZzaIoy42IgKh5PIWLOI0zhHDoIFtphRJHqa8ZunQUQmmyHKkFAl4jgpnLcry-KCpmUypPedFZJoP6mNsxamBcFylKqLSqC02ieEqzgaKCzaBNchpiQeEkQVS0n0HJDxqUpdoDoRbrkB6JooYGHkYV5Yahn5snDIF7L8MFBF+SRZFppIlG3jR-yyJKhgFnx9imOuKJ6Ec6ywluMq6ouizaNV8gBG5aCCJg8BJOh+5gOOem0cVcI1ao5QtJwfFeE5piwgAtEqeR6BcyqQqxSgqKJcUWsyQ1ikVgI7BN5icNNKLFBo81cVkHS2Q451FCYkItMoO0DR25oHTmD4Ynos7vguS6wno13qGiOpePI53ePUH0hl92HUrgtLYAyP36aN2Qw6o2jObNrXZPxsI6gWjR1jVtbTT4CNgd5yORuj0YqW8mMjQs9k-tdFUtBVELKvYsKbMsmgFBxSo+EU2h0+JCURqj1os5lCHs0deayo1bSGJqjQccosLtLU2TTdq-41KtsvxZJVJMzalCiOyohhf5KVq1O2SonjBO6ETWL1LCkvLBCWgQhCKI81boY20SADyoiEFgyW0O7D7GIutmrDkyjTVTehC7dr4TUW9g5FuiivlHSPHn2eHIKnBkw7U-5AxCi7OJxVRQ3j9TXTW2ye-4bn9YjWE16edesw3o3lrU9kXBifFmIYN1VB06pKOZyJogYFUaFXY+QbX57IKoDtOyjaMY9Rw3q4+FyqDVSjIvUTRtDCt0CU410CX3ngVQfBm49oIXnPsgZ2SUArT0yOUH8-4dj1COPzTwgdWgAy0DoHOOoHAYnesPWKn1D49mPjBUKfloEKBsjnVYrU0SInXKvOwGIZTZG3JvfORh2r4NbLtauTwIBvEGjfQ6U5FzkwqsqTh3hUSuFhNnR+L9fAYgKCLbE3C9yjyAVJBCycyAUKyPWPIJkmzlAsjsRQci0S2XqOYlwbRXDmUAfLXyOiAqqCCmgKA+jFj-kziY8y7RzHC3xjKJ8YNGiagMMBdRoE5Yxxdro1KilPFT2Eb9AyzlywrAKM5WUk1FxfluoiPI0i1ibAcbDJx8TIEpXcWlDKZDVZpKxgsTQBZrrXQ6OUaagTKzTXyB+M4pQsSrVct0HhhCtEuKIokupyTlJqQSVA5pHMSrOQGToAwaJNjllQRnUsORXA1H0FuA+AihG6REWnQweNjBg3XD4eyUS5Fe3MroFeVMlAdCqT5IkNTaCqAAKr8AgGmTx+iITmRlJsSRoJWoOE7goeyKwfCQj1OuZwXCAhAA */
   id: "renderMachine",
 
   context: ({ input }) => ({
@@ -239,7 +244,7 @@ export const renderMachine = setup({
 
         "In Verse Scene": {
           exit: "clearScenes",
-          entry: "assignCurrentVerseIdFromTargetVerseId",
+          entry: ["assignCurrentVerseIdFromTargetVerseId", "updateUrl"],
 
           states: {
             Warping: {
@@ -271,7 +276,9 @@ export const renderMachine = setup({
               },
 
               initial: "Initial"
-            }
+            },
+
+            Updating: {}
           },
 
           type: "parallel"
