@@ -1,9 +1,9 @@
 import { GameObjects } from 'phaser';
 
-import { EventBus } from '../EventBus';
 import ReactDOM from 'react-dom/client';
 import { Button } from '@/components/ui/button';
 import { WarpableScene } from './WarpableScene';
+import { emitSceneReady } from '../../EventBus';
 
 export class MainMenu extends WarpableScene
 {
@@ -52,7 +52,7 @@ export class MainMenu extends WarpableScene
             memElement,
         )
 
-        EventBus.emit('current-scene-ready', this);
+        emitSceneReady(this);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,4 +1,4 @@
-import { EventBus } from '../EventBus';
+import { emitSceneReady } from '../../EventBus';
 import { WarpableScene } from './WarpableScene';
 
 export class Preloader extends WarpableScene
@@ -47,6 +47,6 @@ export class Preloader extends WarpableScene
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         // this.scene.start('MainMenu');
 
-        EventBus.emit('current-scene-ready', this);
+        emitSceneReady(this);
     }
 }

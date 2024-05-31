@@ -1,9 +1,9 @@
 
 import { WarpableScene } from "./WarpableScene";
-import { EventBus } from "../EventBus";
 import { VerseState } from "../../load/model";
 import { phaserTilemapKey, phaserTilesetKey } from "../../load/verse";
 import { _2dTileParams } from "@/features/verse/contract/_2dTile";
+import { emitSceneReady } from "../../EventBus";
 
 const SCALE_TILES = 3;
 const SCALE_ENTITIES = 2;
@@ -208,7 +208,7 @@ export class VerseScene extends WarpableScene {
     this.add.text(topLeft.x + 10, topLeft.y + 10, `Verse ID: ${this.verseId}`, { font: '20px Courier', color: '#ff0000' });
     this.add.text(topLeft.x + 10, topLeft.y + 40, `Verse Name: ${this.verse.info.Name}`, { font: '20px Courier', color: '#ff0000' });
 
-    EventBus.emit('current-scene-ready', this);
+    emitSceneReady(this);
   }
 
   public update(/* t: number, dt: number */)
