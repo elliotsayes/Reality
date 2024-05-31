@@ -2,7 +2,7 @@
 import { Scene } from 'phaser';
 import { CreateLoadVerse } from '../../load/verse';
 
-const profileProcessId = import.meta.env.VITE_PROFILETEST_PROCESS_ID as string;
+const profileProcessId = import.meta.env.VITE_PROFILE_PROCESS_ID as string;
 
 export class WarpableScene extends Scene
 {
