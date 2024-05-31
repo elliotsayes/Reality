@@ -16,14 +16,15 @@ export const connectOthentWallet: AoWalletConnector = async (_, onDisconnect) =>
       }
     }
 
+    let interval: NodeJS.Timeout | undefined;
     if (onDisconnect) {
       // Repeatedly check for the address until it is un available
-      const interval = setInterval(async () => {
+      interval = setInterval(async () => {
         try {
-          const activeAddress = await window.arweaveWallet.getActiveAddress()
+          const activeAddress = await Othent.getActiveAddress()
           if (activeAddress !== address) { // Changed wallets
             clearInterval(interval);
-            window.arweaveWallet.disconnect();
+            Othent.disconnect();
             onDisconnect();
           }
         } catch (error) { // Wallet disconnected
@@ -41,7 +42,10 @@ export const connectOthentWallet: AoWalletConnector = async (_, onDisconnect) =>
         address,
         signer: createDataItemSigner(Othent),
       },
-      disconnect: async () => Othent.disconnect(),
+      disconnect: async () => {
+        clearInterval(interval);
+        await Othent.disconnect();
+      },
     }
   } catch (error) {
     return {

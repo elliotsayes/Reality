@@ -34,9 +34,10 @@ export const connectInjectedWallet: AoWalletConnector = async (
       }
     }
 
+    let interval: NodeJS.Timeout | undefined;
     if (onDisconnect) {
       // Repeatedly check for the address until it is un available
-      const interval = setInterval(async () => {
+      interval = setInterval(async () => {
         try {
           const activeAddress = await window.arweaveWallet.getActiveAddress()
           if (activeAddress !== address) {
@@ -59,7 +60,10 @@ export const connectInjectedWallet: AoWalletConnector = async (
         address,
         signer: createDataItemSigner(window.arweaveWallet),
       },
-      disconnect: () => window.arweaveWallet.disconnect(),
+      disconnect: async () => {
+        clearInterval(interval);
+        await window.arweaveWallet.disconnect();
+      },
     }
   } catch (error) {
     return {
