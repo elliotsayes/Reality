@@ -1,19 +1,24 @@
 import { PhaserGame } from './../components/PhaserGame';
+import { ArweaveId } from '@/features/arweave/lib/model';
 import { createVerseClientForProcess } from '@/features/verse/contract/verseClient';
+import { createChatClientForProcess } from '@/features/chat/contract/chatClient';
 import { useNavigate } from '@tanstack/react-router';
 import { ProfileClient } from '@/features/profile/contract/profileClient';
 import { useMachine } from '@xstate/react';
 import { renderMachine } from '../machines/renderMachine';
+import { Chat } from '@/features/chat/components/Chat';
 
 interface RendererProps {
+    userAddress: ArweaveId
     profileClient: ProfileClient
     verseClientForProcess: ReturnType<typeof createVerseClientForProcess>
+    chatClientForProcess: ReturnType<typeof createChatClientForProcess>
     verseId?: string
 }
 
-export function Renderer({ profileClient, verseClientForProcess, verseId: verseIdProp }: RendererProps) {
+export function Renderer({ userAddress, profileClient, verseClientForProcess, chatClientForProcess, verseId: verseIdProp }: RendererProps) {
     const navigate = useNavigate();
-    useMachine(renderMachine, {
+    const [current, send] = useMachine(renderMachine, {
         input: {
             initialVerseId: verseIdProp,
             clients: {
@@ -30,6 +35,16 @@ export function Renderer({ profileClient, verseClientForProcess, verseId: verseI
     });
 
     return (
-        <PhaserGame />
+        <div className='relative'>
+            <div className='absolute right-0 top-0 bottom-0'>
+                <Chat
+                    userAddress={userAddress}
+                    chatClient={current.context.currentVerseId
+                            ? chatClientForProcess(current.context.currentVerseId!)
+                            : undefined}
+                />
+            </div>
+            <PhaserGame />
+        </div>
     )
 }
