@@ -241,6 +241,18 @@ export class VerseScene extends WarpableScene {
     {
       this.player.setVelocityY(0);
     }
+
+    const isMoving = this.cursors.left?.isDown || this.cursors.right?.isDown || this.cursors.up?.isDown || this.cursors.down?.isDown;
+    if (isMoving)
+    {
+      emitSceneEvent({
+        type: 'Update Position',
+        position: [
+          this.player.x / DEFAULT_TILE_SIZE_SCALED,
+          this.player.y / DEFAULT_TILE_SIZE_SCALED,
+        ],
+      })
+    }
   }
 
   public onWarpBegin()

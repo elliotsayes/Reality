@@ -33,13 +33,19 @@ export const renderMachine = setup({
         mainMenu?: MainMenu,
         verseScene?: VerseScene,
       },
+
       targetVerseId?: string,
       currentVerseId?: string,
+
+      nextPosition?: Array<number>,
+      processingPosition?: Array<number>,
     },
     events: {} as 
       | { type: 'Scene Ready', scene: Phaser.Scene }
       | { type: 'Warp Immediate', verseId: string }
-      | { type: 'Warp Overlap Start', verseId: string }
+      // | { type: 'Warp Overlap Start', verseId: string }
+      | { type: 'Update Position', position: Array<number> }
+      | { type: 'Registration Confirmed' }
   },
   actions: {
     activateGameEventListener: assign({
@@ -108,8 +114,34 @@ export const renderMachine = setup({
     assignCurrentVerseIdFromTargetVerseId: assign(({ context }) => ({
       currentVerseId: context.targetVerseId
     })),
+    clearCurrentVerseId: assign(() => ({
+      currentVerseId: undefined
+    })),
     updateUrl: ({ context }) => {
       context.setVerseIdUrl(context.currentVerseId!);
+    },
+    assignNextPosition: assign(({ event }) => {
+      assertEvent(event, 'Update Position');
+      return {
+        nextPosition: event.position
+      };
+    }),
+    consumePositionFromQueue: assign(({ context }) => ({
+      processingPosition: context.nextPosition,
+      nextPosition: undefined
+    })),
+    clearPositionQueue: assign(() => ({
+      nextPosition: undefined
+    })),
+    clearProcesssingPosition: assign(() => ({
+      processingPosition: undefined
+    })),
+    updateVerseSceneEntities: ({ event }) => {
+      console.log('updateVerseSceneEntities', event);
+    },
+    sendRegistrationConfirmed: ({ self }) => {
+      console.log('sendRegistrationConfirmed');
+      self.send({ type: 'Registration Confirmed' });
     },
   },
   guards: {
@@ -130,6 +162,11 @@ export const renderMachine = setup({
       assertEvent(event, 'Scene Ready');
       return event.scene.scene.key === 'VerseScene';
     },
+    hasNextPosition: ({ context }) => {
+      console.log('hasNextPosition');
+      console.log(context.nextPosition);
+      return context.nextPosition !== undefined;
+    },
   },
   actors: {
     loadVerse: fromPromise(async ({ input }: {
@@ -139,6 +176,7 @@ export const renderMachine = setup({
           phaserLoader: Phaser.Loader.LoaderPlugin
         }
       }) => {
+        console.log('loadVerse');
         const verseState = await loadVersePhaser(input.verseClient, input.profileClient, input.phaserLoader);
         return {
           verseId: input.verseClient.verseId,
@@ -146,14 +184,51 @@ export const renderMachine = setup({
         }
       }
     ),
+    updateEntities: fromPromise(async ({ input }: {
+        input: {
+          verseClient: VerseClient,
+          profileClient: ProfileClient
+        }
+      }) => {
+        const entities = await input.verseClient.readAllEntities();
+        const profiles = await input.profileClient.readProfiles(Object.keys(entities));
+        return {
+          entities,
+          profiles,
+        };
+      }
+    ),
+    updatePosition: fromPromise(async ({ input }: {
+        input: {
+          verseClient: VerseClient,
+          position: Array<number>
+        }
+      }) => {
+        console.log('updatePosition', input.position);
+        return await input.verseClient.updateEntityPosition(input.position);
+      }
+    ),
+    registerEntity: fromPromise(async ({ input }: {
+        input: {
+          verseClient: VerseClient
+        }
+      }) => {
+        const verseParams = await input.verseClient.readParameters();
+        const msgId = await input.verseClient.createEntity({
+          Type: 'Avatar',
+          Position: verseParams['2D-Tile-0']?.Spawn || [0, 0]
+        });
+        return msgId;
+      }
+    ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QCcwDsJmQWQIYGMALASzTAGIBlfdMAAgCUxcIBPAbQAYBdRUABwD2sYgBdigtHxAAPRAFYAHAHYAdIoCMGgCzKATIr0BmRQE5TegDQhWiZQDZVy00b1uT209s73FAXz9rVAwsPCJSCmpaRmY2dg1eJBAhEXFJaTkEDSNORVUNXyNdc2VFeS9rWwR7TlUjfXt5T1NOPWV5XwCg9EwcAhIyKhoyGJYOPUSBYTEJKSTMjQdTVXsNeR15cvtlfUqFDXVTbM8VDQN5Uq6QYN6wgbBVAEk0GdwAG3IuSeTptLnQTJtZZNRQqEx6TjmMzyPYINpqextThGUyKTjaC5GIxXG6hfoRJ5oOgAcVwAFsHs86HhSNT0ABXQmvD4AdVwyH4dEeZIpEGIuFEYC+0hSM3S80QOmRqk4Z1ymlKGk4O1hiKMKyMWnM2jaa0MOJ6ePCZEJJPJlKJNMtDNUABlBCw6AA1LCwCgQSQPUgAN0EAGsHri+saLWaKaarXS0Iz7Y6Xcg3QgfYJ8ALZl9hUlRX8MpLvPI6sj9Bc9Np7BjYSpHEZyy5lNlnDs9AaQsH7qbSeGqQAFVBvB29Jnid6fHgi36zXMIEErRrZOXyIFGVXeQvKeqtCylyEt274k1Uzuh3tgfssLBD-kfeLfbOTiUIRSI9Q63zrExV7Qr7Qas72RHbG0ni7ka7aHuaponmeg6xhAzquu6nqqMmAaqEGdwEuBXZElBA4XrB8EJmASZoL6qZ-BmY5ZhO4oAogNQHJspZlG4ZzaIoy42IgKh5PIWLOI0zhHDoIFtphRJHqa8ZunQUQmmyHKkFAl4jgpnLcry-KCpmUypPedFZJoP6mNsxamBcFylKqLSqC02ieEqzgaKCzaBNchpiQeEkQVS0n0HJDxqUpdoDoRbrkB6JooYGHkYV5Yahn5snDIF7L8MFBF+SRZFppIlG3jR-yyJKhgFnx9imOuKJ6Ec6ywluMq6ouizaNV8gBG5aCCJg8BJOh+5gOOem0cVcI1ao5QtJwfFeE5piwgAtEqeR6BcyqQqxSgqKJcUWsyQ1ikVgI7BN5icNNKLFBo81cVkHS2Q451FCYkItMoO0DR25oHTmD4Ynos7vguS6wno13qGiOpePI53ePUH0hl92HUrgtLYAyP36aN2Qw6o2jObNrXZPxsI6gWjR1jVtbTT4CNgd5yORuj0YqW8mMjQs9k-tdFUtBVELKvYsKbMsmgFBxSo+EU2h0+JCURqj1os5lCHs0deayo1bSGJqjQccosLtLU2TTdq-41KtsvxZJVJMzalCiOyohhf5KVq1O2SonjBO6ETWL1LCkvLBCWgQhCKI81boY20SADyoiEFgyW0O7D7GIutmrDkyjTVTehC7dr4TUW9g5FuiivlHSPHn2eHIKnBkw7U-5AxCi7OJxVRQ3j9TXTW2ye-4bn9YjWE16edesw3o3lrU9kXBifFmIYN1VB06pKOZyJogYFUaFXY+QbX57IKoDtOyjaMY9Rw3q4+FyqDVSjIvUTRtDCt0CU410CX3ngVQfBm49oIXnPsgZ2SUArT0yOUH8-4dj1COPzTwgdWgAy0DoHOOoHAYnesPWKn1D49mPjBUKfloEKBsjnVYrU0SInXKvOwGIZTZG3JvfORh2r4NbLtauTwIBvEGjfQ6U5FzkwqsqTh3hUSuFhNnR+L9fAYgKCLbE3C9yjyAVJBCycyAUKyPWPIJkmzlAsjsRQci0S2XqOYlwbRXDmUAfLXyOiAqqCCmgKA+jFj-kziY8y7RzHC3xjKJ8YNGiagMMBdRoE5Yxxdro1KilPFT2Eb9AyzlywrAKM5WUk1FxfluoiPI0i1ibAcbDJx8TIEpXcWlDKZDVZpKxgsTQBZrrXQ6OUaagTKzTXyB+M4pQsSrVct0HhhCtEuKIokupyTlJqQSVA5pHMSrOQGToAwaJNjllQRnUsORXA1H0FuA+AihG6REWnQweNjBg3XD4eyUS5Fe3MroFeVMlAdCqT5IkNTaCqAAKr8AgGmTx+iITmRlJsSRoJWoOE7goeyKwfCQj1OuZwXCAhAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QCcwDsJmQWQIYGMALASzTAGIBlfdMAAgCUxcIBPAbQAYBdRUABwD2sYgBdigtHxAAPRAFYAnAEYAdAA51igEy752gMyL5WgDQhWiALTL1qgGzqDB+-ZcAWAOxL7n9QF9-c1QMLDwiUgpqWkZmNnZlXiQQIRFxSWk5BGVtRU9VThU85WNteUd3c0sEGztHZ1cPb0V7HUDg9EwcAhIyKhoyWJYObSSBYTEJKWSs3QN85WV7eU53Q04lRSrrWwcnFzd7Lx8j9pAQrvDeqIH6JmH2AzGUifTp0CyDd2VODVyj7SeFRzTzbbIGVQHTyudzueTzdycbT2M4XMI9SKqACSaEmuAANuQuM9UpMMjNEIDFKp5O5NJ4DOptIVFFp5GDAfl7IDOEZ1Kt5AyDKjOuiImRsWg6ABxXAAWzAkroeFIyvQAFdJXjCQB1XDIfh0LFyhUQYi4URgYnSUlvTKIZSIiGcHKcTTKPw-TygiyIbkQtyLRSKNaeZQmbQi0LdcWKnEy+VxqUq5Ma1QAGUELDoADUsLAKBBJIrSAA3QQAa0VaJj1yVsoVSpTarQmsz2bzyALCDLgnwFqmxOtyVtU3t2UR8khvM8ZVn7iO7N9CHU0MhR0U82U8zys6jlwxEvjDaTdAACqh8VmulrxASiTwba8xxSELS6stt679ECDGCjr8BicAynhIjo2iIoo+5inWx6JkqF5gFeLBYLe5qEgkJLPuSHyIOo3IaGsjjyNu9JHP+sIOAYOSuMis6eO4UFBOcoq1picGNvGiHITe7YQLm+aFsWqi9lWqg1lc7FSieCGXteqF8QJXZgD2aDlv2bxDo+I7Ye8sh+i6NL6HS+jaDkdJ-suq52PCO7LECKiOtBbFHtJ8Hxp2BZ0NEEp6gapBQGh95+YaxqmualrDuMaQvrh2TqI6qgtN6ZTGN43rqP+ii-NlsIqMBKiaJGzESYep4yR5gnebcqghQFGbXkpBbkEWEqidWrGSa5CacVKnn0D5ip1WggWKf1qnqQOkhaVhMU4fp8VlDSLh5M4OgqCRYLgQUgLhmZDFGGUzldeV7l9VVg2qAAomg4iiKwdAACKCAA7mgPHYhA+IUDIsCiBaiq4AAZpayAABQrJwUMAJTkKVsb1mdTUDTVN13Q9z1vR9WJfVa2nRWSemzGsU7btC8K2G6-z-kBqigQYzK0s4DFuMdZWI71yPVbQ123WIGOve916qAAqvwEAA3QaOTHALXCe14mdezHGnv13MStL91PYLH1ixLlpS3z4hwBNfZTWgM1PnNROUo61JGPMbqMv8LRgt47iqD8SxlN7XwLmzCMq0qauXWe+K4KwWDnrpqhnrpdAAIrqmAyefd95B65LcfW1FLzW+OuiGXCRRAm4DJLtU24MzS3wenO8j6KyAewW5nMhzVYcR1H2eE7H8di9juPkEwUDEH9yDm3QADCkhA8QyCmrno7zbMtL2NOwFhvTTirGCOTBgUjruEB9gFaBKIlUrget6rF0d+HkfINH1t99bdAD8L9xsA+s2EwXTgezdHCFY1F8JfB9JXJ0kISLqFpAyHkpxL7RhOhzW+yl1aKk7o-Z+vce5vHfvwXW4ss66Tlm1NSlYOrIOVjfYOd8eZYO7jHPBUwCFEP1vQFhkhTYaUHDwJeukC60nttCUoWhVhfArg6Wkag3SslyJweoiCOjUOvj1NBXlLqaweiPMeogJ5vCChhfGec-6vm0E4deCIEqFV0NoMEgp14tEdEiAwKwlAmGblJdRdD0FaKNjosAo9x7m1ULov6WAApkJLBQsS8MW4+Mqn41GATYjBP0aE8JoMAo8PNpbHS+dzHQg9o3MorQnA6GUG7OkGhZwlBMt8XQngvHdQqudZJPNtFpL0QYqYtVcCTBGnQIGggn74FnsQOU5tyC-X+paVQwNQZgx+DDOGV8EltK5v49G3SQmGL1IMqAwzRl0HGWgOeUzNImOXjbBAQEakJQFNyR05QpEID8B7cMdILEN3mEYJizE0CCEwPAZI8TIhWzMXFXQ1JNhQ3hCGIEJQwQ2D8BoUBthchuMYi4FpSZtSQrtEU-IcKNhGC8EUPe5QkrQihl8RkLJgJ4tQYS2KC04TaAcJ+aijMqSWUrktQExwyiKOPsiYUSCDxqM2c2bAGpWUrwdG4343wtBeGPlXeYYISYOCUM4Uy3JjLuGZUHeMsq0w4gJQUqFC0j6fJaMGRROgobQgcUoDQix6grLcLCE1tCzUDNTK2BqHZBIKtuS42RTSmTUWWE4CBiBvC-G3BsYMC5XBInkH6xJyZA0tk1JQf6yBRBbNuOG8c25WSqFVYijVzgtXLhWdSZkixmTMiMCUC+KipUbKRgAeVEIQKOg1y2vj9s24MGVoSgU2sueY+RqJIiBAyT8eQu0sVUb2zm3F5LIFHXFSGXKSI8o2Hy7VuRq1bgbjodQdI9ySpgt4zZO6ULICMfuhaAFq1wgYr8rQTItjLnKBCEwxheT8gsa0ZQ2bn1yVfaoQt+oS3mtbB+rIsD8i5BMLyeYtJARvNLnTEopcShfAdTBpGL6byIeLaW2gaGFAhi5d6HcSwdCMT3kiTlixHSgVDIuZpD6XKnW3XB3ijV+oMbfNlOmijHQMu5AyQD1Rf2HwZpOLQ4qs1CZQaa3GUmSK-BdBGRit7zLhjBNRT58JT6QZSrSbT3bH2tKRu3ej1qiVxQ9LsZKs4PHpT8ByHINJdyLFeToew0GdM0JzXR3y+p+ABSkx6VwSVfB+bSoKQLQHvgFHwrkPIjEobbgo23eh8X-IjXfR5tlWRbBHAcEsSm4ZgzGX-BY6thRwy-IUasUrGiUY82GqNCTYaauKviuGT2RRwsbHSmCfkpNGQJUBPsMoxUnPCdQb4zRNVhv9INHFsAyWEp2C-GsTQGxyiVEbae1QEEgIM1PrOcC-WduDY1qkzGQsWBSbMoZB2oEnAAdaPYBxx9IQQYXAidbTFNu6f9e03bnSvs62Fjjb6f32102eSfaEt7NA0zUA3PjfIeTzDe0k5Hn2dnffYZLTWxA4B-ePuvDVrJnawiWG7Fw1bbDAdgadynSOPuYIfkwwpBNPMLWZHkAouGwPZVnJlW7jFIdIm+I4PwLoJXw5i5stzEpGFPy4WgV+hNE7J2Tn9l58vmgrCVxYve2515MmAqlBmGvhdHdjuLk3zD45JxTnGfT43blmU3HbjxhR3cq4FaBGlDN6LAQbky6L0rXPlbF13f3L9TdsOvCzqtQFN4enA-c53vP6Y-EaTkfa3vDfZ+wab83+CP4sDTsdsPBdIsLtvUccmJFbA3YFRBHap8iLAh+LrjdPan2Z46Ubv3ODDH5-bxAUWxCDam7+5YhwYYUunxaJOKljIaS+FWIVww3WG9Z99znlffS1+EM-nEaoUvauUiPyF0z-Il2GH5QdG+CnHgVhCaXqzTz1wzzK0X0VC6SyV6XmhuQLjDHXlKXKA50qXPQ9gZCZH5AZj+UWFv1gN5h2QQNCUtTvHxF3y+GrQgjXQOjdDeRIk5Tk0ME3CcF0H9nTy3QGwwVIP5l2QyUMWejICk0XVkVs2uwjB+DeV8EAVvV5FSgSl9R4PnxgOpzgNSXIMMSyUiRGj+29Gs3DFgQwJdGUz9DPwi0FBFSAmhHXXBRcw0NFwEK1h0L6QOXECGRGTGQmUuTZWQKKVaGrVPjwL8F-AsJXEMG-SKy+FyCDA21n2cxD0x273MSZDoIZg9BPjANvUsyrWMC8AA3+BMHKECECCAA */
   id: "renderMachine",
 
   context: ({ input }) => ({
     ...input,
-    typedScenes: {}
+    typedScenes: {},
   }),
 
   states: {
@@ -243,7 +318,7 @@ export const renderMachine = setup({
         Idle: {},
 
         "In Verse Scene": {
-          exit: "clearScenes",
+          exit: ["clearCurrentVerseId", "clearScenes"],
           entry: ["assignCurrentVerseIdFromTargetVerseId", "updateUrl"],
 
           states: {
@@ -278,7 +353,121 @@ export const renderMachine = setup({
               initial: "Initial"
             },
 
-            Updating: {}
+            "Entity Download": {
+              states: {
+                Idle: {
+                  after: {
+                    "50000": "Update Entities"
+                  }
+                },
+                "Update Entities": {
+                  invoke: {
+                    src: "updateEntities",
+                    input: ({ context }) => ({
+                      verseClient: context.clients.verseClientForProcess(context.currentVerseId!),
+                      profileClient: context.clients.profileClient
+                    }),
+                    onDone: {
+                      target: "Idle",
+                      actions: "updateVerseSceneEntities"
+                    }
+                  }
+                }
+              },
+
+              initial: "Idle"
+            },
+
+            "Player Position": {
+              states: {
+                "Position Queue": {
+                  states: {
+                    Idle: {
+                      on: {
+                        "Update Position": {
+                          target: "Idle",
+                          actions: "assignNextPosition"
+                        }
+                      }
+                    }
+                  },
+
+                  initial: "Idle",
+                  exit: "clearPositionQueue"
+                },
+
+                "Position Upload": {
+                  states: {
+                    Idle: {
+                      on: {
+                        "Registration Confirmed": "Ready"
+                      }
+                    },
+
+                    "Update Position": {
+                      invoke: {
+                        src: "updatePosition",
+                        input: ({ context }) => ({
+                          verseClient: context.clients.verseClientForProcess(context.currentVerseId!),
+                          position: context.processingPosition!,
+                        }),
+                        onDone: {
+                          target: "Ready",
+                          actions: "clearProcesssingPosition"
+                        }
+                      }
+                    },
+
+                    Ready: {
+                      always: {
+                        target: "Update Position",
+                        guard: "hasNextPosition",
+                        actions: ["consumePositionFromQueue"],
+                        reenter: true
+                      }
+                    }
+                  },
+
+                  initial: "Idle"
+                }
+              },
+
+              type: "parallel"
+            },
+
+            "Entity Registration": {
+              states: {
+                Initial: {
+                  always: "Registering"
+                },
+
+                Done: {},
+
+                Registering: {
+                  invoke: {
+                    src: "registerEntity",
+                    input: ({ context }) => ({
+                      verseClient: context.clients.verseClientForProcess(context.currentVerseId!)
+                    }),
+                    onDone: {
+                      target: "Waiting for confimation",
+                      reenter: true
+                    }
+                  }
+                },
+
+                "Waiting for confimation": {
+                  after: {
+                    "1000": {
+                      target: "Done",
+                      actions: "sendRegistrationConfirmed"
+                    }
+                  }
+                }
+              },
+
+              initial: "Initial"
+            }
           },
 
           type: "parallel"
@@ -305,7 +494,7 @@ export const renderMachine = setup({
       target: ".In Game.In Verse Scene",
       guard: "sceneKeyIsVerseScene",
       actions: "assignVerseScene"
-    }]
+    }, ".In Game.In Other Scene"]
   },
 
   entry: "activateGameEventListener",
