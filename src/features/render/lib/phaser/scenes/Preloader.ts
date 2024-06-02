@@ -37,6 +37,14 @@ export class Preloader extends WarpableScene
         this.load.image('scream', 'sprites/scream.png');
 
         this.load.atlas('faune', 'sprites/atlas/faune.png', 'sprites/atlas/faune.json');
+
+        for (let i = 0; i < 6; i++) {
+            const llama_name = `llama_${i}`;
+            this.load.spritesheet(llama_name, `sprites/llama/${llama_name}.png`, {
+                frameWidth: 24,
+                frameHeight: 38,
+            });
+        }
     }
 
     create ()

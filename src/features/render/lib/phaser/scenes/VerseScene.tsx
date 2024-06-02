@@ -38,6 +38,7 @@ export class VerseScene extends WarpableScene {
 
   player!: Phaser.Physics.Arcade.Sprite;
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  lastTickMoving: boolean = false;
 
   entitySprites: Record<string, Phaser.Physics.Arcade.Sprite> = {};
 
@@ -90,6 +91,27 @@ export class VerseScene extends WarpableScene {
     return {
       x: cameraCenter.x - cameraSize.w / 2,
       y: cameraCenter.y - cameraSize.h / 2,
+    }
+  }
+
+  preload()
+  {
+    for (let i = 0; i < 6; i++) {
+      const llama_name = `llama_${i}`;
+      
+      this.anims.create({
+        key: `llama_${i}_idle`,
+        frameRate: 6,
+        frames: this.anims.generateFrameNumbers(llama_name, { start: 7, end: 10 }),
+        repeat: -1
+      });
+
+      this.anims.create({
+          key: `${llama_name}_walk`,
+          frameRate: 12,
+          frames: this.anims.generateFrameNumbers(llama_name, { start: 14, end: 17 }),
+          repeat: -1
+      });
     }
   }
 
@@ -150,13 +172,13 @@ export class VerseScene extends WarpableScene {
     this.player = this.physics.add.sprite(
       this.spawnPixel[0],
       this.spawnPixel[1],
-      'faune',
-      'walk-down-3.png',
+      'llama_0',
     )
       .setSize(16, 22)
       .setScale(SCALE_ENTITIES)
       .setOrigin(0.5)
       .setDepth(DEPTH_PLAYER_BASE);
+    this.player.play(`llama_0_idle`);
     
     if (this.layers) {
       this.physics.add.collider(
@@ -214,11 +236,15 @@ export class VerseScene extends WarpableScene {
     const sprite = this.physics.add.sprite(
       entity.Position[0] * (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
       entity.Position[1] * (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
-      entity.Type === 'Avatar' ? 'mona' : 'scream',
+      entity.Type === 'Avatar' ? 'llama_4' : 'scream',
     )
       .setScale(SCALE_ENTITIES)
       .setOrigin(0.5)
       .setDepth(DEPTH_ENTITY_BASE + 1);
+    if (entity.Type === 'Avatar') {
+      sprite.play(`llama_4_idle`);
+    }
+
     sprite.setInteractive();
     sprite.on('pointerdown', () => {
       console.log(`Clicked on entity ${entityId}`)
@@ -277,13 +303,20 @@ export class VerseScene extends WarpableScene {
     const isMoving = this.cursors.left?.isDown || this.cursors.right?.isDown || this.cursors.up?.isDown || this.cursors.down?.isDown;
     if (isMoving)
     {
-      emitSceneEvent({
-        type: 'Update Position',
-        position: [
-          this.player.x / DEFAULT_TILE_SIZE_SCALED,
-          this.player.y / DEFAULT_TILE_SIZE_SCALED,
-        ],
-      })
+      if (!this.lastTickMoving) this.player.play('llama_0_walk');
+      this.lastTickMoving = true;
+    } else {
+      if (this.lastTickMoving) {
+        this.player.play('llama_0_idle');
+        emitSceneEvent({
+          type: 'Update Position',
+          position: [
+            this.player.x / DEFAULT_TILE_SIZE_SCALED,
+            this.player.y / DEFAULT_TILE_SIZE_SCALED,
+          ],
+        })
+      }
+      this.lastTickMoving = false;
     }
   }
 
