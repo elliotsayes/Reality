@@ -22,14 +22,14 @@ VerseParameters = {
     Tileset = {
       Type = 'Fixed',
       Format = 'PNG',
-      TxId = 'gxNTOop1jamIJQzAvtSB4KgEVdh-eRi56taSgIFtVlM', -- TxId of the tileset in PNG format
+      TxId = 'dPCX5xVVnVq9urytiRHlSR-fTQYQ3TIfEfl-qUtf3l4', -- TxId of the tileset in PNG format
     },
     -- This is a tilemap of origin island & building exteriors
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = 'EqC9HS1H0jz_NHb5Zha1oZqoAcNxAPXSCaGLiA1kjzE', -- TxId of the tilemap in TMJ format
-      Offset = { -49, -49 },                                -- Offset for the tilemap
+      TxId = '2nbNJ3vfBjBWDHaWLJvE9TfXlSf5_UfLhdLiEgiXBVg', -- TxId of the tilemap in TMJ format
+      Offset = { -12, -12 },                                -- Offset for the tilemap
     },
   },
 }
