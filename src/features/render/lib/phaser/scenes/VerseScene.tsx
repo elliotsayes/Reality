@@ -4,6 +4,8 @@ import { VerseState } from "../../load/model";
 import { phaserTilemapKey, phaserTilesetKey } from "../../load/verse";
 import { _2dTileParams } from "@/features/verse/contract/_2dTile";
 import { emitSceneReady, emitSceneEvent } from "../../EventBus";
+import { VerseClient } from "@/features/verse/contract/verseClient";
+import { VerseEntity } from "@/features/verse/contract/model";
 
 const SCALE_TILES = 3;
 const SCALE_ENTITIES = 2;
@@ -36,6 +38,8 @@ export class VerseScene extends WarpableScene {
 
   player!: Phaser.Physics.Arcade.Sprite;
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+
+  entitySprites: Record<string, Phaser.Physics.Arcade.Sprite> = {};
 
   activeEntityEvent?: Phaser.GameObjects.GameObject;
 
@@ -161,38 +165,16 @@ export class VerseScene extends WarpableScene {
       );
     }
 
-    Object.keys(this.verse.entities).map((entityId) => {
+    this.entitySprites = Object.keys(this.verse.entities).map((entityId) => {
       // TODO: Ignore player character
 
       const entity = this.verse.entities[entityId];
-      const sprite = this.physics.add.sprite(
-        entity.Position[0] * (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
-        entity.Position[1] * (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
-        entity.Type === 'Avatar' ? 'mona' : 'scream',
-      )
-        .setScale(SCALE_ENTITIES)
-        .setOrigin(0.5)
-        .setDepth(DEPTH_ENTITY_BASE + 1);
-      sprite.setInteractive();
-      sprite.on('pointerdown', () => {
-        console.log(`Clicked on entity ${entityId}`)
-      }, this)
-      sprite.on('pointerover', () => {
-        console.log(`Hovered over entity ${entityId}`)
-      }, this)
+      const sprite = this.createEntitySprite(entityId, entity);
 
-      if (entity.Type === 'Warp') {
-        this.physics.add.overlap(this.player, sprite, () => {
-          console.log(`Collided with entity ${entityId}`)
-          emitSceneEvent({
-            type: 'Warp Immediate',
-            verseId: entityId,
-          })
-        }, undefined, this);
-      }
-
-      return sprite;
-    });
+      return {
+        [entityId]: sprite,
+      };
+    }).reduce((acc, val) => ({ ...acc, ...val }), {});
 
     this.add.text(this.spawnPixel[0], this.spawnPixel[1], 'X', {
       font: '20px Courier', color: '#ff0000',
@@ -206,6 +188,56 @@ export class VerseScene extends WarpableScene {
     this.add.text(topLeft.x + 10, topLeft.y + 40, `Verse Name: ${this.verse.info.Name}`, { font: '20px Courier', color: '#ff0000' });
 
     emitSceneReady(this);
+  }
+
+  public mergeEntities(entityUpdates: Awaited<ReturnType<VerseClient['readAllEntities']>>)
+  {
+    Object.keys(entityUpdates).forEach((entityId) => {
+      const entityUpdate = entityUpdates[entityId];
+
+      if (this.entitySprites[entityId]) {
+        console.log(`Updating entity ${entityId}`)
+        const entitySprite = this.entitySprites[entityId];
+        entitySprite.setPosition(
+          entityUpdate.Position[0] * this.tileSizeScaled[0],
+          entityUpdate.Position[1] * this.tileSizeScaled[1],
+        );
+      } else {
+        console.log(`Creating entity ${entityId}`)
+        const entitySprite = this.createEntitySprite(entityId, entityUpdate);
+        this.entitySprites[entityId] = entitySprite;
+      }
+    });
+  }
+
+  createEntitySprite(entityId: string, entity: VerseEntity) {
+    const sprite = this.physics.add.sprite(
+      entity.Position[0] * (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
+      entity.Position[1] * (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
+      entity.Type === 'Avatar' ? 'mona' : 'scream',
+    )
+      .setScale(SCALE_ENTITIES)
+      .setOrigin(0.5)
+      .setDepth(DEPTH_ENTITY_BASE + 1);
+    sprite.setInteractive();
+    sprite.on('pointerdown', () => {
+      console.log(`Clicked on entity ${entityId}`)
+    }, this)
+    sprite.on('pointerover', () => {
+      console.log(`Hovered over entity ${entityId}`)
+    }, this)
+
+    if (entity.Type === 'Warp') {
+      this.physics.add.overlap(this.player, sprite, () => {
+        console.log(`Collided with entity ${entityId}`)
+        emitSceneEvent({
+          type: 'Warp Immediate',
+          verseId: entityId,
+        })
+      }, undefined, this);
+    }
+
+    return sprite;
   }
 
   public update(/* t: number, dt: number */)
@@ -254,6 +286,8 @@ export class VerseScene extends WarpableScene {
       })
     }
   }
+
+
 
   public onWarpBegin()
   {

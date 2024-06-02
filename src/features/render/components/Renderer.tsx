@@ -31,7 +31,7 @@ export function Renderer({ userAddress, profileClient, verseClientForProcess, ch
                 });
             },
         },
-        inspect: (e) => console.log(e),
+        inspect: (e) => console.debug(e),
     });
 
     return (
