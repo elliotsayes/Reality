@@ -24,16 +24,17 @@ export default function ChatDemo() {
           >
             Toggle Client ({enabled ? 'Enabled' : 'Disabled'})
           </Button>
+
           <div className='absolute right-0 top-0 bottom-0'>
-              <Chat
-                userAddress={wallet.address}
-                chatClient={enabled 
-                  ? createChatClientForProcess(wallet)(chatProcessId)
-                  : undefined}
-                onUserMessageSent={() => {
-                  console.log("User message sent");
-                }}
-              />
+            <Chat
+              userAddress={wallet.address}
+              chatClient={enabled
+                ? createChatClientForProcess(wallet)(chatProcessId)
+                : undefined}
+              onUserMessageSent={() => {
+                console.log("User message sent");
+              }}
+            />
           </div>
         </div>
       )}
