@@ -12,18 +12,18 @@ VerseInfo = {
 VerseParameters = {
   ['2D-Tile-0'] = {
     Version = 0,
-    Spawn = { 47, 47 },
+    Spawn = { 16, 20 },
     -- This is the interior tileset enforced by origin island verse
     Tileset = {
       Type = 'Fixed',
       Format = 'PNG',
-      TxId = 'gxNTOop1jamIJQzAvtSB4KgEVdh-eRi56taSgIFtVlM', -- TxId of the tileset in PNG format
+      TxId = 'M4ztlWptdamLxlUVYwnDgfu2AcweUnHWonL3ikiErv0', -- TxId of the tileset in PNG format
     },
     -- This will be a tilemap the interior of the llama fed
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = 'uYknNDud0y1kN5nUc2y0KuZd_K4ozZGw0196rN4iucU', -- TxId of the tilemap in TMJ format
+      TxId = 'HZY05GuWiAc0HgMM6BsSL23ec0n2akkiJ37XLEHTQKg', -- TxId of the tilemap in TMJ format
     },
   },
 }
