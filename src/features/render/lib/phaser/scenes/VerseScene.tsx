@@ -150,7 +150,7 @@ export class VerseScene extends WarpableScene {
           .setDepth((isFg ? DEPTH_FG_BASE : DEPTH_BG_BASE) + index);
         layer.setCollisionByProperty({ collides: true })
         
-        const debugGraphics = this.add.graphics().setAlpha(0.5)
+        const debugGraphics = this.add.graphics().setAlpha(0.5).setDepth(999);
         layer.renderDebug(debugGraphics, {
           tileColor: null,
           collidingTileColor: new Phaser.Display.Color(243, 234, 48),
