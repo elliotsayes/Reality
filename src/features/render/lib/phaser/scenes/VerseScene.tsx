@@ -179,6 +179,7 @@ export class VerseScene extends WarpableScene {
       .setOrigin(0.5)
       .setDepth(DEPTH_PLAYER_BASE);
     this.player.play(`llama_0_idle`);
+    this.camera.startFollow(this.player);
     
     if (this.layers) {
       this.physics.add.collider(
