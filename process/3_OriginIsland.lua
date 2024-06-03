@@ -28,7 +28,7 @@ VerseParameters = {
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = '2nbNJ3vfBjBWDHaWLJvE9TfXlSf5_UfLhdLiEgiXBVg', -- TxId of the tilemap in TMJ format
+      TxId = 'GSrk6BEhQ69uBY3RVk03rrwDh0Kz7l62ADwvjOF04mg', -- TxId of the tilemap in TMJ format
       Offset = { -12, -12 },                                -- Offset for the tilemap
     },
   },
@@ -77,24 +77,24 @@ VerseInherit = {
 
 -- Updated by player actions
 VerseEntities = {
-  -- WeaveWorldProcess
-  ['w0UvMR1XlVEjjNSaBn9F1qSkDPoIaWHJXzp5G5jjdAo'] = {
-    Position = { -2, -2 },
-    Type = 'Warp', -- understood by `2D-Tile-0` renderer
-  },
+  -- -- WeaveWorldProcess
+  -- ['w0UvMR1XlVEjjNSaBn9F1qSkDPoIaWHJXzp5G5jjdAo'] = {
+  --   Position = { -2, -2 },
+  --   Type = 'Warp', -- understood by `2D-Tile-0` renderer
+  -- },
   -- LlamaFedProcess
   ['IN3T2l6QERA6d65XGW5asx2JWX7VrOQ3HIbwQvKVBQo'] = {
-    Position = { 2, 2 },
+    Position = { 0, -6 },
     Type = 'Warp', -- understood by `2D-Tile-0` renderer
   },
-  ['SomePlayerProcessId'] = {
-    Position = { 0, 0 },
-    Type = 'Avatar',
-  },
-  ['SomeBotProcessId'] = {
-    Position = { 0, 0 },
-    Type = 'Avatar',
-  },
+  -- ['SomePlayerProcessId'] = {
+  --   Position = { 0, 0 },
+  --   Type = 'Avatar',
+  -- },
+  -- ['SomeBotProcessId'] = {
+  --   Position = { 0, 0 },
+  --   Type = 'Avatar',
+  -- },
 }
 
 -- TODO: Purchasing buildings

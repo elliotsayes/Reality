@@ -12,7 +12,7 @@ VerseInfo = {
 VerseParameters = {
   ['2D-Tile-0'] = {
     Version = 0,
-    Spawn = { 16, 20 },
+    Spawn = { 16, 19 },
     -- This is the interior tileset enforced by origin island verse
     Tileset = {
       Type = 'Fixed',
@@ -32,24 +32,24 @@ VerseParameters = {
 VerseEntities = {
   -- OriginIslandProcess
   ['a1C-TCUNUKCaEup0BiCXNwcVWxOVOiRBfmKuBZwPWZg'] = {
-    Position = { 46, 46 },
+    Position = { 16, 21 },
     Type = 'Warp', -- 'Warp'/'Avatar' types are understood by `2D-Tile-0` renderer
   },
   -- LlamaAssistantProcess
   ['y_obnQk5mkphKlulM7v1Xyn6IhJKZGhP_BC1qLJq46w'] = {
-    Position = { 49, 49 },
+    Position = { 16, 4 },
     Type = 'Avatar',
     Interaction = {
       Type = 'MessageApi',
       Id = 'Petition',
     },
   },
-  ['SomePlayerProcessId'] = {
-    Position = { 0, 0 },
-    Type = 'Avatar',
-  },
-  ['SomeBotProcessId'] = {
-    Position = { 0, 0 },
-    Type = 'Avatar',
-  },
+  -- ['SomePlayerProcessId'] = {
+  --   Position = { 0, 0 },
+  --   Type = 'Avatar',
+  -- },
+  -- ['SomeBotProcessId'] = {
+  --   Position = { 0, 0 },
+  --   Type = 'Avatar',
+  -- },
 }
