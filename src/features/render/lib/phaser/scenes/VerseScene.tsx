@@ -125,7 +125,7 @@ export class VerseScene extends WarpableScene {
   create()
   {
     this.camera = this.cameras.main
-    this.camera.setBackgroundColor(0x107ab0);
+    this.camera.setBackgroundColor(0x111111);
 
     if (this.tilesetTxId && this.tilemapTxId) {
       console.log(`[${this.verse.info.Name}] Loading tilemap ${this.tilemapTxId} and tileset ${this.tilesetTxId}`)
