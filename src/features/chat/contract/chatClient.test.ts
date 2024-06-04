@@ -33,7 +33,7 @@ describe('createChatClient', () => {
     await new Promise((resolve) => setTimeout(resolve, 5000));
     // Check the info is correct
     const createdChat = await client.readHistory();
-    const mostRecentMessage = Object.values(createdChat).sort((a, b) => a.Created - b.Created).pop();
+    const mostRecentMessage = Object.values(createdChat).sort((a, b) => a.Timestamp - b.Timestamp).pop();
 
     expect(mostRecentMessage?.Author).toEqual(testWallet.address);
     expect(mostRecentMessage?.Content).toEqual(initialMessage);

@@ -1,7 +1,9 @@
 import { ArweaveId } from "@/features/arweave/lib/model";
 import { ChatClient } from "../contract/chatClient";
-import { Button } from "@/components/ui/button";
-import { truncateAddress } from "@/features/arweave/lib/utils";
+import './Chat.css';
+import { useQuery } from "@tanstack/react-query";
+import { MessagesKeyed } from "../contract/model";
+import { useRef } from "react";
 
 interface ChatProps {
   userAddress: ArweaveId;
@@ -14,19 +16,178 @@ export function Chat({
   chatClient,
   onUserMessageSent,
 }: ChatProps) {
+  const messages = useQuery({
+    queryKey: ['messages', chatClient?.aoContractClient.processId],
+    queryFn: async () => chatClient!.readHistory(),
+    enabled: chatClient !== undefined,
+  })
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  if (chatClient === undefined) {
+    return null
+  }
 
   return (
-    <div>
-      <h1>Chat</h1>
-      <p>User Address: {truncateAddress(userAddress)}</p>
-      <p>Chat Client Process Id: {chatClient?.aoContractClient.processId !== undefined
-        ? truncateAddress(chatClient?.aoContractClient.processId)
-        : "None"}</p>
-      <Button
-        onClick={onUserMessageSent}
-      >
-        Fire `onUserMessageSent`
-      </Button>
-    </div>
+    <>
+      <div className="chat-page-messages-container">
+        {
+          messages.isSuccess ? renderMessages(userAddress, messages.data) : renderMessages(userAddress, {})
+        }
+      </div>
+
+      <div className='chat-page-send-container'>
+        <input
+          ref={inputRef}
+          id='input_msg'
+          className="chat-input-message"
+          placeholder="message"
+        // value={this.state.msg}
+        // onChange={(e) => this.setState({ msg: e.target.value })}
+        // onKeyDown={this.handleKeyDown}
+        />
+        <button className="chat-send-button" type="submit" onClick={(e) => {
+          if (!inputRef.current || inputRef.current?.value === '') return
+          chatClient.postMessage({
+            Content: inputRef.current!.value,
+          })
+          inputRef.current.value = ''
+          
+          setTimeout(() => {
+            messages.refetch();
+            if (onUserMessageSent) {
+              onUserMessageSent()
+            }
+          }, 1000)
+        }}>
+          Send
+        </button>
+      </div>
+    </>
   )
+}
+
+function renderMessages(userAddress: string, messageData: MessagesKeyed) {
+  // if (this.state.loading)
+  //   return (<Loading />);
+
+  const divs = [];
+
+  // the fake messages for testing
+  console.log(messageData)
+  const messageList = Object.values(messageData).map((value) => {
+    return {
+      address: value.Author,
+      message: value.Content,
+      time: value.Timestamp,
+    }
+  }).sort((a, b) => a.time - b.time);
+
+  console.log(messageList)
+
+  for (let i = 0; i < messageList.length; i++) {
+    const data = messageList[i];
+    const owner = (data.address == userAddress);
+
+    divs.push(
+      <div key={i} className={`chat-msg-line ${owner ? 'my-line' : 'other-line'}`}>
+        {!owner && <img className='chat-msg-portrait' src='/portrait-default.png' />}
+
+        <div>
+          <div className={`chat-msg-header ${owner ? 'my-line' : 'other-line'}`}>
+            <div className="chat-msg-nickname">{
+              owner
+                ? shortStr(data.address, 15)
+                : shortStr(data.address, 15)}
+            </div>
+
+            <div className="chat-msg-address">{shortAddr(data.address, 3)}</div>
+          </div>
+
+          <div className={`chat-message ${owner ? 'my-message' : 'other-message'}`}>
+            {data.message}
+          </div>
+
+          <div className={`chat-msg-time ${owner ? 'my-line' : 'other-line'}`}>
+            {formatTimestamp(data.time / 1000, true)}
+          </div>
+        </div>
+
+        {owner && <img className='chat-msg-portrait' src='/portrait-default.png' />}
+      </div>
+    )
+  }
+
+  return divs.length > 0 ? divs : <div>No messages yet.</div>
+}
+
+
+/**
+ * Format time to twitter style ones
+ * @param time timestamp in seconds
+ * @param ago the 'ago' suffix 
+ * @returns the time formatted
+ */
+function formatTimestamp(time: number, ago?: boolean) {
+  const m = new Map([[1, 'Jan'], [2, 'Feb'], [3, 'Mar'], [4, 'Apr'], [5, 'May'], [6, 'Jun'],
+  [7, 'Jul'], [8, 'Aug'], [9, 'Sep'], [10, 'Oct'], [11, 'Nov'], [12, 'Dec']]);
+
+  const now = secondsOfNow();
+  const diff = now - time;
+
+  const days = Math.floor(diff / (60 * 60 * 24));
+  const hours = Math.floor((diff % (60 * 60 * 24)) / (60 * 60));
+  const minutes = Math.floor((diff % (60 * 60)) / 60);
+  const seconds = Math.floor(diff % 60);
+
+  if (days > 0) {
+    const date = new Date(time * 1000);
+
+    if (days > 365) {
+      return date.toLocaleString();
+    } else {
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      return m.get(month) + ' ' + day;
+    }
+  }
+
+  if (hours > 0) {
+    let t = hours + 'h';
+    if (ago) t += ' ago';
+    return t;
+  }
+
+  if (minutes > 0) {
+    let t = minutes + 'm';
+    if (ago) t += ' ago';
+    return t;
+  }
+
+  if (seconds > 0) {
+    let t = seconds + 's';
+    if (ago) t += ' ago';
+    return t;
+  }
+
+  return 'just now';
+}
+
+/**
+ * Gets the time value of now in seconds.
+ * @returns the time value in seconds
+ */
+function secondsOfNow() {
+  return Math.floor(new Date().getTime() / 1000);
+}
+
+function shortStr(str: string, max: number) {
+  if (str.length > max) {
+    return str.substring(0, max) + '...';
+  }
+  return str;
+}
+
+function shortAddr(str: string, num: number) {
+  return str.substring(0, num) + '...' + str.substring(str.length - num);
 }

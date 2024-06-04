@@ -4,7 +4,7 @@ import { z } from "zod";
 // Placeholder
 // TODO: Define this properly
 export const Message = z.object({
-  Created: z.number(),
+  Timestamp: z.number(),
   Author: ArweaveId,
   Content: z.string(),
 });
@@ -17,7 +17,7 @@ export const MessagesKeyed = z.record(
 export type MessagesKeyed = z.infer<typeof MessagesKeyed>;
 
 export const MessageCreate = Message.omit({
-  Created: true,
+  Timestamp: true,
   Author: true,
 });
 export type MessageCreate = z.infer<typeof MessageCreate>;
