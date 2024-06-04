@@ -4,6 +4,8 @@ import { MainMenu } from './scenes/MainMenu';
 import { Preloader } from './scenes/Preloader';
 import { VerseScene } from './scenes/VerseScene';
 
+export const isDebug = import.meta.env.DEV;
+
 //  Find out more information about the Game Config at:
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
 const config = (parent: string): Phaser.Types.Core.GameConfig => ({
@@ -20,7 +22,7 @@ const config = (parent: string): Phaser.Types.Core.GameConfig => ({
     ],
     physics: {
         default: 'arcade',
-        arcade: { debug: true }
+        arcade: { debug: isDebug }
     },
 	dom: {
 		createContainer: true,

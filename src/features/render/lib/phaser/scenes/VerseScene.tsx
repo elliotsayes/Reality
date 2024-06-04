@@ -10,6 +10,7 @@ import ReactDOM from "react-dom/client";
 import { ElementSize } from "../../model";
 import { FormOverlay } from "@/features/render/components/FormOverlay";
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
+import { isDebug } from "../game";
 
 const SCALE_TILES = 3;
 const SCALE_ENTITIES = 2;
@@ -156,12 +157,14 @@ export class VerseScene extends WarpableScene {
           .setDepth((isFg ? DEPTH_FG_BASE : DEPTH_BG_BASE) + index);
         layer.setCollisionByProperty({ collides: true })
         
-        const debugGraphics = this.add.graphics().setAlpha(0.5).setDepth(999);
-        layer.renderDebug(debugGraphics, {
-          tileColor: null,
-          collidingTileColor: new Phaser.Display.Color(243, 234, 48),
-          faceColor: new Phaser.Display.Color(40, 39, 37),
-        })
+        if (isDebug) {
+          const debugGraphics = this.add.graphics().setAlpha(0.5).setDepth(999);
+          layer.renderDebug(debugGraphics, {
+            tileColor: null,
+            collidingTileColor: new Phaser.Display.Color(243, 234, 48),
+            faceColor: new Phaser.Display.Color(40, 39, 37),
+          })
+        }
 
         return layer;
       }).filter((layer) => layer !== undefined) as Phaser.Tilemaps.TilemapLayer[];
@@ -207,17 +210,18 @@ export class VerseScene extends WarpableScene {
       };
     }).reduce((acc, val) => ({ ...acc, ...val }), {});
 
-    this.add.text(this.spawnPixel[0], this.spawnPixel[1], 'X', {
-      font: '20px Courier', color: '#ff0000',
-    }).setOrigin(0.5);
-    this.add.text(0, 0, 'O', {
-      font: '20px Courier', color: '#0000ff',
-    }).setOrigin(0.5);
-
-    const topLeft = this.topLeft();
-    this.add.text(topLeft.x + 10, topLeft.y + 10, `Verse ID: ${this.verseId}`, { font: '20px Courier', color: '#ff0000' });
-    this.add.text(topLeft.x + 10, topLeft.y + 40, `Verse Name: ${this.verse.info.Name}`, { font: '20px Courier', color: '#ff0000' });
-
+    if (isDebug) {
+      this.add.text(this.spawnPixel[0], this.spawnPixel[1], 'X', {
+        font: '20px Courier', color: '#ff0000',
+      }).setOrigin(0.5);
+      this.add.text(0, 0, 'O', {
+        font: '20px Courier', color: '#0000ff',
+      }).setOrigin(0.5);
+      
+      const topLeft = this.topLeft();
+      this.add.text(topLeft.x + 10, topLeft.y + 10, `Verse ID: ${this.verseId}`, { font: '20px Courier', color: '#ff0000' });
+      this.add.text(topLeft.x + 10, topLeft.y + 40, `Verse Name: ${this.verse.info.Name}`, { font: '20px Courier', color: '#ff0000' });
+    }
     emitSceneReady(this);
   }
 
