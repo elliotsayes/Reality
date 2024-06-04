@@ -180,7 +180,8 @@ export class VerseScene extends WarpableScene {
       this.spawnPixel[1],
       'llama_0',
     )
-      .setSize(16, 22)
+      .setSize(18, 30)
+      .setOffset(3, 6)
       .setScale(SCALE_ENTITIES)
       .setOrigin(0.5)
       .setDepth(DEPTH_PLAYER_BASE);
