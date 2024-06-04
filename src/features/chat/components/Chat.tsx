@@ -3,7 +3,10 @@ import { ChatClient } from "../contract/chatClient";
 import './Chat.css';
 import { useQuery } from "@tanstack/react-query";
 import { MessagesKeyed } from "../contract/model";
-import { useRef } from "react";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface ChatProps {
   userAddress: ArweaveId;
@@ -22,7 +25,7 @@ export function Chat({
     enabled: chatClient !== undefined,
   })
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const form = useForm()
 
   if (chatClient === undefined) {
     return null
@@ -36,33 +39,47 @@ export function Chat({
         }
       </div>
 
-      <div className='chat-page-send-container'>
-        <input
-          ref={inputRef}
-          id='input_msg'
-          className="chat-input-message"
-          placeholder="message"
-        // value={this.state.msg}
-        // onChange={(e) => this.setState({ msg: e.target.value })}
-        // onKeyDown={this.handleKeyDown}
-        />
-        <button className="chat-send-button" type="submit" onClick={(e) => {
-          if (!inputRef.current || inputRef.current?.value === '') return
-          chatClient.postMessage({
-            Content: inputRef.current!.value,
-          })
-          inputRef.current.value = ''
-          
-          setTimeout(() => {
-            messages.refetch();
-            if (onUserMessageSent) {
-              onUserMessageSent()
-            }
-          }, 1000)
-        }}>
-          Send
-        </button>
-      </div>
+      <Form
+        {...form}
+      >
+        <form
+          className="chat-page-send-container"
+          onSubmit={form.handleSubmit(async () => {
+            console.log('submit')
+            const message = form.getValues('message')
+            form.setValue('message', '')
+
+            if (message === undefined || message === '') return;
+            await chatClient.postMessage({ Content: message })
+            setTimeout(() => {
+              messages.refetch();
+              onUserMessageSent?.();
+            }, 1000)
+          })}
+        >
+          <FormField
+            control={form.control}
+            name="message"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    className="chat-input-message"
+                    placeholder="Message"
+                    {...field}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <Button
+            className="chat-send-button"
+            type="submit"
+          >
+            Send
+          </Button>
+        </form>
+      </Form>
     </>
   )
 }
@@ -73,8 +90,6 @@ function renderMessages(userAddress: string, messageData: MessagesKeyed) {
 
   const divs = [];
 
-  // the fake messages for testing
-  console.log(messageData)
   const messageList = Object.values(messageData).map((value) => {
     return {
       address: value.Author,
@@ -82,8 +97,6 @@ function renderMessages(userAddress: string, messageData: MessagesKeyed) {
       time: value.Timestamp,
     }
   }).sort((a, b) => a.time - b.time);
-
-  console.log(messageList)
 
   for (let i = 0; i < messageList.length; i++) {
     const data = messageList[i];

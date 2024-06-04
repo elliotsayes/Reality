@@ -116,6 +116,7 @@
   background-color: rgb(189, 239, 189);
   border-radius: 10px;
   border: 2px solid rgb(46, 75, 180);
+  margin-left: 10px;
 }
 
 .chat-page-list-container {

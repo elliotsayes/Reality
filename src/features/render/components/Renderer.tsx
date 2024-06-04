@@ -40,7 +40,7 @@ export function Renderer({ userAddress, aoContractClientForProcess, profileClien
 
     return (
         <div className='relative'>
-            <div className='hidden right-0 top-0 bottom-0'>
+            <div className='absolute right-0 top-0 bottom-0'>
                 <Chat
                     userAddress={userAddress}
                     chatClient={current.context.currentVerseId
