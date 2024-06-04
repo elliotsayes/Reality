@@ -43,7 +43,9 @@ export class VerseScene extends WarpableScene {
   layers?: Phaser.Tilemaps.TilemapLayer[];
 
   player!: Phaser.Physics.Arcade.Sprite;
-  cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+
+  keys!: object;
+
   lastTickMoving: boolean = false;
 
   isWarping: boolean = false;
@@ -85,8 +87,12 @@ export class VerseScene extends WarpableScene {
     this.tilesetTxId = this._2dTileParams?.Tileset.TxId;
     this.tilemapTxId = this._2dTileParams?.Tilemap.TxId;
 
-    // TODO: Backup input?
-    this.cursors = this.input.keyboard!.createCursorKeys();
+    this.keys = this.input.keyboard!.addKeys({
+      left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+      right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      up: Phaser.Input.Keyboard.KeyCodes.UP,
+      down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+    });
 
     this.pixelateIn();
   }
@@ -295,16 +301,16 @@ export class VerseScene extends WarpableScene {
   public update(/* t: number, dt: number */)
   {
     if (!this.player) return;
-    if (!this.cursors) return;
+    if (!this.keys) return;
 
     const speed = this.isWarping ? 40 : 120;
 
-    if (this.cursors.left?.isDown)
+    if (this.keys.left.isDown)
     {
       this.player.flipX = true;
       this.player.setVelocityX(-speed);
     }
-    else if (this.cursors.right?.isDown)
+    else if (this.keys.right.isDown)
     {
       this.player.flipX = false;
       this.player.setVelocityX(speed);
@@ -315,11 +321,11 @@ export class VerseScene extends WarpableScene {
     }
 
 
-    if (this.cursors.up?.isDown)
+    if (this.keys.up.isDown)
     {
       this.player.setVelocityY(-speed);
     }
-    else if (this.cursors.down?.isDown)
+    else if (this.keys.down.isDown)
     {
       this.player.setVelocityY(speed);
     }
@@ -328,7 +334,7 @@ export class VerseScene extends WarpableScene {
       this.player.setVelocityY(0);
     }
 
-    const isMoving = this.cursors.left?.isDown || this.cursors.right?.isDown || this.cursors.up?.isDown || this.cursors.down?.isDown;
+    const isMoving = this.keys.left.isDown || this.keys.right.isDown || this.keys.up.isDown || this.keys.down.isDown;
     if (isMoving)
     {
       if (!this.lastTickMoving) this.player.play('llama_0_walk');
