@@ -1,8 +1,11 @@
+import { GameObjects } from 'phaser';
 import { emitSceneReady } from '../../EventBus';
 import { WarpableScene } from './WarpableScene';
 
 export class Preloader extends WarpableScene
 {
+    background!: GameObjects.Image;
+
     constructor ()
     {
         super('Preloader');
@@ -11,13 +14,36 @@ export class Preloader extends WarpableScene
     init ()
     {
         //  We loaded this image in our Boot Scene, so we can display it here
-        this.add.image(512, 384, 'background');
+        
+        const camera = this.cameras.main;
+
+        const bgSize = [1252, 627];
+        this.background = this.add.image(
+            camera.width / 2,
+            camera.height / 2,
+            'main_bg',
+        )
+            .setScale(
+                camera.width / bgSize[0], 
+                camera.height / bgSize[1],
+            );
 
         //  A simple progress bar. This is the outline of the bar.
-        this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);
+        this.add.rectangle(
+            camera.width / 2,
+            camera.height / 2,
+            468,
+            32,
+        ).setStrokeStyle(1, 0xffffff);
 
         //  This is the progress bar itself. It will increase in size from the left based on the % of progress.
-        const bar = this.add.rectangle(512-230, 384, 4, 28, 0xffffff);
+        const bar = this.add.rectangle(
+            camera.width / 2 - 230,
+            camera.height / 2,
+            4,
+            28,
+            0xffffff,
+        );
 
         //  Use the 'progress' event emitted by the LoaderPlugin to update the loading bar
         this.load.on('progress', (progress: number) => {
@@ -30,17 +56,17 @@ export class Preloader extends WarpableScene
 
     preload ()
     {
-        //  Load the assets for the game - Replace with your own assets
+        //  Load the assets for the game
         this.load.setPath('assets');
 
-        this.load.image('main_bg', 'branding/main_bg.jpg');
+        // this.load.image('main_bg', 'branding/main_bg.jpg');
         this.load.image('main_logo', 'branding/main_logo_small.png');
 
         this.load.image('invis', 'sprites/invis.png');
         // this.load.image('mona', 'sprites/mona.png');
         // this.load.image('scream', 'sprites/scream.png');
 
-        this.load.atlas('faune', 'sprites/atlas/faune.png', 'sprites/atlas/faune.json');
+        // this.load.atlas('faune', 'sprites/atlas/faune.png', 'sprites/atlas/faune.json');
 
         for (let i = 0; i < 6; i++) {
             const llama_name = `llama_${i}`;
