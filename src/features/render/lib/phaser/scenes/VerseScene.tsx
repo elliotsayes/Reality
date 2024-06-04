@@ -370,7 +370,7 @@ export class VerseScene extends WarpableScene {
 
     const formSize: ElementSize = {
       w: 300,
-      h: 50,
+      h: 300,
     }
     const memElement = document.createElement("div");
     memElement.setAttribute('style', `width: ${formSize.w}px; height: ${formSize.h}px; display: flex; justify-content: center; align-items: center;`)
@@ -380,15 +380,25 @@ export class VerseScene extends WarpableScene {
         methodName={entity.Interaction.Id}
         close={() => {
           this.apiForm?.destroy();
+          this.camera.startFollow(this.player);
         }}
       />
     );
 
     this.apiForm = this.add.dom(
       entity.Position[0] * this.tileSizeScaled[0] - 30,
-      entity.Position[1] * this.tileSizeScaled[1] - 20,
+      entity.Position[1] * this.tileSizeScaled[1],
       memElement,
-    ).setOrigin(1, 0);
+    ).setOrigin(1, 0.5);
+
+    this.camera.stopFollow();
+    this.camera.pan(
+      entity.Position[0] * this.tileSizeScaled[0] + 100,
+      entity.Position[1] * this.tileSizeScaled[1] + 200,
+      500,
+      Phaser.Math.Easing.Linear,
+      false,
+    )
   }
 
   public onWarpBegin()
