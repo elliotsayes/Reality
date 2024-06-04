@@ -350,6 +350,10 @@ export class VerseScene extends WarpableScene {
 
   public showApiForm(entityId: string, entity: VerseEntity)
   {
+    if (this.apiForm) {
+      this.apiForm.destroy();
+    }
+
     if (entity.Interaction?.Type !== 'ApiForm') return;
 
     const formSize: ElementSize = {
