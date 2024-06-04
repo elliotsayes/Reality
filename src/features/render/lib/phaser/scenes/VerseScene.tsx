@@ -102,23 +102,7 @@ export class VerseScene extends WarpableScene {
 
   preload()
   {
-    for (let i = 0; i < 6; i++) {
-      const llama_name = `llama_${i}`;
-      
-      this.anims.create({
-        key: `llama_${i}_idle`,
-        frameRate: 6,
-        frames: this.anims.generateFrameNumbers(llama_name, { start: 7, end: 10 }),
-        repeat: -1
-      });
-
-      this.anims.create({
-          key: `${llama_name}_walk`,
-          frameRate: 12,
-          frames: this.anims.generateFrameNumbers(llama_name, { start: 14, end: 17 }),
-          repeat: -1
-      });
-    }
+    
   }
 
   create()
@@ -276,14 +260,20 @@ export class VerseScene extends WarpableScene {
       if (entity.Interaction?.Type === 'ApiForm') {
         // Llama Assistant
         sprite.play(`llama_5_idle`);
+        sprite.on('pointerdown', () => {
+          console.log(`Clicked on entity ${entityId}`)
+        }, this)
       } else {
         sprite.play(`llama_4_idle`);
+        sprite.on('pointerdown', () => {
+          sprite.play(`llama_4_emote`);
+          setTimeout(() => {
+            sprite.play(`llama_4_idle`);
+          }, 1000)
+        }, this)
       }
     }
 
-    sprite.on('pointerdown', () => {
-      console.log(`Clicked on entity ${entityId}`)
-    }, this)
     sprite.on('pointerover', () => {
       console.log(`Hovered over entity ${entityId}`)
     }, this)

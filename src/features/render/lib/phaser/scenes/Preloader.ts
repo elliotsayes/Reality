@@ -84,6 +84,37 @@ export class Preloader extends WarpableScene
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         // this.scene.start('MainMenu');
+        for (let i = 0; i < 6; i++) {
+            const llama_name = `llama_${i}`;
+            
+            this.anims.create({
+                key: `llama_${i}_idle`,
+                frameRate: 6,
+                frames: this.anims.generateFrameNumbers(llama_name, { start: 7, end: 10 }),
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: `llama_${i}_emote`,
+                frameRate: 24,
+                frames: this.anims.generateFrameNumbers(llama_name, { start: 7, end: 10 }),
+                repeat: -1
+            });
+        
+            this.anims.create({
+                key: `${llama_name}_walk`,
+                frameRate: 12,
+                frames: this.anims.generateFrameNumbers(llama_name, { start: 14, end: 17 }),
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: `${llama_name}_dance`,
+                frameRate: 24,
+                frames: this.anims.generateFrameNumbers(llama_name, { start: 14, end: 17 }),
+                repeat: 3,
+            });
+        }
 
         emitSceneReady(this);
     }
