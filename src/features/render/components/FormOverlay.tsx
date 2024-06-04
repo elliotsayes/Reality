@@ -1,10 +1,12 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AoContractClient } from '@/features/ao/lib/aoContractClient'
+import { truncateAddress } from '@/features/arweave/lib/utils'
 import { ApiFormLoader } from '@/features/contractApi/components/ApiFormLoader'
 import { queryClient } from '@/lib/query'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { X } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface FormOverlayProps {
   contractClient: AoContractClient
@@ -18,7 +20,6 @@ export function FormOverlay({ contractClient, methodName, close }: FormOverlayPr
       <Card>
         <CardHeader className='flex flex-row justify-between items-baseline'>
           <CardTitle>{methodName}</CardTitle>
-
           <Button
             onClick={close}
             variant={"destructive"}
@@ -31,7 +32,10 @@ export function FormOverlay({ contractClient, methodName, close }: FormOverlayPr
           <ApiFormLoader
             contractClient={contractClient}
             methodName={methodName}
-            onComplete={close}
+            onComplete={() => {
+              toast(`'${methodName}' message sent to ${truncateAddress(contractClient.processId)}`)
+              close()
+            }}
           />
         </CardContent>
       </Card>

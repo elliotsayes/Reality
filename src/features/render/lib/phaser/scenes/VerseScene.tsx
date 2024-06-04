@@ -370,7 +370,7 @@ export class VerseScene extends WarpableScene {
 
     this.apiForm = this.add.dom(
       entity.Position[0] * this.tileSizeScaled[0] + 30,
-      entity.Position[1] * this.tileSizeScaled[1],
+      entity.Position[1] * this.tileSizeScaled[1] - 20,
       memElement,
     ).setOrigin(0);
   }
