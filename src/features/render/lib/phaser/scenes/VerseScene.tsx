@@ -217,7 +217,7 @@ export class VerseScene extends WarpableScene {
       this.add.text(0, 0, 'O', {
         font: '20px Courier', color: '#0000ff',
       }).setOrigin(0.5);
-      
+
       const topLeft = this.topLeft();
       this.add.text(topLeft.x + 10, topLeft.y + 10, `Verse ID: ${this.verseId}`, { font: '20px Courier', color: '#ff0000' });
       this.add.text(topLeft.x + 10, topLeft.y + 40, `Verse Name: ${this.verse.info.Name}`, { font: '20px Courier', color: '#ff0000' });
@@ -384,10 +384,10 @@ export class VerseScene extends WarpableScene {
     );
 
     this.apiForm = this.add.dom(
-      entity.Position[0] * this.tileSizeScaled[0] + 30,
+      entity.Position[0] * this.tileSizeScaled[0] - 30,
       entity.Position[1] * this.tileSizeScaled[1] - 20,
       memElement,
-    ).setOrigin(0);
+    ).setOrigin(1, 0);
   }
 
   public onWarpBegin()
