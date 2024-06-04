@@ -28,7 +28,7 @@ VerseParameters = {
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = '9Q7WlHm66GK0NFaW5VTXgo0iK0l3konGtEn7F_krwQI', -- TxId of the tilemap in TMJ format
+      TxId = '4hlu5o-XkdvovH78G-kQm_SpuWt3LFezYVaStQr61Vs', -- TxId of the tilemap in TMJ format
       Offset = { -12, -12 },                                -- Offset for the tilemap
     },
   },
