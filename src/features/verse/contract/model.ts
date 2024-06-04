@@ -36,26 +36,29 @@ export const Warp = z.object({
 });
 export type Warp = z.infer<typeof Warp>;
 
-export const ApiCall = z.object({
-  Type: z.literal("ApiCall"),
-  Id: z.string(),
-  Tags: z.record(z.string(), z.string()),
-});
-export type ApiCall = z.infer<typeof ApiCall>;
-
 export const ApiForm = z.object({
   Type: z.literal("ApiForm"),
   Id: z.string(),
 });
 export type ApiForm = z.infer<typeof ApiForm>;
 
+// Will have to work out how to do this safely
+// API calls should be defined and presented in the same process
+
+// export const ApiCall = z.object({
+//   Type: z.literal("ApiCall"),
+//   Id: z.string(),
+//   Tags: z.record(z.string(), z.string()),
+// });
+// export type ApiCall = z.infer<typeof ApiCall>;
+
 export const VerseEntity = z.object({
   Position: VerseEntityPosition,
   Type: VerseEntityType,
   Interaction: z.optional(z.discriminatedUnion("Type", [
     Warp,
-    ApiCall,
     ApiForm,
+    // ApiCall,
   ]))
 });
 export type VerseEntity = z.infer<typeof VerseEntity>;
