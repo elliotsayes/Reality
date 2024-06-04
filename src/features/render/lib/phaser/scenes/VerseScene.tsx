@@ -273,6 +273,7 @@ export class VerseScene extends WarpableScene {
           type: 'Warp Immediate',
           verseId: entityId,
         })
+        this.camera.fadeOut(2000);
         this.isWarping = true;
       }, undefined, this);
     }
