@@ -1,3 +1,4 @@
+import { Input } from "@/components/ui/input"
 import {
   ariaDescribedByIds,
   BaseInputTemplateProps,
@@ -43,14 +44,11 @@ export default function BaseInputTemplate<
   const _onFocus = ({ target: { value } }: FocusEvent<HTMLInputElement>) =>
     onFocus(id, value)
 
-  const inputClass = `
-    border rounded-lg p-2 focus:border-primary focus:outline-none w-full bg-background
-    ${rawErrors.length > 0 ? "border-red-500" : "border-muted-foreground"}
-  `
+  const inputClass = `${rawErrors.length > 0 ? "border-red-500" : ""}`
 
   return (
     <>
-      <input
+      <Input
         id={id}
         name={id}
         type={type}

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button"
 import {
   FormContextType,
   getSubmitButtonOptions,
@@ -23,13 +24,12 @@ export default function SubmitButton<
 
   return (
     <div>
-      <button
+      <Button
         type="submit"
-        className="bg-primary px-4 py-2 text-base font-normal text-primary-foreground hover:bg-primary/90"
         {...submitButtonProps}
       >
         {submitText}
-      </button>
+      </Button>
     </div>
   )
 }
