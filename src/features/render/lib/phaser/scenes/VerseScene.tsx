@@ -290,10 +290,12 @@ export class VerseScene extends WarpableScene {
 
     if (this.cursors.left?.isDown)
     {
+      this.player.flipX = true;
       this.player.setVelocityX(-speed);
     }
     else if (this.cursors.right?.isDown)
     {
+      this.player.flipX = false;
       this.player.setVelocityX(speed);
     }
     else
