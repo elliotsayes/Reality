@@ -75,6 +75,7 @@ export function Chat({
                   <Input
                     className="chat-input-message"
                     placeholder="Message"
+                    autoComplete="off"
                     {...field}
                   />
                 </FormControl>
