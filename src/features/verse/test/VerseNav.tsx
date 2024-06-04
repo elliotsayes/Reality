@@ -48,7 +48,7 @@ function VerseNav({ wallet }: VerseNavProps) {
       <div className="flex flex-col items-start gap-2 py-2">
         {
           Object.keys(entities.data)
-            .filter((entityId) => entities.data[entityId].Type === "Warp")
+            .filter((entityId) => entities.data[entityId].Interaction?.Type === "Warp")
             .map((verseId) => (
               <VerseLink
                 key={`${processId}-${verseId}`}
