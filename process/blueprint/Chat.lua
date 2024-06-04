@@ -12,6 +12,7 @@ Handlers.add(
   "ChatMessage",
   Handlers.utils.hasMatchingTag("Action", "ChatMessage"),
   function(msg)
+    print("ChatMessage")
     local entry = {
       Timestamp = msg.Timestamp,
       Author = msg.From,
@@ -25,6 +26,7 @@ Handlers.add(
   "ChatHistory",
   Handlers.utils.hasMatchingTag("Action", "ChatHistory"),
   function(msg)
+    print("ChatHistory")
     Handlers.utils.reply(json.encode(ChatHistory))(msg)
   end
 )
