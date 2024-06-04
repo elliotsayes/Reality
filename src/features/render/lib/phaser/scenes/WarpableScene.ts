@@ -32,7 +32,7 @@ export class WarpableScene extends Scene
     // Override this method to clean up the scene
   }
 
-  public warpToVerse (verseId: string, verse: VerseState)
+  public warpToVerse (playerAddress: string, verseId: string, verse: VerseState)
   {
     this.onWarpBegin()
     const pixelated = this.cameras.main.postFX.addPixelate(-1);
@@ -45,7 +45,7 @@ export class WarpableScene extends Scene
         amount: 20,
         onComplete: () => {
             this.onWarpSuccess()
-            this.scene.start('VerseScene', { verseId, verse });
+            this.scene.start('VerseScene', { playerAddress, verseId, verse });
         },
     })
   }

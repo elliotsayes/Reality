@@ -20,6 +20,7 @@ export function Renderer({ userAddress, profileClient, verseClientForProcess, ch
     const navigate = useNavigate();
     const [current, send] = useMachine(renderMachine, {
         input: {
+            playerAddress: userAddress,
             initialVerseId: verseIdProp,
             clients: {
                 profileClient,

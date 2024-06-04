@@ -19,6 +19,7 @@ const DEPTH_ENTITY_BASE = -100; // => -1
 const DEPTH_PLAYER_BASE = 0; // => 400
 
 export class VerseScene extends WarpableScene {
+  playerAddress!: string;
   verseId!: string;
   verse!: VerseState;
 
@@ -51,9 +52,11 @@ export class VerseScene extends WarpableScene {
   }
 
   init ({
+    playerAddress,
     verseId,
     verse,
   }: {
+    playerAddress: string,
     verseId: string,
     verse: VerseState,
   })
@@ -63,6 +66,7 @@ export class VerseScene extends WarpableScene {
     this.activeEntityEvent = undefined;
     this.layers = undefined;
 
+    this.playerAddress = playerAddress;
     this.verseId = verseId;
     this.verse = verse;
 
@@ -191,7 +195,8 @@ export class VerseScene extends WarpableScene {
     }
 
     this.entitySprites = Object.keys(this.verse.entities).map((entityId) => {
-      // TODO: Ignore player character
+      // Ignore player character
+      if (entityId === this.playerAddress) return {};
 
       const entity = this.verse.entities[entityId];
       const sprite = this.createEntitySprite(entityId, entity);
@@ -218,6 +223,9 @@ export class VerseScene extends WarpableScene {
   public mergeEntities(entityUpdates: Awaited<ReturnType<VerseClient['readAllEntities']>>)
   {
     Object.keys(entityUpdates).forEach((entityId) => {
+      // Ignore player character
+      if (entityId === this.playerAddress) return;
+
       const entityUpdate = entityUpdates[entityId];
 
       if (this.entitySprites[entityId]) {

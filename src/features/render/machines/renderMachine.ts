@@ -10,6 +10,7 @@ import { loadVersePhaser } from '../lib/load/verse';
 export const renderMachine = setup({
   types: {
     input: {} as {
+      playerAddress: string,
       initialVerseId?: string,
       clients: {
         profileClient: ProfileClient,
@@ -18,6 +19,8 @@ export const renderMachine = setup({
       setVerseIdUrl: (verseId: string) => void
     },
     context: {} as {
+      playerAddress: string,
+
       initialVerseId?: string,
       clients: {
         profileClient: ProfileClient,
@@ -98,11 +101,18 @@ export const renderMachine = setup({
     },
     startVerseScene: ({ context, event }) => {
       // assertEvent(event, "done.invoke.loadVerse")
-      context.currentScene?.scene.start('VerseScene', event.output);
+      context.currentScene?.scene.start('VerseScene', {
+        playerAddress: context.playerAddress,
+        ...event.output
+      });
     },
     warpVerseScene: ({ context, event }) => {
       // assertEvent(event, "done.invoke.loadVerse")
-      context.typedScenes.verseScene!.warpToVerse(event.output.verseId, event.output.verse);
+      context.typedScenes.verseScene!.warpToVerse(
+        context.playerAddress,
+        event.output.verseId,
+        event.output.verse,
+      );
     },
     assignTargetVerseId: assign(({ event }) => {
       assertEvent(event, 'Warp Immediate');
