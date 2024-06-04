@@ -6,6 +6,10 @@ import { _2dTileParams } from "@/features/verse/contract/_2dTile";
 import { emitSceneReady, emitSceneEvent } from "../../EventBus";
 import { VerseClient } from "@/features/verse/contract/verseClient";
 import { VerseEntity } from "@/features/verse/contract/model";
+import ReactDOM from "react-dom/client";
+import { ElementSize } from "../../model";
+import { FormOverlay } from "@/features/render/components/FormOverlay";
+import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 
 const SCALE_TILES = 3;
 const SCALE_ENTITIES = 2;
@@ -22,6 +26,7 @@ export class VerseScene extends WarpableScene {
   playerAddress!: string;
   verseId!: string;
   verse!: VerseState;
+  aoContractClientForProcess!: AoContractClientForProcess;
 
   _2dTileParams?: _2dTileParams;
   tilesetTxId?: string;
@@ -47,6 +52,8 @@ export class VerseScene extends WarpableScene {
 
   activeEntityEvent?: Phaser.GameObjects.GameObject;
 
+  apiForm?: Phaser.GameObjects.DOMElement;
+
   constructor() {
     super('VerseScene');
   }
@@ -55,10 +62,12 @@ export class VerseScene extends WarpableScene {
     playerAddress,
     verseId,
     verse,
+    aoContractClientForProcess,
   }: {
     playerAddress: string,
     verseId: string,
     verse: VerseState,
+    aoContractClientForProcess: AoContractClientForProcess,
   })
   {
     // reset some vars
@@ -69,6 +78,7 @@ export class VerseScene extends WarpableScene {
     this.playerAddress = playerAddress;
     this.verseId = verseId;
     this.verse = verse;
+    this.aoContractClientForProcess = aoContractClientForProcess;
 
     this._2dTileParams = this.verse.parameters["2D-Tile-0"];
 
@@ -261,7 +271,8 @@ export class VerseScene extends WarpableScene {
         // Llama Assistant
         sprite.play(`llama_5_idle`);
         sprite.on('pointerdown', () => {
-          console.log(`Clicked on entity ${entityId}`)
+          console.log(`Clicked on ApiForm ${entityId}`)
+          this.showApiForm(entityId, entity);
         }, this)
       } else {
         sprite.play(`llama_4_idle`);
@@ -337,7 +348,32 @@ export class VerseScene extends WarpableScene {
     }
   }
 
+  public showApiForm(entityId: string, entity: VerseEntity)
+  {
+    if (entity.Interaction?.Type !== 'ApiForm') return;
 
+    const formSize: ElementSize = {
+      w: 300,
+      h: 50,
+    }
+    const memElement = document.createElement("div");
+    memElement.setAttribute('style', `width: ${formSize.w}px; height: ${formSize.h}px; display: flex; justify-content: center; align-items: center;`)
+    ReactDOM.createRoot(memElement).render(
+      <FormOverlay
+        contractClient={this.aoContractClientForProcess(entityId)}
+        methodName={entity.Interaction.Id}
+        close={() => {
+          this.apiForm?.destroy();
+        }}
+      />
+    );
+
+    this.apiForm = this.add.dom(
+      entity.Position[0] * this.tileSizeScaled[0] + 30,
+      entity.Position[1] * this.tileSizeScaled[1],
+      memElement,
+    ).setOrigin(0);
+  }
 
   public onWarpBegin()
   {

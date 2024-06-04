@@ -7,22 +7,25 @@ import { ProfileClient } from '@/features/profile/contract/profileClient';
 import { useMachine } from '@xstate/react';
 import { renderMachine } from '../machines/renderMachine';
 import { Chat } from '@/features/chat/components/Chat';
+import { AoContractClientForProcess } from '@/features/ao/lib/aoContractClient';
 
 interface RendererProps {
     userAddress: ArweaveId
+    aoContractClientForProcess: AoContractClientForProcess
     profileClient: ProfileClient
     verseClientForProcess: ReturnType<typeof createVerseClientForProcess>
     chatClientForProcess: ReturnType<typeof createChatClientForProcess>
     verseId?: string
 }
 
-export function Renderer({ userAddress, profileClient, verseClientForProcess, chatClientForProcess, verseId: verseIdProp }: RendererProps) {
+export function Renderer({ userAddress, aoContractClientForProcess, profileClient, verseClientForProcess, chatClientForProcess, verseId: verseIdProp }: RendererProps) {
     const navigate = useNavigate();
     const [current, send] = useMachine(renderMachine, {
         input: {
             playerAddress: userAddress,
             initialVerseId: verseIdProp,
             clients: {
+                aoContractClientForProcess,
                 profileClient,
                 verseClientForProcess,
             },

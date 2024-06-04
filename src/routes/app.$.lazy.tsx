@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { createAoContractClientForProcess } from '@/features/ao/lib/aoContractClient'
 import { truncateAddress } from '@/features/arweave/lib/utils'
 import { createChatClientForProcess } from '@/features/chat/contract/chatClient'
 import { Login } from '@/features/login/components/Login'
@@ -57,6 +58,7 @@ function VerseId() {
           <div className='fixed top-14 right-0 left-0 bottom-0'>
             <Renderer
               userAddress={wallet.address}
+              aoContractClientForProcess={createAoContractClientForProcess(wallet)}
               profileClient={createProfileClientForProcess(wallet)(profileProcessId)}
               verseClientForProcess={createVerseClientForProcess(wallet)}
               chatClientForProcess={createChatClientForProcess(wallet)}

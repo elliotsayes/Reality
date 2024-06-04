@@ -6,9 +6,10 @@ import { AoContractClient } from "@/features/ao/lib/aoContractClient"
 interface ApiFormLoaderProps {
   contractClient: AoContractClient
   methodName: string
+  onComplete?: () => void
 }
 
-export function ApiFormLoader({ contractClient, methodName }: ApiFormLoaderProps) {
+export function ApiFormLoader({ contractClient, methodName, onComplete }: ApiFormLoaderProps) {
   const api = useQuery({
     queryKey: ['api', contractClient.processId],
     queryFn: async () => {
@@ -29,7 +30,7 @@ export function ApiFormLoader({ contractClient, methodName }: ApiFormLoaderProps
       await contractClient.message({
         tags,
       })
-      // await new Promise((resolve) => setTimeout(resolve, 2000))
+      onComplete?.()
     },
   })
 

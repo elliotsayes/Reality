@@ -44,12 +44,12 @@ export class MainMenu extends WarpableScene
             h: 50,
         }
         const memElement = document.createElement("div");
+        memElement.setAttribute('style', `width: ${buttonSize.w}px; height: ${buttonSize.h}px; display: flex; justify-content: center; align-items: center;`)
+        
         const cb = () => emitSceneEvent({
             type: 'Warp Immediate',
             verseId: import.meta.env.VITE_ORIGIN_ISLAND_PROCESS_ID,
         })
-        
-        memElement.setAttribute('style', `width: ${buttonSize.w}px; height: ${buttonSize.h}px; display: flex; justify-content: center; align-items: center;`)
         ReactDOM.createRoot(memElement).render(
             <ButtonOnce
                 elementSize={buttonSize}

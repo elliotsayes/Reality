@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { AoClient, Message } from "./aoClient";
 import { AoWallet } from "./aoWallet";
+import { connect } from "@permaweb/aoconnect";
 
 class AoContractError extends Error {
   error: unknown | undefined;
@@ -95,3 +96,9 @@ export const createAoContractClient = (
     message,
   }
 }
+
+export const createAoContractClientForProcess = (wallet: AoWallet) => (processId: string) => {
+  const aoClient = connect();
+  return createAoContractClient(processId, aoClient, wallet);
+}
+export type AoContractClientForProcess = ReturnType<typeof createAoContractClientForProcess>;

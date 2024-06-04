@@ -6,6 +6,7 @@ import { MainMenu } from '../lib/phaser/scenes/MainMenu';
 import { VerseScene } from '../lib/phaser/scenes/VerseScene';
 import { listenScene, listenSceneEvent } from '../lib/EventBus';
 import { loadVersePhaser } from '../lib/load/verse';
+import { AoContractClientForProcess } from '@/features/ao/lib/aoContractClient';
 
 export const renderMachine = setup({
   types: {
@@ -13,6 +14,7 @@ export const renderMachine = setup({
       playerAddress: string,
       initialVerseId?: string,
       clients: {
+        aoContractClientForProcess: AoContractClientForProcess,
         profileClient: ProfileClient,
         verseClientForProcess: VerseClientForProcess,
       }
@@ -23,6 +25,7 @@ export const renderMachine = setup({
 
       initialVerseId?: string,
       clients: {
+        aoContractClientForProcess: AoContractClientForProcess,
         profileClient: ProfileClient,
         verseClientForProcess: VerseClientForProcess,
       }
@@ -103,7 +106,9 @@ export const renderMachine = setup({
       // assertEvent(event, "done.invoke.loadVerse")
       context.currentScene?.scene.start('VerseScene', {
         playerAddress: context.playerAddress,
-        ...event.output
+        verseId: event.output.verseId,
+        verse: event.output.verse,
+        aoContractClientForProcess: context.clients.aoContractClientForProcess
       });
     },
     warpVerseScene: ({ context, event }) => {
@@ -112,6 +117,7 @@ export const renderMachine = setup({
         context.playerAddress,
         event.output.verseId,
         event.output.verse,
+        context.clients.aoContractClientForProcess
       );
     },
     assignTargetVerseId: assign(({ event }) => {
