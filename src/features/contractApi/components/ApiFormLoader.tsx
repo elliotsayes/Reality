@@ -19,10 +19,17 @@ export function ApiFormLoader({ contractClient, methodName }: ApiFormLoaderProps
 
   const message = useMutation({
     mutationKey: ['message', contractClient.processId, methodName],
-    mutationFn: async (formData: object) => {
+    mutationFn: async (data: object) => {
       // TODO
       // Wait 2 seconds
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      console.log('data', data)
+      const formData = data.formData as Record<string, string | number>
+      const tags = Object.entries(formData).map(([name, value]) => ({ name, value: value.toString() }))
+      console.log('tags', tags)
+      await contractClient.message({
+        tags,
+      })
+      // await new Promise((resolve) => setTimeout(resolve, 2000))
     },
   })
 
@@ -37,10 +44,9 @@ export function ApiFormLoader({ contractClient, methodName }: ApiFormLoaderProps
   return (
     <ApiForm
       methodSchema={api.data[methodName]}
-      onSubmitted={(formData) => {
-        console.log('submitted')
-        console.log(formData)
-        message.mutateAsync(formData)
+      onSubmitted={(data) => {
+        console.log('onSubmitted')
+        message.mutateAsync(data)
       }}
       isDisabled={!message.isIdle || message.isSuccess}
       isSubmitting={message.isPending}

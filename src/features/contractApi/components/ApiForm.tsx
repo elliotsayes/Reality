@@ -3,10 +3,6 @@ import validator from '@rjsf/validator-ajv8';
 import { useMemo } from 'react';
 import { ApiSchemaMethod } from '../contract/model';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const log = (type: any) => console.log.bind(console, type);
-
-
 interface ApiFormProps {
   methodSchema: ApiSchemaMethod
   onSubmitted: (data: object, event: unknown) => void
@@ -66,14 +62,13 @@ export const ApiForm = ({
 
   return (
     <div className={`${isSubmitting ? 'animate-pulse' : ''}`}>
-      <h1>{methodSchema.Title}</h1>
-      <h2>{methodSchema.Description}</h2>
+      <p className=' text-xl text-primary'>{methodSchema.Title}</p>
+      <p className=' text-md text-secondary-foreground'>{methodSchema.Description}</p>
       <Form
         {...postProcessed}
         validator={validator}
-        onChange={log('changed')}
         onSubmit={onSubmitted}
-        onError={log('errors')}
+        onError={console.error}
         showErrorList={false}
         disabled={isDisabled}
       />
