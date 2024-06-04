@@ -6,6 +6,7 @@ import { connectInjectedWallet } from "@/features/ao/lib/wallets/injected";
 import { connectOthentWallet } from "@/features/ao/lib/wallets/othent";
 import { toast } from "sonner";
 import { defaultConnectConfig } from "../lib/config";
+import { Cog, Mail, Wallet, WandSparkles } from "lucide-react"
 
 interface LoginMenuProps {
   onConnect: (wallet: AoWallet, disconnect?: () => void) => void;
@@ -38,6 +39,9 @@ export function LoginMenu({ onConnect, onDisconnect, localWallet }: LoginMenuPro
                 disabled={!hasInjectedArweave}
                 className={`flex flex-grow ${hasInjectedArweave ? "" : "cursor-not-allowed"}`}
               >
+                <span className="pr-2">
+                  <Wallet />
+                </span>
                 ArConnect / Injected
               </Button>
             </TooltipTrigger>
@@ -64,6 +68,9 @@ export function LoginMenu({ onConnect, onDisconnect, localWallet }: LoginMenuPro
               }}
             >
               <Button>
+                <span className="pr-2">
+                  <Mail />
+                </span>
                 Othent (via Google)
               </Button>
             </TooltipTrigger>
@@ -82,7 +89,12 @@ export function LoginMenu({ onConnect, onDisconnect, localWallet }: LoginMenuPro
               }}
             >
               <Button>
-                {hasLocalWallet ? '🆕' : '⚙️'} Temporary Wallet
+                <span className="pr-2">
+                  {hasLocalWallet
+                  ? <WandSparkles />
+                  : <Cog className="animate-spin" />}
+                </span>
+                Temporary Wallet
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">
