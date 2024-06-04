@@ -6,6 +6,7 @@
   padding-left: 30px;
   padding-bottom: 30px;
   row-gap: 20px;
+  width: 350px;
 }
 
 .chat-page-messages-container {
@@ -34,7 +35,9 @@
   display: flex;
   align-items: center;
   column-gap: 10px;
-  max-width: 380px;
+  max-width: 250px;
+  overflow: hidden;
+  word-break: break-word;
   background-color: rgb(65, 67, 72);
   border-radius: 20px;
   padding: 5px 15px;
