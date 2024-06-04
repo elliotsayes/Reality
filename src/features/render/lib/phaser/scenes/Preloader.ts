@@ -33,6 +33,9 @@ export class Preloader extends WarpableScene
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets');
 
+        this.load.image('main_bg', 'branding/main_bg.jpg');
+        this.load.image('main_logo', 'branding/main_logo_small.png');
+
         this.load.image('invis', 'sprites/invis.png');
         // this.load.image('mona', 'sprites/mona.png');
         // this.load.image('scream', 'sprites/scream.png');

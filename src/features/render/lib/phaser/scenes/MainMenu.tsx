@@ -19,19 +19,28 @@ export class MainMenu extends WarpableScene
 
     create ()
     {
-        this.background = this.add.image(512, 384, 'background');
+        const camera = this.cameras.main;
 
-        this.logo = this.add.image(512, 300, 'logo').setDepth(100);
+        const bgSize = [1252, 627];
+        this.background = this.add.image(
+            camera.width / 2,
+            camera.height / 2,
+            'main_bg',
+        )
+            .setScale(
+                camera.width / bgSize[0], 
+                camera.height / bgSize[1],
+            );
 
-        this.title = this.add.text(512, 460, 'Main Menu', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5).setDepth(100);
+        this.logo = this.add.image(
+            camera.width / 2,
+            camera.height / 2 - 100,
+            'main_logo',
+        ).setDepth(100);
 
         const buttonSize = {
-            w: 40,
-            h: 30,
+            w: 300,
+            h: 50,
         }
         const memElement = document.createElement("div");
         const cb = () => emitSceneEvent({
@@ -41,23 +50,24 @@ export class MainMenu extends WarpableScene
         
         memElement.setAttribute('style', `width: ${buttonSize.w}px; height: ${buttonSize.h}px; display: flex; justify-content: center; align-items: center;`)
         ReactDOM.createRoot(memElement).render(
-            <Button
-                className='flex'
-                onClick={() => {
-                    console.log('Warping to Origin Island');
-                    console.log(cb)
-                    cb()
-                }}
-            >
-               Go
-            </Button>
+            <div className={`w-[${buttonSize.w}px] flex flex-col items-center`}>
+                <Button
+                    className='flex text-xl font-bold'
+                    onClick={() => {
+                        console.log('Warping to Origin Island');
+                        cb()
+                    }}
+                >
+                Warp to Origin Island
+                </Button>
+            </div>
         );
 
         this.add.dom(
-            512,
-            600,
+            camera.width / 2,
+            camera.height / 2 + 100,
             memElement,
-        )
+        ).setOrigin(0.5);
 
         emitSceneReady(this);
     }
