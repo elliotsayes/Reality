@@ -1,4 +1,4 @@
-import Form from '@rjsf/core';
+import Form from '@/features/rjsf';
 import validator from '@rjsf/validator-ajv8';
 import { useMemo } from 'react';
 import { ApiSchemaMethod } from '../contract/model';
@@ -65,6 +65,7 @@ export const ApiForm = ({
       <p className=' text-xl text-primary'>{methodSchema.Title}</p>
       <p className=' text-md text-secondary-foreground'>{methodSchema.Description}</p>
       <Form
+        className='mt-4'
         {...postProcessed}
         validator={validator}
         onSubmit={onSubmitted}
