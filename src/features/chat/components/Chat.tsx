@@ -24,6 +24,7 @@ export function Chat({
     queryKey: ['messages', chatClient?.aoContractClient.processId],
     queryFn: async () => chatClient!.readHistory(),
     enabled: chatClient !== undefined,
+    refetchInterval: 1000,
   })
 
   const messagesRef = useRef<HTMLDivElement>(null);

@@ -3,6 +3,8 @@
 local ao = require('ao')
 local json = require('json')
 
+local llamaFedProcessId = 'IN3T2l6QERA6d65XGW5asx2JWX7VrOQ3HIbwQvKVBQo'
+
 Handlers.add(
   'Petition',
   Handlers.utils.hasMatchingTag('Action', 'Petition'),
@@ -12,6 +14,16 @@ Handlers.add(
 
     -- TODO: Implement the petition logic
     print('Petitioning the LlamaFed with offering: ' .. offering .. ' and prompt: ' .. prompt)
+    Send({
+      Target = llamaFedProcessId,
+      Tags = {
+        Action = "ChatMessage"
+      },
+      Data = "Dearest " ..
+          msg.From ..
+          ", I hear your plea to the LlamaFed with a generous offering of " ..
+          offering .. " $CRED. However my code is incomplete 🤡."
+    })
   end
 )
 
