@@ -23,7 +23,7 @@ VerseParameters = {
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = 'w0TEcX80cn6w4XcQnDOonbjtfEvu8Q6tsFWHKDZ8bM4', -- TxId of the tilemap in TMJ format
+      TxId = 'hlwu3ZszapjgjmvzZD2nnUeleAYcoRpSVLnz4PGD1Eo', -- TxId of the tilemap in TMJ format
     },
   },
 }
@@ -33,14 +33,18 @@ VerseEntities = {
   -- OriginIslandProcess
   ['a1C-TCUNUKCaEup0BiCXNwcVWxOVOiRBfmKuBZwPWZg'] = {
     Position = { 16, 21 },
-    Type = 'Warp', -- 'Warp'/'Avatar' types are understood by `2D-Tile-0` renderer
+    Type = 'Hidden', -- 'Warp'/'Avatar' types are understood by `2D-Tile-0` renderer
+    Interaction = {
+      Type = 'Warp',
+      Size = { 3, 1 }
+    },
   },
   -- LlamaAssistantProcess
   ['y_obnQk5mkphKlulM7v1Xyn6IhJKZGhP_BC1qLJq46w'] = {
-    Position = { 16, 4 },
+    Position = { 16, 3.5 },
     Type = 'Avatar',
     Interaction = {
-      Type = 'MessageApi',
+      Type = 'ApiForm',
       Id = 'Petition',
     },
   },

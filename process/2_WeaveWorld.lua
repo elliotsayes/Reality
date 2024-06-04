@@ -47,7 +47,10 @@ VerseEntities = {
   -- OriginIslandProcess
   ['a1C-TCUNUKCaEup0BiCXNwcVWxOVOiRBfmKuBZwPWZg'] = {
     Position = { 2, 2 },
-    Type = 'Warp', -- These types are understood by the `2D-Tile-0` renderer
+    Type = 'Hidden', -- These types are understood by the `2D-Tile-0` renderer
+    Interaction = {
+      Type = 'Warp',
+    },
   },
   ['SomePlayerProcessId'] = {
     Position = { 0, 0 },

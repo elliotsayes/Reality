@@ -34,6 +34,7 @@ export class WarpableScene extends Scene
 
   public warpToVerse (verseId: string, verse: VerseState)
   {
+    this.onWarpBegin()
     const pixelated = this.cameras.main.postFX.addPixelate(-1);
     
     // Transition to next scene
@@ -43,7 +44,7 @@ export class WarpableScene extends Scene
         duration: 200,
         amount: 20,
         onComplete: () => {
-            this.isWarping = false;
+            this.onWarpSuccess()
             this.scene.start('VerseScene', { verseId, verse });
         },
     })

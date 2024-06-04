@@ -11,6 +11,7 @@ Handlers.add(
     local prompt = msg.Tags['Prompt']
 
     -- TODO: Implement the petition logic
+    print('Petitioning the LlamaFed with offering:', offering, 'and prompt:', prompt)
   end
 )
 

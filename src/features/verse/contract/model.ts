@@ -24,15 +24,39 @@ export const VerseParameters = z.object({
 });
 export type VerseParameters = z.infer<typeof VerseParameters>;
 
-export const VerseEntityType = z.enum(["Unknown", "Avatar", "Warp"]);
+export const VerseEntityType = z.enum(["Unknown", "Avatar", "Hidden"]);
 export type VerseEntityType = z.infer<typeof VerseEntityType>;
 
 export const VerseEntityPosition = VerseVector;
 export type VerseEntityPosition = z.infer<typeof VerseEntityPosition>;
 
+export const Warp = z.object({
+  Type: z.literal("Warp"),
+  Size: z.optional(z.array(z.number())),
+});
+export type Warp = z.infer<typeof Warp>;
+
+export const ApiCall = z.object({
+  Type: z.literal("ApiCall"),
+  Id: z.string(),
+  Tags: z.record(z.string(), z.string()),
+});
+export type ApiCall = z.infer<typeof ApiCall>;
+
+export const ApiForm = z.object({
+  Type: z.literal("ApiForm"),
+  Id: z.string(),
+});
+export type ApiForm = z.infer<typeof ApiForm>;
+
 export const VerseEntity = z.object({
-  Type: VerseEntityType,
   Position: VerseEntityPosition,
+  Type: VerseEntityType,
+  Interaction: z.optional(z.discriminatedUnion("Type", [
+    Warp,
+    ApiCall,
+    ApiForm,
+  ]))
 });
 export type VerseEntity = z.infer<typeof VerseEntity>;
 

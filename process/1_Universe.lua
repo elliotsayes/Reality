@@ -13,7 +13,10 @@ VerseEntities = {
   -- WeaveWorldProcess
   ['w0UvMR1XlVEjjNSaBn9F1qSkDPoIaWHJXzp5G5jjdAo'] = {
     Position = { 0 },
-    Type = 'Warp',
+    Type = 'Unknown',
+    Interaction = {
+      Type = 'Warp',
+    },
   },
 }
 

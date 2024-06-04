@@ -28,7 +28,7 @@ VerseParameters = {
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = 'GSrk6BEhQ69uBY3RVk03rrwDh0Kz7l62ADwvjOF04mg', -- TxId of the tilemap in TMJ format
+      TxId = '9Q7WlHm66GK0NFaW5VTXgo0iK0l3konGtEn7F_krwQI', -- TxId of the tilemap in TMJ format
       Offset = { -12, -12 },                                -- Offset for the tilemap
     },
   },
@@ -80,12 +80,19 @@ VerseEntities = {
   -- -- WeaveWorldProcess
   -- ['w0UvMR1XlVEjjNSaBn9F1qSkDPoIaWHJXzp5G5jjdAo'] = {
   --   Position = { -2, -2 },
-  --   Type = 'Warp', -- understood by `2D-Tile-0` renderer
+  --   Type = 'Hidden', -- understood by `2D-Tile-0` renderer
+  --   Interaction = {
+  --     Type = 'Warp',
+  --   },
   -- },
   -- LlamaFedProcess
   ['IN3T2l6QERA6d65XGW5asx2JWX7VrOQ3HIbwQvKVBQo'] = {
     Position = { 0, -6 },
-    Type = 'Warp', -- understood by `2D-Tile-0` renderer
+    Type = 'Hidden', -- understood by `2D-Tile-0` renderer
+    Interaction = {
+      Type = 'Warp',
+      Size = { 3, 1 }
+    },
   },
   -- ['SomePlayerProcessId'] = {
   --   Position = { 0, 0 },

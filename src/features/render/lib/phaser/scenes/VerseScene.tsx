@@ -40,6 +40,8 @@ export class VerseScene extends WarpableScene {
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   lastTickMoving: boolean = false;
 
+  isWarping: boolean = false;
+
   entitySprites: Record<string, Phaser.Physics.Arcade.Sprite> = {};
 
   activeEntityEvent?: Phaser.GameObjects.GameObject;
@@ -237,32 +239,46 @@ export class VerseScene extends WarpableScene {
     const sprite = this.physics.add.sprite(
       entity.Position[0] * (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
       entity.Position[1] * (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
-      entity.Type === 'Avatar' ? 'llama_4' : 'scream',
+      entity.Type === 'Avatar' ? 'llama_4' : 'invis',
     )
       .setScale(SCALE_ENTITIES)
       .setOrigin(0.5)
-      .setDepth(DEPTH_ENTITY_BASE + 1);
-    if (entity.Type === 'Avatar') {
-      sprite.play(`llama_4_idle`);
-    }
+      .setDepth(DEPTH_ENTITY_BASE + 1)
+      .setInteractive();
 
-    sprite.setInteractive();
-    sprite.on('pointerdown', () => {
-      console.log(`Clicked on entity ${entityId}`)
-    }, this)
-    sprite.on('pointerover', () => {
-      console.log(`Hovered over entity ${entityId}`)
-    }, this)
-
-    if (entity.Type === 'Warp') {
+    if (entity.Interaction?.Type === 'Warp') {
+      console.log(`Creating warp entity ${entityId}`)
+      if (entity.Interaction.Size) {
+        sprite.setSize(
+          entity.Interaction.Size[0] * this.tileSizeScaled[0] / 2,
+          entity.Interaction.Size[1] * this.tileSizeScaled[1] / 2,
+        )
+      }
       this.physics.add.overlap(this.player, sprite, () => {
         console.log(`Collided with entity ${entityId}`)
         emitSceneEvent({
           type: 'Warp Immediate',
           verseId: entityId,
         })
+        this.isWarping = true;
       }, undefined, this);
     }
+    
+    if (entity.Type === 'Avatar') {
+      if (entity.Interaction?.Type === 'ApiForm') {
+        // Llama Assistant
+        sprite.play(`llama_5_idle`);
+      } else {
+        sprite.play(`llama_4_idle`);
+      }
+    }
+
+    sprite.on('pointerdown', () => {
+      console.log(`Clicked on entity ${entityId}`)
+    }, this)
+    sprite.on('pointerover', () => {
+      console.log(`Hovered over entity ${entityId}`)
+    }, this)
 
     return sprite;
   }
@@ -272,7 +288,7 @@ export class VerseScene extends WarpableScene {
     if (!this.player) return;
     if (!this.cursors) return;
 
-    const speed = this.isWarping ? 50 : 100;
+    const speed = this.isWarping ? 40 : 120;
 
     if (this.cursors.left?.isDown)
     {
