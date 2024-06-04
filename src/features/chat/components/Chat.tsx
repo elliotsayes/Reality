@@ -1,8 +1,9 @@
 import { ArweaveId } from "@/features/arweave/lib/model";
 import { ChatClient } from "../contract/chatClient";
-import { Button } from "@/components/ui/button";
-import { truncateAddress } from "@/features/arweave/lib/utils";
 import './Chat.css';
+import { useQuery } from "@tanstack/react-query";
+import { MessagesKeyed } from "../contract/model";
+import { useRef } from "react";
 
 interface ChatProps {
   userAddress: ArweaveId;
@@ -15,26 +16,29 @@ export function Chat({
   chatClient,
   onUserMessageSent,
 }: ChatProps) {
+  const messages = useQuery({
+    queryKey: ['messages', chatClient?.aoContractClient.processId],
+    queryFn: async () => chatClient!.readHistory(),
+    enabled: chatClient !== undefined,
+  })
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  if (chatClient === undefined) {
+    return null
+  }
 
   return (
-    <div>
-      <h1>Chat</h1>
-      <p>User Address: {truncateAddress(userAddress)}</p>
-      <p>Chat Client Process Id: {chatClient?.aoContractClient.processId !== undefined
-        ? truncateAddress(chatClient?.aoContractClient.processId)
-        : "None"}</p>
-      <Button
-        onClick={onUserMessageSent}
-      >
-        Fire `onUserMessageSent`
-      </Button>
-
+    <>
       <div className="chat-page-messages-container">
-        {renderMessages()}
+        {
+          messages.isSuccess ? renderMessages(userAddress, messages.data) : renderMessages(userAddress, {})
+        }
       </div>
 
       <div className='chat-page-send-container'>
         <input
+          ref={inputRef}
           id='input_msg'
           className="chat-input-message"
           placeholder="message"
@@ -42,70 +46,48 @@ export function Chat({
         // onChange={(e) => this.setState({ msg: e.target.value })}
         // onKeyDown={this.handleKeyDown}
         />
-        <button className="chat-send-button" onClick={() => sendMessage()}>Send</button>
+        <button className="chat-send-button" type="submit" onClick={(e) => {
+          if (!inputRef.current || inputRef.current?.value === '') return
+          chatClient.postMessage({
+            Content: inputRef.current!.value,
+          })
+          inputRef.current.value = ''
+          
+          setTimeout(() => {
+            messages.refetch();
+            if (onUserMessageSent) {
+              onUserMessageSent()
+            }
+          }, 1000)
+        }}>
+          Send
+        </button>
       </div>
-    </div>
+    </>
   )
 }
 
-function sendMessage() {
-  console.log("Send message.");
-}
-
-function renderMessages() {
+function renderMessages(userAddress: string, messageData: MessagesKeyed) {
   // if (this.state.loading)
   //   return (<Loading />);
 
-  let divs = [];
+  const divs = [];
 
   // the fake messages for testing
-  let messages = [
-    {
-      "address": "OZyW6inTbP088ZejEW4rRxN6f6L8PXXqkGc56tReaW0",
-      "friend": "95CWRAW4SA7wiWWNGa38RPnlTyIJnELeWQ0QPOPM89c",
-      "message": "Hey kz-brave!",
-      "time": 1714133437
-    },
-    {
-      "address": "95CWRAW4SA7wiWWNGa38RPnlTyIJnELeWQ0QPOPM89c",
-      "friend": "OZyW6inTbP088ZejEW4rRxN6f6L8PXXqkGc56tReaW0",
-      "message": "Hey iamgamelover!",
-      "time": 1714133481
-    },
-    {
-      "address": "OZyW6inTbP088ZejEW4rRxN6f6L8PXXqkGc56tReaW0",
-      "friend": "95CWRAW4SA7wiWWNGa38RPnlTyIJnELeWQ0QPOPM89c",
-      "message": "How are you doing?",
-      "time": 1714133508
-    },
-    {
-      "address": "95CWRAW4SA7wiWWNGa38RPnlTyIJnELeWQ0QPOPM89c",
-      "friend": "OZyW6inTbP088ZejEW4rRxN6f6L8PXXqkGc56tReaW0",
-      "message": "Keep going to building. I like it. 💪🍺",
-      "time": 1714133588
-    },
-    {
-      "address": "OZyW6inTbP088ZejEW4rRxN6f6L8PXXqkGc56tReaW0",
-      "friend": "95CWRAW4SA7wiWWNGa38RPnlTyIJnELeWQ0QPOPM89c",
-      "message": "Sure! Let's do it! 😄☕️",
-      "time": 1714133623
-    },
-    {
-      "address": "OZyW6inTbP088ZejEW4rRxN6f6L8PXXqkGc56tReaW0",
-      "friend": "95CWRAW4SA7wiWWNGa38RPnlTyIJnELeWQ0QPOPM89c",
-      "message": "gm☕️",
-      "time": 1714193953
+  console.log(messageData)
+  const messageList = Object.values(messageData).map((value) => {
+    return {
+      address: value.Author,
+      message: value.Content,
+      time: value.Timestamp,
     }
-  ];
+  }).sort((a, b) => a.time - b.time);
 
-  // the fake user's data for testing
-  let address = "OZyW6inTbP088ZejEW4rRxN6f6L8PXXqkGc56tReaW0";
-  let my_nickname = 'iamgamelover';
-  let friend_nickname = 'kz-brave';
+  console.log(messageList)
 
-  for (let i = 0; i < messages.length; i++) {
-    let data = messages[i];
-    let owner = (data.address == address);
+  for (let i = 0; i < messageList.length; i++) {
+    const data = messageList[i];
+    const owner = (data.address == userAddress);
 
     divs.push(
       <div key={i} className={`chat-msg-line ${owner ? 'my-line' : 'other-line'}`}>
@@ -115,8 +97,8 @@ function renderMessages() {
           <div className={`chat-msg-header ${owner ? 'my-line' : 'other-line'}`}>
             <div className="chat-msg-nickname">{
               owner
-                ? shortStr(my_nickname, 15)
-                : shortStr(friend_nickname, 15)}
+                ? shortStr(data.address, 15)
+                : shortStr(data.address, 15)}
             </div>
 
             <div className="chat-msg-address">{shortAddr(data.address, 3)}</div>
@@ -127,7 +109,7 @@ function renderMessages() {
           </div>
 
           <div className={`chat-msg-time ${owner ? 'my-line' : 'other-line'}`}>
-            {formatTimestamp(data.time, true)}
+            {formatTimestamp(data.time / 1000, true)}
           </div>
         </div>
 
@@ -146,13 +128,12 @@ function renderMessages() {
  * @param ago the 'ago' suffix 
  * @returns the time formatted
  */
-export function formatTimestamp(time: number, ago?: boolean) {
-
+function formatTimestamp(time: number, ago?: boolean) {
   const m = new Map([[1, 'Jan'], [2, 'Feb'], [3, 'Mar'], [4, 'Apr'], [5, 'May'], [6, 'Jun'],
   [7, 'Jul'], [8, 'Aug'], [9, 'Sep'], [10, 'Oct'], [11, 'Nov'], [12, 'Dec']]);
 
-  let now = secondsOfNow();
-  let diff = now - time;
+  const now = secondsOfNow();
+  const diff = now - time;
 
   const days = Math.floor(diff / (60 * 60 * 24));
   const hours = Math.floor((diff % (60 * 60 * 24)) / (60 * 60));
@@ -190,23 +171,23 @@ export function formatTimestamp(time: number, ago?: boolean) {
   }
 
   return 'just now';
-};
+}
 
 /**
  * Gets the time value of now in seconds.
  * @returns the time value in seconds
  */
-export function secondsOfNow() {
+function secondsOfNow() {
   return Math.floor(new Date().getTime() / 1000);
 }
 
-export function shortStr(str: string, max: number) {
+function shortStr(str: string, max: number) {
   if (str.length > max) {
     return str.substring(0, max) + '...';
   }
   return str;
 }
 
-export function shortAddr(str: string, num: number) {
+function shortAddr(str: string, num: number) {
   return str.substring(0, num) + '...' + str.substring(str.length - num);
 }
