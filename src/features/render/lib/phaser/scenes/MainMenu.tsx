@@ -1,9 +1,10 @@
 import { GameObjects } from 'phaser';
 
 import ReactDOM from 'react-dom/client';
-import { Button } from '@/components/ui/button';
 import { WarpableScene } from './WarpableScene';
 import { emitSceneEvent, emitSceneReady } from '../../EventBus';
+import { ButtonOnce } from '@/features/render/components/ButtonOnce';
+import { ElementSize } from '../../model';
 
 export class MainMenu extends WarpableScene
 {
@@ -38,7 +39,7 @@ export class MainMenu extends WarpableScene
             'main_logo',
         ).setDepth(100);
 
-        const buttonSize = {
+        const buttonSize: ElementSize = {
             w: 300,
             h: 50,
         }
@@ -50,17 +51,11 @@ export class MainMenu extends WarpableScene
         
         memElement.setAttribute('style', `width: ${buttonSize.w}px; height: ${buttonSize.h}px; display: flex; justify-content: center; align-items: center;`)
         ReactDOM.createRoot(memElement).render(
-            <div className={`w-[${buttonSize.w}px] flex flex-col items-center`}>
-                <Button
-                    className='flex text-xl font-bold'
-                    onClick={() => {
-                        console.log('Warping to Origin Island');
-                        cb()
-                    }}
-                >
-                Warp to Origin Island
-                </Button>
-            </div>
+            <ButtonOnce
+                elementSize={buttonSize}
+                onClick={cb}
+                children="Warp to Origin Island"
+            />
         );
 
         this.add.dom(
