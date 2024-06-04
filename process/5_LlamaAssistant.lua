@@ -47,7 +47,7 @@ Api = {
     Title = "Petition the LlamaFed",
     Description = "You must stake some $CRED for a chance to earn $LLAMA",
     Schema = {
-      Tags = PetitionSchemaTags,
+      Tags = json.decode(PetitionSchemaTags),
       -- Data
       -- Result?
     },
@@ -58,6 +58,7 @@ Handlers.add(
   'Api',
   Handlers.utils.hasMatchingTag('Read', 'Api'),
   function(msg)
-    ao.send({ Target = msg.From, Tags = { Type = 'Api' }, Data = json.encode(Api) })
+    print('Api')
+    Send({ Target = msg.From, Tags = { Type = 'Api' }, Data = json.encode(Api) })
   end
 )
