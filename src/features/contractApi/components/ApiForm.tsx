@@ -10,11 +10,15 @@ const log = (type: any) => console.log.bind(console, type);
 interface ApiFormProps {
   methodSchema: ApiSchemaMethod
   onSubmitted: (data: object, event: unknown) => void
+  isDisabled?: boolean
+  isSubmitting?: boolean
 }
 
 export const ApiForm = ({
   methodSchema,
   onSubmitted,
+  isDisabled,
+  isSubmitting,
 }: ApiFormProps) => {
   const postProcessed = useMemo(() => {
     const tagSchema = methodSchema.Schema.Tags;
@@ -61,7 +65,7 @@ export const ApiForm = ({
   }, [methodSchema.Schema.Tags])
 
   return (
-    <div>
+    <div className={`${isSubmitting ? 'animate-pulse' : ''}`}>
       <h1>{methodSchema.Title}</h1>
       <h2>{methodSchema.Description}</h2>
       <Form
@@ -71,6 +75,7 @@ export const ApiForm = ({
         onSubmit={onSubmitted}
         onError={log('errors')}
         showErrorList={false}
+        disabled={isDisabled}
       />
     </div>
   );

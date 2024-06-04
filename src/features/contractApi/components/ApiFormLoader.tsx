@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { createApiClient } from "../contract/apiClient"
 import { ApiForm } from "./ApiForm"
 import { AoContractClient } from "@/features/ao/lib/aoContractClient"
@@ -17,6 +17,15 @@ export function ApiFormLoader({ contractClient, methodName }: ApiFormLoaderProps
     },
   })
 
+  const message = useMutation({
+    mutationKey: ['message', contractClient.processId, methodName],
+    mutationFn: async (formData: object) => {
+      // TODO
+      // Wait 2 seconds
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+    },
+  })
+
   if (api.isLoading) {
     return <div>Loading...</div>
   }
@@ -31,10 +40,10 @@ export function ApiFormLoader({ contractClient, methodName }: ApiFormLoaderProps
       onSubmitted={(formData) => {
         console.log('submitted')
         console.log(formData)
-        contractClient.message({
-
-        })
+        message.mutateAsync(formData)
       }}
+      isDisabled={!message.isIdle || message.isSuccess}
+      isSubmitting={message.isPending}
     />
   )
 }
