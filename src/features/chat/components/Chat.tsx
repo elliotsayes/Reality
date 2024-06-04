@@ -7,6 +7,7 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useEffect, useRef } from "react";
 
 interface ChatProps {
   userAddress: ArweaveId;
@@ -25,6 +26,14 @@ export function Chat({
     enabled: chatClient !== undefined,
   })
 
+  const messagesRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (messagesRef.current) {
+      // Scroll to bottom
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+    }
+  }, [messages.data])
+
   const form = useForm()
 
   if (chatClient === undefined) {
@@ -33,7 +42,7 @@ export function Chat({
 
   return (
     <>
-      <div className="chat-page-messages-container">
+      <div ref={messagesRef} className="chat-page-messages-container">
         {
           messages.isSuccess ? renderMessages(userAddress, messages.data) : renderMessages(userAddress, {})
         }
