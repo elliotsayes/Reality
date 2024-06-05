@@ -7,7 +7,7 @@ import { emitSceneReady, emitSceneEvent } from "../../EventBus";
 import { VerseClient } from "@/features/verse/contract/verseClient";
 import { VerseEntity } from "@/features/verse/contract/model";
 import ReactDOM from "react-dom/client";
-import { ElementSize } from "../../model";
+import { BoxCentered, Point2D, Size2D } from "../../model";
 import { FormOverlay } from "@/features/render/components/FormOverlay";
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import { isDebug } from "../game";
@@ -22,6 +22,8 @@ const DEPTH_BG_BASE = -200; // => -101
 const DEPTH_FG_BASE = 100; // => 199
 const DEPTH_ENTITY_BASE = -100; // => -1
 const DEPTH_PLAYER_BASE = 0; // => 400
+
+const OBJECT_SIZE_ENTITY = 2;
 
 export class VerseScene extends WarpableScene {
   playerAddress!: string;
@@ -52,6 +54,7 @@ export class VerseScene extends WarpableScene {
   isWarping: boolean = false;
 
   entitySprites: Record<string, Phaser.Physics.Arcade.Sprite> = {};
+  entityTargets: Record<string, Phaser.Physics.Arcade.Sprite> = {};
 
   activeEntityEvent?: Phaser.GameObjects.GameObject;
 
@@ -236,10 +239,39 @@ export class VerseScene extends WarpableScene {
       if (this.entitySprites[entityId]) {
         console.log(`Updating entity ${entityId}`)
         const entitySprite = this.entitySprites[entityId];
-        entitySprite.setPosition(
-          entityUpdate.Position[0] * this.tileSizeScaled[0],
-          entityUpdate.Position[1] * this.tileSizeScaled[1],
-        );
+        
+        const updatePosition: Point2D = {
+          x: entityUpdate.Position[0] * this.tileSizeScaled[0],
+          y: entityUpdate.Position[1] * this.tileSizeScaled[1],
+        }
+        if (!this.withinBox(entitySprite, {
+          center: updatePosition,
+          edgeLength: SCALE_ENTITIES * OBJECT_SIZE_ENTITY * 2,
+        })) {
+          this.entityTargets[entityId]?.destroy();
+          delete this.entityTargets[entityId];
+
+          this.entityTargets[entityId] = this.physics.add.sprite(
+            updatePosition.x,
+            updatePosition.y,
+            'invis',
+          )
+            .setScale(SCALE_ENTITIES)
+            .setOrigin(0.5)
+            .setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
+
+          entitySprite.play('llama_4_walk')
+          this.physics.moveToObject(entitySprite, this.entityTargets[entityId], 120);
+          this.physics.add.overlap(entitySprite, this.entityTargets[entityId], () => {
+            console.log(`Entity ${entityId} collided with target`)
+            entitySprite.body?.stop();
+            entitySprite.play('llama_4_idle')
+            // entitySprite.setPosition(updatePosition.x, updatePosition.y);
+
+            this.entityTargets[entityId]?.destroy();
+            delete this.entityTargets[entityId];
+          });
+        }
       } else {
         console.log(`Creating entity ${entityId}`)
         const entitySprite = this.createEntitySprite(entityId, entityUpdate);
@@ -287,6 +319,10 @@ export class VerseScene extends WarpableScene {
           this.showApiForm(entityId, entity);
         }, this)
       } else {
+        sprite.setSize(
+          OBJECT_SIZE_ENTITY,
+          OBJECT_SIZE_ENTITY,
+        );
         sprite.play(`llama_4_idle`);
         sprite.on('pointerdown', () => {
           sprite.play(`llama_4_emote`);
@@ -302,6 +338,16 @@ export class VerseScene extends WarpableScene {
     }, this)
 
     return sprite;
+  }
+
+  public withinBox(point: Point2D, bounds: BoxCentered)
+  {
+    const withinX = point.x >= bounds.center.x - bounds.edgeLength / 2 
+      && point.x <= bounds.center.x + bounds.edgeLength / 2;
+    const withinY = point.y >= bounds.center.y - bounds.edgeLength / 2
+      && point.y <= bounds.center.y + bounds.edgeLength / 2;
+    
+    return withinX && withinY;
   }
 
   public update(/* t: number, dt: number */)
@@ -368,7 +414,7 @@ export class VerseScene extends WarpableScene {
 
     if (entity.Interaction?.Type !== 'ApiForm') return;
 
-    const formSize: ElementSize = {
+    const formSize: Size2D = {
       w: 300,
       h: 300,
     }

@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react"
-import { ElementSize } from "../lib/model";
+import { Size2D } from "../lib/model";
 import { useState } from "react";
 
 interface ButtonOnceProps {
-  elementSize: ElementSize;
+  elementSize: Size2D;
   children: React.ReactNode;
   onClick: () => void;
 }

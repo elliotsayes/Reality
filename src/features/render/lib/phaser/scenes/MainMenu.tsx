@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { WarpableScene } from './WarpableScene';
 import { emitSceneEvent, emitSceneReady } from '../../EventBus';
 import { ButtonOnce } from '@/features/render/components/ButtonOnce';
-import { ElementSize } from '../../model';
+import { Size2D } from '../../model';
 
 export class MainMenu extends WarpableScene
 {
@@ -39,7 +39,7 @@ export class MainMenu extends WarpableScene
             'main_logo',
         ).setDepth(100);
 
-        const buttonSize: ElementSize = {
+        const buttonSize: Size2D = {
             w: 300,
             h: 50,
         }
