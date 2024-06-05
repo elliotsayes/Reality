@@ -7,6 +7,7 @@ import { connectOthentWallet } from "@/features/ao/lib/wallets/othent";
 import { toast } from "sonner";
 import { defaultConnectConfig } from "../lib/config";
 import { Cog, Mail, Wallet, WandSparkles } from "lucide-react"
+import { connectEthereumWallet } from "@/features/ao/lib/wallets/ethereum";
 
 interface LoginMenuProps {
   onConnect: (wallet: AoWallet, disconnect?: () => void) => void;
@@ -17,6 +18,7 @@ interface LoginMenuProps {
 export function LoginMenu({ onConnect, onDisconnect, localWallet }: LoginMenuProps) {
   const hasLocalWallet = localWallet !== undefined;
   const hasInjectedArweave = !!window.arweaveWallet;
+  const hasInjectedEthereum = !!window.ethereum;
 
   return (
     <TooltipProvider>
@@ -51,6 +53,36 @@ export function LoginMenu({ onConnect, onDisconnect, localWallet }: LoginMenuPro
                   hasInjectedArweave 
                     ? "Log in with your Injected Arweave Wallet"
                     : "No injected wallet. Please install ArConnect to enable this option"
+                }
+              </p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip disableHoverableContent>
+            <TooltipTrigger className="flex flex-grow">
+              <Button
+                onClick={async () => {
+                  const wallet = await connectEthereumWallet(defaultConnectConfig, onDisconnect)
+                  if (wallet.success) {
+                    onConnect(wallet.result, wallet.disconnect)
+                  } else {
+                    toast(`Failed to connect: ${wallet.error}`)
+                  }
+                }}
+                disabled={!hasInjectedEthereum}
+                className={`flex flex-grow ${hasInjectedEthereum ? "" : "cursor-not-allowed"}`}
+              >
+                <span className="pr-2">
+                  <Wallet />
+                </span>
+                Ethereum Browser Wallet
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p>
+                {
+                  hasInjectedEthereum 
+                    ? "Log in with your Injected Ethereum Wallet"
+                    : "No injected wallet. Please install Metamask to enable this option"
                 }
               </p>
             </TooltipContent>
