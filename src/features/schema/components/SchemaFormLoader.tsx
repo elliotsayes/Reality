@@ -12,6 +12,7 @@ interface SchemaFormLoaderProps {
 }
 
 export function SchemaFormLoader({ aoContractClientForProcess, schemaProcessId, isExternal, methodName, onComplete }: SchemaFormLoaderProps) {
+  // TODO: Conditional based on isExternal
   const schema = useQuery({
     queryKey: ['schemaExternal', schemaProcessId],
     queryFn: async () => {
