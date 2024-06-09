@@ -3,6 +3,7 @@
 local ao = require('ao')
 local json = require('json')
 
+local credTokenProcessId = 'Sa0iBLPNyJQrwpTTG-tWLQU-1QeUAJA73DdxGGiKoJc'
 local llamaFedProcessId = 'IN3T2l6QERA6d65XGW5asx2JWX7VrOQ3HIbwQvKVBQo'
 
 Handlers.add(
@@ -32,32 +33,40 @@ PetitionSchemaTags = [[
   "type": "object",
   "required": [
     "Action",
-    "Offering",
-    "Prompt"
+    "Recipient",
+    "Quantity",
+    "X-Petition"
   ],
   "properties": {
     "Action": {
       "type": "string",
-      "const": "Petition"
+      "const": "Transfer"
     },
-    "Offering": {
+    "Recipient": {
+      "type": "string",
+      "const": "thisProcessId"
+    },
+    "Quantity": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 100
+      "maximum": 100,
+      "title:": "$AOCRED Offering"
     },
-    "Prompt": {
+    "X-Petition": {
       "type": "string",
       "minLength": 2,
-      "maxLength": 100
+      "maxLength": 100,
+      "title:": "Your written plea for $LLAMA"
     }
   }
 }
 ]]
 
-Api = {
+SchemaExternal = {
   Petition = {
-    Title = "Petition the LlamaFed",
-    Description = "You must stake some $CRED for a chance to earn $LLAMA",
+    Target = credTokenProcessId, -- Can be nil? In that case it must be supplied externally
+    Title = "Petition the Llama King",
+    Description = "Offer some testnet $AOCRED for a chance to earn $LLAMA",
     Schema = {
       Tags = json.decode(PetitionSchemaTags),
       -- Data
@@ -66,11 +75,20 @@ Api = {
   },
 }
 
+-- Handlers.add(
+--   'Schema',
+--   Handlers.utils.hasMatchingTag('Read', 'Schema'),
+--   function(msg)
+--     print('Schema')
+--     Send({ Target = msg.From, Tags = { Type = 'Schema' }, Data = json.encode(Schema) })
+--   end
+-- )
+
 Handlers.add(
-  'Api',
-  Handlers.utils.hasMatchingTag('Read', 'Api'),
+  'SchemaExternal',
+  Handlers.utils.hasMatchingTag('Read', 'SchemaExternal'),
   function(msg)
-    print('Api')
-    Send({ Target = msg.From, Tags = { Type = 'Api' }, Data = json.encode(Api) })
+    print('SchemaExternal')
+    Send({ Target = msg.From, Tags = { Type = 'SchemaExternal' }, Data = json.encode(SchemaExternal) })
   end
 )

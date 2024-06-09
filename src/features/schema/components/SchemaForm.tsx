@@ -1,21 +1,21 @@
 import Form from '@/features/rjsf';
 import validator from '@rjsf/validator-ajv8';
 import { useMemo } from 'react';
-import { ApiSchemaMethod } from '../contract/model';
+import { SchemaMethod } from '../contract/model';
 
-interface ApiFormProps {
-  methodSchema: ApiSchemaMethod
+interface SchemaFormProps {
+  methodSchema: SchemaMethod
   onSubmitted: (data: object, event: unknown) => void
   isDisabled?: boolean
   isSubmitting?: boolean
 }
 
-export const ApiForm = ({
+export const SchemaForm = ({
   methodSchema,
   onSubmitted,
   isDisabled,
   isSubmitting,
-}: ApiFormProps) => {
+}: SchemaFormProps) => {
   const postProcessed = useMemo(() => {
     const tagSchema = methodSchema.Schema.Tags;
     const tagProperties = tagSchema.properties as Record<string, {

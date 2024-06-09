@@ -58,7 +58,7 @@ export class VerseScene extends WarpableScene {
 
   activeEntityEvent?: Phaser.GameObjects.GameObject;
 
-  apiForm?: Phaser.GameObjects.DOMElement;
+  schemaForm?: Phaser.GameObjects.DOMElement;
 
   constructor() {
     super('VerseScene');
@@ -311,12 +311,13 @@ export class VerseScene extends WarpableScene {
     }
     
     if (entity.Type === 'Avatar') {
-      if (entity.Interaction?.Type === 'ApiForm') {
+      // TODO: SchemaForm
+      if (entity.Interaction?.Type === 'SchemaExternalForm') {
         // Llama Assistant
         sprite.play(`llama_5_idle`);
         sprite.on('pointerdown', () => {
-          console.log(`Clicked on ApiForm ${entityId}`)
-          this.showApiForm(entityId, entity);
+          console.log(`Clicked on SchemaFormExternal ${entityId}`)
+          this.showSchemaExternalForm(entityId, entity);
         }, this)
       } else {
         sprite.setSize(
@@ -406,13 +407,13 @@ export class VerseScene extends WarpableScene {
     }
   }
 
-  public showApiForm(entityId: string, entity: VerseEntity)
+  public showSchemaExternalForm(entityId: string, entity: VerseEntity)
   {
-    if (this.apiForm) {
-      this.apiForm.destroy();
+    if (this.schemaForm) {
+      this.schemaForm.destroy();
     }
 
-    if (entity.Interaction?.Type !== 'ApiForm') return;
+    if (entity.Interaction?.Type !== 'SchemaExternalForm') return;
 
     const formSize: Size2D = {
       w: 300,
@@ -422,16 +423,17 @@ export class VerseScene extends WarpableScene {
     memElement.setAttribute('style', `width: ${formSize.w}px; height: ${formSize.h}px; display: flex; justify-content: center; align-items: center;`)
     ReactDOM.createRoot(memElement).render(
       <FormOverlay
-        contractClient={this.aoContractClientForProcess(entityId)}
+        aoContractClientForProcess={this.aoContractClientForProcess}
+        schemaProcessId={entityId}
         methodName={entity.Interaction.Id}
         close={() => {
-          this.apiForm?.destroy();
+          this.schemaForm?.destroy();
           this.camera.startFollow(this.player);
         }}
       />
     );
 
-    this.apiForm = this.add.dom(
+    this.schemaForm = this.add.dom(
       entity.Position[0] * this.tileSizeScaled[0] - 30,
       entity.Position[1] * this.tileSizeScaled[1],
       memElement,

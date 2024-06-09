@@ -44,7 +44,7 @@ VerseEntities = {
     Position = { 16, 3.5 },
     Type = 'Avatar',
     Interaction = {
-      Type = 'ApiForm',
+      Type = 'SchemaExternalForm',
       Id = 'Petition',
     },
   },

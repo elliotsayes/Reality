@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ApiFormLoader } from './ApiFormLoader';
+import { SchemaFormLoader } from './SchemaFormLoader';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query';
 import { createAoContractClient } from '@/features/ao/lib/aoContractClient';
@@ -8,20 +8,20 @@ import AnonymousLoader from '@/features/ao/test/components/AnonymousLoader';
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
-  title: 'api/ApiFormLoader',
-  component: ApiFormLoader,
+  title: 'Schema/SchemaFormLoader',
+  component: SchemaFormLoader,
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: 'centered',
   },
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
   tags: ['autodocs'],
-  // More on argTypes: https://storybook.js.org/docs/api/argtypes
+  // More on argTypes: https://storybook.js.org/docs/Schema/argtypes
   argTypes: {},
   // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
   args: {
     //@ts-expect-error provided by decorator
-    contractClient: null,
+    schemaContractClient: null,
   },
   // wrap in TanStack QueryProvider
   decorators: [
@@ -32,7 +32,7 @@ const meta = {
             <Story
               args={{
                 ...options.args,
-                contractClient: createAoContractClient(import.meta.env.VITE_LLAMAASSISTANT_PROCESS_ID, connect(), wallet),
+                schemaContractClient: createAoContractClient(import.meta.env.VITE_LLAMAASSISTANT_PROCESS_ID, connect(), wallet),
               }}
             />
           )}
@@ -40,7 +40,7 @@ const meta = {
       </QueryClientProvider>
     ),
   ],
-} satisfies Meta<typeof ApiFormLoader>;
+} satisfies Meta<typeof SchemaFormLoader>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

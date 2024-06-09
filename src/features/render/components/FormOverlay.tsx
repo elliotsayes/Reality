@@ -1,20 +1,22 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { AoContractClient } from '@/features/ao/lib/aoContractClient'
+import { AoContractClientForProcess } from '@/features/ao/lib/aoContractClient'
 import { truncateAddress } from '@/features/arweave/lib/utils'
-import { ApiFormLoader } from '@/features/contractApi/components/ApiFormLoader'
+import { SchemaFormLoader } from '@/features/schema/components/SchemaFormLoader'
 import { queryClient } from '@/lib/query'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { X } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface FormOverlayProps {
-  contractClient: AoContractClient
+  aoContractClientForProcess: AoContractClientForProcess
+  schemaProcessId: string
+  isExternal?: boolean
   methodName: string
   close: () => void
 }
 
-export function FormOverlay({ contractClient, methodName, close }: FormOverlayProps) {
+export function FormOverlay({ aoContractClientForProcess, schemaProcessId, isExternal, methodName, close }: FormOverlayProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <Card>
@@ -29,11 +31,14 @@ export function FormOverlay({ contractClient, methodName, close }: FormOverlayPr
           </Button>
         </CardHeader>
         <CardContent>
-          <ApiFormLoader
-            contractClient={contractClient}
+          <SchemaFormLoader
+            aoContractClientForProcess={aoContractClientForProcess}
+            schemaProcessId={schemaProcessId}
+            isExternal={isExternal}
             methodName={methodName}
             onComplete={() => {
-              toast(`'${methodName}' message sent to ${truncateAddress(contractClient.processId)}`)
+              // TODO: Show external process Id?
+              toast(`'${methodName}' message sent to ${truncateAddress(schemaProcessId)}`)
               close()
             }}
           />
