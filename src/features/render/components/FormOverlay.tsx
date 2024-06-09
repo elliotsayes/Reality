@@ -11,7 +11,7 @@ import { toast } from 'sonner'
 interface FormOverlayProps {
   aoContractClientForProcess: AoContractClientForProcess
   schemaProcessId: string
-  isExternal?: boolean
+  isExternal: boolean
   methodName: string
   close: () => void
 }

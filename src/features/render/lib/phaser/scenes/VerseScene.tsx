@@ -425,6 +425,7 @@ export class VerseScene extends WarpableScene {
       <FormOverlay
         aoContractClientForProcess={this.aoContractClientForProcess}
         schemaProcessId={entityId}
+        isExternal={true}
         methodName={entity.Interaction.Id}
         close={() => {
           this.schemaForm?.destroy();

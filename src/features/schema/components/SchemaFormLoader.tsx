@@ -6,7 +6,7 @@ import { createSchemaClient } from "../contract/schemaClient"
 interface SchemaFormLoaderProps {
   aoContractClientForProcess: AoContractClientForProcess
   schemaProcessId: string
-  isExternal?: boolean
+  isExternal: boolean
   methodName: string
   onComplete?: () => void
 }
@@ -33,6 +33,8 @@ export function SchemaFormLoader({ aoContractClientForProcess, schemaProcessId, 
       const formData = data.formData as Record<string, string | number>
       const tags = Object.entries(formData).map(([name, value]) => ({ name, value: value.toString() }))
       console.log('tags', tags)
+
+      console.log(`Sending message to ${messageTarget} with tags:`, tags)
 
       const targetContractClient = aoContractClientForProcess(messageTarget)
       await targetContractClient.message({ tags })
