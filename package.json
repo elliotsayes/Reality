@@ -20,7 +20,8 @@
     "deploy-all-verse": "concurrently \"npm:aos-d-load-verse Singularity\" \"npm:aos-d-load-verse Universe\" \"npm:aos-d-load-verse WeaveWorld\" \"npm:aos-d-load-verse OriginIsland\" \"npm:aos-d-load-verse LlamaFed\"",
     "deploy-all-chat": "concurrently \"npm:aos-d-load-chat WeaveWorld\" \"npm:aos-d-load-chat OriginIsland\" \"npm:aos-d-load-chat LlamaFed\"",
     "deploy-all-specific": "concurrently \"npm:aos-d-load-specific Singularity 0\" \"npm:aos-d-load-specific Universe 1\" \"npm:aos-d-load-specific WeaveWorld 2\" \"npm:aos-d-load-specific OriginIsland 3\" \"npm:aos-d-load-specific LlamaFed 4\" \"npm:aos-d-load-specific LlamaAssistant 5\"",
-    "deploy-all": "concurrently \"npm:deploy-all-verse\" \"npm:deploy-all-chat\" \"npm:deploy-all-specific\""
+    "deploy-all": "concurrently \"npm:deploy-all-verse\" \"npm:deploy-all-chat\" \"npm:deploy-all-specific\"",
+    "aos-l": "func() { aos ${1} --wallet ./.secret/deploy_llama_jwk.json ; }; func"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.4.2",
