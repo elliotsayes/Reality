@@ -34,12 +34,14 @@ Handlers.add(
         },
       }),
     })
-    Send({
-      Target = OriginIsland,
-      Tags = {
-        Action = "ChatMessage",
-      },
-      Data = "Actually I like it better over here...",
-    })
+    if (math.random(100) == 1) then
+      Send({
+        Target = OriginIsland,
+        Tags = {
+          Action = "ChatMessage",
+        },
+        Data = "Actually I like it better over here...",
+      })
+    end
   end
 )
