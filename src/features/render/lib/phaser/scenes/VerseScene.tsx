@@ -356,7 +356,7 @@ export class VerseScene extends WarpableScene {
     if (!this.player) return;
     if (!this.keys) return;
 
-    const speed = this.isWarping ? 30 : 120;
+    const speed = this.isWarping ? 20 : 120;
 
     if (this.keys.left.isDown)
     {
