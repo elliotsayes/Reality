@@ -50,13 +50,13 @@ PetitionSchemaTags = [[
       "type": "integer",
       "minimum": 1,
       "maximum": 100,
-      "title:": "$AOCRED Offering"
+      "title": "$AOCRED Offering"
     },
     "X-Petition": {
       "type": "string",
       "minLength": 2,
       "maxLength": 100,
-      "title:": "Your written plea for $LLAMA"
+      "title": "Your written plea for $LLAMA"
     }
   }
 }

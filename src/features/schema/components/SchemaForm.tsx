@@ -19,21 +19,23 @@ export const SchemaForm = ({
   const postProcessed = useMemo(() => {
     const tagSchema = methodSchema.Schema.Tags;
     const tagProperties = tagSchema.properties as Record<string, {
+      title?: string;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const?: any
     }>
-    const tagConstProperties = Object.keys(tagProperties)
+    const tagPropertyKeys = Object.keys(tagProperties)
+    const tagConstPropertyKeys = tagPropertyKeys
       .filter((property) => tagProperties[property].const !== undefined)
 
     // Created modified properties with default values addeed when const is specified
     const tagSchemaPropertiesModified = {
       ...tagSchema.properties,
-      ...tagConstProperties.reduce((acc, property) => ({
+      ...tagConstPropertyKeys.reduce((acc, property) => ({
         ...acc,
         [property]: {
           ...tagProperties[property],
           ...(
-            tagConstProperties.includes(property) && {
+            tagConstPropertyKeys.includes(property) && {
               default: tagProperties[property].const,
             }
           )
@@ -42,10 +44,15 @@ export const SchemaForm = ({
     }
 
     // Get UI to hide const properties
-    const uiSchema = tagConstProperties.reduce((acc, property) => ({
+    const uiSchema = tagPropertyKeys.reduce((acc, property) => ({
       ...acc,
       [property]: {
-        'ui:widget': 'hidden',
+        ...(tagProperties[property].title !== undefined ? {
+          'ui:title': tagProperties[property].title,
+        } : {}),
+        ...(tagConstPropertyKeys.includes(property) ? {
+          'ui:widget': 'hidden',
+        } : {}),
       },
     }), {});
     
