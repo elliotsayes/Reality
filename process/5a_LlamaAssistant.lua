@@ -50,7 +50,7 @@ PetitionSchemaTags = [[
       "type": "integer",
       "minimum": 1,
       "maximum": 100,
-      "title": "$AOCRED Offering"
+      "title": "Wrapped AR Offering"
     },
     "X-Petition": {
       "type": "string",
