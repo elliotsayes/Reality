@@ -1,9 +1,9 @@
--- ProcessId: a1C-TCUNUKCaEup0BiCXNwcVWxOVOiRBfmKuBZwPWZg
+-- ProcessId: --5ozI7qKmLyBxcZJr_T62iGltnKE2ei1jOoQrKKfRA
 
 -- Fixed
 VerseInfo = {
   Parent = 'w0UvMR1XlVEjjNSaBn9F1qSkDPoIaWHJXzp5G5jjdAo', -- WeaveWorldProcessId
-  Name = 'Origin Island',
+  Name = 'Llama Island',
   Dimensions = 2,
   ['Render-With'] = '2D-Tile-0',
 }

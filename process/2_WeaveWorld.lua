@@ -45,7 +45,7 @@ VerseParameters = {
 -- Player entities can be updated by player actions, i.e. movement
 VerseEntities = {
   -- OriginIslandProcess
-  ['a1C-TCUNUKCaEup0BiCXNwcVWxOVOiRBfmKuBZwPWZg'] = {
+  ['--5ozI7qKmLyBxcZJr_T62iGltnKE2ei1jOoQrKKfRA'] = {
     Position = { 2, 2 },
     Type = 'Hidden', -- These types are understood by the `2D-Tile-0` renderer
     Interaction = {

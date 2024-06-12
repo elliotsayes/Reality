@@ -48,7 +48,7 @@ export class MainMenu extends WarpableScene
         
         const cb = () => emitSceneEvent({
             type: 'Warp Immediate',
-            verseId: import.meta.env.VITE_ORIGIN_ISLAND_PROCESS_ID,
+            verseId: import.meta.env.VITE_LLAMA_ISLAND_PROCESS_ID,
         })
         ReactDOM.createRoot(memElement).render(
             <ButtonOnce

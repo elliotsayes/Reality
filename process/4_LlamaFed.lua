@@ -2,7 +2,7 @@
 
 -- Fixed
 VerseInfo = {
-  Parent = 'a1C-TCUNUKCaEup0BiCXNwcVWxOVOiRBfmKuBZwPWZg', -- OriginIslandProcessId
+  Parent = '--5ozI7qKmLyBxcZJr_T62iGltnKE2ei1jOoQrKKfRA', -- OriginIslandProcessId
   Name = 'Llama Fed',
   Dimensions = 2,
   ['Render-With'] = '2D-Tile-0',
@@ -31,7 +31,7 @@ VerseParameters = {
 -- Updated by player actions
 VerseEntities = {
   -- OriginIslandProcess
-  ['a1C-TCUNUKCaEup0BiCXNwcVWxOVOiRBfmKuBZwPWZg'] = {
+  ['--5ozI7qKmLyBxcZJr_T62iGltnKE2ei1jOoQrKKfRA'] = {
     Position = { 16, 21 },
     Type = 'Hidden', -- 'Warp'/'Avatar' types are understood by `2D-Tile-0` renderer
     Interaction = {
