@@ -25,7 +25,7 @@ test('load source', async () => {
 })
 
 test('load llama island', async () => {
-  const code = fs.readFileSync('./verse/3_LlamaIsland.lua', 'utf-8')
+  const code = fs.readFileSync('./verse/3_LlamaLand.lua', 'utf-8')
   const result = await Send({ Action: "Eval", Data: code })
 
   assert.equal(result.Output.data.output, undefined)

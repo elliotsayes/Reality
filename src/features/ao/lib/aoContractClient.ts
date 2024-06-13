@@ -34,12 +34,14 @@ export const createAoContractClient = (
   aoWallet: AoWallet,
 ): AoContractClient => {
   const dryrunReadReplyOptional = async (readArgs: ReadArgs) => {
+    console.debug("dryRunArgs", readArgs);
     const result = await aoClient.dryrun({
       ...readArgs,
       process: processId,
       Target: processId,
       Owner: aoWallet.address,
     });
+    console.debug("dryRunResult", result);
     const messages = result.Messages as Array<Message>;
 
     if (messages.length === 0) {

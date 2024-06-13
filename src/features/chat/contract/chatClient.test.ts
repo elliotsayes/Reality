@@ -13,7 +13,7 @@ describe('createChatClient', () => {
 
   beforeAll(async () => {
     testWallet = await loadTestWallet();
-    chatTestAoContractClient = createAoContractClient(import.meta.env.VITE_LLAMA_ISLAND_PROCESS_ID, connect(), testWallet);
+    chatTestAoContractClient = createAoContractClient(import.meta.env.VITE_LLAMA_LAND_PROCESS_ID, connect(), testWallet);
   })
 
   test('creates client', async () => {

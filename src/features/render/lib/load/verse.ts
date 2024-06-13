@@ -44,8 +44,14 @@ export async function loadVersePhaser(verseClient: VerseClient, profileClient: P
   processQueue.add(async () => {
     const entities = await queryClient.ensureQueryData({
       queryKey: ['verseEntities', verseClient.verseId],
-      queryFn: async () => verseClient.readEntitiesStatic(),
+      queryFn: async () => {
+        const entitiesStatic = await verseClient.readEntitiesStatic()
+        const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000)
+        const entitiesDynamic = await verseClient.readEntitiesDynamic(fiveMinsAgo)
+        return { ...entitiesStatic, ...entitiesDynamic }
+      },
     })
+    console.log({entities})
 
     const profileEntites = Object.keys(entities).filter((entityId) => {
       const entity = entities[entityId]
@@ -53,7 +59,7 @@ export async function loadVersePhaser(verseClient: VerseClient, profileClient: P
     })
 
     await queryClient.ensureQueryData({
-      queryKey: ['entityProfiles', verseClient.verseId],
+      queryKey: ['verseEntityProfiles', profileClient.aoContractClient.processId, verseClient.verseId],
       queryFn: async () => profileClient.readProfiles(profileEntites),
     })
   })
@@ -64,10 +70,12 @@ export async function loadVersePhaser(verseClient: VerseClient, profileClient: P
     phaserLoader.start()
   });
 
-  return {
+  const verseState = {
     info: queryClient.getQueryData(['verseInfo', verseClient.verseId]),
     parameters: queryClient.getQueryData(['verseParameters', verseClient.verseId]),
     entities: queryClient.getQueryData(['verseEntities', verseClient.verseId]),
-    profiles: queryClient.getQueryData(['verseEntityProfiles', verseClient.verseId, profileClient.aoContractClient.processId]),
+    profiles: queryClient.getQueryData(['verseEntityProfiles', profileClient.aoContractClient.processId, verseClient.verseId]),
   } as VerseState;
+
+  return verseState;
 }

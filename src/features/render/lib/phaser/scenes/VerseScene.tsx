@@ -201,17 +201,18 @@ export class VerseScene extends WarpableScene {
       );
     }
 
-    this.entitySprites = Object.keys(this.verse.entities).map((entityId) => {
-      // Ignore player character
-      if (entityId === this.playerAddress) return {};
+    console.log(this.verse.entities)
+    this.entitySprites = Object.keys(this.verse.entities)
+      .filter(entityId => entityId !== this.playerAddress)
+      .map((entityId) => {
+        const entity = this.verse.entities[entityId];
+        const sprite = this.createEntitySprite(entityId, entity);
 
-      const entity = this.verse.entities[entityId];
-      const sprite = this.createEntitySprite(entityId, entity);
-
-      return {
-        [entityId]: sprite,
-      };
+        return {
+          [entityId]: sprite,
+        };
     }).reduce((acc, val) => ({ ...acc, ...val }), {});
+    console.log(`Created ${this.entitySprites.length} entities`)
 
     if (isDebug) {
       this.add.text(this.spawnPixel[0], this.spawnPixel[1], 'X', {

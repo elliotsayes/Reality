@@ -39,7 +39,8 @@ export const createVerseClient = (
   }, /* VerseEntities */), // TODO: Define VerseEntities properly
   readEntitiesDynamic: (sinceTime: Date) => aoContractClient.dryrunReadReplyOneJson<VerseEntities>({
     tags: [{ name: "Action", value: "VerseEntitiesDynamic" }],
-    data: JSON.stringify({ Timestamp: sinceTime.getTime() }),
+    // TODO: Get timestamp working!!
+    data: JSON.stringify({ Timestamp: 0 /* Math.floor(sinceTime.getTime() / 1000) */ }),
   }, /* VerseEntities */), // TODO: Define VerseEntities properly
 
   // Write

@@ -42,6 +42,7 @@ export const renderMachine = setup({
 
       targetVerseId?: string,
       currentVerseId?: string,
+      lastEntityUpdate?: Date,
 
       nextPosition?: Array<number>,
       processingPosition?: Array<number>,
@@ -155,11 +156,14 @@ export const renderMachine = setup({
     updateVerseSceneEntities: ({ context, event }) => {
       console.log('updateVerseSceneEntities', event);
       const { entities, profiles } = event.output as {
-        entities: Awaited<ReturnType<VerseClient['readEntitiesStatic']>>,
+        entities: Awaited<ReturnType<VerseClient['readEntitiesDynamic']>>,
         profiles: Awaited<ReturnType<ProfileClient['readProfiles']>>,
       };
       context.typedScenes.verseScene!.mergeEntities(entities);
     },
+    saveLastEntityUpdate: assign(({ event }) => ({
+      lastEntityUpdate: event.output.beforeTimestamp
+    })),
     sendRegistrationConfirmed: ({ self }) => {
       console.log('sendRegistrationConfirmed');
       self.send({ type: 'Registration Confirmed' });
@@ -205,14 +209,18 @@ export const renderMachine = setup({
     updateEntities: fromPromise(async ({ input }: {
         input: {
           verseClient: VerseClient,
-          profileClient: ProfileClient
+          profileClient: ProfileClient,
+          lastEntityUpdate?: Date,
         }
       }) => {
-        const entities = await input.verseClient.readEntitiesStatic();
+        const beforeTimestamp = new Date();
+        const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+        const entities = await input.verseClient.readEntitiesDynamic(input.lastEntityUpdate ?? oneMinuteAgo);
         const profiles = await input.profileClient.readProfiles(Object.keys(entities));
         return {
           entities,
           profiles,
+          beforeTimestamp,
         };
       }
     ),
@@ -241,7 +249,7 @@ export const renderMachine = setup({
     ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QCcwDsJmQWQIYGMALASzTAGIBlfdMAAgCUxcIBPAbQAYBdRUABwD2sYgBdigtHxAAPRAFYAnAEYAdAA51igEy752gMyL5WgDQhWiALTL1qgGzqDB+-ZcAWAOxL7n9QF9-c1QMLDwiUgpqWkZmNnZlXiQQIRFxSWk5BGVtRU9VThU85WNteUd3c0sEGztHZ1cPb0V7HUDg9EwcAhIyKhoyWJYObSSBYTEJKWSs3QN85WV7eU53Q04lRSrrWwcnFzd7Lx8j9pAQrvDeqIH6JmH2AzGUifTp0CyDd2VODVyj7SeFRzTzbbIGVQHTyudzueTzdycbT2M4XMI9SKqACSaEmuAANuQuM9UpMMjNEIDFKp5O5NJ4DOptIVFFp5GDAfl7IDOEZ1Kt5AyDKjOuiImRsWg6ABxXAAWzAkroeFIyvQAFdJXjCQB1XDIfh0LFyhUQYi4URgYnSUlvTKIZSIiGcHKcTTKPw-TygiyIbkQtyLRSKNaeZQmbQi0LdcWKnEy+VxqUq5Ma1QAGUELDoADUsLAKBBJIrSAA3QQAa0VaJj1yVsoVSpTarQmsz2bzyALCDLgnwFqmxOtyVtU3t2UR8khvM8ZVn7iO7N9CHU0MhR0U82U8zys6jlwxEvjDaTdAACqh8VmulrxASiTwba8xxSELS6stt679ECDGCjr8BicAynhIjo2iIoo+5inWx6JkqF5gFeLBYLe5qEgkJLPuSHyIOo3IaGsjjyNu9JHP+sIOAYOSuMis6eO4UFBOcoq1picGNvGiHITe7YQLm+aFsWqi9lWqg1lc7FSieCGXteqF8QJXZgD2aDlv2bxDo+I7Ye8sh+i6NL6HS+jaDkdJ-suq52PCO7LECKiOtBbFHtJ8Hxp2BZ0NEEp6gapBQGh95+YaxqmualrDuMaQvrh2TqI6qgtN6ZTGN43rqP+ii-NlsIqMBKiaJGzESYep4yR5gnebcqghQFGbXkpBbkEWEqidWrGSa5CacVKnn0D5ip1WggWKf1qnqQOkhaVhMU4fp8VlDSLh5M4OgqCRYLgQUgLhmZDFGGUzldeV7l9VVg2qAAomg4iiKwdAACKCAA7mgPHYhA+IUDIsCiBaiq4AAZpayAABQrJwnAAJTkKVsb1mdTUDTVN13Q9z1vR9WJfVa2nRWSemzGsU7btC8K2G6-z-kBqigQYzK0s4DFuMdZWI71yPVbQ123WIGOve916qAAqvwEAA3QaOTHALXCe14mdezHGnv13MStL91PYLH1ixLlpS3z4hwBNfZTWgM1PnNROUo61JGPMbqMv8LRgt47iqD8SxlN7XwLmzCMq0qauXWe+K4KwWDnrpqhnrpdAAIrqmAyefd95B65LcfW1FLzW+OuiGXCRRAm4DJLtU24MzS3wenO8j6KyAewW5nMhzVYcR1H2eE7H8di9juPkEwUDEH9yDm3QADCkhA8QyCmrno7zbMtL2NOwFhvTTirGCOTBgUjruEB9gFaBKIlUrget6rF0d+HkfINH1t99bdAD8LmcGz3bxy21amVg6tGE6HNb7KXVoqTuj9n69x-lMd+-BdbiyzrpU2GlBw8CXrpAutJ7bQlKFoVYXwK4OlpGoN0rJcicHqKcS+wDlY32DnfHmUDu4xzgZIBBH17hsAfLNQmBcnAezdHCFY1F8JfB9JXJ0kISLqFpAyHktCOj0Ovj1MBXlLqaweiPMeogJ5vCChhfGecBGvm0E4deCIEqFV0NoMEgp14tEdEiAwKwlAmGblJdRTDwFaKNjosAo9x7m1ULov6WAAp-xLAAsS8MW4+Mqn41GATYjBP0aE8JoMApoPNpbHS+dzHQg9o3MorQnA6GUG7OkGhZwlBMt8XQngvHdQqudZJPNtFpL0QYqYtVcCTBGnQIGggn74FnsQOU5tyC-X+paVQwNQZgx+FDWG8TvFtK5v49G3SQmGL1IMqAwzRl0HGWgOeUzNImOXjbBAQEakJQFNyR05QSEID8B7cMdILEN3mEYJizE0CCEwPAZI6yyBWzMXFXQ1JNhQ3hCGIEJQwQ2D8BocRNFbDOGcO4FpSZtSQrtEU-IcKNhGC8EUPe5QkrQihl8RkLJgJ4tAYS2KC04TaAcJ+aijMqSWUrktQEXgMXGAZn4ZlQd4zNmwBqVlK8HRuN+N8LQXhj5V3mGCEmDglB+wYroY+xgJWMKlQM1MrYjFytuUfT5LRgzUJ0FDaEDilAaEWPUFZbhYRGsScmU1LY2yNX6pa8cLjyFNKZNRZYTgpGIG8L8bcGxgwLlcEieQ3rNnSrTJQf6yBRBbNuMG1825WSqGVYitV2KY3ZChtSZkixmTMiMCUC+KiDxqM2QAeVEIQKOg1C1xT9rW4MGVoSgU2sueY+RqJIiBAyT8eQW0sVUQkzZ3F5LIH7QtSGXKSI8o2HyzVuRS3zDKKuUC1DPF0LbSupGa6ULIAtQUqFC0AKlrhAxX5WgmRbGXOUCEJhjC8n5BY1oyh023rkve1Q2b9R5sza2TdWR5H5FyCYXk8xaSAjeaXOmJRS4lC+La8DnM703hg7m-NtBEMKBDFy70O4lg6EYnvJEnLFiOlAqGRczSr0wQ2RBpC66GodkEtRt82U6bUMdAy7kDIf3VA-YfBmk4tDIjccRuMuMxMkV+C6CMjF1CNO+G86inz4SnxAylWkabeMuVOm3ZhEKn1Erih6XYyVZwePSn4DkOQaQLqcLkRiDImQad8Zomqw0oBiY9K4JKvhPNpUFD5393wCj4TKMfQo5TF3gvsxolGPMouPoJi5hatgjgOCWJTcMwZjL-gsaWwo4ZflUNWGFpJEWiv6n4PVMaonnNsqyLYcMnsiivOyoKQUYJ+Sk0ZAlQE+wyjFVbXx1pSN27df8iNfpBpKNOdK0Nh0CU7BfjWJoDY5RKjLh+PoVQEEgIM1PrOcCHX2ldY1qkzGQsWBibMoZB2oEnDftaPYBxx9IT8nuf92kcI3v7cVF077g9vp-cbXTZ5J9oSGc0DTNQDdON8h5PMeHm3Ps7OR5-ZBBtNbEDgH94+681WsmdrCJYbsXCltsH++RJ3SeOcgQ-NhhTDvyoQMyPIBQMOAeyrOTKN3Vj22A4iCCdJqG5avjehzHSJSsKfhwtAr9CaJ2TsnP7LypfNBWLLixe9tzryZD8QEvhVUMn5zrwXXd9fsPjknFOmnUeDbF2ZTcluPGFGArbm7PIaVip5N4FYPHVt2dAeFwruuhfe5fgbrh14GclqApvD0QH7l285-TR0jpHBQ0M+7j7nvoEG6N28XPLA05gD+-YD0kOFxeGWCRWw12BUQR2qfIiwIfjClsyAyV7308N+F7A-uiCqf63oAbv7liHBhli6fFok4qWMhpL4RXerqINzr-P2OmeYGGJzx-NvPDqii9uciQo-mDP8hnYYflDpjN02UzWF2nwiZWnwYR9QR15h2SyV6XmhuQLjDHXlKXKBZ0qUPQ9hC2cASlPlYyTyXWvX4213rygP5l2QyUMRxAJSD1fyEVLQggXQOjdDeRIk5Sk0ME3ECwgg12XUIIKwgRIK1hgNCWegO1MTK0+C9gKAsyuwjFu3-AYnSydFSgSi9TAPbQ2wFwEMCXSVgMNyyUiRGj+29DM3DHkRQJdHkz9CPx0HsjKF5GAlcEv34K6SEP2QGXECGRGTGQmUuTZXgKKVaFLVPiZGsl-EsJXEMDfUYl5DWEcjaDUNgi02oMEU5TWAZg9BPlhAsSH0QD5CSgUW-X+BMHKECECCAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QCcwDsJmQWQIYGMALASzTAGIBlfdMAAgCUxcIBPAbQAYBdRUABwD2sYgBdigtHxAAPRAFYAnAEYAdAA51igEy752gMyL5WgDQhWiALTL1qgGzqDB+-ZcAWAOxL7n9QF9-c1QMLDwiUgpqWkZmNnZlXiQQIRFxSWk5BGVtRU9VThU85WNteUd3c0sEGztHZ1cPb0V7HUDg9EwcAhIyKhoyWJYObSSBYTEJKWSs3QN85WV7eU53Q04lRSrrWwcnFzd7Lx8j9pAQrvDeqIH6JmH2AzGUifTp0CyDd2VODVyj7SeFRzTzbbIGVQHTyudzueTzdycbT2M4XMI9SKqACSaEmuAANuQuM9UpMMjNEIDFKp5O5NJ4DOptIVFFp5GDAfl7IDOEZ1Kt5AyDKjOuiImRsWg6ABxXAAWzAkroeFIyvQAFdJXjCQB1XDIfh0LFyhUQYi4URgYnSUlvTKIZSIiGcHKcTTKPw-TygiyIbkQtyLRSKNaeZQmbQi0LdcWKnEy+VxqUq5Ma1QAGUELDoADUsLAKBBJIrSAA3QQAa0VaJj1yVsoVSpTarQmsz2bzyALCDLgnwFqmxOtyVtU3t2UR8khvM8ZVn7iO7N9CHU0MhR0U82U8zys6jlwxEvjDaTdAACqh8VmulrxASiTwba8xxSELS6stt679ECDGCjr8BicAynhIjo2iIoo+5inWx6JkqF5gFeLBYLe5qEgkJLPuSHyIOo3IaGsjjyNu9JHP+sIOAYOSuMis6eO4UFBOcoq1picGNvGiHITe7YQLm+aFsWqi9lWqg1lc7FSieCGXteqF8QJXZgD2aDlv2bxDo+I7Ye8sh+i6NL6HS+jaDkdJ-suq52PCO7LECKiOtBbFHtJ8Hxp2BZ0NEEp6gapBQGh95+YaxqmualrDuMaQvrh2TqI6qgtN6ZTGN43rqP+ii-NlsIqMBKiaJGzESYep4yR5gnebcqghQFGbXkpBbkEWEqidWrGSa5CacVKnn0D5ip1WggWKf1qnqQOkhaVhMU4fp8VlDSLh5M4OgqCRYLgQUgLhmZDFGGUzldeV7l9VVg2qAAomg4iiKwdAACKCAA7mgPHYhA+IUDIsCiBaiq4AAZpayAABQ-JwnAAJTkKVsb1mdTUDTVN13Q9z1vR9WJfVa2nRWSemzIy+TImZQG+BUmj-poqjfOo5SMiYtjHWViO9cj1W0Ndt1iBjr3vdeqgAKr8BAAN0GjkxwC1wnteJnVsxxp79VzEpS-dT0Cx9ovi5aku8+IcATX2U1oDNT5zUTlKOtSRjzG6jL-C0YLeO4qg-EsZRe18C6swjytKqrl1nviuCsFg566aoZ66XQACK6pgEnn3feQusS7HVtRS8VvjrohlwkUQJuAyS7VNuBjaDS3wenO8j6Ky-uwW5HPBzVofh5HWeEzHcei9juPkEwUDEH9yBm3QADCkhA8QyCmjno7zbMtL2NOwFhqBjJAZUy45MGBSOu4FMFaBKIlYrAetyrF0d2HEfIFHVt91bdAD0LGf6z3byy21amVg6tGE67Nb7KTVoqTuj9n69x-lMd+-AdZi0zrpE2GlBw8CXrpfOtI7bQlKFoVYXxy4OlpGoN0rJcicHqKcS+wClY3yDnfbmUDu7RzgZIBBH17hsAfLNQm+cnDuzdHCFY1F8JfB9BXJ0kISIMy8FXc+7hm5SR6mAryl0NYPRHmPUQE83hBQwvjXOAjXzaCcOvBECVCq6G0GCQU68WiOiRAYFYSgTAqO6hVc64DNGG20WAUe48zaqB0X9LAAU-4lgAWJeGLc1FMN8ajfxsQgl6JCWE0GAU0FmwtjpPOZjoTu0bmUVoTgdDKFdnSDQs4SgmW+LoTwnjTpt2YerFJmT9FTFqrgSYI06BA0EE-fAs9iByjNuQX6-1LSqGBqDCGUMYZwyvvE7xnM-Ho1Sborpkgel9KgAMoZdARloDnuMzSxjl7WwQLvOwCUBTckdOUEhCA-Du3DHScxDd5hGCYsxNAghMDwGSHEyIltTFxV0NSTYUN4QhiBCUMENggQe32CGOE241jKGaYY8FdpCn5BhRsIwXgihgnDI46EUMviMhZMBHFys8WxQWnCaurgSLUWZD+Tc5KII0nsDkZxoFWSrmxXQg818EnxmbNgDUTKV4Olcb8em8KT6V3mGCNYU5qIemcfhBcfgGWMOlb01MrZcX5IhQtY+7yWjBmoToKG0J7FKA0IseokM3CwiNVK5MpqWxtkav1eV1znHkMaUyaiywnBSMQN4X424NjBgXK4JE8gfVrJlWmSg-1kCiHWbcEN45tysjprYVV1FnAav3lDakzJFjMmZEYEoF8Oj0MlWsgA8qIQgkdBpFtfL7OtwYMrQlAptZc8x8jUSRECBkn48itpYu21ZSNuLyWQAOuKKxfjsq-FyqkllqhrGpBQ+EXh6RpqaeKmCqi1nrpQsgC1BN8VxQAnTOEDFvlaCZFsZcjMaRsl5PycxrQxVtolaujmD6bw5v1PmrNrYt0LQZqTYw-JnBu0BC8kuqgwx5CcZuRirQM1rrko+1QcG80FtoMhrISh3auG9DuJYOhGLkqRNXRYjpQKhkXNeiDt6vFkaQhuhqHZBJ0YUNlPD1DHS0u5AyP91Qv1HyrpOLQyJXGkc4rjKTb4fhHwjIxdQDTvgvOou8+E9gkT4RSrSdNN6XItPUSjWjlrX3WrDHYZKs53HpT8ByHIBQBW2EMMiYEyinMgMDpVJJ3NhpQH0x6VwSVfB+bSoKQL-7ERJUKAfUz7jwPLsg3epG7cEv6n4PVHE2pkv6ocEsWwLpNjGX-OYum+WG7wioasHTrmIE9P8iNcT-Fg0eeZVkWw4YPZFGedlQUgowT8inKRBKgJ9hlGKoJ5zoDEkaJqolobhoKtkHq7sL8axNAbHKHvCuGxq4QSAlXGzs5wL9f2259pmzMaCxYPpsyhl7agScL+1o9h7GUQ2K0XkJ8HbCmiww31NHvt8y1ljIWONvoA6bXhx5FNoSmepsuQMRleN8h5PMD7cWDvcy0ejv7EARbIP1hrYgcAAcn3Xmq1kTtYRLFdi4MtDM3AMwSgERHHbyttMgQ-NhBSX2TcpIUfIM53GFGAuYjj1TVqrCZJGqu22StCZc59wbrCn4cLQK-QmCck5JwB08go8x1fZVnJlfe25ucMlsJoStzhqc+NpxKC3MCDFW7t8nOMemJsKoQGZTczvmgrDd1r-ePIkoMkBDybwKwBPG927FoPX3Zdd0t+w-uiDryc9LUBTeHpgO73JV7mkqUkSOgLi0QPKPS-QKtzbt4XDMcx8V3H5EHpISmaONCBuixTO8r5UiGzRFgQ-ARztmLxri-m7l+Xl+EeP4sGZ3regVuAcWIcGGFLNmWiTnJfCGyvhVh5DWNRBu3fTu9-l7Ayv3C4jVFH2uWREKBpBDBFShmz2cHJXMzw3UzWF2nwnpUlygwGw2TR06TNgBzDHXhKXKF5wqU1T5XKEFRWkU30A-xlx5k2QwIMVqzvHxHPy+DpggkXQOjdBeRImrjk0ME3CcF0D9mQLK1aXi1R01hoO6WejO1j2uRnXIRs1KThCZB+BeV8GEVM15FSgSm9UEOE2EOD0VHp3EN2UyQiRGiwIYg9hIhMAbhh0RRJ0ZCSmREFDKF5GAlcAoJEIMI6UCW2RCT1H2UOWGVGXOWZSuXznwTphs31z8F-GUzwkMA-UYlh1yCDCN1BSPBHxMU81mCZGYKrg9AplhHMTu0QD5CSlpD8FyH+GsIvkCCAA */
   id: "renderMachine",
 
   context: ({ input }) => ({
@@ -383,11 +391,12 @@ export const renderMachine = setup({
                     src: "updateEntities",
                     input: ({ context }) => ({
                       verseClient: context.clients.verseClientForProcess(context.currentVerseId!),
-                      profileClient: context.clients.profileClient
+                      profileClient: context.clients.profileClient,
+                      lastEntityUpdate: context.lastEntityUpdate
                     }),
                     onDone: {
                       target: "Idle",
-                      actions: "updateVerseSceneEntities"
+                      actions: ["updateVerseSceneEntities", "saveLastEntityUpdate"]
                     }
                   }
                 }
