@@ -86,7 +86,7 @@ VerseEntitiesStatic = {
   --   },
   -- },
   -- LlamaFedProcess
-  ['IN3T2l6QERA6d65XGW5asx2JWX7VrOQ3HIbwQvKVBQo'] = {
+  ['QIFgbqEmk5MyJy01wuINfcRP_erGNNbhqHRkAQjxKgg'] = {
     Position = { 0, -6 },
     Type = 'Hidden', -- understood by `2D-Tile-0` renderer
     Interaction = {
