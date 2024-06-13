@@ -30,3 +30,5 @@ Handlers.add(
     Handlers.utils.reply(json.encode(ChatHistory))(msg)
   end
 )
+
+return "Loaded Chat Protocol"
