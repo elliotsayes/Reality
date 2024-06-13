@@ -1,4 +1,8 @@
 local json = require("json")
+local sqlite3 = require('lsqlite3')
+
+BankerDb = BankerDb or sqlite3.open_memory()
+BankerDbAdmin = BankerDbAdmin or require('DbAdmin').new(BankerDb)
 
 HOURLY_EMISSION_LIMIT = 1000000
 LLAMA_TOKEN_PROCESS = "TODO: LlamaTokenProcessId"
@@ -7,13 +11,36 @@ WRAPPED_ARWEAVE_TOKEN_PROCESS = "TODO: WarProcessId"
 
 LLAMA_KING_PROCESS = "TODO: LlamaKingProcessId"
 
--- Map<CreditNoticeMessageId, CreditNotice>
-WAR_CREDIT_HISTORY = {
-  -- ['msgId'] = {
-  --   Sender = 'SomeTxId',
-  --   Quantity = 100,
-  -- }
-}
+--#region Initialization
+
+SQLITE_TABLE_WAR_CREDIT = [[
+  CREATE TABLE IF NOT EXISTS WarCredit (
+    MessageId TEXT PRIMARY KEY,
+    Sender TEXT,
+    Quantity INTEGER
+  );
+]]
+
+SQLITE_TABLE_EMISSIONS = [[
+  CREATE TABLE IF NOT EXISTS Emissions (
+    Amount INTEGER,
+    Recipient TEXT,
+    Timestamp INTEGER
+  );
+]]
+
+function InitDb()
+  BankerDb:exec(SQLITE_TABLE_WAR_CREDIT)
+  BankerDb:exec(SQLITE_TABLE_EMISSIONS)
+end
+
+Initialized = Initialized or false
+if (not Initialized) then
+  InitDb()
+  Initialized = true
+end
+
+--#endregion
 
 Handlers.add(
   "CreditNoticeHandler",
@@ -25,14 +52,18 @@ Handlers.add(
 
     local messageId = msg.Id
     local sender = msg.Tags.Sender
-    local quantity = msg.Tags.Quantity
+    local quantity = tonumber(msg.Tags.Quantity)
     local petition = msg.Tags['X-Petition']
 
     -- Save metadata
-    WAR_CREDIT_HISTORY[messageId] = {
-      Sender = sender,
-      Quantity = quantity,
-    }
+    BankerDb:exec(
+      string.format(
+        "INSERT INTO WarCredit (MessageId, Sender, Quantity) VALUES ('%s', '%s', %d)",
+        messageId,
+        sender,
+        quantity
+      )
+    )
 
     -- Dispatch to the LlamaKing
     Send({
@@ -47,31 +78,30 @@ Handlers.add(
   end
 )
 
-EMISSIONS = {}
-
 function CalculateBaseEmissions(grade, currentTime)
-  local totalEmissions = 0
-  for i, emission in ipairs(EMISSIONS) do
-    if currentTime - emission.timestamp <= 3600 then
-      totalEmissions = totalEmissions + emission.amount
-    end
-  end
+  -- TODO, fix this algo
+  local totalEmissions = BankerDbAdmin:exec(
+    "SELECT SUM(Amount) as Value FROM Emissions WHERE Timestamp > " .. currentTime - 3600
+  )[1].Value or 0
   local adjustment = HOURLY_EMISSION_LIMIT /
       math.max(HOURLY_EMISSION_LIMIT, totalEmissions * 200) -- 10k
   return 100 * adjustment * grade
 end
 
 function SendLlamaToken(amount, recipient, currentTime)
+  BankerDbAdmin:exec(
+    string.format(
+      "INSERT INTO Emissions (Amount, Recipient, Timestamp) VALUES (%d, '%s', %d)",
+      amount,
+      recipient,
+      currentTime
+    )
+  )
   ao.send({
     Target = LLAMA_TOKEN_PROCESS,
     Action = "Transfer",
     Recipient = recipient,
     Quantity = tostring(amount)
-  })
-  table.insert(EMISSIONS, {
-    amount = amount,
-    recipient = recipient,
-    timestamp = currentTime
   })
 end
 
@@ -83,20 +113,22 @@ Handlers.add(
       return print("Petition not from LlamaKing")
     end
     local originalMessageId = msg['Original-Message']
-    if WAR_CREDIT_HISTORY[originalMessageId] == nil then
+    local creditEntries = BankerDbAdmin:exec(
+      "SELECT * FROM WarCredit WHERE MessageId = '" .. originalMessageId .. "'"
+    )
+    if (#creditEntries == 0) then
       return print("Credit not found")
     end
+    local originalQuantity = creditEntries[1].Quantity
 
-    local originalSender = msg['Original-Sender']
-    local originalQuantity = WAR_CREDIT_HISTORY[originalMessageId].Quantity
-
-    local grade = msg.Tags.Grade
+    local grade = tonumber(msg.Tags.Grade)
 
     local baseEmissions = CalculateBaseEmissions(grade, msg.Timestamp)
-    local weightedEmissions = baseEmissions * originalQuantity
+    local weightedEmissions = math.floor(baseEmissions * originalQuantity)
 
     -- TODO: Message chat / DM
 
+    local originalSender = msg.Tags['Original-Sender']
     SendLlamaToken(weightedEmissions, originalSender, msg.Timestamp)
   end
 )
@@ -132,21 +164,13 @@ Handlers.add(
   end
 )
 
-function clearOldEmissions(currentTime)
-  for i = #EMISSIONS, 1, -1 do
-    if currentTime - EMISSIONS[i].timestamp > 6 * 3600 then
-      table.remove(EMISSIONS, i)
-    end
-  end
-end
-
-Handlers.add(
-  "CronHandler",
-  Handlers.utils.hasMatchingTag("Action", "Cron-Tick"),
-  function(msg)
-    clearOldEmissions(msg.Timestamp)
-  end
-)
+-- Handlers.add(
+--   "CronHandler",
+--   Handlers.utils.hasMatchingTag("Action", "Cron-Tick"),
+--   function(msg)
+--     clearOldEmissions(msg.Timestamp)
+--   end
+-- )
 
 -- Declare Schema for UI
 

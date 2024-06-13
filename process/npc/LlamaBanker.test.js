@@ -9,6 +9,20 @@ const LlamaKing = "TODO: LlamaKingProcessId"
 
 const exampleSender = "SOME RANDOM GUY"
 
+test('load DbAdmin module', async () => {
+  const dbAdminCode = fs. readFileSync('./blueprint/DbAdmin.lua', 'utf-8')
+  const result = await Send({
+  Action: 'Eval',
+  Data: `
+local function _load()
+  ${dbAdminCode}
+end
+_G.package.loaded["DbAdmin"] = _load()
+return "ok"`,
+  })
+  assert.equal(result.Output.data.output, "ok")
+})
+
 test('load source', async () => {
   const code = fs.readFileSync('./npc/LlamaBanker.lua', 'utf-8')
   const result = await Send({ Action: "Eval", Data: code })
@@ -45,14 +59,13 @@ test('Credits from wAR', async () => {
 test('Saved History', async () => {
   const result = await Send({
     Action: "Eval",
-    Data: `require('json').encode(WAR_CREDIT_HISTORY)`
+    Data: `require('json').encode(BankerDbAdmin:exec('SELECT * FROM WarCredit')[1])`
   })
 
   assert.deepEqual(JSON.parse(result.Output.data.output), {
-    MyMessageId: {
-      Sender: 'SOME RANDOM GUY',
-      Quantity: 100,
-    },
+    MessageId: 'MyMessageId',
+    Quantity: 100,
+    Sender: 'SOME RANDOM GUY'
   })
 });
 
@@ -80,19 +93,25 @@ test('GradePetitionHandler unknown msg Id', async () => {
 })
 
 test('GradePetitionHandler happy', async () => {
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 100000; i++) {
     const result = await Send({
       From: LlamaKing,
       Action: "Grade-Petition",
       ['Original-Message']: "MyMessageId",
-      Grade: `1`,
+      ['Original-Sender']: exampleSender,
+      Grade: `10`,
       Timestamp: 10000000 + i * 10
     })
 
-    // console.log(JSON.parse(result.Output.data))
     const message = result.Messages[0]
     assert.equal(message.Target, LlamaToken)
     const quantity = message.Tags.filter(t => t.name === "Quantity")[0].value
-    console.log(quantity)
+    console.log(i, "emit:", quantity)
+
+    const emissionsTotalResult = await Send({
+      Action: "Eval",
+      Data: `require('json').encode(BankerDbAdmin:exec('SELECT SUM(Amount) as Value FROM Emissions')[1].Value)`
+    })
+    console.log(i, "total:", emissionsTotalResult.Output.data.output)
   }
 })
