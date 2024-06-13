@@ -6,6 +6,10 @@ LLM_WORKERS = {
     ['4zQMuZlze_PoKcffdLTkXLv90_DusEENofq3Bg-hHQk'] = {
         busyWithMessage = nil,
         submittedTimestamp = nil,
+    },
+    ['FAKEWORKER2'] = {
+        busyWithMessage = nil,
+        submittedTimestamp = nil,
     }
 }
 
@@ -80,10 +84,9 @@ function dispatchHighestPriorityMessage(currentTime)
 end
 
 function removeMessageAndResetLlama(messageId)
-    for i, message in ipairs(MESSAGES_TO_SEND) do
+    for _, message in pairs(MESSAGES_TO_SEND) do
         if message.originalMessageId == messageId then
-            table.remove(MESSAGES_TO_SEND, i)
-            break
+            MESSAGES_TO_SEND[message.originalMessageId] = nil
         end
     end
 
