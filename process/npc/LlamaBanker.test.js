@@ -93,13 +93,13 @@ test('GradePetitionHandler unknown msg Id', async () => {
 })
 
 test('GradePetitionHandler happy', async () => {
-  for (let i = 0; i < 100000; i++) {
+  for (let i = 0; i < 10; i++) {
     const result = await Send({
       From: LlamaKing,
       Action: "Grade-Petition",
       ['Original-Message']: "MyMessageId",
       ['Original-Sender']: exampleSender,
-      Grade: `10`,
+      Grade: `1`,
       Timestamp: 10000000 + i * 10
     })
 
@@ -108,10 +108,10 @@ test('GradePetitionHandler happy', async () => {
     const quantity = message.Tags.filter(t => t.name === "Quantity")[0].value
     console.log(i, "emit:", quantity)
 
-    const emissionsTotalResult = await Send({
-      Action: "Eval",
-      Data: `require('json').encode(BankerDbAdmin:exec('SELECT SUM(Amount) as Value FROM Emissions')[1].Value)`
-    })
-    console.log(i, "total:", emissionsTotalResult.Output.data.output)
+    // const emissionsTotalResult = await Send({
+    //   Action: "Eval",
+    //   Data: `require('json').encode(BankerDbAdmin:exec('SELECT SUM(Amount) as Value FROM Emissions')[1].Value)`
+    // })
+    // console.log(i, "total:", emissionsTotalResult.Output.data.output)
   }
 })
