@@ -1,4 +1,7 @@
 local json = require("json")
+local sqlite3 = require('lsqlite3')
+Db = Db or sqlite3.open_memory()
+DbAdmin = require('DbAdmin').new(Db)
 
 --#region Model
 
