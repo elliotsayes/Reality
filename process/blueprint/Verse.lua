@@ -189,3 +189,5 @@ Handlers.add(
 )
 
 --#endregion
+
+return "Loaded Verse Protocol"
