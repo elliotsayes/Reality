@@ -24,7 +24,7 @@ test('load source', async () => {
   assert.equal(result.Output.data.output, "Loaded Verse Protocol")
 })
 
-test('load llama island', async () => {
+test('load llama land', async () => {
   const code = fs.readFileSync('./verse/3_LlamaLand.lua', 'utf-8')
   const result = await Send({ Action: "Eval", Data: code })
 
