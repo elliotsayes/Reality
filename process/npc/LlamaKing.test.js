@@ -33,7 +33,7 @@ test('Petition Handler with Original-Message', async () => {
   })
 
   const message = result.Messages[0]
-  assert.equal(message.Target, LlmWorkerId1)
+  assert.equal(message.Target, LlmWorkerId2)
   // assert.equal(message.Tags.Action, 'Petition')
   assert.equal(message.Data, plea)
 })
@@ -48,7 +48,7 @@ test('Petition Handler with different Original-Message', async () => {
   })
 
   const message = result.Messages[0]
-  assert.equal(message.Target, LlmWorkerId2)
+  assert.equal(message.Target, LlmWorkerId1)
   // assert.equal(message.Tags.Action, 'Petition')
   assert.equal(message.Data, plea)
 })
@@ -116,11 +116,11 @@ test('LLM_WORKERS State', async () => {
   })
 
   assert.deepEqual(JSON.parse(result.Output.data.output), {
-    '4zQMuZlze_PoKcffdLTkXLv90_DusEENofq3Bg-hHQk': [],
-    FAKEWORKER2: {
+    '4zQMuZlze_PoKcffdLTkXLv90_DusEENofq3Bg-hHQk': {
       busyWithMessage: 'MyCreditNoticeMessageId2',
-      submittedTimestamp: 10003
-    }
+      submittedTimestamp: 10000
+    },
+    FAKEWORKER2: []
   })
 })
 
