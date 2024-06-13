@@ -155,7 +155,7 @@ export const renderMachine = setup({
     updateVerseSceneEntities: ({ context, event }) => {
       console.log('updateVerseSceneEntities', event);
       const { entities, profiles } = event.output as {
-        entities: Awaited<ReturnType<VerseClient['readAllEntities']>>,
+        entities: Awaited<ReturnType<VerseClient['readEntitiesStatic']>>,
         profiles: Awaited<ReturnType<ProfileClient['readProfiles']>>,
       };
       context.typedScenes.verseScene!.mergeEntities(entities);
@@ -208,7 +208,7 @@ export const renderMachine = setup({
           profileClient: ProfileClient
         }
       }) => {
-        const entities = await input.verseClient.readAllEntities();
+        const entities = await input.verseClient.readEntitiesStatic();
         const profiles = await input.profileClient.readProfiles(Object.keys(entities));
         return {
           entities,

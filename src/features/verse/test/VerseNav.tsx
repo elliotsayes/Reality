@@ -32,7 +32,7 @@ function VerseNav({ wallet }: VerseNavProps) {
   const entities = useSuspenseQuery(
     {
       queryKey: [processId, "verseEntities"],
-      queryFn: async () => verseClient.readAllEntities(),
+      queryFn: async () => verseClient.readEntitiesStatic(),
     },
   )
 

@@ -12,7 +12,7 @@ VerseParameters = {}
 
 VerseEntitiesStatic = {
   -- UniverseProcess
-  ['fi0JJNAg_RcORit6kttAWyTmV6V-U4mOdlsMKPEioc0'] = {
+  ['-wNWBTJSU9c8RqID5J3GZy074Rt9PEZbVmv383Mz6nQ'] = {
     Position = {},
   }
 }

@@ -44,7 +44,7 @@ export async function loadVersePhaser(verseClient: VerseClient, profileClient: P
   processQueue.add(async () => {
     const entities = await queryClient.ensureQueryData({
       queryKey: ['verseEntities', verseClient.verseId],
-      queryFn: async () => verseClient.readAllEntities(),
+      queryFn: async () => verseClient.readEntitiesStatic(),
     })
 
     const profileEntites = Object.keys(entities).filter((entityId) => {

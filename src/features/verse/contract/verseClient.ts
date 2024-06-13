@@ -1,4 +1,3 @@
-import { ArweaveId } from "@/features/arweave/lib/model";
 import { MessageId } from "../../ao/lib/aoClient";
 import { AoContractClient, createAoContractClient } from "../../ao/lib/aoContractClient";
 import { VerseEntities, VerseEntity, VerseEntityCreate, VerseEntityPosition, VerseInfo, VerseParameters } from "./model";
@@ -13,8 +12,8 @@ export type VerseClient = {
   // Reads
   readInfo(): Promise<VerseInfo>;
   readParameters(): Promise<VerseParameters>;
-  readAllEntities(): Promise<VerseEntities>;
-  readEntities(entityIds: Array<ArweaveId>): Promise<VerseEntities>;
+  readEntitiesStatic(): Promise<VerseEntities>;
+  readEntitiesDynamic(sinceTime: Date): Promise<VerseEntities>;
 
   // Writes
   createEntity(entity: VerseEntity): Promise<MessageId>;
@@ -35,12 +34,12 @@ export const createVerseClient = (
   readParameters: () => aoContractClient.dryrunReadReplyOneJson<VerseParameters>({
     tags: [{ name: "Action", value: "VerseParameters" }]
   }, /* VerseParameters */), // TODO: Define VerseParameters properly
-  readAllEntities: () => aoContractClient.dryrunReadReplyOneJson<VerseEntities>({
-    tags: [{ name: "Action", value: "VerseEntities" }]
+  readEntitiesStatic: () => aoContractClient.dryrunReadReplyOneJson<VerseEntities>({
+    tags: [{ name: "Action", value: "VerseEntitiesStatic" }]
   }, /* VerseEntities */), // TODO: Define VerseEntities properly
-  readEntities: (entityIds: Array<ArweaveId>) => aoContractClient.dryrunReadReplyOneJson<VerseEntities>({
-    tags: [{ name: "Action", value: "VerseParameters" }],
-    data: JSON.stringify({ EntityIds: entityIds }),
+  readEntitiesDynamic: (sinceTime: Date) => aoContractClient.dryrunReadReplyOneJson<VerseEntities>({
+    tags: [{ name: "Action", value: "VerseEntitiesDynamic" }],
+    data: JSON.stringify({ Timestamp: sinceTime.getTime() }),
   }, /* VerseEntities */), // TODO: Define VerseEntities properly
 
   // Write

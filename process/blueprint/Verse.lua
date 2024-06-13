@@ -78,11 +78,17 @@ Handlers.add(
   function(msg)
     print("VerseEntitiesDynamic")
 
-    local timestamp = msg.Timestamp
+    local queryTimestamp = json.decode(msg.Data).Timestamp
+    -- Validate timestamp
+    if (type(queryTimestamp) ~= "number") then
+      ReplyError(msg, "Invalid Timestamp")
+      return
+    end
+
     local query = VerseDbAdmin:exec(string.format([[
         SELECT * FROM Entities WHERE LastUpdated > %d
       ]],
-      timestamp
+      queryTimestamp
     ))
     local entities = {}
     for i = 1, #query do

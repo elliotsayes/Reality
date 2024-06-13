@@ -39,7 +39,7 @@ describe('createVerseClient', () => {
 
   test('Universe readAllEntities', async () => {
     const client = createVerseClient(universeAoContractClient)
-    const info = await client.readAllEntities();
+    const info = await client.readEntitiesStatic();
     expect(info).toMatchSnapshot();
   })
 
@@ -55,7 +55,8 @@ describe('createVerseClient', () => {
     // Wait for the message to be processed
     await new Promise((resolve) => setTimeout(resolve, 5000));
     // Check the info is correct
-    const createdEntities = await client.readAllEntities();
+    const createdEntities = await client.readEntitiesDynamic(new Date(0));
+    console.log(createdEntities);
     expect(createdEntities[testWallet.address].Position).toEqual(initialPosition);
     expect(createdEntities[testWallet.address].Type).toEqual("Avatar");
 
@@ -65,7 +66,7 @@ describe('createVerseClient', () => {
     // Wait for the message to be processed
     await new Promise((resolve) => setTimeout(resolve, 5000));
     // Check the info is correct
-    const updatedEntities = await client.readAllEntities();
+    const updatedEntities = await client.readEntitiesDynamic(new Date(0));
     expect(updatedEntities[testWallet.address].Position).toEqual(updatedPosition);
   }, {
     timeout: 20000,
