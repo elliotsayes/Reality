@@ -43,7 +43,7 @@ VerseParameters = {
 }
 
 -- Player entities can be updated by player actions, i.e. movement
-VerseEntities = {
+VerseEntitiesStatic = {
   -- OriginIslandProcess
   ['--5ozI7qKmLyBxcZJr_T62iGltnKE2ei1jOoQrKKfRA'] = {
     Position = { 2, 2 },

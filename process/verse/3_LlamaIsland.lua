@@ -76,7 +76,7 @@ VerseInherit = {
 }
 
 -- Updated by player actions
-VerseEntities = {
+VerseEntitiesStatic = {
   -- -- WeaveWorldProcess
   -- ['w0UvMR1XlVEjjNSaBn9F1qSkDPoIaWHJXzp5G5jjdAo'] = {
   --   Position = { -2, -2 },

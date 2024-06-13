@@ -1,6 +1,8 @@
 VerseInfo = nil
 VerseParameters = nil
-VerseEntities = nil
+VerseEntitiesStatic = nil
+VerseDb = nil
+VerseDbAdmin = nil
 
 Handlers.remove("VerseInfo")
 Handlers.remove("VerseParameters")

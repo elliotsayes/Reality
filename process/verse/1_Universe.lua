@@ -9,7 +9,7 @@ VerseInfo = {
 
 VerseParameters = {}
 
-VerseEntities = {
+VerseEntitiesStatic = {
   -- WeaveWorldProcess
   ['w0UvMR1XlVEjjNSaBn9F1qSkDPoIaWHJXzp5G5jjdAo'] = {
     Position = { 0 },

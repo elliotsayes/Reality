@@ -29,7 +29,7 @@ VerseParameters = {
 }
 
 -- Updated by player actions
-VerseEntities = {
+VerseEntitiesStatic = {
   -- OriginIslandProcess
   ['--5ozI7qKmLyBxcZJr_T62iGltnKE2ei1jOoQrKKfRA'] = {
     Position = { 16, 21 },

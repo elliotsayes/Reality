@@ -1,7 +1,31 @@
-local json = require("json")
+local json = require('json')
 local sqlite3 = require('lsqlite3')
-Db = Db or sqlite3.open_memory()
-DbAdmin = require('DbAdmin').new(Db)
+
+VerseDb = VerseDb or sqlite3.open_memory()
+VerseDbAdmin = VerseDbAdmin or require('DbAdmin').new(VerseDb)
+
+--#region Initialization
+
+SQLITE_TABLE_VERSE_ENTITIES = [[
+  CREATE TABLE IF NOT EXISTS Entities (
+    Id TEXT PRIMARY KEY,
+    LastUpdated INTEGER,
+    Position TEXT,
+    Type TEXT
+  );
+]]
+
+function InitDb()
+  VerseDb:exec(SQLITE_TABLE_VERSE_ENTITIES)
+end
+
+Initialized = Initialized or false
+if (not Initialized) then
+  InitDb()
+  Initialized = true
+end
+
+--#endregion
 
 --#region Model
 
@@ -15,7 +39,7 @@ VerseInfo = VerseInfo or {
 
 VerseParameters = VerseParameters or {}
 
-VerseEntities = VerseEntities or {}
+VerseEntitiesStatic = VerseEntitiesStatic or {}
 
 --#endregion
 
@@ -40,11 +64,36 @@ Handlers.add(
 )
 
 Handlers.add(
-  "VerseEntities",
-  Handlers.utils.hasMatchingTag("Action", "VerseEntities"),
+  "VerseEntitiesStatic",
+  Handlers.utils.hasMatchingTag("Action", "VerseEntitiesStatic"),
   function(msg)
-    print("VerseEntities")
-    Handlers.utils.reply(json.encode(VerseEntities))(msg)
+    print("VerseEntitiesStatic")
+    Handlers.utils.reply(json.encode(VerseEntitiesStatic))(msg)
+  end
+)
+
+Handlers.add(
+  "VerseEntitiesDynamic",
+  Handlers.utils.hasMatchingTag("Action", "VerseEntitiesDynamic"),
+  function(msg)
+    print("VerseEntitiesDynamic")
+
+    local timestamp = msg.Timestamp
+    local query = VerseDbAdmin:exec(string.format([[
+        SELECT * FROM Entities WHERE LastUpdated > %d
+      ]],
+      timestamp
+    ))
+    local entities = {}
+    for i = 1, #query do
+      local entity = query[i]
+      entities[entity.Id] = {
+        Position = json.decode(entity.Position),
+        Type = entity.Type,
+      }
+    end
+
+    Handlers.utils.reply(json.encode(entities))(msg)
   end
 )
 
@@ -136,12 +185,22 @@ Handlers.add(
       Type = data.Type
     end
 
-    local newEntity = {
-      Position = Position,
-      Type = Type,
-    }
+    VerseDbAdmin:exec(string.format([[
+        INSERT INTO Entities (Id, LastUpdated, Position, Type)
+        VALUES ('%s', %d, '%s', '%s')
+      ]],
+      entityId,
+      msg.Timestamp,
+      json.encode(Position),
+      Type
+    ))
 
-    VerseEntities[entityId] = newEntity
+    local result = {
+      [entityId] = {
+        Position = Position,
+        Type = Type,
+      }
+    }
 
     Send({
       Target = msg.From,
@@ -149,9 +208,7 @@ Handlers.add(
         MsgRef = msg.Id,
         Result = "OK",
       },
-      Data = json.encode({
-        [entityId] = newEntity,
-      }),
+      Data = json.encode(result),
     })
   end
 )
@@ -163,7 +220,12 @@ Handlers.add(
     print("VerseEntityUpdatePosition")
     local entityId = msg.From
 
-    if (not VerseEntities[entityId]) then
+    local dbEntry = VerseDbAdmin:exec(string.format([[
+        SELECT * FROM Entities WHERE Id = '%s'
+      ]],
+      entityId
+    ))[1]
+    if (not dbEntry) then
       ReplyError(msg, "Entity not found")
       return
     end
@@ -177,16 +239,29 @@ Handlers.add(
       return
     end
 
-    VerseEntities[entityId].Position = Position
+    VerseDbAdmin:exec(string.format([[
+        UPDATE Entities
+        SET LastUpdated = %d, Position = '%s'
+        WHERE Id = '%s'
+      ]],
+      msg.Timestamp,
+      json.encode(Position),
+      entityId
+    ))
+
+    local result = {
+      [entityId] = {
+        Position = Position,
+      }
+    }
+
     Send({
       Target = msg.From,
       Tags = {
         MsgRef = msg.Id,
         Result = "OK",
       },
-      Data = json.encode({
-        [entityId] = VerseEntities[entityId],
-      }),
+      Data = json.encode(result),
     })
   end
 )
