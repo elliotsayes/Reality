@@ -94,7 +94,7 @@ test('check VerseEntitiesDynamic handler', async () => {
   const result = await Send({
     From: "TestOwner",
     Action: "VerseEntitiesDynamic",
-    Timestamp: 0,
+    Data: JSON.stringify({ Timestamp: 0 })
   })
 
   assert.equal(result.Output.data, "VerseEntitiesDynamic")
@@ -105,7 +105,7 @@ test('check VerseEntitiesDynamic handler future timestamp', async () => {
   const result = await Send({
     From: "TestOwner",
     Action: "VerseEntitiesDynamic",
-    Timestamp: 99999,
+    Data: JSON.stringify({ Timestamp: 99999 })
   })
 
   assert.equal(result.Output.data, "VerseEntitiesDynamic")
