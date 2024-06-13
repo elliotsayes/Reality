@@ -9,7 +9,7 @@ DefaultSystemPrompt =
     "You are a good king and you really like grass."
 
 InferenceAllowList = {
-  -- LlamaBanker
+  -- LlamaKing ProcessId
   "",
 }
 

@@ -1,7 +1,5 @@
 -- Load this script prior to the token blueprint
 local bint = require('.bint')(256)
-local ao = require('ao')
-local json = require('json')
 
 local utils = {
   add = function(a, b)
@@ -25,5 +23,5 @@ Ticker = 'LLAMA'
 Logo = '' -- TODO: 'SBCCXwwecBlDqRLUjb8dYABExTJXLieawf7m2aBJ-KY'
 
 -- Don't overwrite Balances!
-LlamaSecretary = 'TODO'
-Balances = Balances or { [LlamaSecretary] = utils.toBalanceValue(10000 * 10 ^ Denomination) }
+LlamaBanker = 'TODO'
+Balances = Balances or { [LlamaBanker] = utils.toBalanceValue(10000 * 10 ^ Denomination) }
