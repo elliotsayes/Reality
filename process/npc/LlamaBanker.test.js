@@ -48,6 +48,7 @@ test('Credits from wAR', async () => {
     Action: "Credit-Notice",
     Quantity: 100,
     ['X-Petition']: plea,
+    ['X-Sender-Name']: 'Cool guy :)',
     Sender: exampleSender
   })
 
@@ -103,10 +104,15 @@ test('GradePetitionHandler happy', async () => {
       Timestamp: 10000000 + i * 10
     })
 
-    const message = result.Messages[0]
-    assert.equal(message.Target, LlamaToken)
-    const quantity = message.Tags.filter(t => t.name === "Quantity")[0].value
+    const transfer = result.Messages[0]
+    assert.equal(transfer.Target, LlamaToken)
+    const quantity = transfer.Tags.filter(t => t.name === "Quantity")[0].value
     console.log(i, "emit:", quantity)
+
+    const chatMessage = result.Messages[1]
+    assert.equal(chatMessage.Target, "TODO: ChatProcessId")
+    // 'Congratulations ' .. originalSender .. ', you have been granted ' .. weightedEmissions .. ' $LLAMA coins!'
+    assert.equal(chatMessage.Data, `Congratulations ${exampleSender}, you have been granted ${quantity} $LLAMA coins!`)
 
     // const emissionsTotalResult = await Send({
     //   Action: "Eval",
@@ -115,3 +121,27 @@ test('GradePetitionHandler happy', async () => {
     // console.log(i, "total:", emissionsTotalResult.Output.data.output)
   }
 })
+
+test('RequestBalanceMessage handler', async () => {
+  const result = await Send({
+    From: 'Some random guy',
+    Action: "RequestBalanceMessage",
+  })
+
+  const transfer = result.Messages[0]
+  assert.equal(transfer.Target, LlamaToken)
+  assert.equal(transfer.Tags.filter(t => t.name === "Recipient")[0].value, 'Some random guy')
+});
+
+test('TokenBalanceResponse handler', async () => {
+  const result = await Send({
+    From: LlamaToken,
+    Account: 'Some random guy',
+    Balance: '100',
+  })
+
+  const chat = result.Messages[0]
+  assert.equal(chat.Target, "TODO: ChatProcessId")
+  // Data = 'Address ' .. account .. ', you currently have ' .. balance .. ' $LLAMA coins!',
+  assert.equal(chat.Data, "Address Some random guy, you currently have 100 $LLAMA coins!")
+});

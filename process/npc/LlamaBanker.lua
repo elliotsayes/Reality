@@ -11,6 +11,8 @@ WRAPPED_ARWEAVE_TOKEN_PROCESS = "TODO: WarProcessId"
 
 LLAMA_KING_PROCESS = "TODO: LlamaKingProcessId"
 
+LLAMA_FED_CHAT_PROCESS = "TODO: ChatProcessId"
+
 --#region Initialization
 
 SQLITE_TABLE_WAR_CREDIT = [[
@@ -52,6 +54,7 @@ Handlers.add(
 
     local messageId = msg.Id
     local sender = msg.Tags.Sender
+    local senderName = msg.Tags['X-Sender-Name']
     local quantity = tonumber(msg.Tags.Quantity)
     local petition = msg.Tags['X-Petition']
 
@@ -74,6 +77,16 @@ Handlers.add(
         ['Original-Message'] = messageId,
       },
       Data = petition,
+    })
+
+    -- Write in Chat
+    Send({
+      Target = LLAMA_FED_CHAT_PROCESS,
+      Tags = {
+        Action = 'ChatMessage',
+        ['Author-Name'] = 'LlamaBanker',
+      },
+      Data = 'Received ' .. quantity .. ' $wAR from ' .. (senderName or sender),
     })
   end
 )
@@ -130,6 +143,16 @@ Handlers.add(
 
     local originalSender = msg.Tags['Original-Sender']
     SendLlamaToken(weightedEmissions, originalSender, msg.Timestamp)
+
+    -- Write in Chat
+    Send({
+      Target = LLAMA_FED_CHAT_PROCESS,
+      Tags = {
+        Action = 'ChatMessage',
+        ['Author-Name'] = 'LlamaBanker',
+      },
+      Data = 'Congratulations ' .. originalSender .. ', you have been granted ' .. weightedEmissions .. ' $LLAMA coins!',
+    })
   end
 )
 
@@ -156,11 +179,19 @@ Handlers.add(
     return fromToken and hasBalance
   end,
   function(msg)
-    print('TokenBalanceResponse')
+    -- print('TokenBalanceResponse')
     local account = msg.Tags.Account
     local balance = msg.Tags.Balance
     print('Account: ' .. account .. ', Balance: ' .. balance)
-    -- TODO: Put the balance in the chat / DM
+    -- TODO: DM ?
+    Send({
+      Target = LLAMA_FED_CHAT_PROCESS,
+      Tags = {
+        Action = 'ChatMessage',
+        ['Author-Name'] = 'LlamaBanker',
+      },
+      Data = 'Address ' .. account .. ', you currently have ' .. balance .. ' $LLAMA coins!',
+    })
   end
 )
 
