@@ -87,6 +87,14 @@
   background-color: green;
 }
 
+.highlight-message {
+  background-color: rgb(100, 90, 80);
+  border-bottom-right-radius: 0;
+  border-style: solid;
+  border-width: 2px;
+  border-color: orange;
+}
+
 .chat-msg-time {
   display: flex;
   font-size: 13px;

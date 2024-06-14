@@ -9,6 +9,11 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useRef } from "react";
 import { Message } from "../contract/model";
 
+const highlightedAuthorIds = [
+  'kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA', // KingDummy
+  'ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk', // BankerDummy
+]
+
 interface ChatProps {
   userAddress: ArweaveId;
   chatClient?: ChatClient;
@@ -114,6 +119,7 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
   for (let i = 0; i < messageList.length; i++) {
     const data = messageList[i];
     const owner = (data.address == userAddress);
+    const highlighted = highlightedAuthorIds.includes(data.address);
 
     divs.push(
       <div key={data.id} className={`chat-msg-line ${owner ? 'my-line' : 'other-line'}`}>
@@ -128,7 +134,7 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
             <div className="chat-msg-address">{shortAddr(data.address, 3)}</div>
           </div>
 
-          <div className={`chat-message ${owner ? 'my-message' : 'other-message'}`}>
+          <div className={`chat-message ${owner ? 'my-message' : (highlighted ? 'highlight-message' : 'other-message')}`}>
             {data.message}
           </div>
 
