@@ -1,3 +1,5 @@
+-- ProcessId: Btm_9_fvwb7eXbQ2VswA4V19HxYWnFsYRB4gIl3Dahw
+
 -- Load this script prior to the token blueprint
 local bint = require('.bint')(256)
 
@@ -20,8 +22,10 @@ Denomination = 12
 TotalSupply = utils.toBalanceValue(10000 * 10 ^ Denomination)
 Name = 'Llama Coin'
 Ticker = 'LLAMA'
-Logo = '' -- TODO: 'SBCCXwwecBlDqRLUjb8dYABExTJXLieawf7m2aBJ-KY'
+-- Logo = '' -- TODO: 'SBCCXwwecBlDqRLUjb8dYABExTJXLieawf7m2aBJ-KY'
 
--- Don't overwrite Balances!
-LlamaBanker = 'TODO'
+-- LlamaBankerDummy
+LlamaBanker = 'ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk'
+
+-- Don't overwrite Balances
 Balances = Balances or { [LlamaBanker] = utils.toBalanceValue(10000 * 10 ^ Denomination) }

@@ -5,13 +5,13 @@ BankerDb = BankerDb or sqlite3.open_memory()
 BankerDbAdmin = BankerDbAdmin or require('DbAdmin').new(BankerDb)
 
 HOURLY_EMISSION_LIMIT = 1000000
-LLAMA_TOKEN_PROCESS = "TODO: LlamaTokenProcessId"
+LLAMA_TOKEN_PROCESS = LLAMA_TOKEN_PROCESS or "TODO: LlamaTokenProcessId"
 
-WRAPPED_ARWEAVE_TOKEN_PROCESS = "TODO: WarProcessId"
+WRAPPED_ARWEAVE_TOKEN_PROCESS = WRAPPED_ARWEAVE_TOKEN_PROCESS or "TODO: WarProcessId"
 
-LLAMA_KING_PROCESS = "TODO: LlamaKingProcessId"
+LLAMA_KING_PROCESS = LLAMA_KING_PROCESS or "TODO: LlamaKingProcessId"
 
-LLAMA_FED_CHAT_PROCESS = "TODO: ChatProcessId"
+LLAMA_FED_CHAT_PROCESS = LLAMA_FED_CHAT_PROCESS or "TODO: ChatProcessId"
 
 --#region Initialization
 
@@ -36,10 +36,10 @@ function InitDb()
   BankerDb:exec(SQLITE_TABLE_EMISSIONS)
 end
 
-Initialized = Initialized or false
-if (not Initialized) then
+ChatInitialized = ChatInitialized or false
+if (not ChatInitialized) then
   InitDb()
-  Initialized = true
+  ChatInitialized = true
 end
 
 --#endregion
@@ -48,6 +48,7 @@ Handlers.add(
   "CreditNoticeHandler",
   Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
   function(msg)
+    print("CreditNoticeHandler")
     if msg.From ~= WRAPPED_ARWEAVE_TOKEN_PROCESS then
       return print("Credit Notice not from $wAR")
     end
@@ -122,6 +123,7 @@ Handlers.add(
   "GradePetitionHandler",
   Handlers.utils.hasMatchingTag("Action", "Grade-Petition"),
   function(msg)
+    print("GradePetitionHandler")
     if msg.From ~= LLAMA_KING_PROCESS then
       return print("Petition not from LlamaKing")
     end

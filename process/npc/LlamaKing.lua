@@ -1,10 +1,13 @@
+local ao = require("ao")
 local json = require("json")
 
-LLAMA_BANKER_PROCESS = "TODO: BankerProcessId"
+WRAPPED_ARWEAVE_TOKEN_PROCESS = WRAPPED_ARWEAVE_TOKEN_PROCESS or "TODO: WrappedArweaveProcessId"
 
-LLAMA_FED_CHAT_PROCESS = "TODO: ChatProcessId"
+LLAMA_BANKER_PROCESS = LLAMA_BANKER_PROCESS or "TODO: BankerProcessId"
 
-LLM_WORKERS = {
+LLAMA_FED_CHAT_PROCESS = LLAMA_FED_CHAT_PROCESS or "TODO: ChatProcessId"
+
+LLM_WORKERS = LLM_WORKERS or {
     ['4zQMuZlze_PoKcffdLTkXLv90_DusEENofq3Bg-hHQk'] = {
         busyWithMessage = nil,
         submittedTimestamp = nil,
@@ -187,5 +190,64 @@ Handlers.add(
     Handlers.utils.hasMatchingTag("Action", "Cron-Tick"),
     function(msg)
         clearExpiredLlamas(msg.Timestamp)
+    end
+)
+
+-- Schema
+
+
+PetitionSchemaTags = [[
+{
+  "type": "object",
+  "required": [
+    "Action",
+    "Recipient",
+    "Quantity",
+    "X-Petition"
+  ],
+  "properties": {
+    "Action": {
+      "type": "string",
+      "const": "Transfer"
+    },
+    "Recipient": {
+      "type": "string",
+      "const": "]] .. LLAMA_BANKER_PROCESS .. [["
+    },
+    "Quantity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100,
+      "title": "Wrapped AR Offering"
+    },
+    "X-Petition": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 100,
+      "title": "Your written plea for $LLAMA"
+    }
+  }
+}
+]]
+
+SchemaExternal = {
+    Petition = {
+        Target = WRAPPED_ARWEAVE_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
+        Title = "Petition the Llama King",
+        Description = "Offer some Wrapped Arweave tokens for a chance to earn $LLAMA coin",
+        Schema = {
+            Tags = json.decode(PetitionSchemaTags),
+            -- Data
+            -- Result?
+        },
+    },
+}
+
+Handlers.add(
+    'SchemaExternal',
+    Handlers.utils.hasMatchingTag('Read', 'SchemaExternal'),
+    function(msg)
+        print('SchemaExternal')
+        Send({ Target = msg.From, Tags = { Type = 'SchemaExternal' }, Data = json.encode(SchemaExternal) })
     end
 )

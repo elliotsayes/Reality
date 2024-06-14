@@ -35,7 +35,7 @@ describe('createChatClient', () => {
     const createdChat = await client.readHistory();
     const mostRecentMessage = Object.values(createdChat).sort((a, b) => a.Timestamp - b.Timestamp).pop();
 
-    expect(mostRecentMessage?.Author).toEqual(testWallet.address);
+    expect(mostRecentMessage?.AuthorId).toEqual(testWallet.address);
     expect(mostRecentMessage?.Content).toEqual(initialMessage);
   }, {
     timeout: 20000,

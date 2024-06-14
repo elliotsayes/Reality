@@ -19,10 +19,10 @@ function InitDb()
   VerseDb:exec(SQLITE_TABLE_VERSE_ENTITIES)
 end
 
-Initialized = Initialized or false
-if (not Initialized) then
+VerseInitialized = VerseInitialized or false
+if (not VerseInitialized) then
   InitDb()
-  Initialized = true
+  VerseInitialized = true
 end
 
 --#endregion

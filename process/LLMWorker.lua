@@ -70,8 +70,6 @@ Handlers.add(
     local Grade, Reason = ProcessPetition(systemPrompt, userPrompt)
     print("Grade: " .. Grade .. ", Reason: " .. Reason)
 
-    -- TODO: Post Reason in Chat
-
     ao.send({
       Target = msg.From,
       Tags = {

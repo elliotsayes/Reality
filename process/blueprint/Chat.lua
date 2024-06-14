@@ -21,10 +21,10 @@ function InitDb()
   ChatDb:exec(SQLITE_TABLE_CHAT_MESSAAGES)
 end
 
-Initialized = Initialized or false
-if (not Initialized) then
+ChatInitialized = ChatInitialized or false
+if (not ChatInitialized) then
   InitDb()
-  Initialized = true
+  ChatInitialized = true
 end
 
 --#endregion
@@ -53,7 +53,7 @@ function ValidateContent(content)
   if (string.len(content) < 1) then
     return false
   end
-  if (string.len(content) > 100) then
+  if (string.len(content) > 1000) then
     return false
   end
   -- Note: Input sanitization is not performed here, but by the bind function

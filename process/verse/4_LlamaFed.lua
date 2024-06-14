@@ -39,14 +39,19 @@ VerseEntitiesStatic = {
       Size = { 3, 1 }
     },
   },
-  -- LlamaAssistantProcess
-  ['y_obnQk5mkphKlulM7v1Xyn6IhJKZGhP_BC1qLJq46w'] = {
+  -- LlamaKingDummyProcess
+  ['kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA'] = {
     Position = { 16, 3.5 },
     Type = 'Avatar',
     Interaction = {
       Type = 'SchemaExternalForm',
       Id = 'Petition',
     },
+  },
+  -- LlamaBankerDummyProcess
+  ['ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk-UPVA'] = {
+    Position = { 17, 3.5 },
+    Type = 'Avatar',
   },
   -- ['SomePlayerProcessId'] = {
   --   Position = { 0, 0 },

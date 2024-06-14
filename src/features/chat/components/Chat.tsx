@@ -2,12 +2,12 @@ import { ArweaveId } from "@/features/arweave/lib/model";
 import { ChatClient } from "../contract/chatClient";
 import './Chat.css';
 import { useQuery } from "@tanstack/react-query";
-import { MessagesKeyed } from "../contract/model";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef } from "react";
+import { Message } from "../contract/model";
 
 interface ChatProps {
   userAddress: ArweaveId;
@@ -45,7 +45,7 @@ export function Chat({
     <>
       <div ref={messagesRef} className="chat-page-messages-container">
         {
-          messages.isSuccess ? renderMessages(userAddress, messages.data) : renderMessages(userAddress, {})
+          messages.isSuccess ? renderMessages(userAddress, messages.data) : renderMessages(userAddress, [])
         }
       </div>
 
@@ -60,7 +60,7 @@ export function Chat({
             form.setValue('message', '')
 
             if (message === undefined || message === '') return;
-            await chatClient.postMessage({ Content: message })
+            await chatClient.postMessage({ Content: message, AuthorName: userAddress.slice(0, 5) })
             setTimeout(() => {
               messages.refetch();
               onUserMessageSent?.();
@@ -95,17 +95,19 @@ export function Chat({
   )
 }
 
-function renderMessages(userAddress: string, messageData: MessagesKeyed) {
+function renderMessages(userAddress: string, messages: Array<Message>) {
   // if (this.state.loading)
   //   return (<Loading />);
 
   const divs = [];
 
-  const messageList = Object.values(messageData).map((value) => {
+  const messageList = messages.map((msg) => {
     return {
-      address: value.Author,
-      message: value.Content,
-      time: value.Timestamp,
+      id: msg.MessageId,
+      address: msg.AuthorId,
+      authorName: msg.AuthorName,
+      message: msg.Content,
+      time: msg.Timestamp,
     }
   }).sort((a, b) => a.time - b.time);
 
@@ -114,15 +116,13 @@ function renderMessages(userAddress: string, messageData: MessagesKeyed) {
     const owner = (data.address == userAddress);
 
     divs.push(
-      <div key={i} className={`chat-msg-line ${owner ? 'my-line' : 'other-line'}`}>
+      <div key={data.id} className={`chat-msg-line ${owner ? 'my-line' : 'other-line'}`}>
         {!owner && <img className='chat-msg-portrait' src='/portrait-default.png' />}
 
         <div>
           <div className={`chat-msg-header ${owner ? 'my-line' : 'other-line'}`}>
-            <div className="chat-msg-nickname">{
-              owner
-                ? shortStr(data.address, 15)
-                : shortStr(data.address, 15)}
+            <div className="chat-msg-nickname">
+              {data.authorName}
             </div>
 
             <div className="chat-msg-address">{shortAddr(data.address, 3)}</div>

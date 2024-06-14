@@ -59,7 +59,6 @@ describe('createVerseClient', () => {
     await new Promise((resolve) => setTimeout(resolve, 5000));
     // Check the info is correct
     const createdEntities = await client.readEntitiesDynamic(new Date(0));
-    console.log(createdEntities);
     expect(createdEntities[weaveWorldAoContractClient.aoWallet.address].Position).toEqual(initialPosition);
     expect(createdEntities[weaveWorldAoContractClient.aoWallet.address].Type).toEqual("Avatar");
 

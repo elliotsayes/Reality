@@ -41,12 +41,12 @@ export function Renderer({ userAddress, aoContractClientForProcess, profileClien
     return (
         <div className='relative'>
             <div className='absolute right-0 top-0 bottom-0'>
-                {/* <Chat
+                <Chat
                     userAddress={userAddress}
                     chatClient={current.context.currentVerseId
                             ? chatClientForProcess(current.context.currentVerseId!)
                             : undefined}
-                /> */}
+                />
             </div>
             <PhaserGame />
         </div>

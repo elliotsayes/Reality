@@ -51,7 +51,6 @@ export async function loadVersePhaser(verseClient: VerseClient, profileClient: P
         return { ...entitiesStatic, ...entitiesDynamic }
       },
     })
-    console.log({entities})
 
     const profileEntites = Object.keys(entities).filter((entityId) => {
       const entity = entities[entityId]
