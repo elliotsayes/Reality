@@ -8,7 +8,8 @@ ChatDbAdmin = ChatDbAdmin or require('DbAdmin').new(ChatDb)
 
 SQLITE_TABLE_CHAT_MESSAAGES = [[
   CREATE TABLE IF NOT EXISTS Messages (
-    Id TEXT PRIMARY KEY,
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    MessageId TEXT,
     Timestamp INTEGER,
     AuthorId TEXT,
     AuthorName TEXT,
@@ -83,7 +84,7 @@ Handlers.add(
 
     -- Save message
     local stmt = ChatDb:prepare([[
-      INSERT INTO Messages (Id, Timestamp, AuthorId, AuthorName, Content)
+      INSERT INTO Messages (MessageId, Timestamp, AuthorId, AuthorName, Content)
       VALUES (?, ?, ?, ?, ?)
     ]])
     stmt:bind_values(messageId, timestamp, authorId, authorName, content)
@@ -106,6 +107,21 @@ function ValidateTimestamp(testTimestamp)
   return true
 end
 
+function ValidateLimit(testLimit)
+  if (testLimit == nil) then
+    -- Allow nil limits
+    return true
+  end
+  if (testLimit < 1) then
+    return false
+  end
+  if (testLimit > 100) then
+    return false
+  end
+
+  return true
+end
+
 Handlers.add(
   "ChatHistory",
   Handlers.utils.hasMatchingTag("Action", "ChatHistory"),
@@ -113,6 +129,7 @@ Handlers.add(
     -- print("ChatHistory")
     local timestampStart = tonumber(msg.Tags['Timestamp-Start'])
     local timestampEnd = tonumber(msg.Tags['Timestamp-End'])
+    local limit = tonumber(msg.Tags['Limit'])
 
     -- Validate Individual Timestamps
     if (not ValidateTimestamp(timestampStart)) then
@@ -130,18 +147,28 @@ Handlers.add(
     end
 
     -- Query messages
-    -- Note that timestamps are inclusive and may be nil
+    -- Note that timestamps may be nil
+    -- limit may be nil
     local stmt = ChatDb:prepare([[
       SELECT * FROM Messages
       WHERE (Timestamp >= ? OR ? IS NULL)
       AND (Timestamp <= ? OR ? IS NULL)
+      ORDER BY Timestamp DESC
+      LIMIT ?
     ]])
-    stmt:bind_values(timestampStart, timestampStart, timestampEnd, timestampEnd)
+    stmt:bind_values(
+      timestampStart,
+      timestampStart,
+      timestampEnd,
+      timestampEnd,
+      limit or 100
+    )
 
     local messages = {}
     for row in stmt:nrows() do
       table.insert(messages, {
         Id = row.Id,
+        MessageId = row.MessageId,
         Timestamp = row.Timestamp,
         AuthorId = row.AuthorId,
         AuthorName = row.AuthorName,
