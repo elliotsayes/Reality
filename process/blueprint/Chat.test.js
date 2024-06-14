@@ -300,3 +300,23 @@ test('ChatHistory with Id-Before And Limit', async () => {
     Content: 'Hello, World2!',
   });
 });
+
+test('ChatHistory with Id-After and Limit', async () => {
+  const result = await Send({
+    Action: "ChatHistory",
+    ['Id-After']: 1,
+    Limit: 1,
+  });
+
+  const reply = result.Messages[0];
+  const messages = JSON.parse(reply.Data);
+  assert.equal(messages.length, 1);
+  assert.deepEqual(messages[0], {
+    Id: 2,
+    MessageId: '5678',
+    Timestamp: 20000,
+    AuthorId: 'Some hacker ID',
+    AuthorName: '--Some_-Hacker09',
+    Content: 'Hello, World2!',
+  });
+});

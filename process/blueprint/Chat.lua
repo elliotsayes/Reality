@@ -137,12 +137,16 @@ Handlers.add(
   Handlers.utils.hasMatchingTag("Action", "ChatHistory"),
   function(msg)
     -- print("ChatHistory")
+    local idAfter = tonumber(msg.Tags['Id-After'])
     local idBefore = tonumber(msg.Tags['Id-Before'])
     local timestampStart = tonumber(msg.Tags['Timestamp-Start'])
     local timestampEnd = tonumber(msg.Tags['Timestamp-End'])
     local limit = tonumber(msg.Tags['Limit'])
 
     -- Validate Ids
+    if (not ValidateId(idAfter)) then
+      return print("Invalid Id Start")
+    end
     if (not ValidateId(idBefore)) then
       return print("Invalid Id End")
     end
@@ -169,13 +173,15 @@ Handlers.add(
     -- Default limit is 100
     local stmt = ChatDb:prepare([[
       SELECT * FROM Messages
-      WHERE (Id < ? OR ? IS NULL)
+      WHERE (Id > ? OR ? IS NULL)
+      AND (Id < ? OR ? IS NULL)
       AND (Timestamp >= ? OR ? IS NULL)
       AND (Timestamp <= ? OR ? IS NULL)
       ORDER BY Timestamp DESC
       LIMIT ?
     ]])
     stmt:bind_values(
+      idAfter, idAfter,
       idBefore, idBefore,
       timestampStart, timestampStart,
       timestampEnd, timestampEnd,
