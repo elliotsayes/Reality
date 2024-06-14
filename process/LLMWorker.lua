@@ -79,7 +79,8 @@ Handlers.add(
         Grade = Grade,
         ["Original-Sender"] = msg.Tags["Original-Sender"],
         ["Original-Message"] = msg.Tags["Original-Message"],
-      }
+      },
+      Data = Reason,
     })
   end
 )

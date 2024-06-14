@@ -2,6 +2,8 @@ local json = require("json")
 
 LLAMA_BANKER_PROCESS = "TODO: BankerProcessId"
 
+LLAMA_FED_CHAT_PROCESS = "TODO: ChatProcessId"
+
 LLM_WORKERS = {
     ['4zQMuZlze_PoKcffdLTkXLv90_DusEENofq3Bg-hHQk'] = {
         busyWithMessage = nil,
@@ -17,6 +19,7 @@ MESSAGES_TO_SEND = {
     -- [oriingalMessageId] = {
     --     originalMessageId = '1',
     --     originalSender = 'wallet',
+    --     originalSenderName = 'my name', -- TODO
     --     timestamp = 0,
     --     content = "I want a grant for xyz",
     -- }
@@ -119,11 +122,10 @@ Handlers.add(
         MESSAGES_TO_SEND[originalMessageId] = {
             originalMessageId = originalMessageId,
             originalSender = msg.Tags['Original-Sender'],
+            originalSenderName = msg.Tags['Original-Sender-Name'],
             timestamp = msg.Timestamp,
             content = msg.Data,
         }
-
-        -- print(json.encode(MESSAGES_TO_SEND))
 
         dispatchHighestPriorityMessage(msg.Timestamp)
     end
@@ -142,6 +144,7 @@ Handlers.add(
         end
 
         local grade = tonumber(msg.Tags.Grade)
+        local reason = msg.Data
         local originalMessageId = msg.Tags['Original-Message']
         if (not originalMessageId) then
             return print("No original message id found")
@@ -150,9 +153,10 @@ Handlers.add(
             return print("Message not found")
         end
 
-        removeMessageAndResetLlama(originalMessageId)
+        local originalSender = MESSAGES_TO_SEND[originalMessageId].originalSender
+        local originalSenderName = MESSAGES_TO_SEND[originalMessageId].originalSenderName
 
-        -- TODO: Chat message
+        removeMessageAndResetLlama(originalMessageId)
 
         ao.send({
             Target = LLAMA_BANKER_PROCESS,
@@ -162,6 +166,16 @@ Handlers.add(
                 ['Original-Sender'] = msg.Tags['Original-Sender'],
                 ['Original-Message'] = msg.Tags['Original-Message'],
             }
+        })
+
+        ao.send({
+            Target = LLAMA_FED_CHAT_PROCESS,
+            Tags = {
+                Action = 'ChatMessage',
+                ['Author-Name'] = 'Llama King',
+            },
+            Data = 'Dearest ' ..
+                (originalSenderName or originalSender) .. ', here is my response to your petition: \r\n' .. reason,
         })
 
         dispatchHighestPriorityMessage(msg.Timestamp)
