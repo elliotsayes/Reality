@@ -95,6 +95,16 @@ Handlers.add(
   end
 )
 
+
+function ValidateId(testId)
+  if (testId == nil) then
+    -- Allow nil ids
+    return true
+  end
+
+  return true
+end
+
 function ValidateTimestamp(testTimestamp)
   if (testTimestamp == nil) then
     -- Allow nil timestamps
@@ -127,9 +137,15 @@ Handlers.add(
   Handlers.utils.hasMatchingTag("Action", "ChatHistory"),
   function(msg)
     -- print("ChatHistory")
+    local idBefore = tonumber(msg.Tags['Id-Before'])
     local timestampStart = tonumber(msg.Tags['Timestamp-Start'])
     local timestampEnd = tonumber(msg.Tags['Timestamp-End'])
     local limit = tonumber(msg.Tags['Limit'])
+
+    -- Validate Ids
+    if (not ValidateId(idBefore)) then
+      return print("Invalid Id End")
+    end
 
     -- Validate Individual Timestamps
     if (not ValidateTimestamp(timestampStart)) then
@@ -147,20 +163,22 @@ Handlers.add(
     end
 
     -- Query messages
-    -- Note that timestamps may be nil
-    -- limit may be nil
+    -- Any variable maybe be nil
+    -- Id is exclutive
+    -- Timestamp is inclusive
+    -- Default limit is 100
     local stmt = ChatDb:prepare([[
       SELECT * FROM Messages
-      WHERE (Timestamp >= ? OR ? IS NULL)
+      WHERE (Id < ? OR ? IS NULL)
+      AND (Timestamp >= ? OR ? IS NULL)
       AND (Timestamp <= ? OR ? IS NULL)
       ORDER BY Timestamp DESC
       LIMIT ?
     ]])
     stmt:bind_values(
-      timestampStart,
-      timestampStart,
-      timestampEnd,
-      timestampEnd,
+      idBefore, idBefore,
+      timestampStart, timestampStart,
+      timestampEnd, timestampEnd,
       limit or 100
     )
 

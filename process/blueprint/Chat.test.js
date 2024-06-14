@@ -253,3 +253,50 @@ test('ChatHistory with limit', async () => {
     Content: 'Hello, World3!',
   });
 });
+
+test('ChatHistory with Id-Before', async () => {
+  const result = await Send({
+    Action: "ChatHistory",
+    ['Id-Before']: 3,
+  });
+
+  const reply = result.Messages[0];
+  const messages = JSON.parse(reply.Data);
+  assert.equal(messages.length, 2);
+  assert.deepEqual(messages[0], {
+    Id: 2,
+    MessageId: '5678',
+    Timestamp: 20000,
+    AuthorId: 'Some hacker ID',
+    AuthorName: '--Some_-Hacker09',
+    Content: 'Hello, World2!',
+  });
+  assert.deepEqual(messages[1], {
+    Id: 1,
+    MessageId: '1234',
+    Timestamp: 10003,
+    AuthorId: 'Some hacker ID',
+    AuthorName: '--Some_-Hacker09',
+    Content: 'Hello, World!',
+  });
+});
+
+test('ChatHistory with Id-Before And Limit', async () => {
+  const result = await Send({
+    Action: "ChatHistory",
+    ['Id-Before']: 3,
+    Limit: 1,
+  });
+
+  const reply = result.Messages[0];
+  const messages = JSON.parse(reply.Data);
+  assert.equal(messages.length, 1);
+  assert.deepEqual(messages[0], {
+    Id: 2,
+    MessageId: '5678',
+    Timestamp: 20000,
+    AuthorId: 'Some hacker ID',
+    AuthorName: '--Some_-Hacker09',
+    Content: 'Hello, World2!',
+  });
+});
