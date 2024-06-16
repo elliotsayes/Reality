@@ -39,7 +39,6 @@ export class WarpableScene extends Scene
     const pixelated = this.cameras.main.postFX.addPixelate(-1);
     
     // Transition to next scene
-    this.cameras.main.fadeOut(200)
     this.add.tween({
         targets: pixelated,
         duration: 200,
