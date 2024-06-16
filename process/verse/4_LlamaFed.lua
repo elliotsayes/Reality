@@ -17,13 +17,13 @@ VerseParameters = {
     Tileset = {
       Type = 'Fixed',
       Format = 'PNG',
-      TxId = 'M4ztlWptdamLxlUVYwnDgfu2AcweUnHWonL3ikiErv0', -- TxId of the tileset in PNG format
+      TxId = 'iF0xdDoGMGjnEYD0s4AbsZz2OK7xROj_KnPZ_3wZFRU', -- TxId of the tileset in PNG format
     },
     -- This will be a tilemap the interior of the llama fed
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = '5BInm1jnwj__yuCRo1kebIGmhKPVsEOjrzC87P1w5v0', -- TxId of the tilemap in TMJ format
+      TxId = 'KNUEc-ZsXB7ri-qBuXT-TfxNu41Dn2eUIU2FFYDjWu8', -- TxId of the tilemap in TMJ format
     },
   },
 }
@@ -41,7 +41,7 @@ VerseEntitiesStatic = {
   },
   -- LlamaKingDummyProcess
   ['kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA'] = {
-    Position = { 16, 3.5 },
+    Position = { 15.875, 2.5 },
     Type = 'Avatar',
     Interaction = {
       Type = 'SchemaExternalForm',
@@ -49,8 +49,8 @@ VerseEntitiesStatic = {
     },
   },
   -- LlamaBankerDummyProcess
-  ['ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk-UPVA'] = {
-    Position = { 17, 3.5 },
+  ['ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk'] = {
+    Position = { 18.875, 2.5 },
     Type = 'Avatar',
   },
   -- ['SomePlayerProcessId'] = {

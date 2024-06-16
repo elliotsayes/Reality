@@ -25,6 +25,14 @@ const DEPTH_PLAYER_BASE = 0; // => 400
 
 const OBJECT_SIZE_ENTITY = 2;
 
+const kingEntityIds = [
+  'kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA'
+]
+
+const bankerEntityIds = [
+  'ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk',
+]
+
 export class VerseScene extends WarpableScene {
   playerAddress!: string;
   verseId!: string;
@@ -313,12 +321,19 @@ export class VerseScene extends WarpableScene {
     
     if (entity.Type === 'Avatar') {
       // TODO: SchemaForm
-      if (entity.Interaction?.Type === 'SchemaExternalForm') {
+      if (kingEntityIds.includes(entityId)) {
         // Llama Assistant
-        sprite.play(`llama_5_idle`);
+        sprite.play(`llama_6_idle`);
         sprite.on('pointerdown', () => {
           console.log(`Clicked on SchemaFormExternal ${entityId}`)
           this.showSchemaExternalForm(entityId, entity);
+        }, this)
+      } else if (bankerEntityIds.includes(entityId)) {
+        // Banker
+        sprite.play(`llama_8_idle`);
+        sprite.on('pointerdown', () => {
+          console.log(`Clicked on Banker ${entityId}`)
+          // this.showSchemaExternalForm(entityId, entity);
         }, this)
       } else {
         sprite.setSize(

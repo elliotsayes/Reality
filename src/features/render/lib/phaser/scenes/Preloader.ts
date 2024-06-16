@@ -68,7 +68,7 @@ export class Preloader extends WarpableScene
 
         // this.load.atlas('faune', 'sprites/atlas/faune.png', 'sprites/atlas/faune.json');
 
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 10; i++) {
             const llama_name = `llama_${i}`;
             this.load.spritesheet(llama_name, `sprites/llama/${llama_name}.png`, {
                 frameWidth: 24,
@@ -84,7 +84,7 @@ export class Preloader extends WarpableScene
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         // this.scene.start('MainMenu');
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 10; i++) {
             const llama_name = `llama_${i}`;
             
             this.anims.create({
