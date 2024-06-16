@@ -196,7 +196,8 @@ Handlers.add(
 -- Schema
 
 
-PetitionSchemaTags = [[
+function PetitionSchemaTags()
+    return [[
 {
   "type": "object",
   "required": [
@@ -229,25 +230,28 @@ PetitionSchemaTags = [[
   }
 }
 ]]
+end
 
-SchemaExternal = {
-    Petition = {
-        Target = WRAPPED_ARWEAVE_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
-        Title = "Petition the Llama King",
-        Description = "Offer some Wrapped Arweave tokens for a chance to earn $LLAMA coin",
-        Schema = {
-            Tags = json.decode(PetitionSchemaTags),
-            -- Data
-            -- Result?
+function SchemaExternal()
+    return {
+        Petition = {
+            Target = WRAPPED_ARWEAVE_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
+            Title = "Petition the Llama King",
+            Description = "Offer some Wrapped Arweave tokens for a chance to earn $LLAMA coin",
+            Schema = {
+                Tags = json.decode(PetitionSchemaTags()),
+                -- Data
+                -- Result?
+            },
         },
-    },
-}
+    }
+end
 
 Handlers.add(
     'SchemaExternal',
     Handlers.utils.hasMatchingTag('Read', 'SchemaExternal'),
     function(msg)
         print('SchemaExternal')
-        Send({ Target = msg.From, Tags = { Type = 'SchemaExternal' }, Data = json.encode(SchemaExternal) })
+        Send({ Target = msg.From, Tags = { Type = 'SchemaExternal' }, Data = json.encode(SchemaExternal()) })
     end
 )
