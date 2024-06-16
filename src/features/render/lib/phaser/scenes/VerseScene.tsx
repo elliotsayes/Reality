@@ -68,6 +68,8 @@ export class VerseScene extends WarpableScene {
 
   schemaForm?: Phaser.GameObjects.DOMElement;
 
+  slowMs: number = 120;
+
   constructor() {
     super('VerseScene');
   }
@@ -88,6 +90,7 @@ export class VerseScene extends WarpableScene {
     this.isWarping = false;
     this.activeEntityEvent = undefined;
     this.layers = undefined;
+    this.slowMs = 120;
 
     this.playerAddress = playerAddress;
     this.verseId = verseId;
@@ -310,12 +313,21 @@ export class VerseScene extends WarpableScene {
       }
       this.physics.add.overlap(this.player, sprite, () => {
         console.log(`Collided with entity ${entityId}`)
+        if (this.isWarping) return;
+        this.isWarping = true;
         emitSceneEvent({
           type: 'Warp Immediate',
           verseId: entityId,
         })
-        this.camera.fadeOut(2000);
-        this.isWarping = true;
+        this.camera.fadeOut(5_000);
+        this.tweens.addCounter({
+          duration: 2_000,
+          from: 60,
+          to: 0,
+          onUpdate: (tween) => {
+            this.slowMs = tween.getValue();
+          },
+        });
       }, undefined, this);
     }
     
@@ -372,7 +384,8 @@ export class VerseScene extends WarpableScene {
     if (!this.player) return;
     if (!this.keys) return;
 
-    const speed = this.isWarping ? 20 : 120;
+    const speed = this.isWarping ? this.slowMs : 120;
+    console.log(`Speed: ${speed}, slowMs: ${this.slowMs}`)
 
     if (this.keys.left.isDown)
     {
