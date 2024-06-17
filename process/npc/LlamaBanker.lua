@@ -153,6 +153,14 @@ Handlers.add(
     local originalSender = msg.Tags['Original-Sender']
     SendLlamaToken(weightedEmissions, originalSender, msg.Timestamp)
 
+    local chatMessage = 'Sorry ' ..
+        originalSender ..
+        ', the king specifically requested that you receive no $LLAMA coin... maybe you could try again?'
+    if (weightedEmissions > 0) then
+      chatMessage = 'Congratulations ' ..
+          originalSender .. ', you have been granted ' .. FormatLlamaTokenAmount(weightedEmissions) .. ' $LLAMA coins!'
+    end
+
     -- Write in Chat
     Send({
       Target = LLAMA_FED_CHAT_PROCESS,
@@ -160,8 +168,7 @@ Handlers.add(
         Action = 'ChatMessage',
         ['Author-Name'] = 'LlamaBanker',
       },
-      Data = 'Congratulations ' ..
-          originalSender .. ', you have been granted ' .. FormatLlamaTokenAmount(weightedEmissions) .. ' $LLAMA coins!',
+      Data = chatMessage,
     })
   end
 )
