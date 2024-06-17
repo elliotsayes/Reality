@@ -33,7 +33,7 @@ test('Petition Handler with Original-Message', async () => {
   })
 
   const message = result.Messages[0]
-  assert.equal(message.Target, LlmWorkerId2)
+  assert.equal(message.Target, LlmWorkerId1)
   // assert.equal(message.Tags.Action, 'Petition')
   assert.equal(message.Data, plea)
 })
@@ -48,7 +48,7 @@ test('Petition Handler with different Original-Message', async () => {
   })
 
   const message = result.Messages[0]
-  assert.equal(message.Target, LlmWorkerId1)
+  assert.equal(message.Target, LlmWorkerId2)
   // assert.equal(message.Tags.Action, 'Petition')
   assert.equal(message.Data, plea)
 })
@@ -58,10 +58,13 @@ test('Petition Handler with duplicate Original-Message', async () => {
     From: "TODO: BankerProcessId",
     Action: "Petition",
     ["Original-Message"]: "MyCreditNoticeMessageId",
+    ["Original-Sender"]: "SOME SENDER",
+    ["Original-Sender-Name"]: "SOME SENDER NAME",
   })
 
   assert.equal(result.Output.data, "Message already exists")
 })
+
 test('Inference Response Handler Unknow Sender', async () => {
   const result = await Send({
     From: "Some hacker",
@@ -90,7 +93,8 @@ test('Inference Response Handler', async () => {
     Action: "Inference-Response",
     ["Original-Message"]: "MyCreditNoticeMessageId",
     ["Original-Sender"]: "SOME SENDER",
-    "Grade": "1"
+    "Grade": "1",
+    Data: "My response",
   })
 
   const message = result.Messages[0]
@@ -103,7 +107,8 @@ test('Inference Response Handler Duplicate', async () => {
     Action: "Inference-Response",
     ["Original-Message"]: "MyCreditNoticeMessageId",
     ["Original-Sender"]: "SOME SENDER",
-    "Grade": "1"
+    "Grade": "1",
+    Data: "My response",
   })
 
   assert.equal(result.Output.data, "Message not found")
@@ -116,11 +121,11 @@ test('LLM_WORKERS State', async () => {
   })
 
   assert.deepEqual(JSON.parse(result.Output.data.output), {
-    '4zQMuZlze_PoKcffdLTkXLv90_DusEENofq3Bg-hHQk': {
+    '4zQMuZlze_PoKcffdLTkXLv90_DusEENofq3Bg-hHQk': [],
+    FAKEWORKER2: {
       busyWithMessage: 'MyCreditNoticeMessageId2',
-      submittedTimestamp: 10000
+      submittedTimestamp: 10003,
     },
-    FAKEWORKER2: []
   })
 })
 

@@ -15,13 +15,13 @@ SQLITE_TABLE_VERSE_ENTITIES = [[
   );
 ]]
 
-function InitDb()
+function VerseDbInit()
   VerseDb:exec(SQLITE_TABLE_VERSE_ENTITIES)
 end
 
 VerseInitialized = VerseInitialized or false
 if (not VerseInitialized) then
-  InitDb()
+  VerseDbInit()
   VerseInitialized = true
 end
 

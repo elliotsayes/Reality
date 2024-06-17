@@ -6,7 +6,7 @@ ChatDbAdmin = ChatDbAdmin or require('DbAdmin').new(ChatDb)
 
 --#region Initialization
 
-SQLITE_TABLE_CHAT_MESSAAGES = [[
+SQLITE_TABLE_CHAT_MESSAGES = [[
   CREATE TABLE IF NOT EXISTS Messages (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     MessageId TEXT,
@@ -17,13 +17,13 @@ SQLITE_TABLE_CHAT_MESSAAGES = [[
   );
 ]]
 
-function InitDb()
-  ChatDb:exec(SQLITE_TABLE_CHAT_MESSAAGES)
+function ChatDbInit()
+  ChatDb:exec(SQLITE_TABLE_CHAT_MESSAGES)
 end
 
 ChatInitialized = ChatInitialized or false
 if (not ChatInitialized) then
-  InitDb()
+  ChatDbInit()
   ChatInitialized = true
 end
 

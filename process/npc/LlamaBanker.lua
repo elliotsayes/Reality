@@ -4,8 +4,11 @@ local sqlite3 = require('lsqlite3')
 BankerDb = BankerDb or sqlite3.open_memory()
 BankerDbAdmin = BankerDbAdmin or require('DbAdmin').new(BankerDb)
 
-HOURLY_EMISSION_LIMIT = 1000000
 LLAMA_TOKEN_PROCESS = LLAMA_TOKEN_PROCESS or "TODO: LlamaTokenProcessId"
+LLAMA_TOKEN_DENOMINATION = LLAMA_TOKEN_DENOMINATION or 12
+LLAMA_TOKEN_MULTIPLIER = 10 ^ LLAMA_TOKEN_DENOMINATION
+
+HOURLY_EMISSION_LIMIT = 100 * LLAMA_TOKEN_MULTIPLIER
 
 WRAPPED_ARWEAVE_TOKEN_PROCESS = WRAPPED_ARWEAVE_TOKEN_PROCESS or "TODO: WarProcessId"
 
@@ -48,7 +51,7 @@ Handlers.add(
   "CreditNoticeHandler",
   Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
   function(msg)
-    print("CreditNoticeHandler")
+    -- print("CreditNoticeHandler")
     if msg.From ~= WRAPPED_ARWEAVE_TOKEN_PROCESS then
       return print("Credit Notice not from $wAR")
     end
@@ -98,8 +101,8 @@ function CalculateBaseEmissions(grade, currentTime)
     "SELECT SUM(Amount) as Value FROM Emissions WHERE Timestamp > " .. currentTime - 3600
   )[1].Value or 0
   local adjustment = HOURLY_EMISSION_LIMIT /
-      math.max(HOURLY_EMISSION_LIMIT, totalEmissions * 200) -- 10k
-  return 100 * adjustment * grade
+      math.max(HOURLY_EMISSION_LIMIT, totalEmissions * 2 * LLAMA_TOKEN_MULTIPLIER) -- 10k
+  return LLAMA_TOKEN_MULTIPLIER * adjustment * grade
 end
 
 function SendLlamaToken(amount, recipient, currentTime)
@@ -119,11 +122,15 @@ function SendLlamaToken(amount, recipient, currentTime)
   })
 end
 
+function FormatLlamaTokenAmount(amount)
+  return string.format("%.2f", amount / LLAMA_TOKEN_MULTIPLIER)
+end
+
 Handlers.add(
   "GradePetitionHandler",
   Handlers.utils.hasMatchingTag("Action", "Grade-Petition"),
   function(msg)
-    print("GradePetitionHandler")
+    -- print("GradePetitionHandler")
     if msg.From ~= LLAMA_KING_PROCESS then
       return print("Petition not from LlamaKing")
     end
@@ -153,7 +160,8 @@ Handlers.add(
         Action = 'ChatMessage',
         ['Author-Name'] = 'LlamaBanker',
       },
-      Data = 'Congratulations ' .. originalSender .. ', you have been granted ' .. weightedEmissions .. ' $LLAMA coins!',
+      Data = 'Congratulations ' ..
+          originalSender .. ', you have been granted ' .. FormatLlamaTokenAmount(weightedEmissions) .. ' $LLAMA coins!',
     })
   end
 )
@@ -192,7 +200,7 @@ Handlers.add(
         Action = 'ChatMessage',
         ['Author-Name'] = 'LlamaBanker',
       },
-      Data = 'Address ' .. account .. ', you currently have ' .. balance .. ' $LLAMA coins!',
+      Data = 'Address ' .. account .. ', you currently have ' .. FormatLlamaTokenAmount(balance) .. ' $LLAMA coins!',
     })
   end
 )

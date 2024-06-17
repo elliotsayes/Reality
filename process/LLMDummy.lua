@@ -1,4 +1,5 @@
 local responseLookup = {
+  "Not even worth a penny",
   "Terrible, you should be ashamed of yourself.",
   "You should be embarrassed.",
   "Almost worthless",
@@ -13,8 +14,8 @@ local responseLookup = {
 
 function ProcessPetition(systemPrompt, userPrompt)
   -- Random grade 1-10
-  local gradeNumber = math.random(1, 10)
-  return tostring(gradeNumber), responseLookup[gradeNumber]
+  local gradeNumber = math.random(0, 10)
+  return tostring(gradeNumber), responseLookup[gradeNumber + 1]
 end
 
 Handlers.add(
