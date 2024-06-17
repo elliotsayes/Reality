@@ -6,7 +6,6 @@ import { AoWallet } from "@/features/ao/lib/aoWallet";
 import { connect } from "@permaweb/aoconnect";
 import { ArweaveId } from "@/features/arweave/lib/model";
 
-
 describe('createProfileClient', () => {
   let testWallet: AoWallet;
   let profileTestAoContractClient: AoContractClient;
@@ -21,34 +20,36 @@ describe('createProfileClient', () => {
     expect(client).toMatchSnapshot();
   })
 
-  test('WeaveWorld createEntity & update', async () => {
+  test('createProfile & update', async () => {
     const client = createProfileClient(profileTestAoContractClient)
 
     const initialName = "Test Name";
-    const initialAvatarSeed = "a1204030b070a01";
     const createMsgId = await client.createProfile({
-      Name: initialName,
-      AvatarSeed: initialAvatarSeed,
+      UserName: initialName,
+      DateCreated: Date.now(),
+      DateUpdated: Date.now(),
+      ProfileImage: "",
+      CoverImage: "",
+      Description: "",
+      DisplayName: ""
     });
     expect(ArweaveId.safeParse(createMsgId).success).toBe(true);
     // Wait for the message to be processed
     await new Promise((resolve) => setTimeout(resolve, 5000));
     // Check the info is correct
-    const createdProfile = await client.readProfiles([testWallet.address]);
-    expect(createdProfile[testWallet.address].Name).toEqual(initialName);
-    expect(createdProfile[testWallet.address].AvatarSeed).toEqual(initialAvatarSeed);
+    const createdProfile = (await client.readProfiles([testWallet.address]))[0];
+    expect(createdProfile.Username).toEqual(initialName);
 
     const updatedName = "New Name";
     const updateMsgId = await client.updateProfile({
-      Name: updatedName,
+      UserName: updatedName,
     });
     expect(ArweaveId.safeParse(updateMsgId).success).toBe(true);
     // Wait for the message to be processed
     await new Promise((resolve) => setTimeout(resolve, 5000));
     // Check the info is correct
-    const updatedProfile = await client.readProfiles([testWallet.address]);
-    expect(updatedProfile[testWallet.address].Name).toEqual(updatedName);
-    expect(updatedProfile[testWallet.address].AvatarSeed).toEqual(initialAvatarSeed);
+    const updatedProfile = (await client.readProfiles([testWallet.address]))[0];
+    expect(updatedProfile.Username).toEqual(updatedName);
   }, {
     timeout: 20000,
   })

@@ -1,31 +1,33 @@
 import { ArweaveId } from "@/features/arweave/lib/model";
 import { z } from "zod";
 
-// Placeholder
-// TODO: Define this properly
 export const ProfileInfo = z.object({
-  Created: z.number(),
-  LastSeen: z.number(),
-  Name: z.string(),
-  Following: z.record(ArweaveId),
-  AvatarSeed: z.optional(z.string()),
-  Status: z.optional(z.string()),
-  CurrentWorldId: z.optional(ArweaveId),
+  ProfileId: ArweaveId,
+  Username: z.string(),
+  ProfileImage: z.string(),
+  CoverImage: z.string(),
+  Description: z.string(),
+  DisplayName: z.string(),
 });
 export type ProfileInfo = z.infer<typeof ProfileInfo>;
 
-export const ProfileInfoKeyed = z.record(
-  ArweaveId,
-  ProfileInfo,
-);
-export type ProfileInfoKeyed = z.infer<typeof ProfileInfoKeyed>;
-
 export const ProfileInfoCreate = ProfileInfo.omit({
-  Created: true,
-  LastSeen: true,
-  Following: true,
+  ProfileId: true,
+  Username: true,
+}).extend({
+  UserName: z.string(),
+  DateCreated: z.number(),
+  DateUpdated: z.number(),
+}).partial({
+  // Username: true,
+  // ProfileImage: true,
+  // CoverImage: true,
+  // Description: true,
+  // DisplayName: true,
 });
 export type ProfileInfoCreate = z.infer<typeof ProfileInfoCreate>;
 
-export const ProfileInfoUpdate = ProfileInfoCreate.partial();
+export const ProfileInfoUpdate = ProfileInfoCreate.omit({
+  DateCreated: true,
+}).partial();
 export type ProfileInfoUpdate = z.infer<typeof ProfileInfoUpdate>;
