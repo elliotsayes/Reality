@@ -11,6 +11,7 @@ import { BoxCentered, Point2D, Size2D } from "../../model";
 import { FormOverlay } from "@/features/render/components/FormOverlay";
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import { isDebug } from "../game";
+import { truncateAddress } from "@/features/arweave/lib/utils";
 
 const SCALE_TILES = 3;
 const SCALE_ENTITIES = 2;
@@ -61,7 +62,7 @@ export class VerseScene extends WarpableScene {
 
   isWarping: boolean = false;
 
-  entitySprites: Record<string, Phaser.Physics.Arcade.Sprite> = {};
+  entityContainers: Record<string, Phaser.GameObjects.Container> = {};
   entityTargets: Record<string, Phaser.Physics.Arcade.Sprite> = {};
 
   activeEntityEvent?: Phaser.GameObjects.GameObject;
@@ -213,17 +214,17 @@ export class VerseScene extends WarpableScene {
     }
 
     console.log(this.verse.entities)
-    this.entitySprites = Object.keys(this.verse.entities)
+    this.entityContainers = Object.keys(this.verse.entities)
       .filter(entityId => entityId !== this.playerAddress)
       .map((entityId) => {
         const entity = this.verse.entities[entityId];
-        const sprite = this.createEntitySprite(entityId, entity);
+        const entityContainer = this.createEntityContainer(entityId, entity);
 
         return {
-          [entityId]: sprite,
+          [entityId]: entityContainer,
         };
     }).reduce((acc, val) => ({ ...acc, ...val }), {});
-    console.log(`Created ${this.entitySprites.length} entities`)
+    console.log(`Created ${this.entityContainers.length} entities`)
 
     if (isDebug) {
       this.add.text(this.spawnPixel[0], this.spawnPixel[1], 'X', {
@@ -240,7 +241,7 @@ export class VerseScene extends WarpableScene {
     emitSceneReady(this);
   }
 
-  public mergeEntities(entityUpdates: Awaited<ReturnType<VerseClient['readAllEntities']>>)
+  public mergeEntities(entityUpdates: Awaited<ReturnType<VerseClient['readEntitiesDynamic']>>)
   {
     Object.keys(entityUpdates).forEach((entityId) => {
       // Ignore player character
@@ -248,15 +249,16 @@ export class VerseScene extends WarpableScene {
 
       const entityUpdate = entityUpdates[entityId];
 
-      if (this.entitySprites[entityId]) {
+      if (this.entityContainers[entityId]) {
         console.log(`Updating entity ${entityId}`)
-        const entitySprite = this.entitySprites[entityId];
+        const entityCointainer = this.entityContainers[entityId]
+        const entitySprite = entityCointainer.getAt(0) as Phaser.GameObjects.Sprite;
         
         const updatePosition: Point2D = {
           x: entityUpdate.Position[0] * this.tileSizeScaled[0],
           y: entityUpdate.Position[1] * this.tileSizeScaled[1],
         }
-        if (!this.withinBox(entitySprite, {
+        if (!this.withinBox(entityCointainer, {
           center: updatePosition,
           edgeLength: SCALE_ENTITIES * OBJECT_SIZE_ENTITY * 2,
         })) {
@@ -273,10 +275,10 @@ export class VerseScene extends WarpableScene {
             .setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
 
           entitySprite.play('llama_4_walk')
-          this.physics.moveToObject(entitySprite, this.entityTargets[entityId], 120);
-          this.physics.add.overlap(entitySprite, this.entityTargets[entityId], () => {
-            console.log(`Entity ${entityId} collided with target`)
-            entitySprite.body?.stop();
+          this.physics.moveToObject(entityCointainer, this.entityTargets[entityId], 120);
+          this.physics.add.overlap(entityCointainer, this.entityTargets[entityId], () => {
+            console.log(`Entity ${entityId} collided with target`);
+            (entityCointainer.body as Phaser.Physics.Arcade.Body).setVelocity(0, 0);
             entitySprite.play('llama_4_idle')
             // entitySprite.setPosition(updatePosition.x, updatePosition.y);
 
@@ -286,16 +288,20 @@ export class VerseScene extends WarpableScene {
         }
       } else {
         console.log(`Creating entity ${entityId}`)
-        const entitySprite = this.createEntitySprite(entityId, entityUpdate);
-        this.entitySprites[entityId] = entitySprite;
+        const entitySprite = this.createEntityContainer(entityId, entityUpdate);
+        this.entityContainers[entityId] = entitySprite;
       }
     });
   }
 
-  createEntitySprite(entityId: string, entity: VerseEntity) {
-    const sprite = this.physics.add.sprite(
+  createEntityContainer(entityId: string, entity: VerseEntity) {
+    const container = this.add.container(
       entity.Position[0] * (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
       entity.Position[1] * (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
+    );
+    
+    const sprite = this.add.sprite(
+      0, 0,
       entity.Type === 'Avatar' ? 'llama_4' : 'invis',
     )
       .setScale(SCALE_ENTITIES)
@@ -348,10 +354,6 @@ export class VerseScene extends WarpableScene {
           // this.showSchemaExternalForm(entityId, entity);
         }, this)
       } else {
-        sprite.setSize(
-          OBJECT_SIZE_ENTITY,
-          OBJECT_SIZE_ENTITY,
-        );
         sprite.play(`llama_4_idle`);
         sprite.on('pointerdown', () => {
           sprite.play(`llama_4_emote`);
@@ -366,7 +368,35 @@ export class VerseScene extends WarpableScene {
       console.log(`Hovered over entity ${entityId}`)
     }, this)
 
-    return sprite;
+    const nameText = this.add.text(
+      0, -40,
+      truncateAddress(entityId, 3),
+      { 
+        font: '14px Courier bold',
+        color: '#dddddd',
+        strokeThickness: 2,
+        stroke: '#111111',
+        // resolution: 8,
+        shadow: {
+          offsetX: 1,
+          offsetY: 1,
+          color: '#111111',
+          blur: 1,
+          stroke: true,
+          fill: true,
+        },
+      },
+    ).setOrigin(0.5);
+
+    container.add(sprite);
+    container.add(nameText);
+    container.setSize(
+      OBJECT_SIZE_ENTITY,
+      OBJECT_SIZE_ENTITY,
+    );
+    this.physics.world.enable(container);
+
+    return container;
   }
 
   public withinBox(point: Point2D, bounds: BoxCentered)
