@@ -56,6 +56,15 @@ test('ChatMessage bad message', async () => {
   assert.equal(result.Output.data, "Invalid Content")
 });
 
+test('ChatCount no messages', async () => {
+  const result = await Send({
+    Action: "ChatCount",
+  });
+
+  const response = result.Messages[0]
+  assert.equal(response.Data, "0")
+});
+
 test('ChatMessage valid', async () => {
   const result = await Send({
     From: "Some hacker ID",
@@ -84,6 +93,15 @@ test('ChatMessage valid', async () => {
     AuthorName: '--Some_-Hacker09',
     Content: 'Hello, World!',
   })
+});
+
+test('ChatCount one message', async () => {
+  const result = await Send({
+    Action: "ChatCount",
+  });
+
+  const response = result.Messages[0]
+  assert.equal(response.Data, "1")
 });
 
 test('ChatHistory no timestamps', async () => {

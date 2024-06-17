@@ -139,6 +139,26 @@ function ValidateLimit(testLimit)
 end
 
 Handlers.add(
+  'ChatCount',
+  Handlers.utils.hasMatchingTag('Action', 'ChatCount'),
+  function(msg)
+    -- print("ChatCount")
+    local stmt = ChatDb:prepare("SELECT COUNT(*) FROM Messages")
+    stmt:step()
+    local count = stmt:get_value(0)
+    stmt:finalize()
+
+    Send({
+      Target = msg.From,
+      Tags = {
+        Action = 'ChatCountResponse',
+      },
+      Data = tostring(count)
+    })
+  end
+)
+
+Handlers.add(
   "ChatHistory",
   Handlers.utils.hasMatchingTag("Action", "ChatHistory"),
   function(msg)
