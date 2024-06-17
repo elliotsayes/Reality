@@ -11,8 +11,10 @@ LLAMA_TOKEN_MULTIPLIER = 10 ^ LLAMA_TOKEN_DENOMINATION
 HOURLY_EMISSION_LIMIT = 100 * LLAMA_TOKEN_MULTIPLIER
 
 WRAPPED_ARWEAVE_TOKEN_PROCESS = WRAPPED_ARWEAVE_TOKEN_PROCESS or "TODO: WarProcessId"
-WRAPPED_ARWEAVE_MIN_QUANTITY = WRAPPED_ARWEAVE_MIN_QUANTITY or 0.01
-WRAPPED_ARWEAVE_MAX_QUANTITY = WRAPPED_ARWEAVE_MAX_QUANTITY or 0.1
+WRAPPED_ARWEAVE_DENOMINATION = 12
+WRAPPED_ARWEAVE_MULTIPLIER = 10 ^ WRAPPED_ARWEAVE_DENOMINATION
+WRAPPED_ARWEAVE_MIN_QUANTITY = 1000000000   -- 1 Billion
+WRAPPED_ARWEAVE_MAX_QUANTITY = 100000000000 -- 100 Billion
 
 LLAMA_KING_PROCESS = LLAMA_KING_PROCESS or "TODO: LlamaKingProcessId"
 
@@ -49,10 +51,21 @@ end
 
 --#endregion
 
-function ValidateQuantity(quantity)
+function ValidateWarQuantity(quantity)
   return quantity ~= nil
       and quantity >= WRAPPED_ARWEAVE_MIN_QUANTITY
       and quantity <= WRAPPED_ARWEAVE_MAX_QUANTITY
+end
+
+function ValidateSenderName(senderName)
+  return senderName ~= nil
+      and string.len(senderName) > 0
+      and string.len(senderName) <= 20
+      and not string.match(senderName, "[^a-zA-Z0-9\\ _-]")
+end
+
+function FormatWarTokenAmount(amount)
+  return string.format("%.4f", amount / WRAPPED_ARWEAVE_MULTIPLIER)
 end
 
 Handlers.add(
@@ -61,13 +74,13 @@ Handlers.add(
   function(msg)
     -- print("CreditNoticeHandler")
     if msg.From ~= WRAPPED_ARWEAVE_TOKEN_PROCESS then
-      return print("Credit Notice not from $wAR")
+      return print("Credit Notice not from wrapped $AR")
     end
 
     local messageId = msg.Id
     local sender = msg.Tags.Sender
     local quantity = tonumber(msg.Tags.Quantity)
-    if not ValidateQuantity(quantity) then
+    if not ValidateWarQuantity(quantity) then
       return print("Invalid quantity")
     end
 
@@ -88,6 +101,7 @@ Handlers.add(
       Tags = {
         Action = 'Petition',
         ['Original-Sender'] = sender,
+        ['Original-Sender-Name'] = senderName,
         ['Original-Message'] = messageId,
       },
       Data = petition,
@@ -100,7 +114,7 @@ Handlers.add(
         Action = 'ChatMessage',
         ['Author-Name'] = 'LlamaBanker',
       },
-      Data = 'Received ' .. quantity .. ' $wAR from ' .. (senderName or sender),
+      Data = 'Received ' .. FormatWarTokenAmount(quantity) .. ' wrapped $AR from ' .. (senderName or sender),
     })
   end
 )
@@ -163,18 +177,22 @@ Handlers.add(
     -- TODO: Message chat / DM
 
     local originalSender = msg.Tags['Original-Sender']
+    local originalSenderName = msg.Tags['Original-Sender-Name']
+    local useSenderName = originalSenderName or originalSender
+
     SendLlamaToken(weightedEmissions, originalSender, msg.Timestamp)
 
     local chatMessage = 'Sorry ' ..
-        originalSender ..
+        useSenderName ..
         ', the king specifically requested that you receive no $LLAMA coin... maybe you could try again?'
     if (grade > 0) then
       if (weightedEmissions > 0) then
         chatMessage = 'Congratulations ' ..
-            originalSender .. ', you have been granted ' .. FormatLlamaTokenAmount(weightedEmissions) .. ' $LLAMA coins!'
+            useSenderName .. ', you have been granted ' .. FormatLlamaTokenAmount(weightedEmissions) .. ' $LLAMA coins!'
       else
         chatMessage = 'I\'m sorry ' ..
-            originalSender .. ', but it looks like I have no more $LLAMA coins to give... maybe try again in an hour?'
+            useSenderName ..
+            ', but it looks like I have no more $LLAMA coins to give... maybe try again in an hour or so?'
       end
     end
 

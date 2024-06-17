@@ -158,6 +158,7 @@ Handlers.add(
 
         local originalSender = MESSAGES_TO_SEND[originalMessageId].originalSender
         local originalSenderName = MESSAGES_TO_SEND[originalMessageId].originalSenderName
+        local useSender = originalSenderName or originalSender
 
         removeMessageAndResetLlama(originalMessageId)
 
@@ -166,8 +167,9 @@ Handlers.add(
             Tags = {
                 Action = "Grade-Petition",
                 Grade = tostring(grade),
-                ['Original-Sender'] = msg.Tags['Original-Sender'],
-                ['Original-Message'] = msg.Tags['Original-Message'],
+                ['Original-Message'] = originalMessageId,
+                ['Original-Sender'] = originalSender,
+                ['Original-Sender-Name'] = originalSenderName,
             }
         })
 
@@ -177,8 +179,7 @@ Handlers.add(
                 Action = 'ChatMessage',
                 ['Author-Name'] = 'Llama King',
             },
-            Data = 'Dearest ' ..
-                (originalSenderName or originalSender) .. ', here is my response to your petition: \r\n' .. reason,
+            Data = 'Dearest ' .. useSender .. ', here is my response to your petition: \r\n' .. reason,
         })
 
         dispatchHighestPriorityMessage(msg.Timestamp)
@@ -204,7 +205,8 @@ function PetitionSchemaTags()
     "Action",
     "Recipient",
     "Quantity",
-    "X-Petition"
+    "X-Petition",
+    "X-Sender-Name"
   ],
   "properties": {
     "Action": {
@@ -217,15 +219,21 @@ function PetitionSchemaTags()
     },
     "Quantity": {
       "type": "integer",
-      "minimum": 0.01,
-      "maximum": 0.1,
-      "title": "Wrapped AR Offering"
+      "minimum": 1000000000,
+      "maximum": 100000000000,
+      "title": "Wrapped $AR (0.001-0.1) offering. Enter the amount in winston (1B-100B)"
     },
     "X-Petition": {
       "type": "string",
       "minLength": 2,
       "maxLength": 100,
       "title": "Your written plea for $LLAMA"
+    },
+    "X-Sender-Name": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 20,
+      "title": "Signed with your name"
     }
   }
 }
@@ -237,7 +245,7 @@ function SchemaExternal()
         Petition = {
             Target = WRAPPED_ARWEAVE_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
             Title = "Petition the Llama King",
-            Description = "Offer some Wrapped Arweave tokens for a chance to earn $LLAMA coin",
+            Description = "Offer some wrapped $AR tokens for a chance to earn $LLAMA coin",
             Schema = {
                 Tags = json.decode(PetitionSchemaTags()),
                 -- Data

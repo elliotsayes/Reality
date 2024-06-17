@@ -18,6 +18,8 @@ test('Petition Handler no Original-Message', async () => {
     From: "TODO: BankerProcessId",
     Action: "Petition",
     // ["Original-Message"]: "MyCreditNoticeMessageId",
+    ["Original-Sender"]: "SOME SENDER",
+    ["Original-Sender-Name"]: "SOME SENDER NAME",
   })
 
   assert.equal(result.Output.data, "No original message id found")
@@ -29,6 +31,8 @@ test('Petition Handler with Original-Message', async () => {
     From: "TODO: BankerProcessId",
     Action: "Petition",
     ["Original-Message"]: "MyCreditNoticeMessageId",
+    ["Original-Sender"]: "SOME SENDER",
+    ["Original-Sender-Name"]: "SOME SENDER NAME",
     Data: plea,
   })
 
@@ -44,6 +48,8 @@ test('Petition Handler with different Original-Message', async () => {
     From: "TODO: BankerProcessId",
     Action: "Petition",
     ["Original-Message"]: "MyCreditNoticeMessageId2",
+    ["Original-Sender"]: "SOME SENDER",
+    ["Original-Sender-Name"]: "SOME SENDER NAME",
     Data: plea,
   })
 
