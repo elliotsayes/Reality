@@ -24,8 +24,10 @@ describe('createChatClient', () => {
   test('CreateMessage', async () => {
     const client = createChatClient(chatTestAoContractClient)
 
-    const initialMessage = "Test Name";
+    const initialName = "Test Name";
+    const initialMessage = "Test Message";
     const createMsgId = await client.postMessage({
+      AuthorName: initialName,
       Content: initialMessage,
     });
     expect(ArweaveId.safeParse(createMsgId).success).toBe(true);

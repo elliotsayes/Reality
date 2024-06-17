@@ -23,7 +23,7 @@ exports[`createChatClient > creates client 1`] = `
     "dryrunReadReplyOneJson": [Function],
     "dryrunReadReplyOptional": [Function],
     "message": [Function],
-    "processId": "a1C-TCUNUKCaEup0BiCXNwcVWxOVOiRBfmKuBZwPWZg",
+    "processId": "9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss",
   },
   "postMessage": [Function],
   "readHistory": [Function],
