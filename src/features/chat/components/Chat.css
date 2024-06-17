@@ -4,7 +4,7 @@
   max-width: var(--page-max-width);
   margin: auto;
   padding-left: 30px;
-  padding-bottom: 30px;
+  padding-bottom: 20px;
   row-gap: 20px;
   width: 350px;
 }
@@ -14,14 +14,14 @@
   flex-direction: column;
   align-items: flex-start;
   width: 350px;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 160px);
   background-color: rgb(227, 248, 227);
   border-radius: 10px;
   border: 1px solid lightgray;
   padding: 20px 10px;
   overflow-y: auto;
-  margin-top: 30px;
-  margin-right: 10px;
+  margin-top: 20px;
+  margin-right: 15px;
 }
 
 .chat-msg-line {
