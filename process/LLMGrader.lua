@@ -3,7 +3,7 @@
 ModelID = "ISrbGzQot05rs_HKC08O_SmkipYQnqgB1yC3mjZZeEo"
 Llama = nil
 
-DefaultMaxResponse = 50
+DefaultMaxResponse = 10
 DefaultSystemPrompt =
     "You are a Llama king of a kingdom. " ..
     "You are a good king and you really like grass."
@@ -29,6 +29,8 @@ function ProcessPetition(systemPrompt, userPrompt)
       return match, response
     end
   end
+  -- Default to 2
+  return "2", "Your plea confused me immensely. Take these coins as a consolation."
 end
 
 function GeneratePrompt(systemPrompt, userPrompt)
