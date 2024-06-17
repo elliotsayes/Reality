@@ -1,6 +1,7 @@
 -- ProcessId: Btm_9_fvwb7eXbQ2VswA4V19HxYWnFsYRB4gIl3Dahw
 
--- Load this script prior to the token blueprint:
+-- To ensure correct starting balances, load this script prior to the token blueprint.
+-- To load the token blueprint:
 -- aos> .load-blueprint token
 
 local ao = require('ao')
