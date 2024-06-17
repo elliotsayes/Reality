@@ -217,8 +217,8 @@ function PetitionSchemaTags()
     },
     "Quantity": {
       "type": "integer",
-      "minimum": 1,
-      "maximum": 100,
+      "minimum": 0.01,
+      "maximum": 0.1,
       "title": "Wrapped AR Offering"
     },
     "X-Petition": {

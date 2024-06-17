@@ -11,6 +11,8 @@ LLAMA_TOKEN_MULTIPLIER = 10 ^ LLAMA_TOKEN_DENOMINATION
 HOURLY_EMISSION_LIMIT = 100 * LLAMA_TOKEN_MULTIPLIER
 
 WRAPPED_ARWEAVE_TOKEN_PROCESS = WRAPPED_ARWEAVE_TOKEN_PROCESS or "TODO: WarProcessId"
+WRAPPED_ARWEAVE_MIN_QUANTITY = WRAPPED_ARWEAVE_MIN_QUANTITY or 0.01
+WRAPPED_ARWEAVE_MAX_QUANTITY = WRAPPED_ARWEAVE_MAX_QUANTITY or 0.1
 
 LLAMA_KING_PROCESS = LLAMA_KING_PROCESS or "TODO: LlamaKingProcessId"
 
@@ -47,6 +49,12 @@ end
 
 --#endregion
 
+function ValidateQuantity(quantity)
+  return quantity ~= nil
+      and quantity >= WRAPPED_ARWEAVE_MIN_QUANTITY
+      and quantity <= WRAPPED_ARWEAVE_MAX_QUANTITY
+end
+
 Handlers.add(
   "CreditNoticeHandler",
   Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
@@ -58,19 +66,21 @@ Handlers.add(
 
     local messageId = msg.Id
     local sender = msg.Tags.Sender
-    local senderName = msg.Tags['X-Sender-Name']
     local quantity = tonumber(msg.Tags.Quantity)
+    if not ValidateQuantity(quantity) then
+      return print("Invalid quantity")
+    end
+
+    local senderName = msg.Tags['X-Sender-Name']
     local petition = msg.Tags['X-Petition']
 
     -- Save metadata
-    BankerDb:exec(
-      string.format(
-        "INSERT INTO WarCredit (MessageId, Sender, Quantity) VALUES ('%s', '%s', %d)",
-        messageId,
-        sender,
-        quantity
-      )
+    local stmt = BankerDb:prepare(
+      "INSERT INTO WarCredit (MessageId, Sender, Quantity) VALUES (?, ?, ?)"
     )
+    stmt:bind_values(messageId, sender, quantity)
+    stmt:step()
+    stmt:finalize()
 
     -- Dispatch to the LlamaKing
     Send({
@@ -95,14 +105,13 @@ Handlers.add(
   end
 )
 
-function CalculateBaseEmissions(grade, currentTime)
-  -- TODO, fix this algo
-  local totalEmissions = BankerDbAdmin:exec(
+function CalculateBaseEmissions(currentTime)
+  local totalHourlyEmissions = BankerDbAdmin:exec(
     "SELECT SUM(Amount) as Value FROM Emissions WHERE Timestamp > " .. currentTime - 3600
   )[1].Value or 0
-  local adjustment = HOURLY_EMISSION_LIMIT /
-      math.max(HOURLY_EMISSION_LIMIT, totalEmissions * 2 * LLAMA_TOKEN_MULTIPLIER) -- 10k
-  return LLAMA_TOKEN_MULTIPLIER * adjustment * grade
+  local remainingEmissions = math.max(HOURLY_EMISSION_LIMIT - totalHourlyEmissions, 0)
+  local baseEmissions = remainingEmissions / 10
+  return baseEmissions
 end
 
 function SendLlamaToken(amount, recipient, currentTime)
@@ -141,12 +150,15 @@ Handlers.add(
     if (#creditEntries == 0) then
       return print("Credit not found")
     end
+
     local originalQuantity = creditEntries[1].Quantity
+    local quantityMultiplier = originalQuantity / WRAPPED_ARWEAVE_MAX_QUANTITY
 
-    local grade = tonumber(msg.Tags.Grade)
+    local grade = tonumber(msg.Tags.Grade) -- 0 to 10
+    local gradeMultiplier = grade / 10
 
-    local baseEmissions = CalculateBaseEmissions(grade, msg.Timestamp)
-    local weightedEmissions = math.floor(baseEmissions * originalQuantity)
+    local baseEmissions = CalculateBaseEmissions(msg.Timestamp)
+    local weightedEmissions = math.floor(baseEmissions * gradeMultiplier * quantityMultiplier)
 
     -- TODO: Message chat / DM
 
@@ -156,9 +168,14 @@ Handlers.add(
     local chatMessage = 'Sorry ' ..
         originalSender ..
         ', the king specifically requested that you receive no $LLAMA coin... maybe you could try again?'
-    if (weightedEmissions > 0) then
-      chatMessage = 'Congratulations ' ..
-          originalSender .. ', you have been granted ' .. FormatLlamaTokenAmount(weightedEmissions) .. ' $LLAMA coins!'
+    if (grade > 0) then
+      if (weightedEmissions > 0) then
+        chatMessage = 'Congratulations ' ..
+            originalSender .. ', you have been granted ' .. FormatLlamaTokenAmount(weightedEmissions) .. ' $LLAMA coins!'
+      else
+        chatMessage = 'I\'m sorry ' ..
+            originalSender .. ', but it looks like I have no more $LLAMA coins to give... maybe try again in an hour?'
+      end
     end
 
     -- Write in Chat

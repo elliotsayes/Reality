@@ -46,10 +46,10 @@ test('Credits from wAR', async () => {
     Id: 'MyMessageId',
     From: WarToken,
     Action: "Credit-Notice",
-    Quantity: 100,
+    Quantity: 0.1,
+    Sender: exampleSender,
     ['X-Petition']: plea,
     ['X-Sender-Name']: 'Cool guy :)',
-    Sender: exampleSender
   })
 
   const message = result.Messages[0]
@@ -65,7 +65,7 @@ test('Saved History', async () => {
 
   assert.deepEqual(JSON.parse(result.Output.data.output), {
     MessageId: 'MyMessageId',
-    Quantity: 100,
+    Quantity: 0.1,
     Sender: 'SOME RANDOM GUY'
   })
 });
@@ -100,7 +100,7 @@ test('GradePetitionHandler happy', async () => {
       Action: "Grade-Petition",
       ['Original-Message']: "MyMessageId",
       ['Original-Sender']: exampleSender,
-      Grade: `1`,
+      Grade: `10`,
       Timestamp: 10000000 + i * 10
     })
 
