@@ -417,12 +417,21 @@ export class VerseScene extends WarpableScene {
     const speed = this.isWarping ? this.slowMs : 120;
     console.log(`Speed: ${speed}, slowMs: ${this.slowMs}`)
 
-    if (this.keys.left.isDown)
+    //@ts-expect-error - Phaser types are wrong
+    const isLeft = this.keys.left.isDown;
+    //@ts-expect-error - Phaser types are wrong
+    const isRight = this.keys.right.isDown;
+    //@ts-expect-error - Phaser types are wrong
+    const isUp = this.keys.up.isDown;
+    //@ts-expect-error - Phaser types are wrong
+    const isDown = this.keys.down.isDown;
+
+    if (isLeft)
     {
       this.player.flipX = true;
       this.player.setVelocityX(-speed);
     }
-    else if (this.keys.right.isDown)
+    else if (isRight)
     {
       this.player.flipX = false;
       this.player.setVelocityX(speed);
@@ -433,11 +442,11 @@ export class VerseScene extends WarpableScene {
     }
 
 
-    if (this.keys.up.isDown)
+    if (isUp)
     {
       this.player.setVelocityY(-speed);
     }
-    else if (this.keys.down.isDown)
+    else if (isDown)
     {
       this.player.setVelocityY(speed);
     }
@@ -446,7 +455,7 @@ export class VerseScene extends WarpableScene {
       this.player.setVelocityY(0);
     }
 
-    const isMoving = this.keys.left.isDown || this.keys.right.isDown || this.keys.up.isDown || this.keys.down.isDown;
+    const isMoving = isLeft || isRight || isUp || isDown;
     if (isMoving)
     {
       if (!this.lastTickMoving) this.player.play('llama_0_walk');
