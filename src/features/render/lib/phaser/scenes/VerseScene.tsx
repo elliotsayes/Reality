@@ -360,7 +360,8 @@ export class VerseScene extends WarpableScene {
     const container = this.add.container(
       entity.Position[0] * (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
       entity.Position[1] * (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
-    );
+    )
+      .setDepth(DEPTH_ENTITY_BASE + 1);
     
     const sprite = this.add.sprite(
       0, 0,
@@ -368,7 +369,6 @@ export class VerseScene extends WarpableScene {
     )
       .setScale(SCALE_ENTITIES)
       .setOrigin(0.5)
-      .setDepth(DEPTH_ENTITY_BASE + 1)
       .setInteractive();
 
     if (entity.Interaction?.Type === 'Warp') {
