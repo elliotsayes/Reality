@@ -159,7 +159,7 @@ export const renderMachine = setup({
         entities: Awaited<ReturnType<VerseClient['readEntitiesDynamic']>>,
         profiles: Awaited<ReturnType<ProfileClient['readProfiles']>>,
       };
-      context.typedScenes.verseScene!.mergeEntities(entities);
+      context.typedScenes.verseScene!.mergeEntities(entities, profiles);
     },
     saveLastEntityUpdate: assign(({ event }) => ({
       lastEntityUpdate: event.output.beforeTimestamp

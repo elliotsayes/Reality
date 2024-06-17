@@ -57,6 +57,7 @@ export default function BaseInputTemplate<
         required={required}
         disabled={disabled}
         readOnly={readonly}
+        autoComplete="off"
         className={inputClass}
         list={schema.examples ? examplesId<T>(id) : undefined}
         {...inputProps}

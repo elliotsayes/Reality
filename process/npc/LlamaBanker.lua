@@ -112,7 +112,7 @@ Handlers.add(
       Target = LLAMA_FED_CHAT_PROCESS,
       Tags = {
         Action = 'ChatMessage',
-        ['Author-Name'] = 'LlamaBanker',
+        ['Author-Name'] = 'Llama Banker',
       },
       Data = 'Received ' .. FormatWarTokenAmount(quantity) .. ' wrapped $AR from ' .. (senderName or sender),
     })
@@ -201,7 +201,7 @@ Handlers.add(
       Target = LLAMA_FED_CHAT_PROCESS,
       Tags = {
         Action = 'ChatMessage',
-        ['Author-Name'] = 'LlamaBanker',
+        ['Author-Name'] = 'Llama Banker',
       },
       Data = chatMessage,
     })
@@ -240,7 +240,7 @@ Handlers.add(
       Target = LLAMA_FED_CHAT_PROCESS,
       Tags = {
         Action = 'ChatMessage',
-        ['Author-Name'] = 'LlamaBanker',
+        ['Author-Name'] = 'Llama Banker',
       },
       Data = 'Address ' .. account .. ', you currently have ' .. FormatLlamaTokenAmount(balance) .. ' $LLAMA coins!',
     })

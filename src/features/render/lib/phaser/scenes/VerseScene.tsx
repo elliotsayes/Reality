@@ -4,14 +4,14 @@ import { VerseState } from "../../load/model";
 import { phaserTilemapKey, phaserTilesetKey } from "../../load/verse";
 import { _2dTileParams } from "@/features/verse/contract/_2dTile";
 import { emitSceneReady, emitSceneEvent } from "../../EventBus";
-import { VerseClient } from "@/features/verse/contract/verseClient";
-import { VerseEntity } from "@/features/verse/contract/model";
+import { VerseEntity, VerseEntityKeyed } from "@/features/verse/contract/model";
 import ReactDOM from "react-dom/client";
 import { BoxCentered, Point2D, Size2D } from "../../model";
 import { FormOverlay } from "@/features/render/components/FormOverlay";
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import { isDebug } from "../game";
 import { truncateAddress } from "@/features/arweave/lib/utils";
+import { ProfileInfo } from "@/features/profile/contract/model";
 
 const SCALE_TILES = 3;
 const SCALE_ENTITIES = 2;
@@ -223,7 +223,8 @@ export class VerseScene extends WarpableScene {
     this.avatarEntityContainers = avatarEntityIds
       .map((entityId) => {
         const entity = this.verse.entities[entityId];
-        const entityContainer = this.createEntityContainer(entityId, entity);
+        const profileMaybe = this.verse.profiles.find((profile) => profile.ProfileId === entityId);
+        const entityContainer = this.createEntityContainer(entityId, entity, profileMaybe);
 
         return {
           [entityId]: entityContainer,
@@ -258,7 +259,7 @@ export class VerseScene extends WarpableScene {
     emitSceneReady(this);
   }
 
-  public mergeEntities(entityUpdates: Awaited<ReturnType<VerseClient['readEntitiesDynamic']>>)
+  public mergeEntities(entityUpdates: VerseEntityKeyed, profiles: Array<ProfileInfo>)
   {
     Object.keys(entityUpdates).forEach((entityId) => {
       // Ignore player character
@@ -307,7 +308,8 @@ export class VerseScene extends WarpableScene {
         }
       } else {
         console.log(`Creating entity ${entityId}`)
-        const entitySprite = this.createEntityContainer(entityId, entityUpdate);
+        const profileMaybe = profiles.find((profile) => profile.ProfileId === entityId);
+        const entitySprite = this.createEntityContainer(entityId, entityUpdate, profileMaybe);
         this.avatarEntityContainers[entityId] = entitySprite;
       }
     });
@@ -356,7 +358,7 @@ export class VerseScene extends WarpableScene {
     return sprite;
   }
 
-  createEntityContainer(entityId: string, entity: VerseEntity) {
+  createEntityContainer(entityId: string, entity: VerseEntity, profile?: ProfileInfo) {
     const container = this.add.container(
       entity.Position[0] * (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
       entity.Position[1] * (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
@@ -430,9 +432,13 @@ export class VerseScene extends WarpableScene {
       console.log(`Hovered over entity ${entityId}`)
     }, this)
 
+    const displayText = profile?.DisplayName 
+      ?? profile?.Username 
+      ?? truncateAddress(entityId, 3);
+
     const nameText = this.add.text(
       0, -40,
-      truncateAddress(entityId, 3),
+      displayText,
       { 
         font: '14px Courier bold',
         color: '#dddddd',
