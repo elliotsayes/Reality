@@ -1,7 +1,7 @@
 local json = require("json")
 
 HasRegistered = HasRegistered or nil
-LLAMA_LAND = "9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss"
+LLAMA_LAND = LLAMA_LAND or "9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss"
 
 LAST_MESSAGE_ID = LAST_MESSAGE_ID or 0
 
@@ -45,16 +45,16 @@ Handlers.add(
     })
 
     -- Respond to chat history
-    if (TICK_COUNT % 5 == 0) then
-      Send({
-        Target = LLAMA_LAND,
-        Tags = {
-          Action = "ChatHistory",
-          ["Id-After"] = tostring(LAST_MESSAGE_ID),
-          Limit = tostring(10),
-        },
-      })
-    end
+    -- if (TICK_COUNT % 5 == 0) then
+    Send({
+      Target = LLAMA_LAND,
+      Tags = {
+        Action = "ChatHistory",
+        ["Id-After"] = tostring(LAST_MESSAGE_ID),
+        Limit = tostring(10),
+      },
+    })
+    -- end
   end
 )
 
