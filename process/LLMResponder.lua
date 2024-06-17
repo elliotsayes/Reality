@@ -67,8 +67,11 @@ Handlers.add(
     end
 
     local systemPrompt = msg.Tags.SystemPrompt or DefaultSystemPrompt
-    local userPrompt = msg.Data
-    local response = ProcessMessages(systemPrompt, userPrompt)
+    local msgLog = msg.Data
+    local response = ProcessMessages(systemPrompt, msgLog)
+    if not response then
+      return print("No response generated")
+    end
 
     Send({
       Target = msg.From,
