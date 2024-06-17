@@ -415,7 +415,6 @@ export class VerseScene extends WarpableScene {
     if (!this.keys) return;
 
     const speed = this.isWarping ? this.slowMs : 120;
-    console.log(`Speed: ${speed}, slowMs: ${this.slowMs}`)
 
     //@ts-expect-error - Phaser types are wrong
     const isLeft = this.keys.left.isDown;
