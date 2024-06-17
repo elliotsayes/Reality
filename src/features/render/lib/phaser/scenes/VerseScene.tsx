@@ -62,7 +62,8 @@ export class VerseScene extends WarpableScene {
 
   isWarping: boolean = false;
 
-  entityContainers: Record<string, Phaser.GameObjects.Container> = {};
+  avatarEntityContainers: Record<string, Phaser.GameObjects.Container> = {};
+  warpSprites: Record<string, Phaser.Physics.Arcade.Sprite> = {};
   entityTargets: Record<string, Phaser.Physics.Arcade.Sprite> = {};
 
   activeEntityEvent?: Phaser.GameObjects.GameObject;
@@ -214,8 +215,12 @@ export class VerseScene extends WarpableScene {
     }
 
     console.log(this.verse.entities)
-    this.entityContainers = Object.keys(this.verse.entities)
-      .filter(entityId => entityId !== this.playerAddress)
+    const otherEntityIds = Object.keys(this.verse.entities)
+      .filter(entityId => entityId !== this.playerAddress);
+    
+    const avatarEntityIds = otherEntityIds
+      .filter(entityId => this.verse.entities[entityId].Type === 'Avatar');
+    this.avatarEntityContainers = avatarEntityIds
       .map((entityId) => {
         const entity = this.verse.entities[entityId];
         const entityContainer = this.createEntityContainer(entityId, entity);
@@ -224,7 +229,19 @@ export class VerseScene extends WarpableScene {
           [entityId]: entityContainer,
         };
     }).reduce((acc, val) => ({ ...acc, ...val }), {});
-    console.log(`Created ${this.entityContainers.length} entities`)
+    console.log(`Created ${this.avatarEntityContainers.length} avatar entities`)
+
+    const warpEntityIds = otherEntityIds
+      .filter(entityId => this.verse.entities[entityId].Interaction?.Type === 'Warp');
+    this.warpSprites = warpEntityIds
+      .map((entityId) => {
+        const entity = this.verse.entities[entityId];
+        const warpSprite = this.createWarpEntity(entityId, entity);
+
+        return {
+          [entityId]: warpSprite,
+        };
+    }).reduce((acc, val) => ({ ...acc, ...val }), {});
 
     if (isDebug) {
       this.add.text(this.spawnPixel[0], this.spawnPixel[1], 'X', {
@@ -248,17 +265,19 @@ export class VerseScene extends WarpableScene {
       if (entityId === this.playerAddress) return;
 
       const entityUpdate = entityUpdates[entityId];
+      if (entityUpdate.Type !== 'Avatar') return;
 
-      if (this.entityContainers[entityId]) {
+      if (this.avatarEntityContainers[entityId]) {
         console.log(`Updating entity ${entityId}`)
-        const entityCointainer = this.entityContainers[entityId]
-        const entitySprite = entityCointainer.getAt(0) as Phaser.GameObjects.Sprite;
+        const entityContainer = this.avatarEntityContainers[entityId]
+        if (!entityContainer) return;
+        const entitySprite = entityContainer.getAt(0) as Phaser.GameObjects.Sprite;
         
         const updatePosition: Point2D = {
           x: entityUpdate.Position[0] * this.tileSizeScaled[0],
           y: entityUpdate.Position[1] * this.tileSizeScaled[1],
         }
-        if (!this.withinBox(entityCointainer, {
+        if (!this.withinBox(entityContainer, {
           center: updatePosition,
           edgeLength: SCALE_ENTITIES * OBJECT_SIZE_ENTITY * 2,
         })) {
@@ -275,10 +294,10 @@ export class VerseScene extends WarpableScene {
             .setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
 
           entitySprite.play('llama_4_walk')
-          this.physics.moveToObject(entityCointainer, this.entityTargets[entityId], 120);
-          this.physics.add.overlap(entityCointainer, this.entityTargets[entityId], () => {
+          this.physics.moveToObject(entityContainer, this.entityTargets[entityId], 120);
+          this.physics.add.overlap(entityContainer, this.entityTargets[entityId], () => {
             console.log(`Entity ${entityId} collided with target`);
-            (entityCointainer.body as Phaser.Physics.Arcade.Body).setVelocity(0, 0);
+            (entityContainer.body as Phaser.Physics.Arcade.Body).setVelocity(0, 0);
             entitySprite.play('llama_4_idle')
             // entitySprite.setPosition(updatePosition.x, updatePosition.y);
 
@@ -289,9 +308,52 @@ export class VerseScene extends WarpableScene {
       } else {
         console.log(`Creating entity ${entityId}`)
         const entitySprite = this.createEntityContainer(entityId, entityUpdate);
-        this.entityContainers[entityId] = entitySprite;
+        this.avatarEntityContainers[entityId] = entitySprite;
       }
     });
+  }
+
+  createWarpEntity(entityId: string, entity: VerseEntity) {
+    console.log(`Creating warp entity ${entityId}`)
+    if (entity.Interaction?.Type !== 'Warp') {
+      throw new Error(`Entity ${entityId} is not a warp entity`)
+    }
+    const sprite = this.physics.add.sprite(
+      entity.Position[0] * (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
+      entity.Position[1] * (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
+      'invis',
+    )
+      .setScale(SCALE_ENTITIES)
+      .setOrigin(0.5)
+      .setDepth(DEPTH_ENTITY_BASE + 1)
+      .setInteractive();
+
+    if (entity.Interaction.Size) {
+      sprite.setSize(
+        entity.Interaction.Size[0] * this.tileSizeScaled[0] / 2,
+        entity.Interaction.Size[1] * this.tileSizeScaled[1] / 2,
+      )
+    }
+    this.physics.add.overlap(this.player, sprite, () => {
+      console.log(`Collided with entity ${entityId}`)
+      if (this.isWarping) return;
+      this.isWarping = true;
+      emitSceneEvent({
+        type: 'Warp Immediate',
+        verseId: entityId,
+      })
+      this.camera.fadeOut(5_000);
+      this.tweens.addCounter({
+        duration: 2_000,
+        from: 60,
+        to: 0,
+        onUpdate: (tween) => {
+          this.slowMs = tween.getValue();
+        },
+      });
+    }, undefined, this);
+
+    return sprite;
   }
 
   createEntityContainer(entityId: string, entity: VerseEntity) {
