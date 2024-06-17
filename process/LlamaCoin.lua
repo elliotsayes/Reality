@@ -58,7 +58,8 @@ Handlers.add(
     Send({
       Tags = {
         Action = 'Transfer',
-        Recipient = mintQuantity,
+        Quantity = mintQuantity,
+        Recipient = LlamaBanker,
       }
     })
   end
