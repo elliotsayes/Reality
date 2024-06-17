@@ -65,7 +65,7 @@ function ValidateSenderName(senderName)
 end
 
 function FormatWarTokenAmount(amount)
-  return string.format("%.4f", amount / WRAPPED_ARWEAVE_MULTIPLIER)
+  return string.format("%.3f", amount / WRAPPED_ARWEAVE_MULTIPLIER)
 end
 
 Handlers.add(
