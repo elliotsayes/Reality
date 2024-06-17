@@ -191,7 +191,7 @@ Handlers.add(
   function(msg)
     -- print('TokenBalanceResponse')
     local account = msg.Tags.Account
-    local balance = msg.Tags.Balance
+    local balance = tonumber(msg.Tags.Balance)
     print('Account: ' .. account .. ', Balance: ' .. balance)
     -- TODO: DM ?
     Send({

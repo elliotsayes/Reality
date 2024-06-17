@@ -112,7 +112,7 @@ test('GradePetitionHandler happy', async () => {
     const chatMessage = result.Messages[1]
     assert.equal(chatMessage.Target, "TODO: ChatProcessId")
     // 'Congratulations ' .. originalSender .. ', you have been granted ' .. weightedEmissions .. ' $LLAMA coins!'
-    assert.equal(chatMessage.Data, `Congratulations ${exampleSender}, you have been granted ${quantity} $LLAMA coins!`)
+    assert.equal(chatMessage.Data, `Congratulations ${exampleSender}, you have been granted ${(quantity / Math.pow(10,12)).toFixed(2)} $LLAMA coins!`)
 
     // const emissionsTotalResult = await Send({
     //   Action: "Eval",
@@ -137,11 +137,11 @@ test('TokenBalanceResponse handler', async () => {
   const result = await Send({
     From: LlamaToken,
     Account: 'Some random guy',
-    Balance: '100',
+    Balance: (100 * Math.pow(10, 12)).toString(),
   })
 
   const chat = result.Messages[0]
   assert.equal(chat.Target, "TODO: ChatProcessId")
   // Data = 'Address ' .. account .. ', you currently have ' .. balance .. ' $LLAMA coins!',
-  assert.equal(chat.Data, "Address Some random guy, you currently have 100 $LLAMA coins!")
+  assert.equal(chat.Data, "Address Some random guy, you currently have 100.00 $LLAMA coins!")
 });
