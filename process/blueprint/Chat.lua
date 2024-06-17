@@ -101,6 +101,12 @@ function ValidateId(testId)
     -- Allow nil ids
     return true
   end
+  if (type(testId) ~= "number") then
+    return false
+  end
+  if (testId < 0) then
+    return false
+  end
 
   return true
 end
@@ -143,12 +149,18 @@ Handlers.add(
     local timestampEnd = tonumber(msg.Tags['Timestamp-End'])
     local limit = tonumber(msg.Tags['Limit'])
 
-    -- Validate Ids
+    -- Validate individual Ids
     if (not ValidateId(idAfter)) then
       return print("Invalid Id Start")
     end
     if (not ValidateId(idBefore)) then
       return print("Invalid Id End")
+    end
+    -- Validate Ids range
+    if (idAfter ~= nil
+          and idBefore ~= nil
+          and idAfter > idBefore) then
+      return print("Invalid Id Range")
     end
 
     -- Validate Individual Timestamps
@@ -158,8 +170,7 @@ Handlers.add(
     if (not ValidateTimestamp(timestampEnd)) then
       return print("Invalid Timestamp End")
     end
-
-    -- Validate Range
+    -- Validate timestamp range
     if (timestampStart ~= nil
           and timestampEnd ~= nil
           and timestampStart > timestampEnd) then
@@ -168,8 +179,9 @@ Handlers.add(
 
     -- Query messages
     -- Any variable maybe be nil
-    -- Id is exclutive
-    -- Timestamp is inclusive
+    -- Ids are EXclusive
+    -- Timestamps are INclusive
+    -- Most recent first
     -- Default limit is 100
     local stmt = ChatDb:prepare([[
       SELECT * FROM Messages
@@ -203,7 +215,13 @@ Handlers.add(
     stmt:finalize()
 
     -- Reply with messages
-    Handlers.utils.reply(json.encode(messages))(msg)
+    Send({
+      Target = msg.From,
+      Tags = {
+        Action = "ChatHistoryResponse",
+      },
+      Data = json.encode(messages)
+    })
   end
 )
 
