@@ -3,14 +3,15 @@
 ModelID = "ISrbGzQot05rs_HKC08O_SmkipYQnqgB1yC3mjZZeEo"
 Llama = nil
 
-DefaultMaxResponse = 50
+DefaultMaxResponse = 5
 DefaultSystemPrompt =
-    "You are a Llama king of a kingdom. " ..
-    "You are a good king and you really like grass."
+    "Your name is Wandering Llama. You are a Llama who wanders around in LlamaLand. " ..
+    "Below are some messages from Llamas chatting nearby, Please respond to them. " ..
+    "Important: End your message with the text <END>"
 
 InferenceAllowList = {
-  -- LlamaKing ProcessId
-  "",
+  -- LlamaWanderer ProcessId
+  "_di-oSYyicR6IW5Dy7UzDxibD-paV23l_6-v0cziiA0",
 }
 
 function Init(ModelID)
@@ -19,22 +20,22 @@ function Init(ModelID)
   Llama.load(ModelID)
 end
 
-function ProcessPetition(systemPrompt, userPrompt)
+function ProcessMessages(systemPrompt, userPrompt)
   Llama.setPrompt(GeneratePrompt(systemPrompt, userPrompt))
   local response = ""
   for i = 1, DefaultMaxResponse do
     response = Llama.next()
-    local match = string.match(response, "GRADE:%s*(%d+)")
+    local match = string.match(response, "(.*)<END>")
     if match then
-      return match, response
+      return match
     end
   end
 end
 
 function GeneratePrompt(systemPrompt, userPrompt)
-  return "<|SYSTEM|>" ..
-      systemPrompt .. "<|USER|>" ..
-      userPrompt .. "<|ASSISTANT|>"
+  return "<|SYSTEM|>" .. systemPrompt
+      .. "<|USER|>" .. userPrompt
+      .. "<|ASSISTANT|>"
 end
 
 Handlers.add(
@@ -48,7 +49,7 @@ Handlers.add(
     DefaultMaxResponse = msg.Tags["Max-Response"] or DefaultMaxResponse
 
     Send({
-      Action = "King-Initialized",
+      Action = "Responder-Initialized",
     })
   end
 )
@@ -59,26 +60,24 @@ Handlers.add(
   function(msg)
     print("Inference")
 
-    -- TODO: Whitelist
-    -- if not InferenceAllowList[msg.From] then
-    --   print("Inference not allowed: " .. msg.From)
-    --   return
-    -- end
+    -- Whitelist
+    if not InferenceAllowList[msg.From] then
+      print("Inference not allowed: " .. msg.From)
+      return
+    end
 
     local systemPrompt = msg.Tags.SystemPrompt or DefaultSystemPrompt
     local userPrompt = msg.Data
-    local Grade, Reason = ProcessPetition(systemPrompt, userPrompt)
-    print("Grade: " .. Grade .. ", Reason: " .. Reason)
+    local response = ProcessMessages(systemPrompt, userPrompt)
 
-    ao.send({
+    Send({
       Target = msg.From,
       Tags = {
         Action = "Inference-Response",
-        Grade = Grade,
         ["Original-Sender"] = msg.Tags["Original-Sender"],
         ["Original-Message"] = msg.Tags["Original-Message"],
       },
-      Data = Reason,
+      Data = response,
     })
   end
 )
