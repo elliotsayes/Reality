@@ -21,8 +21,10 @@ local utils = {
   end
 }
 
+local initialSupply = 100;
+
 Denomination = 12
-TotalSupply = utils.toBalanceValue(10000 * 10 ^ Denomination)
+TotalSupply = utils.toBalanceValue(initialSupply * 10 ^ Denomination)
 Name = 'Llama Coin'
 Ticker = 'LLAMA'
 -- Logo = '' -- TODO: 'SBCCXwwecBlDqRLUjb8dYABExTJXLieawf7m2aBJ-KY'
@@ -31,7 +33,7 @@ Ticker = 'LLAMA'
 LlamaBanker = 'ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk'
 
 -- Don't overwrite Balances
-Balances = Balances or { [LlamaBanker] = utils.toBalanceValue(100 * 10 ^ Denomination) }
+Balances = Balances or { [LlamaBanker] = utils.toBalanceValue(initialSupply * 10 ^ Denomination) }
 
 INFLATION_AMOUNT = 100;
 
