@@ -4,12 +4,20 @@ import { MessageCreate, MessageHistory } from "./model";
 import { AoWallet } from "@/features/ao/lib/aoWallet";
 import { connect } from "@permaweb/aoconnect";
 
+type HistoryQuery = {
+  idAfter?: number;
+  idBefore?: number;
+  timeStart?: Date;
+  timeEnd?: Date;
+  limit?: number;
+}
+
 export type ChatClient = {
   aoContractClient: AoContractClient;
 
   // Reads
   readCount(): Promise<number>;
-  readHistory(): Promise<MessageHistory>;
+  readHistory(query?: HistoryQuery): Promise<MessageHistory>;
 
   // Writes
   postMessage(message: MessageCreate): Promise<MessageId>;
@@ -26,21 +34,34 @@ export const createChatClient = (
   readCount: () => aoContractClient.dryrunReadReplyOne({
     tags: [{ name: "Action", value: "ChatCount" }],
   }).then((reply) => parseInt(reply.Data)),
-  readHistory: () => aoContractClient.dryrunReadReplyOneJson<MessageHistory>({
-    tags: [{ name: "Action", value: "ChatHistory" }],
-    data: JSON.stringify({}),
-  }, /* ChatInfoKeyed */),
+  readHistory: (query?: HistoryQuery) => {
+    const queryTagsMap = {
+      'Id-After': query?.idAfter?.toString(),
+      'Id-Before': query?.idBefore?.toString(),
+      'Timestamp-Start': query?.timeStart?.getTime().toString(),
+      'Timestamp-End': query?.timeEnd?.getTime().toString(),
+      'Limit': query?.limit?.toString(),
+    }
+    const filterTags = Object.entries(queryTagsMap)
+      .filter(([, value]) => value !== undefined)
+      .map(([name, value]) => ({ name, value: value! }))
+    const tags = filterTags.concat({ name: "Action", value: "ChatHistory" });
+    
+    return aoContractClient.dryrunReadReplyOneJson<MessageHistory>({
+      tags,
+    });
+  },
 
   // Write
-  postMessage: (chat: MessageCreate) => aoContractClient.message({
+  postMessage: (chatMessage: MessageCreate) => aoContractClient.message({
     tags: [{
       name: "Action",
       value: "ChatMessage",
     }, {
       name: "Author-Name",
-      value: chat.AuthorName,
+      value: chatMessage.AuthorName,
     }],
-    data: chat.Content,
+    data: chatMessage.Content,
   }),
 });
 
