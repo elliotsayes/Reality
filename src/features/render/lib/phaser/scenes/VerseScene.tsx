@@ -25,6 +25,8 @@ const DEPTH_FG_BASE = 100; // => 199
 const DEPTH_ENTITY_BASE = -100; // => -1
 const DEPTH_PLAYER_BASE = 0; // => 400
 
+const DEPTH_TEXT_BASE = 500;
+
 const OBJECT_SIZE_ENTITY = 2;
 
 const kingEntityIds = [
@@ -481,7 +483,43 @@ export class VerseScene extends WarpableScene {
 
   public showEntityChatMessages(messages: MessageHistory)
   {
-    console.error('showEntityChatMessages', messages)
+    messages.forEach((message) => {
+      const entityId = message.AuthorId;
+      const entityContainer = this.avatarEntityContainers[entityId];
+
+      if (!entityContainer) return;
+
+      const displayContent = message.Content.length > 15
+        ? `${message.Content.slice(0, 14)}…`
+        : message.Content;
+
+      const chatText = this.add.text(
+        30, -20,
+        displayContent,
+        { 
+          fontSize: '12px',
+          fontFamily: '"Press Start 2P"',
+          color: '#eeeeee',
+          backgroundColor: '#111111',
+          // resolution: 8,
+          shadow: {
+            offsetX: 1,
+            offsetY: 1,
+            color: '#111111',
+            blur: 1,
+            stroke: true,
+            fill: true,
+          },
+        },
+      )
+        .setOrigin(0)
+        .setDepth(DEPTH_TEXT_BASE + 1)
+
+      entityContainer.add(chatText);
+      setTimeout(() => {
+        chatText.destroy();
+      }, 5000)
+    });
   }
 
   public update(/* t: number, dt: number */)
