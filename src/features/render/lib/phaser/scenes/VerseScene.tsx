@@ -107,8 +107,17 @@ export class VerseScene extends WarpableScene {
 
     this.tilesetTxId = this._2dTileParams?.Tileset.TxId;
     this.tilemapTxId = this._2dTileParams?.Tilemap.TxId;
-
     this.inputEnable();
+
+    // God only knows why this is necessary
+    // Allows chat message to capture keyboard input
+    // (Game still captures it too)
+    setTimeout(() => {
+      this.inputDisable();
+    }, 10)
+    setTimeout(() => {
+      this.inputEnable();
+    }, 20)
 
     this.pixelateIn();
   }
@@ -117,7 +126,10 @@ export class VerseScene extends WarpableScene {
   {
     const keyboard = this.input.keyboard
     if (keyboard) {
+      console.log('inputEnable: Keyboard found')
       keyboard.manager.enabled = true;
+      keyboard.disableGlobalCapture();
+      keyboard.manager.preventDefault = false;
       this.arrows = keyboard.addKeys({
         left: Phaser.Input.Keyboard.KeyCodes.LEFT,
         right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
@@ -130,6 +142,8 @@ export class VerseScene extends WarpableScene {
         up: Phaser.Input.Keyboard.KeyCodes.W,
         down: Phaser.Input.Keyboard.KeyCodes.S,
       });
+    } else {
+      console.warn('inputEnable: No keyboard found')
     }
   }
 
@@ -137,7 +151,10 @@ export class VerseScene extends WarpableScene {
   {
     const keyboard = this.input.keyboard
     if (keyboard) {
+      console.log('inputDisable: Keyboard found')
       keyboard.manager.enabled = false;
+    } else {
+      console.warn('inputDisable: No keyboard found')
     }
   }
 
