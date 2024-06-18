@@ -1,3 +1,8 @@
-export const truncateAddress = (address: string, length: number = 6) => {
-    return `${address.slice(0, length)}...${address.slice(-length)}`;
+export const truncateAddress = (
+    address: string,
+    prefixLength: number = 6,
+    suffixLength: number = 4,
+    middleText: string = '...'
+) => {
+    return `${address.slice(0, prefixLength)}${middleText}${address.slice(-suffixLength)}`;
 }

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef } from "react";
 import { Message } from "../contract/model";
+import { truncateAddress } from "@/features/arweave/lib/utils";
 
 const highlightedAuthorIds = [
   'kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA', // KingDummy
@@ -65,7 +66,7 @@ export function Chat({
             form.setValue('message', '')
 
             if (message === undefined || message === '') return;
-            await chatClient.postMessage({ Content: message, AuthorName: userAddress.slice(0, 5) })
+            await chatClient.postMessage({ Content: message, AuthorName: userAddress.slice(0, 6) })
             setTimeout(() => {
               messages.refetch();
               onUserMessageSent?.();
@@ -131,7 +132,7 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
               {data.authorName}
             </div>
 
-            <div className="chat-msg-address">{shortAddr(data.address, 3)}</div>
+            <div className="chat-msg-address">{truncateAddress(data.address)}</div>
           </div>
 
           <div className={`chat-message ${owner ? 'my-message' : (highlighted ? 'highlight-message' : 'other-message')}`}>
@@ -216,8 +217,4 @@ function shortStr(str: string, max: number) {
     return str.substring(0, max) + '...';
   }
   return str;
-}
-
-function shortAddr(str: string, num: number) {
-  return str.substring(0, num) + '...' + str.substring(str.length - num);
 }

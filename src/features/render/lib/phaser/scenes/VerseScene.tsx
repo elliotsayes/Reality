@@ -434,7 +434,7 @@ export class VerseScene extends WarpableScene {
 
     const displayText = profile?.DisplayName 
       ?? profile?.Username 
-      ?? truncateAddress(entityId, 3);
+      ?? truncateAddress(entityId, 4, 3, '…');
 
     const nameText = this.add.text(
       0, -40,
