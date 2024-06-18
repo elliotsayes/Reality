@@ -292,3 +292,6 @@ Handlers.add(
     Send({ Target = msg.From, Tags = { Type = 'Schema' }, Data = json.encode(Schema) })
   end
 )
+
+-- PROFILE = "SNy4m-DrqxWl01YqGM4sxI8qCni-58re8uuJLvZPypY"
+-- Send({ Target = PROFILE, Action = "Create-Profile", Data = '{"UserName":"Llama Banker","DateCreated":1718653250836,"DateUpdated":1718653250836,"ProfileImage":"","CoverImage":"","Description":"","DisplayName":"Llama Banker"}' })
