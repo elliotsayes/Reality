@@ -59,7 +59,8 @@ export class VerseScene extends WarpableScene {
 
   player!: Phaser.Physics.Arcade.Sprite;
 
-  keys!: object;
+  arrows?: object;
+  wasd?: object;
 
   lastTickMoving: boolean = false;
 
@@ -107,14 +108,37 @@ export class VerseScene extends WarpableScene {
     this.tilesetTxId = this._2dTileParams?.Tileset.TxId;
     this.tilemapTxId = this._2dTileParams?.Tilemap.TxId;
 
-    this.keys = this.input.keyboard!.addKeys({
-      left: Phaser.Input.Keyboard.KeyCodes.LEFT,
-      right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
-      up: Phaser.Input.Keyboard.KeyCodes.UP,
-      down: Phaser.Input.Keyboard.KeyCodes.DOWN,
-    });
+    this.inputEnable();
 
     this.pixelateIn();
+  }
+
+  inputEnable()
+  {
+    const keyboard = this.input.keyboard
+    if (keyboard) {
+      keyboard.manager.enabled = true;
+      this.arrows = keyboard.addKeys({
+        left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+        right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+        up: Phaser.Input.Keyboard.KeyCodes.UP,
+        down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+      });
+      this.wasd = keyboard.addKeys({
+        left: Phaser.Input.Keyboard.KeyCodes.A,
+        right: Phaser.Input.Keyboard.KeyCodes.D,
+        up: Phaser.Input.Keyboard.KeyCodes.W,
+        down: Phaser.Input.Keyboard.KeyCodes.S,
+      });
+    }
+  }
+
+  inputDisable()
+  {
+    const keyboard = this.input.keyboard
+    if (keyboard) {
+      keyboard.manager.enabled = false;
+    }
   }
 
   topLeft()
@@ -575,18 +599,18 @@ export class VerseScene extends WarpableScene {
   public update(/* t: number, dt: number */)
   {
     if (!this.player) return;
-    if (!this.keys) return;
+    if (!this.arrows) return;
 
     const speed = this.isWarping ? this.slowMs : 120;
 
     //@ts-expect-error - Phaser types are wrong
-    const isLeft = this.keys.left.isDown;
+    const isLeft = (this.arrows?.left.isDown || this.wasd?.left.isDown) ?? false;
     //@ts-expect-error - Phaser types are wrong
-    const isRight = this.keys.right.isDown;
+    const isRight = (this.arrows?.right.isDown || this.wasd?.right.isDown) ?? false;
     //@ts-expect-error - Phaser types are wrong
-    const isUp = this.keys.up.isDown;
+    const isUp = (this.arrows?.up.isDown || this.wasd?.up.isDown) ?? false;
     //@ts-expect-error - Phaser types are wrong
-    const isDown = this.keys.down.isDown;
+    const isDown = (this.arrows?.down.isDown || this.wasd?.down.isDown) ?? false;
 
     if (isLeft)
     {
@@ -660,6 +684,7 @@ export class VerseScene extends WarpableScene {
         close={() => {
           this.schemaForm?.destroy();
           this.camera.startFollow(this.player);
+          this.inputEnable();
         }}
       />
     );
@@ -678,6 +703,8 @@ export class VerseScene extends WarpableScene {
       Phaser.Math.Easing.Linear,
       false,
     )
+
+    this.inputDisable();
   }
 
   public onWarpBegin()
