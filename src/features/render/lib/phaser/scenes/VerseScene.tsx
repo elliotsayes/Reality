@@ -503,7 +503,7 @@ export class VerseScene extends WarpableScene {
           .setOrigin(0)
   
         const chatText = this.add.text(
-          9, 6,
+          10, 6,
           message.Content,
           { 
             fontSize: '10px',
