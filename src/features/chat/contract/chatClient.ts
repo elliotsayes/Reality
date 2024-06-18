@@ -69,3 +69,5 @@ export const createChatClientForProcess = (wallet: AoWallet) => (processId: stri
   const aoContractClient = createAoContractClient(processId, connect(), wallet);
   return createChatClient(aoContractClient);
 }
+
+export type ChatClientForProcess = ReturnType<typeof createChatClientForProcess>;
