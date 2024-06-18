@@ -1,6 +1,7 @@
 import { GameObjects } from 'phaser';
 import { emitSceneReady } from '../../EventBus';
 import { WarpableScene } from './WarpableScene';
+import FontFaceObserver from 'fontfaceobserver';
 
 export class Preloader extends WarpableScene
 {
@@ -116,6 +117,9 @@ export class Preloader extends WarpableScene
             });
         }
 
-        emitSceneReady(this);
+        const font = new FontFaceObserver('Press Start 2P');
+        font.load().then(() => ((t) => {
+            emitSceneReady(t);
+        })(this));
     }
 }

@@ -440,9 +440,10 @@ export class VerseScene extends WarpableScene {
       0, -40,
       displayText,
       { 
-        font: '20px Courier bold',
-        color: '#dddddd',
-        strokeThickness: 4,
+        fontSize: '10px',
+        fontFamily: '"Press Start 2P"',
+        color: '#eeeeee',
+        strokeThickness: 2,
         stroke: '#111111',
         // resolution: 8,
         shadow: {
