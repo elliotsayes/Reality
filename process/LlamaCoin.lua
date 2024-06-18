@@ -36,7 +36,8 @@ LlamaBanker = 'ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk'
 -- Don't overwrite Balances
 Balances = Balances or { [LlamaBanker] = utils.toBalanceValue(initialSupply * 10 ^ Denomination) }
 
-INFLATION_AMOUNT = 100;
+local inflationAmount = 100;
+INFLATION_QUANTITY = utils.toBalanceValue(inflationAmount * 10 ^ Denomination);
 
 -- Should be run every hour?
 Handlers.add(
@@ -47,9 +48,10 @@ Handlers.add(
       return print('Cron-Tick not from own process')
     end
 
-    local mintQuantity = tostring(INFLATION_AMOUNT)
+    local mintQuantity = INFLATION_QUANTITY;
     -- Mint $LLAMA
     Send({
+      Target = ao.id,
       Tags = {
         Action = 'Mint',
         Quantity = mintQuantity,
@@ -57,6 +59,7 @@ Handlers.add(
     })
     -- Allocate the newly minted $LLAMA to the banker
     Send({
+      Target = ao.id,
       Tags = {
         Action = 'Transfer',
         Quantity = mintQuantity,
