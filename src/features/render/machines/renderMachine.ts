@@ -8,6 +8,7 @@ import { listenScene, listenSceneEvent } from '../lib/EventBus';
 import { loadVersePhaser } from '../lib/load/verse';
 import { AoContractClientForProcess } from '@/features/ao/lib/aoContractClient';
 import { ChatClient, ChatClientForProcess } from '@/features/chat/contract/chatClient';
+import { MessageHistory } from '@/features/chat/contract/model';
 
 export const renderMachine = setup({
   types: {
@@ -172,6 +173,19 @@ export const renderMachine = setup({
     sendRegistrationConfirmed: ({ self }) => {
       console.log('sendRegistrationConfirmed');
       self.send({ type: 'Registration Confirmed' });
+    },
+    assignChatMessageOffset: assign(({ event }) => {
+      const offset = event.output;
+      return { chatMessageOffset: offset };
+    }),
+    updateChatMessageOffset: assign(({ event }) => {
+      const messages = event.output as MessageHistory;
+      if (messages.length === 0) return {};
+      return { chatMessageOffset: messages[0].Id };
+    }),
+    notifyRendererOfNewMessages: ({ context, event }) => {
+      const messages = event.output as MessageHistory;
+      context.typedScenes.verseScene!.showEntityChatMessages(messages);
     },
   },
   guards: {

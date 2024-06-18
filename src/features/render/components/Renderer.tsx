@@ -28,6 +28,7 @@ export function Renderer({ userAddress, aoContractClientForProcess, profileClien
                 aoContractClientForProcess,
                 profileClient,
                 verseClientForProcess,
+                chatClientForProcess,
             },
             setVerseIdUrl: (verseId: string) => {
                 navigate({

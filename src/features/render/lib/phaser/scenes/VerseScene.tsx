@@ -12,6 +12,7 @@ import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import { isDebug } from "../game";
 import { truncateAddress } from "@/features/arweave/lib/utils";
 import { ProfileInfo } from "@/features/profile/contract/model";
+import { MessageHistory } from "@/features/chat/contract/model";
 
 const SCALE_TILES = 3;
 const SCALE_ENTITIES = 2;
@@ -476,6 +477,11 @@ export class VerseScene extends WarpableScene {
       && point.y <= bounds.center.y + bounds.edgeLength / 2;
     
     return withinX && withinY;
+  }
+
+  public showEntityChatMessages(messages: MessageHistory)
+  {
+    console.error('showEntityChatMessages', messages)
   }
 
   public update(/* t: number, dt: number */)
