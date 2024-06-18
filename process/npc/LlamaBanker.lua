@@ -213,6 +213,24 @@ Handlers.add(
   Handlers.utils.hasMatchingTag('Action', 'RequestBalanceMessage'),
   function(msg)
     print('RequestBalanceMessage')
+    -- If the user has no emissions, the token process might
+    -- send the balance of the banker instead!!
+    local emissionsCount = BankerDbAdmin:exec(
+      "SELECT COUNT(*) as Value FROM Emissions WHERE Recipient = '" .. msg.From .. "'"
+    )[1].Value or 0
+
+    if (emissionsCount == 0) then
+      return Send({
+        Target = LLAMA_FED_CHAT_PROCESS,
+        Tags = {
+          Action = 'ChatMessage',
+          ['Author-Name'] = 'Llama Banker',
+        },
+        Data = 'Address ' ..
+            msg.From .. ', sorry but I can\'t help you till the king has personally approved some tokens for you!',
+      })
+    end
+
     Send({
       Target = LLAMA_TOKEN_PROCESS,
       Tags = {
@@ -273,9 +291,9 @@ RequestBalanceMessageSchemaTags = [[
 ]]
 
 Schema = {
-  RequestBalanceMessage = {
+  Balance = {
     Title = "Check your $LLAMA Balance",
-    Description = "", -- TODO: nil Descriptions?
+    Description = "Llama Banker will check your account and put the result in the chat", -- TODO: nil Descriptions?
     Schema = {
       Tags = json.decode(RequestBalanceMessageSchemaTags),
       -- Data

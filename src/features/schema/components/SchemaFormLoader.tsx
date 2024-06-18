@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { SchemaForm } from "./SchemaForm"
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient"
 import { createSchemaClient } from "../contract/schemaClient"
+import { SchemaExternalMethod } from "../contract/model"
 
 interface SchemaFormLoaderProps {
   aoContractClientForProcess: AoContractClientForProcess
@@ -14,15 +15,17 @@ interface SchemaFormLoaderProps {
 export function SchemaFormLoader({ aoContractClientForProcess, schemaProcessId, isExternal, methodName, onComplete }: SchemaFormLoaderProps) {
   // TODO: Conditional based on isExternal
   const schema = useQuery({
-    queryKey: ['schemaExternal', schemaProcessId],
+    queryKey: [isExternal ? 'schemaExternal' : 'schema', schemaProcessId],
     queryFn: async () => {
       const schemaClient = createSchemaClient(aoContractClientForProcess(schemaProcessId))
-      return schemaClient.readSchemaExternal()
+      return isExternal 
+        ? await schemaClient.readSchemaExternal()
+        : await schemaClient.readSchema()
     },
   })
 
   const messageTarget = isExternal
-    ? schema.data?.[methodName]?.Target
+    ? (schema.data?.[methodName] as SchemaExternalMethod | undefined)?.Target
     : schemaProcessId
 
   const message = useMutation({

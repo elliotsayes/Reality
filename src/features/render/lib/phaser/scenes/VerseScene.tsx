@@ -435,14 +435,14 @@ export class VerseScene extends WarpableScene {
         sprite.play(`llama_6_idle`);
         sprite.on('pointerdown', () => {
           console.log(`Clicked on SchemaFormExternal ${entityId}`)
-          this.showSchemaExternalForm(entityId, entity);
+          this.showSchemaForm(entityId, entity);
         }, this)
       } else if (bankerEntityIds.includes(entityId)) {
         // Banker
         sprite.play(`llama_8_idle`);
         sprite.on('pointerdown', () => {
           console.log(`Clicked on Banker ${entityId}`)
-          // this.showSchemaExternalForm(entityId, entity);
+          this.showSchemaForm(entityId, entity);
         }, this)
       } else {
         sprite.play(`llama_4_idle`);
@@ -566,7 +566,7 @@ export class VerseScene extends WarpableScene {
             maxLines: 3,
             lineSpacing: 2,
             wordWrap: {
-              width: 150,
+              width: 140,
               useAdvancedWrap: true,
             },
             // resolution: 8,
@@ -661,13 +661,15 @@ export class VerseScene extends WarpableScene {
     }
   }
 
-  public showSchemaExternalForm(entityId: string, entity: VerseEntity)
+  public showSchemaForm(entityId: string, entity: VerseEntity)
   {
     if (this.schemaForm) {
       this.schemaForm.destroy();
     }
 
-    if (entity.Interaction?.Type !== 'SchemaExternalForm') return;
+    if (entity.Interaction?.Type !== 'SchemaExternalForm'
+      && entity.Interaction?.Type !== 'SchemaForm') return;
+    const isExternal = entity.Interaction?.Type === 'SchemaExternalForm';
 
     const formSize: Size2D = {
       w: 350,
@@ -679,7 +681,7 @@ export class VerseScene extends WarpableScene {
       <FormOverlay
         aoContractClientForProcess={this.aoContractClientForProcess}
         schemaProcessId={entityId}
-        isExternal={true}
+        isExternal={isExternal}
         methodName={entity.Interaction.Id}
         close={() => {
           this.schemaForm?.destroy();

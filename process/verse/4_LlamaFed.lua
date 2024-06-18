@@ -52,6 +52,10 @@ VerseEntitiesStatic = {
   ['ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk'] = {
     Position = { 18.875, 2.5 },
     Type = 'Avatar',
+    Interaction = {
+      Type = 'SchemaForm',
+      Id = 'Balance',
+    },
   },
   -- ['SomePlayerProcessId'] = {
   --   Position = { 0, 0 },
