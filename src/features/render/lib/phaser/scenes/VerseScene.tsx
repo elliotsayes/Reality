@@ -551,8 +551,8 @@ export class VerseScene extends WarpableScene {
     if (entity.Interaction?.Type !== 'SchemaExternalForm') return;
 
     const formSize: Size2D = {
-      w: 300,
-      h: 300,
+      w: 350,
+      h: 500,
     }
     const memElement = document.createElement("div");
     memElement.setAttribute('style', `width: ${formSize.w}px; height: ${formSize.h}px; display: flex; justify-content: center; align-items: center;`)
@@ -570,10 +570,10 @@ export class VerseScene extends WarpableScene {
     );
 
     this.schemaForm = this.add.dom(
-      entity.Position[0] * this.tileSizeScaled[0] - 30,
+      entity.Position[0] * this.tileSizeScaled[0] - 60,
       entity.Position[1] * this.tileSizeScaled[1],
       memElement,
-    ).setOrigin(1, 0.5);
+    ).setOrigin(1, 0.25);
 
     this.camera.stopFollow();
     this.camera.pan(
