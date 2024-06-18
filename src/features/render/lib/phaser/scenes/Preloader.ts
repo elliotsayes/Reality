@@ -66,6 +66,8 @@ export class Preloader extends WarpableScene
         this.load.image('invis', 'sprites/invis.png');
         // this.load.image('mona', 'sprites/mona.png');
         // this.load.image('scream', 'sprites/scream.png');
+        this.load.image('speech_sm', 'sprites/speech_sm.png');
+        this.load.image('speech_md', 'sprites/speech_md.png');
 
         // this.load.atlas('faune', 'sprites/atlas/faune.png', 'sprites/atlas/faune.json');
 

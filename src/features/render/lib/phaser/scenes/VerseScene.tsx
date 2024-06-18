@@ -489,35 +489,85 @@ export class VerseScene extends WarpableScene {
 
       if (!entityContainer) return;
 
-      const displayContent = message.Content.length > 15
-        ? `${message.Content.slice(0, 14)}…`
-        : message.Content;
-
-      const chatText = this.add.text(
-        30, -20,
-        displayContent,
-        { 
-          fontSize: '12px',
-          fontFamily: '"Press Start 2P"',
-          color: '#eeeeee',
-          backgroundColor: '#111111',
-          // resolution: 8,
-          shadow: {
-            offsetX: 1,
-            offsetY: 1,
-            color: '#111111',
-            blur: 1,
-            stroke: true,
-            fill: true,
-          },
-        },
+      const chatBubble = this.add.container(
+        25, -30,
       )
-        .setOrigin(0)
-        .setDepth(DEPTH_TEXT_BASE + 1)
 
-      entityContainer.add(chatText);
+      if (message.Content.length <= 8) {
+        // speech_sm
+        const speechBubbleSm = this.add.sprite(
+          0, 0,
+          'speech_sm',
+        )
+          .setScale(1)
+          .setOrigin(0)
+  
+        const chatText = this.add.text(
+          9, 6,
+          message.Content,
+          { 
+            fontSize: '10px',
+            fontFamily: '"Press Start 2P"',
+            color: '#111111',
+            // resolution: 8,
+            shadow: {
+              offsetX: 1,
+              offsetY: 1,
+              color: '#11111177',
+              blur: 1,
+              stroke: true,
+              fill: true,
+            },
+          },
+        )
+          .setOrigin(0)
+          .setDepth(DEPTH_TEXT_BASE + 1)
+        
+        chatBubble.add(speechBubbleSm);
+        chatBubble.add(chatText);
+      } else {
+        const speechBubbleMd = this.add.sprite(
+          0, 0,
+          'speech_md',
+        )
+          .setScale(1)
+          .setOrigin(0)
+        const chatText = this.add.text(
+          9, 5,
+          message.Content,
+          { 
+            fontSize: '8px',
+            fontFamily: '"Press Start 2P"',
+            color: '#111111',
+            maxLines: 3,
+            lineSpacing: 2,
+            wordWrap: {
+              width: 150,
+              useAdvancedWrap: true,
+            },
+            // resolution: 8,
+            shadow: {
+              offsetX: 1,
+              offsetY: 1,
+              color: '#11111177',
+              blur: 1,
+              stroke: true,
+              fill: true,
+            },
+          },
+        )
+          .setOrigin(0)
+          .setDepth(DEPTH_TEXT_BASE + 1)
+        
+        chatBubble.add(speechBubbleMd);
+        chatBubble.add(chatText);
+      }
+
+
+
+      entityContainer.add(chatBubble);
       setTimeout(() => {
-        chatText.destroy();
+        chatBubble.destroy();
       }, 5000)
     });
   }
