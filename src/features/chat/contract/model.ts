@@ -12,6 +12,9 @@ export const Message = z.object({
 });
 export type Message = z.infer<typeof Message>;
 
+export const MessageHistory = z.array(Message);
+export type MessageHistory = z.infer<typeof MessageHistory>;
+
 export const MessageCreate = Message.omit({
   MessageId: true,
   Timestamp: true,

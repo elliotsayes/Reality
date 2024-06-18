@@ -42,4 +42,12 @@ describe('createChatClient', () => {
   }, {
     timeout: 20000,
   })
+
+  test('ReadCount', async () => {
+    const client = createChatClient(chatTestAoContractClient)
+    const count = await client.readCount();
+    expect(count).toBeGreaterThan(0);
+  }, {
+    timeout: 20000,
+  });
 })

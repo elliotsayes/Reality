@@ -1,6 +1,6 @@
 import { MessageId } from "../../ao/lib/aoClient";
 import { AoContractClient, createAoContractClient } from "../../ao/lib/aoContractClient";
-import { Message, MessageCreate } from "./model";
+import { MessageCreate, MessageHistory } from "./model";
 import { AoWallet } from "@/features/ao/lib/aoWallet";
 import { connect } from "@permaweb/aoconnect";
 
@@ -8,7 +8,8 @@ export type ChatClient = {
   aoContractClient: AoContractClient;
 
   // Reads
-  readHistory(): Promise<Array<Message>>;
+  readCount(): Promise<number>;
+  readHistory(): Promise<MessageHistory>;
 
   // Writes
   postMessage(message: MessageCreate): Promise<MessageId>;
@@ -22,7 +23,10 @@ export const createChatClient = (
   aoContractClient: aoContractClient,
 
   // Read
-  readHistory: () => aoContractClient.dryrunReadReplyOneJson<Array<Message>>({
+  readCount: () => aoContractClient.dryrunReadReplyOne({
+    tags: [{ name: "Action", value: "ChatCount" }],
+  }).then((reply) => parseInt(reply.Data)),
+  readHistory: () => aoContractClient.dryrunReadReplyOneJson<MessageHistory>({
     tags: [{ name: "Action", value: "ChatHistory" }],
     data: JSON.stringify({}),
   }, /* ChatInfoKeyed */),

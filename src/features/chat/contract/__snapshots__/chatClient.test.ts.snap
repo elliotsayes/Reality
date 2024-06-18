@@ -26,6 +26,7 @@ exports[`createChatClient > creates client 1`] = `
     "processId": "9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss",
   },
   "postMessage": [Function],
+  "readCount": [Function],
   "readHistory": [Function],
 }
 `;
