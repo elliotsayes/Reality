@@ -293,7 +293,8 @@ RequestBalanceMessageSchemaTags = [[
 Schema = {
   Balance = {
     Title = "Check your $LLAMA Balance",
-    Description = "Llama Banker will check your account and put the result in the chat", -- TODO: nil Descriptions?
+    Description =
+    "Llama Banker will check your account and put the result in the chat. Llama Banker will only help you if you've already recieved tokens from the Llama King.", -- TODO: nil Descriptions?
     Schema = {
       Tags = json.decode(RequestBalanceMessageSchemaTags),
       -- Data
