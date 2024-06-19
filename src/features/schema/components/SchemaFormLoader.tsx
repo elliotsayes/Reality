@@ -24,8 +24,10 @@ export function SchemaFormLoader({ aoContractClientForProcess, schemaProcessId, 
     },
   })
 
+  const maybeMethodSchema = (schema.data?.[methodName] as SchemaExternalMethod | undefined)
+
   const messageTarget = isExternal
-    ? (schema.data?.[methodName] as SchemaExternalMethod | undefined)?.Target
+    ? maybeMethodSchema?.Target
     : schemaProcessId
 
   const message = useMutation({
@@ -35,7 +37,28 @@ export function SchemaFormLoader({ aoContractClientForProcess, schemaProcessId, 
 
       console.log('data', data)
       const formData = data.formData as Record<string, string | number>
-      const tags = Object.entries(formData).map(([name, value]) => ({ name, value: value.toString() }))
+      const tags = Object.entries(formData).map(([name, value]) => {
+        const maybeComment = maybeMethodSchema?.Schema.Tags.properties?.[name]?.$comment;
+        if (maybeComment && typeof value === 'number') {
+          console.log(`Found comment: ${maybeComment} for tag: ${name}`)
+          try {
+            const multiplier = parseInt(maybeComment)
+            const processedTag = {
+              name,
+              value: (value * multiplier).toString(),
+            }
+            console.log('multplied tag: ', processedTag)
+            return processedTag
+          } catch (e) {
+            console.error(`Failed to parse comment as integer: ${maybeComment}`)
+          }
+        }
+
+        return {
+          name,
+          value: value.toString(),
+        }
+      })
       console.log('tags', tags)
 
       console.log(`Sending message to ${messageTarget} with tags:`, tags)

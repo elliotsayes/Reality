@@ -218,10 +218,11 @@ function PetitionSchemaTags()
       "const": "]] .. LLAMA_BANKER_PROCESS .. [["
     },
     "Quantity": {
-      "type": "integer",
-      "minimum": 1000000000,
-      "maximum": 100000000000,
-      "title": "Wrapped $AR (0.001-0.1) offering. Enter the amount in winston (1B-100B)"
+      "type": "number",
+      "minimum": 0.001,
+      "maximum": 0.1,
+      "title": "Wrapped $AR offering (0.001-0.1).",
+      "$comment": "1000000000000"
     },
     "X-Petition": {
       "type": "string",
