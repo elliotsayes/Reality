@@ -1,36 +1,48 @@
 -- Module: 1PdCJiXhNafpJbvC-sjxWTeNzbf9Q_RfUNs84GYoPm0
 
 ModelID = "ISrbGzQot05rs_HKC08O_SmkipYQnqgB1yC3mjZZeEo"
-Llama = nil
+Llama = Llama or nil
 
 DefaultMaxResponse = 10
-DefaultSystemPrompt =
+CoinsSystemPrompt =
     "You are a Llama king of a kingdom. " ..
-    "You are a good king and you really like grass."
+    "A user wants you to give them some coins. Below is their reason. " ..
+    "Give them coins based on the reason. " ..
+    "Important: Respond tersely with a number of coins out of 10."
 
+DefaultSystemPrompt =
+    "You are the Llama king. " ..
+    "The user wants coins. Below is their reason. " ..
+    "Important: Respond only with a few words and GRADE: <number> 0 to 5."
 InferenceAllowList = {
   -- LlamaKing ProcessId
   "",
 }
 
-function Init(ModelID)
+function Init()
   Llama = require("llama")
   Llama.logLevel = 4
-  Llama.load(ModelID)
+  Llama.load("/data/" .. ModelID)
 end
 
 function ProcessPetition(systemPrompt, userPrompt)
   Llama.setPrompt(GeneratePrompt(systemPrompt, userPrompt))
   local response = ""
   for i = 1, DefaultMaxResponse do
-    response = Llama.next()
-    local match = string.match(response, "GRADE:%s*(%d+)")
+    response = response .. Llama.next()
+    local match = string.match(response, "(%d+)")
     if match then
-      return match, response
+      return {
+        Grade = tostring(match),
+        Reason = response,
+      }
     end
   end
   -- Default to 2
-  return "2", "Your plea confused me immensely. Take these coins as a consolation."
+  return {
+    Grade = "1",
+    Reason = "Your plea confused me immensely. Take these coins as a consolation.",
+  }
 end
 
 function GeneratePrompt(systemPrompt, userPrompt)
@@ -44,11 +56,9 @@ Handlers.add(
   Handlers.utils.hasMatchingTag("Action", "Init"),
   function(msg)
     ModelID = msg.Tags["Model-ID"] or ModelID
-    Init(ModelID)
-
+    Init()
     DefaultSystemPrompt = msg.Tags.SystemPrompt or DefaultSystemPrompt
     DefaultMaxResponse = msg.Tags["Max-Response"] or DefaultMaxResponse
-
     Send({
       Action = "Grader-Initialized",
     })
