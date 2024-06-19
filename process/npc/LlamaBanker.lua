@@ -294,7 +294,7 @@ Schema = {
   Balance = {
     Title = "Check your $LLAMA Balance",
     Description =
-    "Llama Banker will check your account and put the result in the chat. Llama Banker will only help you if you've already recieved tokens from the Llama King.", -- TODO: nil Descriptions?
+    "Llama Banker will check your $LLAMA account and write your balance in the chat. Llama Banker will only help you if you've already recieved some $LLAMA tokens from the Llama King.", -- TODO: nil Descriptions?
     Schema = {
       Tags = json.decode(RequestBalanceMessageSchemaTags),
       -- Data
