@@ -1,35 +1,37 @@
 -- Module: 1PdCJiXhNafpJbvC-sjxWTeNzbf9Q_RfUNs84GYoPm0
 
-ModelID = "ISrbGzQot05rs_HKC08O_SmkipYQnqgB1yC3mjZZeEo"
-Llama = nil
+ModelID = ModelID or "M-OzkyjxWhSvWYF87p0kvmkuAEEkvOzIj4nMNoSIydc"
+Llama = Llama or nil
 
-DefaultMaxResponse = 5
+DefaultMaxResponse = 30
 DefaultSystemPrompt =
-    "Your name is Wandering Llama. You are a Llama who wanders around in LlamaLand. " ..
-    "Below are some messages from Llamas chatting nearby, Please respond to them. " ..
-    "Important: End your message with the text <END>"
+    "You are a llama in a digital world. " ..
+    "Below are messages from users nearby. Respond to them. " ..
+    "Important: End your message with <END> "
 
 InferenceAllowList = {
   -- LlamaWanderer ProcessId
   "_di-oSYyicR6IW5Dy7UzDxibD-paV23l_6-v0cziiA0",
 }
 
-function Init(ModelID)
+function Init()
   Llama = require("llama")
   Llama.logLevel = 4
-  Llama.load(ModelID)
+  Llama.load("/data/" .. ModelID)
 end
 
 function ProcessMessages(systemPrompt, userPrompt)
   Llama.setPrompt(GeneratePrompt(systemPrompt, userPrompt))
   local response = ""
   for i = 1, DefaultMaxResponse do
-    response = Llama.next()
+    response = response .. Llama.next()
+    print("Response so far: " .. response)
     local match = string.match(response, "(.*)<END>")
     if match then
       return match
     end
   end
+  return response
 end
 
 function GeneratePrompt(systemPrompt, userPrompt)
@@ -43,7 +45,7 @@ Handlers.add(
   Handlers.utils.hasMatchingTag("Action", "Init"),
   function(msg)
     ModelID = msg.Tags["Model-ID"] or ModelID
-    Init(ModelID)
+    Init()
 
     DefaultSystemPrompt = msg.Tags.SystemPrompt or DefaultSystemPrompt
     DefaultMaxResponse = msg.Tags["Max-Response"] or DefaultMaxResponse
