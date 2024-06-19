@@ -76,8 +76,6 @@ Handlers.add(
   "VerseEntitiesDynamic",
   Handlers.utils.hasMatchingTag("Action", "VerseEntitiesDynamic"),
   function(msg)
-    print("VerseEntitiesDynamic")
-
     local queryTimestamp = json.decode(msg.Data).Timestamp
     -- Validate timestamp
     if (type(queryTimestamp) ~= "number") then
@@ -85,17 +83,18 @@ Handlers.add(
       return
     end
 
-    local query = VerseDbAdmin:exec(string.format([[
-        SELECT * FROM Entities WHERE LastUpdated > %d
-      ]],
-      queryTimestamp
-    ))
+    print("VerseEntitiesDynamic(" .. (queryTimestamp or 'nil') .. ")")
+
+    local query = VerseDb:prepare([[
+      SELECT * FROM Entities WHERE LastUpdated > ?
+    ]])
+    query:bind_values(queryTimestamp)
+
     local entities = {}
-    for i = 1, #query do
-      local entity = query[i]
-      entities[entity.Id] = {
-        Position = json.decode(entity.Position),
-        Type = entity.Type,
+    for row in query:nrows() do
+      entities[row.Id] = {
+        Position = json.decode(row.Position),
+        Type = row.Type,
       }
     end
 

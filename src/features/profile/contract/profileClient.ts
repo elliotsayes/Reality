@@ -24,13 +24,17 @@ export const createProfileClient = (
   aoContractClient: aoContractClient,
 
   // Read
-  readProfiles: async (profileIds: Array<ArweaveId>) =>
-    aoContractClient.dryrunReadReplyOneJson<Array<ProfileInfo>>({
+  readProfiles: async (profileIds: Array<ArweaveId>) => {
+    if (profileIds.length === 0) {
+      return [];
+    }
+    return aoContractClient.dryrunReadReplyOneJson<Array<ProfileInfo>>({
       tags: [{ name: "Action", value: "Get-Metadata-By-ProfileIds" }],
       data: JSON.stringify({
         ProfileIds: profileIds,
       }),
-    }, /* Array<ProfileInfo> */),
+    }, /* Array<ProfileInfo> */);
+  },
 
   // Write
   createProfile: (profile: ProfileInfoCreate) => aoContractClient.message({

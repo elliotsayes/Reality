@@ -233,8 +233,8 @@ export const renderMachine = setup({
         }
       }) => {
         const beforeTimestamp = new Date();
-        const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
-        const entities = await input.verseClient.readEntitiesDynamic(input.lastEntityUpdate ?? oneMinuteAgo);
+        const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
+        const entities = await input.verseClient.readEntitiesDynamic(input.lastEntityUpdate ?? tenSecondsAgo);
         const profiles = await input.profileClient.readProfiles(Object.keys(entities));
         return {
           entities,
