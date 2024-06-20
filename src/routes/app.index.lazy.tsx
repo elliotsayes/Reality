@@ -1,21 +1,22 @@
-import { createLazyFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react';
+import { Login } from '@/features/login/components/Login';
+import { WaitlistScreen } from '@/features/waitlist/components/WaitlistScreen';
+import { createLazyFileRoute } from '@tanstack/react-router'
 
 export const Route = createLazyFileRoute('/app/')({
-  component: VerseId,
+  component: WaitlistRoute,
 })
 
-function VerseId() {
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    navigate({
-      to: '/app/$',
-      params: {
-        _splat: 'main',
-      },
-    })
-  }, [navigate])
-
-  return null;
+function WaitlistRoute() {
+  return (
+    <Login
+      loginTitle="Sign in to access the Waitlist"
+      temporaryWalletEnabled={false}
+    >
+      {(wallet, disconnect) => (
+        <WaitlistScreen
+          wallet={wallet}
+        />
+      )}
+    </Login>
+  )
 }

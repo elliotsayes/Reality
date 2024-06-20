@@ -24,7 +24,7 @@ export const createWaitlistClient = (
 
   // Reads
   readState: () => aoContractClient.dryrunReadReplyOneJson<WaitlistState>({
-    tags: [{ name: "Action", value: "Waitlist-State" }],
+    tags: [{ name: "Read", value: "Waitlist-State" }],
   }),
 
   // Writes

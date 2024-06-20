@@ -127,16 +127,17 @@ Handlers.add(
     local waitlistCount = WaitlistDbAdmin:count('Waitlist')
 
     local waitlistUserPosition = 0;
+    local waitlistUser = nil;
     -- Get the rank of the user
     -- Sort by BumpCount DESC, TimestampLastBumped ASC
     -- Should be safe to string.format msg.From
     local waitlistQuery = WaitlistDbAdmin:exec(string.format([[
     SELECT
-      Rank
+      *
     FROM
       (
         SELECT
-          WalletId,
+          *,
           ROW_NUMBER() OVER (ORDER BY BumpCount DESC, TimestampLastBumped ASC) AS Rank
         FROM
           Waitlist
@@ -146,7 +147,15 @@ Handlers.add(
     ]], userAddress))
 
     if (waitlistQuery and #waitlistQuery == 1) then
-      waitlistUserPosition = waitlistQuery[1].Rank
+      local row = waitlistQuery[1]
+      waitlistUserPosition = row.Rank
+      waitlistUser = {
+        Rank = row.Rank,
+        WalletId = row.WalletId,
+        TimestampCreated = row.TimestampCreated,
+        TimestampLastBumped = row.TimestampLastBumped,
+        BumpCount = row.BumpCount
+      }
     end
 
     -- Query waitlist limits
@@ -173,6 +182,7 @@ Handlers.add(
       Data = json.encode({
         Count = waitlistCount,
         UserPosition = waitlistUserPosition,
+        User = waitlistUser,
         RankDesc = rankDescEntries,
         RankAsc = rankAscEntries,
         RankAscSurrounding = rankAscSurroundingEntries,
@@ -220,10 +230,10 @@ Handlers.add(
 --#region Writes
 
 Handlers.add(
-  "WaitlistAdd",
-  Handlers.utils.hasMatchingTag("Action", "Waitlist-Add"),
+  "WaitlistRegister",
+  Handlers.utils.hasMatchingTag("Action", "Waitlist-Register"),
   function(msg)
-    print("WaitlistAdd")
+    print("WaitlistRegister")
 
     local userAddress = msg.From
     local nowMs = msg.Timestamp
@@ -253,7 +263,7 @@ Handlers.add(
     Send({
       Target = msg.From,
       Tags = {
-        Action = "Waitlist-Add-Response",
+        Action = "Waitlist-Register-Response",
       },
       Data = json.encode({
         WalletId = userAddress,

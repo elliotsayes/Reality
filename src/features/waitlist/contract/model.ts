@@ -18,5 +18,6 @@ export const WaitlistState = z.object({
   RankDesc: RankList,
   Count: z.number(),
   UserPosition: z.number(),
+  User: z.optional(WaitlistEntry),
 });
 export type WaitlistState = z.infer<typeof WaitlistState>;

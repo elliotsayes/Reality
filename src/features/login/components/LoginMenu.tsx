@@ -12,9 +12,11 @@ interface LoginMenuProps {
   onConnect: (wallet: AoWallet, disconnect?: () => void) => void;
   onDisconnect: () => void;
   localWallet?: AoWallet;
+  loginTitle?: string;
+  temporaryWalletEnabled?: boolean;
 }
 
-export function LoginMenu({ onConnect, onDisconnect, localWallet }: LoginMenuProps) {
+export function LoginMenu({ onConnect, onDisconnect, localWallet, loginTitle, temporaryWalletEnabled }: LoginMenuProps) {
   const hasLocalWallet = localWallet !== undefined;
   const hasInjectedArweave = !!window.arweaveWallet;
 
@@ -22,7 +24,7 @@ export function LoginMenu({ onConnect, onDisconnect, localWallet }: LoginMenuPro
     <TooltipProvider>
       <Card>
         <CardHeader>
-          <CardTitle>Login with an Arweave wallet</CardTitle>
+          <CardTitle>{loginTitle ?? "Login with an Arweave wallet"}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2 items-stretch">
           <Tooltip disableHoverableContent>
@@ -80,29 +82,33 @@ export function LoginMenu({ onConnect, onDisconnect, localWallet }: LoginMenuPro
               </p>
             </TooltipContent>
           </Tooltip>
-          <Tooltip disableHoverableContent>
-            <TooltipTrigger
-              asChild
-              disabled={!hasLocalWallet}
-              onClick={() => {
-                onConnect(localWallet!)
-              }}
-            >
-              <Button>
-                <span className="pr-2">
-                  {hasLocalWallet
-                  ? <WandSparkles />
-                  : <Cog className="animate-spin" />}
-                </span>
-                Temporary Wallet
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>
-                Log in with a temporary wallet stored in your browser
-              </p>
-            </TooltipContent>
-          </Tooltip>
+          {
+            temporaryWalletEnabled !== false && (
+              <Tooltip disableHoverableContent>
+                <TooltipTrigger
+                  asChild
+                  disabled={!hasLocalWallet}
+                  onClick={() => {
+                    onConnect(localWallet!)
+                  }}
+                >
+                  <Button>
+                    <span className="pr-2">
+                      {hasLocalWallet
+                      ? <WandSparkles />
+                      : <Cog className="animate-spin" />}
+                    </span>
+                    Temporary Wallet
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>
+                    Log in with a temporary wallet stored in your browser
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )
+          }
         </CardContent>
       </Card>
     </TooltipProvider>

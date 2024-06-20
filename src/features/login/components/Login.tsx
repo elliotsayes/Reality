@@ -7,9 +7,11 @@ import { inspect } from "@/lib/xstate"
 
 interface LoginProps {
   children: (wallet: AoWallet, disconnect: () => void) => React.ReactNode
+  loginTitle?: string
+  temporaryWalletEnabled?: boolean
 }
 
-export function Login({ children }: LoginProps) {
+export function Login({ children, loginTitle, temporaryWalletEnabled }: LoginProps) {
   const [current, send] = useMachine(loginMachine, { inspect })
 
   if (current.matches({ "Logging In": "Show Login UI" })) {
@@ -19,6 +21,8 @@ export function Login({ children }: LoginProps) {
           onConnect={(wallet, disconnect) => send({ type: 'Connect', data: { wallet, disconnect: disconnect ?? (() => {}) } })} 
           onDisconnect={() => send({ type: 'External Disconnect' })}
           localWallet={current.context.localWallet}
+          loginTitle={loginTitle}
+          temporaryWalletEnabled={temporaryWalletEnabled}
         />
         <div />
       </div>
