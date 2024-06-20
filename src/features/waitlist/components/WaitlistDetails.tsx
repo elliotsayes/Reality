@@ -89,7 +89,7 @@ export function WaitlistDetails({
       {
         waitlistState.data.User !== undefined && (
           <p className="text-sm">
-            Next bump in <span className="italic text-purple-300">{humanizeDuration(timeLeft)}</span>...
+            Next bump in <span className="italic text-purple-300">{humanizeDuration(timeLeft, {round: true})}</span>...
           </p>
         )
       }

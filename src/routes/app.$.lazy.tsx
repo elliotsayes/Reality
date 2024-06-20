@@ -18,6 +18,7 @@ export const Route = createLazyFileRoute('/app/$')({
 
 const addressWhitelist = [
   '0cQJ5Hd4oCaL57CWP-Pqe5_e0D4_ZDWuxKBgR9ke1SI',
+  '0yTSTgkCdcgxZHshUDHobfo_sHzW7ZIbqse8eMy_wJY',
   "71jBJuC2FPubKtv687Q1kc8ee43l_a_8D9TZGIgShzg",
   "uf_FqRvLqjnFMc8ZzGkF4qWKuNmUIQcYP0tPlCGORQk",
   "v2XXwq_FvVqH2KR4p_x8H-SQ7rDwZBbykSv-59__Avc",
