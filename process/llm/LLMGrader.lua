@@ -1,9 +1,11 @@
--- Module: 1PdCJiXhNafpJbvC-sjxWTeNzbf9Q_RfUNs84GYoPm0
+-- Module: BlucTh6AJQvcbhNPa1t1UpNgHTM7UEmR0czYdAdCxXg
 
-ModelID = "ISrbGzQot05rs_HKC08O_SmkipYQnqgB1yC3mjZZeEo"
 Llama = Llama or nil
 
-DefaultMaxResponse = 10
+-- GPT-2 XL 4bit
+ModelID = "M-OzkyjxWhSvWYF87p0kvmkuAEEkvOzIj4nMNoSIydc"
+
+DefaultMaxResponse = 20
 CoinsSystemPrompt =
     "You are a Llama king of a kingdom. " ..
     "A user wants you to give them some coins. Below is their reason. " ..
@@ -14,9 +16,10 @@ DefaultSystemPrompt =
     "You are the Llama king. " ..
     "The user wants coins. Below is their reason. " ..
     "Important: Respond only with a few words and GRADE: <number> 0 to 5."
+
 InferenceAllowList = {
   -- LlamaKing ProcessId
-  "",
+  ["kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA"] = true,
 }
 
 function Init()
@@ -46,9 +49,9 @@ function ProcessPetition(systemPrompt, userPrompt)
 end
 
 function GeneratePrompt(systemPrompt, userPrompt)
-  return "<|SYSTEM|>" ..
-      systemPrompt .. "<|USER|>" ..
-      userPrompt .. "<|ASSISTANT|>"
+  return "<|SYSTEM|>" .. systemPrompt
+      .. "<|USER|>" .. userPrompt
+      .. "<|ASSISTANT|>"
 end
 
 Handlers.add(
@@ -71,15 +74,17 @@ Handlers.add(
   function(msg)
     print("Inference")
 
-    -- TODO: Whitelist
-    -- if not InferenceAllowList[msg.From] then
-    --   print("Inference not allowed: " .. msg.From)
-    --   return
-    -- end
+    if not InferenceAllowList[msg.From] then
+      print("Inference not allowed: " .. msg.From)
+      return
+    end
 
     local systemPrompt = msg.Tags.SystemPrompt or DefaultSystemPrompt
     local userPrompt = msg.Data
-    local Grade, Reason = ProcessPetition(systemPrompt, userPrompt)
+    local petitionResponse = ProcessPetition(systemPrompt, userPrompt)
+
+    local Grade = petitionResponse.Grade
+    local Reason = petitionResponse.Reason
     print("Grade: " .. Grade .. ", Reason: " .. Reason)
 
     ao.send({

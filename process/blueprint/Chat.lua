@@ -131,7 +131,7 @@ function ValidateLimit(testLimit)
   if (testLimit < 1) then
     return false
   end
-  if (testLimit > 100) then
+  if (testLimit > 200) then
     return false
   end
 

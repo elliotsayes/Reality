@@ -130,6 +130,17 @@ Handlers.add(
             content = msg.Data,
         }
 
+        ao.send({
+            Target = LLAMA_FED_CHAT_PROCESS,
+            Tags = {
+                Action = 'ChatMessage',
+                ['Author-Name'] = 'Llama King',
+            },
+            Data = 'Honorable ' ..
+                msg.Tags['Original-Sender-Name'] ..
+                '! Make yourself comfortable while I thoughtfully consider your request...'
+        })
+
         dispatchHighestPriorityMessage(msg.Timestamp)
     end
 )
@@ -195,7 +206,6 @@ Handlers.add(
 )
 
 -- Schema
-
 
 function PetitionSchemaTags()
     return [[
