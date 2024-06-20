@@ -69,23 +69,27 @@ export function WaitlistDetails({
 
 
   return (
-    <div className="flex flex-col justify-evenly items-center h-[25%] min-h-44">
+    <div
+      className="flex flex-col justify-evenly items-center h-72 min-h-44"
+      style={{
+        fontFamily: "'Press Start 2P",
+      }}
+    >
       {
         waitlistState.data.UserPosition === 0 ? (
-          <p className="text-2xl">
+          <p className="text-xl">
             You are not yet on the Waitlist
           </p>
         ) : (
-          <p className="text-2xl">
+          <p className="text-xl">
             You are at position <span className="text-purple-300">{waitlistState.data.UserPosition}</span> / <span className="text-purple-300">{waitlistState.data.Count}</span> on the Waitlist
           </p>
         )
       }
-      <div className="flex flex-col items-center gap-2">
       {
         waitlistState.data.User !== undefined && (
-          <p className="text-lg">
-            Next bump in <span className="italic">{humanizeDuration(timeLeft, { round: true })}</span>...
+          <p className="text-sm">
+            Next bump in <span className="italic text-purple-300">{humanizeDuration(timeLeft)}</span>...
           </p>
         )
       }
@@ -94,6 +98,8 @@ export function WaitlistDetails({
           <Button
             onClick={() => waitlistRegister.mutate()}
             disabled={waitlistRegister.isPending || waitlistRegister.isSuccess}
+            size={"lg"}
+            className="p-8 z-20"
           >
             Register
           </Button>
@@ -101,12 +107,13 @@ export function WaitlistDetails({
           <Button
             onClick={() => walletlistBump.mutate()}
             disabled={!canBump || walletlistBump.isPending || walletlistBump.isSuccess}
+            size={"lg"}
+            className="p-8 z-20"
           >
             {canBump ? 'Bump your spot!' : 'Bump cooldown...'}
           </Button>
         )
       }
-      </div>
     </div>
   )
 }

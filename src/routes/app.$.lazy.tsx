@@ -30,6 +30,8 @@ const addressWhitelist = [
   "IWJPipyG_rq6Wq_UWJZbbUEek930Goo30MktSoiWtFk",
   "qqg_q69nWNQwEXUajdX-Zy3du9HMz-p0Wp-8tFQGDtU",
   "FZx2g_LPDIj09ksj8dksbMWqjnSxoXAyEqxPrQDc1MI",
+  "YxFhHPuYgB1PvchIjcQ569bn9WMspuxrJgT71DFg4uo",
+  "sM9nBtAlqIfxTLOXv4aYm9u3JsOyvKqG8XLb5UirT_I",
 ]
 
 function VerseId() {
@@ -58,6 +60,7 @@ function VerseId() {
   }
 
   return (
+    // <div className="bg-gray-100 h-dvh overflow-clip">
     <Login>
       {(wallet, disconnect) => {
         if (addressWhitelist.includes(wallet.address)) 
@@ -89,5 +92,6 @@ function VerseId() {
         return <div>Unauthorized</div>
       }}
     </Login>
+    // </div>
   )
 }
