@@ -184,7 +184,7 @@ Handlers.add(
 
     local chatMessage = 'Sorry ' ..
         useSenderName ..
-        ', the king specifically requested that you receive no $LLAMA coin... maybe you could try again?'
+        ', the king specifically requested that you recieve no $LLAMA coin... maybe you could try again?'
     if (grade > 0) then
       if (weightedEmissions > 0) then
         chatMessage = 'Congratulations ' ..
