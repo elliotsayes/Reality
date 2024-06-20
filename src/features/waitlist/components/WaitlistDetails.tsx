@@ -23,13 +23,14 @@ export function WaitlistDetails({
       const waitlistCLient = createWaitlistClientForProcess(resolvedWallet)(waitlistProcessId)
       return waitlistCLient.readState();
     },
+    refetchInterval: 10_000,
   })
 
   const waitlistRegister = useMutation({
     mutationKey: ['waitlist', waitlistProcessId, resolvedWallet.address, 'register'],
     mutationFn: async () => {
       const waitlistCLient = createWaitlistClientForProcess(resolvedWallet)(waitlistProcessId)
-      return waitlistCLient.register();
+      return await waitlistCLient.register();
     },
     onSuccess: () => {
       waitlistState.refetch();
@@ -40,7 +41,7 @@ export function WaitlistDetails({
     mutationKey: ['waitlist', waitlistProcessId, resolvedWallet.address, 'bump'],
     mutationFn: async () => {
       const waitlistCLient = createWaitlistClientForProcess(resolvedWallet)(waitlistProcessId)
-      return waitlistCLient.bump();
+      return await waitlistCLient.bump();
     },
     onSuccess: () => {
       waitlistState.refetch();
@@ -76,14 +77,15 @@ export function WaitlistDetails({
           </p>
         ) : (
           <p className="text-2xl">
-            You are on the Waitlist at position <span className="text-purple-300">{waitlistState.data.UserPosition}</span> / <span className="text-purple-300">{waitlistState.data.Count}</span>
+            You are at position <span className="text-purple-300">{waitlistState.data.UserPosition}</span> / <span className="text-purple-300">{waitlistState.data.Count}</span> on the Waitlist
           </p>
         )
       }
+      <div className="flex flex-col items-center gap-2">
       {
         waitlistState.data.User !== undefined && (
           <p className="text-lg">
-            Next bump in <span className="italic">{humanizeDuration(timeLeft, { round: true })}</span>
+            Next bump in <span className="italic">{humanizeDuration(timeLeft, { round: true })}</span>...
           </p>
         )
       }
@@ -100,10 +102,11 @@ export function WaitlistDetails({
             onClick={() => walletlistBump.mutate()}
             disabled={!canBump || walletlistBump.isPending || walletlistBump.isSuccess}
           >
-            {canBump ? 'Bump' : 'Bump cooldown...'}
+            {canBump ? 'Bump your spot!' : 'Bump cooldown...'}
           </Button>
         )
       }
+      </div>
     </div>
   )
 }
