@@ -124,7 +124,7 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
 
     divs.push(
       <div key={data.id} className={`chat-msg-line ${owner ? 'my-line' : 'other-line'}`}>
-        {!owner && <img className='chat-msg-portrait' src='/llamaland_profilePic.png' />}
+        {!owner && <img className='chat-msg-portrait' src='llamaland_profilePic.png' />}
 
         <div>
           <div className={`chat-msg-header ${owner ? 'my-line' : 'other-line'}`}>
@@ -144,7 +144,7 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
           </div>
         </div>
 
-        {owner && <img className='chat-msg-portrait' src='/llamaland_profilePic.png' />}
+        {owner && <img className='chat-msg-portrait' src='llamaland_profilePic.png' />}
       </div>
     )
   }
