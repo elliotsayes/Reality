@@ -70,7 +70,7 @@ export function WaitlistDetails({
 
   return (
     <div
-      className="flex flex-col justify-evenly items-center h-72 min-h-44"
+      className="flex flex-col justify-evenly items-center h-72 min-h-44 text-center px-4"
       style={{
         fontFamily: "'Press Start 2P",
       }}
