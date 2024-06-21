@@ -17,25 +17,18 @@ interface LoginProps {
 export function WaitlistSplash({ children, loginTitle, temporaryWalletEnabled }: LoginProps) {
   const [current, send] = useMachine(loginMachine, { inspect })
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [musicPlaying, setMusicPlaying] = useState(true);
+  const [musicPlaying, setMusicPlaying] = useState(false);
   useEffect(() => {
     if (audioRef.current === null) {
       return;
     }
+    audioRef.current.volume = 0.5;
     if (musicPlaying) {
       audioRef.current.play();
     } else {
       audioRef.current.pause();
     }
   }, [musicPlaying]);
-
-  useEffect(() => {
-    if (audioRef.current === null) {
-      return;
-    }
-    audioRef.current.volume = 0.5;
-  }, []);
-
 
   if (current.matches({ "Logging In": "Show Login UI" })) {
     return (
@@ -72,7 +65,6 @@ export function WaitlistSplash({ children, loginTitle, temporaryWalletEnabled }:
         ref={audioRef}
         className="hidden"
         src="assets/serenade.wav"
-        autoPlay
         loop
       />
       </>
