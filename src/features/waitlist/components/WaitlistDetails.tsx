@@ -49,7 +49,7 @@ export function WaitlistDetails({
   });
 
   const lastBump = waitlistState.data.User?.TimestampLastBumped
-  const [timeLeft, setTimeLeft] = useState(bumpCooldown)
+  const [timeLeft, setTimeLeft] = useState(bumpCooldown - 1)
   const canBump = timeLeft <= 0;
 
   useEffect(() => {
