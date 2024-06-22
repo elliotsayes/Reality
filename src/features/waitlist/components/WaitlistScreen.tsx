@@ -49,8 +49,8 @@ export function WaitlistScreen({
         }
       </Button>
       <div className="z-20 h-[380px] flex flex-col items-center justify-start gap-1">
-        <img src="assets/branding/LLAMA_coin_large.png" height={120} width={120}></img>
-        <img src="assets/branding/LLAMA_purple.png" width={500}></img>
+        <img src="assets/branding/LLAMA_coin_large.png" height={140} width={140}></img>
+        <img src="assets/branding/LLAMA_purple.png" width={450}></img>
       </div>
       <Suspense fallback={(
         <div className="flex flex-col justify-center h-72 min-h-44">
