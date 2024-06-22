@@ -8,7 +8,6 @@ import prettyMilliseconds from 'pretty-ms';
 import { Tooltip } from "@/components/ui/tooltip";
 import { TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 import JSConfetti from "js-confetti";
-import { c } from "node_modules/vite/dist/node/types.d-aGj9QkWt";
 
 const waitlistProcessId = import.meta.env.VITE_WAITLIST_PROCESS_ID! as string;
 const bumpCooldown = 12 * 60 * 60 * 1000;
@@ -131,14 +130,18 @@ export function WaitlistDetails({
           </p>
         ) : (
           <p className="text-xl leading-8">
-            You are <span className="text-purple-300">{waitlistState.data.UserPosition}</span>/<span className="text-purple-300">{waitlistState.data.Count}</span> in line<br />
-            with
+            You are <span className="text-purple-300">{waitlistState.data.UserPosition}</span>/<span className="text-purple-300">{waitlistState.data.Count}</span> in line!<br />
+            <div className="flex flex-row justify-center flex-wrap">
+            Waitlist earnings: 
+            <p>
             <img src="assets/branding/LLAMA_coin_icon.png" height={30} width={30} className="inline-block mb-2 ml-2 mr-1"></img>
             <span className={`bg-gradient-to-r from-[#cb559e] via-[#EBAEC6] to-[#d47deb] inline-block text-transparent bg-clip-text transition-colors`}>
               {waitlistState.data.User.BumpCount}
               {' '}
               $LLAMA
             </span>
+            </p>
+            </div>
           </p>  
         )
       }
@@ -147,8 +150,8 @@ export function WaitlistDetails({
 
           timeLeft > 0 ? (
             <p className="text-sm max-w-2xl">
-              Come back in <span className="italic text-purple-300">{prettyMilliseconds(timeLeft, {verbose: true, secondsDecimalDigits: 0 })}</span><br />
-              and bump your spot for more $LLAMA!
+              Come back in <span className="italic text-purple-300">{prettyMilliseconds(timeLeft, {verbose: true, secondsDecimalDigits: 0 })}</span>
+              {' '}to <br /> fight for your spot in line & earn  more $LLAMA!
             </p>
           ) : (
             <p className="text-sm hidden">
@@ -180,7 +183,7 @@ export function WaitlistDetails({
           ) : (
             <TooltipProvider>
               <Tooltip open={true}>
-                <TooltipTrigger className="cursor-wait opacity-80">
+                <TooltipTrigger className="cursor-wait">
                   <Button
                     onClick={() => walletlistBump.mutate()}
                     disabled={true}
