@@ -142,7 +142,8 @@ export function WaitlistDetails({
 
           timeLeft > 0 ? (
             <p className="text-sm max-w-2xl">
-              Come back in <span className="italic text-purple-300">{prettyMilliseconds(timeLeft, {verbose: true, secondsDecimalDigits: 0 })}</span> and bump your spot for more $LLAMA!
+              Come back in <span className="italic text-purple-300">{prettyMilliseconds(timeLeft, {verbose: true, secondsDecimalDigits: 0 })}</span><br />
+              and bump your spot for more $LLAMA!
             </p>
           ) : (
             <p className="text-sm hidden">
