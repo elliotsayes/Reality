@@ -56,7 +56,7 @@ test('WaitlistBump with empty waitlist', async () => {
 
 test('WaitlistAdd success', async () => {
   const result = await Send({
-    Action: "Waitlist-Add",
+    Action: "Waitlist-Register",
   });
 
   const reply = result.Messages[0]
@@ -81,7 +81,7 @@ test('WaitlistAdd success', async () => {
 
 test('WaitlistAdd retry reject', async () => {
   const result = await Send({
-    Action: "Waitlist-Add",
+    Action: "Waitlist-Register",
     Timestamp: 10004,
   });
 
@@ -162,7 +162,7 @@ test('WaitlistBump just after fails', async () => {
 test('WaitlistAdd another success', async () => {
   const result = await Send({
     From: "ANOTHER",
-    Action: "Waitlist-Add",
+    Action: "Waitlist-Register",
     Timestamp: 10006,
   });
 
