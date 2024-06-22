@@ -45,7 +45,7 @@ export function WaitlistScreen({
         variant={"ghost"}
       >
         {
-          musicPlaying ? <VolumeX /> : <Volume2 />
+          musicPlaying ? <Volume2 /> : <VolumeX />
         }
       </Button>
       <div className="z-20 h-[380px] flex flex-col items-center justify-start gap-1">
