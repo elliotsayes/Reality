@@ -1,12 +1,13 @@
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
 import { createWaitlistClientForProcess } from "../contract/waitlistClient";
 import { AoWallet } from "@/features/ao/lib/aoWallet";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import humanizeDuration from "humanize-duration";
 import prettyMilliseconds from 'pretty-ms';
 import { Tooltip } from "@/components/ui/tooltip";
 import { TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
+import JSConfetti from "js-confetti";
 
 const waitlistProcessId = import.meta.env.VITE_WAITLIST_PROCESS_ID! as string;
 const bumpCooldown = 12 * 60 * 60 * 1000;
@@ -35,8 +36,9 @@ export function WaitlistDetails({
       const waitlistCLient = createWaitlistClientForProcess(resolvedWallet)(waitlistProcessId)
       return await waitlistCLient.register();
     },
-    onSuccess: () => {
-      waitlistState.refetch();
+    onSuccess: async () => {
+      fireConfetti()
+      await waitlistState.refetch();
     },
   });
 
@@ -46,8 +48,9 @@ export function WaitlistDetails({
       const waitlistCLient = createWaitlistClientForProcess(resolvedWallet)(waitlistProcessId)
       return await waitlistCLient.bump();
     },
-    onSuccess: () => {
-      waitlistState.refetch();
+    onSuccess: async () => {
+      fireConfetti()
+      await waitlistState.refetch();
     },
   });
 
@@ -69,6 +72,44 @@ export function WaitlistDetails({
 
     return () => clearInterval(interval)
   }, [lastBump, walletlistBump])
+  
+  const hasCreatedJsConfetti = useRef(false);
+  const [jsConfetti, setJsConfetti] = useState<JSConfetti | null>(null);
+  useEffect(() => {
+    if (hasCreatedJsConfetti.current) {
+      return;
+    }
+    hasCreatedJsConfetti.current = true;
+    setJsConfetti(new JSConfetti());
+  }, []);
+
+  function fireConfetti() {
+    if (jsConfetti) {
+      jsConfetti.addConfetti({
+        emojis: ["👑", "🦙"],
+        emojiSize: 60,
+        confettiNumber: 50,
+      });
+      // enable vibration support
+      navigator.vibrate =
+        navigator.vibrate ||
+        navigator.webkitVibrate ||
+        navigator.mozVibrate ||
+        navigator.msVibrate;
+
+      if (navigator.vibrate) {
+        // vibration API supported
+        navigator.vibrate(100);
+      }
+    }
+    if (jsConfetti) {
+      jsConfetti.addConfetti({
+        emojis: ["👑", "🦙"],
+        emojiSize: 60,
+        confettiNumber: 50,
+      });
+    }
+  }
 
 
   return (
