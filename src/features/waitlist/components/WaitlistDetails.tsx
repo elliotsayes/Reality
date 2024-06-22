@@ -135,7 +135,7 @@ export function WaitlistDetails({
             with
             <img src="assets/branding/LLAMA_coin_icon.png" height={30} width={30} className="inline-block mb-2 ml-2 mr-1"></img>
             <span className={`bg-gradient-to-r from-[#cb559e] via-[#EBAEC6] to-[#d47deb] inline-block text-transparent bg-clip-text transition-colors`}>
-              {waitlistState.data.User.BumpCount + 1}
+              {waitlistState.data.User.BumpCount}
               {' '}
               $LLAMA
             </span>
