@@ -8,6 +8,7 @@ import prettyMilliseconds from 'pretty-ms';
 import { Tooltip } from "@/components/ui/tooltip";
 import { TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 import JSConfetti from "js-confetti";
+import { c } from "node_modules/vite/dist/node/types.d-aGj9QkWt";
 
 const waitlistProcessId = import.meta.env.VITE_WAITLIST_PROCESS_ID! as string;
 const bumpCooldown = 12 * 60 * 60 * 1000;
@@ -54,24 +55,28 @@ export function WaitlistDetails({
     },
   });
 
-  const lastBump = waitlistState.data.User?.TimestampLastBumped
-  const [timeLeft, setTimeLeft] = useState(bumpCooldown - 1)
+  const lastBumpMaybe = waitlistState.data.User?.TimestampLastBumped
+  
+  const calculateTimeLeft = (lastBump: number) => {
+    const now = Date.now();
+    const diff = now - lastBump;
+    const timeLeft = Math.max(bumpCooldown - diff, 0);
+    return timeLeft
+  }
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(lastBumpMaybe ?? 0))
   const canBump = timeLeft <= 0;
 
   useEffect(() => {
-    if (!lastBump) {
+    if (!lastBumpMaybe) {
       return;
     }
 
     const interval = setInterval(() => {
-      const now = Date.now();
-      const diff = now - lastBump;
-      const timeLeft = Math.max(bumpCooldown - diff, 0);
-      setTimeLeft(timeLeft);
+      setTimeLeft(calculateTimeLeft(lastBumpMaybe));
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [lastBump, walletlistBump])
+  }, [lastBumpMaybe, walletlistBump])
   
   const hasCreatedJsConfetti = useRef(false);
   const [jsConfetti, setJsConfetti] = useState<JSConfetti | null>(null);
