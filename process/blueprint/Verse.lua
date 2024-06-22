@@ -76,14 +76,14 @@ Handlers.add(
   "VerseEntitiesDynamic",
   Handlers.utils.hasMatchingTag("Action", "VerseEntitiesDynamic"),
   function(msg)
+    print("VerseEntitiesDynamic")
+
     local queryTimestamp = json.decode(msg.Data).Timestamp
     -- Validate timestamp
     if (type(queryTimestamp) ~= "number") then
       ReplyError(msg, "Invalid Timestamp")
       return
     end
-
-    print("VerseEntitiesDynamic(" .. (queryTimestamp or 'nil') .. ")")
 
     local query = VerseDb:prepare([[
       SELECT * FROM Entities WHERE LastUpdated > ?
