@@ -61,7 +61,7 @@ test('WaitlistAdd success', async () => {
 
   const reply = result.Messages[0]
   const replyData = JSON.parse(reply.Data)
-  assert.deepEqual(replyData, {"TimestampCreated":10003,"TimestampLastBumped":10003,"WalletId":"OWNER","BumpCount":0})
+  assert.deepEqual(replyData, {"TimestampCreated":10003,"TimestampLastBumped":0,"WalletId":"OWNER","BumpCount":0})
 
   const dbResult = await Send({
     Action: 'Eval',
@@ -73,7 +73,7 @@ test('WaitlistAdd success', async () => {
       TimestampCreated: 10003,
       WalletId: 'OWNER',
       Id: 1,
-      TimestampLastBumped: 10003,
+      TimestampLastBumped: 0,
       BumpCount: 0
     }
   ])
@@ -99,11 +99,39 @@ test('WaitlistAdd retry reject', async () => {
       TimestampCreated: 10003,
       WalletId: 'OWNER',
       Id: 1,
-      TimestampLastBumped: 10003,
+      TimestampLastBumped: 0,
       BumpCount: 0
     }
   ])
 })
+
+test('WaitlistBump first is free', async () => {
+  const earlyTs = 10005 + TWELVE_HOURS_MS - 200
+  const result = await Send({
+    Action: "Waitlist-Bump",
+    Timestamp: earlyTs,
+  });
+
+  const reply = result.Messages[0]
+  const replyData = JSON.parse(reply.Data)
+  assert.deepEqual(replyData, {"TimestampCreated":10003,"TimestampLastBumped":earlyTs,"WalletId":"OWNER","BumpCount":1})
+
+  // Db should be the same
+  const dbResult = await Send({
+    Action: 'Eval',
+    Data: "require('json').encode(WaitlistDbAdmin:exec('SELECT * FROM Waitlist'))"
+  })
+  const dbOutput = JSON.parse(dbResult.Output.data.output)
+  assert.deepEqual(dbOutput, [
+    {
+      TimestampCreated: 10003,
+      WalletId: 'OWNER',
+      Id: 1,
+      TimestampLastBumped: earlyTs,
+      BumpCount: 1
+    }
+  ])
+});
 
 test('WaitlistBump too soon fails', async () => {
   const result = await Send({
@@ -125,14 +153,14 @@ test('WaitlistBump too soon fails', async () => {
       TimestampCreated: 10003,
       WalletId: 'OWNER',
       Id: 1,
-      TimestampLastBumped: 10003,
-      BumpCount: 0
+      TimestampLastBumped: 43209805,
+      BumpCount: 1
     }
   ])
 });
 
 test('WaitlistBump in ages success', async () => {
-  const agesTs = 10005 + TWELVE_HOURS_MS + 100
+  const agesTs = 10005 + TWELVE_HOURS_MS * 2 + 100
   const result = await Send({
     Action: "Waitlist-Bump",
     Timestamp: agesTs,
@@ -144,7 +172,7 @@ test('WaitlistBump in ages success', async () => {
     "WalletId": "OWNER",
     "TimestampCreated": 10003,
     "TimestampLastBumped": agesTs,
-    "BumpCount": 1,
+    "BumpCount": 2,
   })
 });
 
@@ -168,7 +196,7 @@ test('WaitlistAdd another success', async () => {
 
   const reply = result.Messages[0]
   const replyData = JSON.parse(reply.Data)
-  assert.deepEqual(replyData, {"TimestampCreated":10006,"TimestampLastBumped":10006,"WalletId":"ANOTHER","BumpCount":0})
+  assert.deepEqual(replyData, {"TimestampCreated":10006,"TimestampLastBumped":0,"WalletId":"ANOTHER","BumpCount":0})
 
   const dbResult = await Send({
     Action: 'Eval',
@@ -180,14 +208,14 @@ test('WaitlistAdd another success', async () => {
       TimestampCreated: 10003,
       WalletId: 'OWNER',
       Id: 1,
-      TimestampLastBumped: 43210105,
-      BumpCount: 1
+      TimestampLastBumped: 86410105,
+      BumpCount: 2
     },
     {
       TimestampCreated: 10006,
       WalletId: 'ANOTHER',
       Id: 2,
-      TimestampLastBumped: 10006,
+      TimestampLastBumped: 0,
       BumpCount: 0
     }
   ])
@@ -248,7 +276,7 @@ test('WaitlistState Unknown user', async () => {
 
   const reply = result.Messages[0]
   const replyData = JSON.parse(reply.Data)
-  console.log(replyData)
+  // console.log(replyData)
   assert.equal(replyData.RankDesc.length, 2)
   assert.equal(replyData.Count, 2);
   assert.equal(replyData.UserPosition, 0)

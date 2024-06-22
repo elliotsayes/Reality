@@ -245,7 +245,7 @@ Handlers.add(
     stmt:bind_values(
       userAddress,
       nowMs,
-      nowMs,
+      0,
       0
     )
     stmt:step()
@@ -268,7 +268,7 @@ Handlers.add(
       Data = json.encode({
         WalletId = userAddress,
         TimestampCreated = nowMs,
-        TimestampLastBumped = nowMs,
+        TimestampLastBumped = 0,
         BumpCount = 0
       })
     })
