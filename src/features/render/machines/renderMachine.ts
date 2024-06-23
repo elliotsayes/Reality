@@ -9,6 +9,7 @@ import { loadVersePhaser } from '../lib/load/verse';
 import { AoContractClientForProcess } from '@/features/ao/lib/aoContractClient';
 import { ChatClient, ChatClientForProcess } from '@/features/chat/contract/chatClient';
 import { MessageHistory } from '@/features/chat/contract/model';
+import { VerseState } from '../lib/load/model';
 
 export const renderMachine = setup({
   types: {
@@ -111,21 +112,27 @@ export const renderMachine = setup({
     startMainMenu: ({ context }) => {
       context.currentScene?.scene.start('MainMenu');
     },
-    startVerseScene: ({ context, event }) => {
-      // assertEvent(event, "done.invoke.loadVerse")
+    startVerseScene: ({ context }, params: {
+      verseId: string,
+      verse: VerseState,
+    }) => {
+      const { verseId, verse } = params;
       context.currentScene?.scene.start('VerseScene', {
         playerAddress: context.playerAddress,
-        verseId: event.output.verseId,
-        verse: event.output.verse,
+        verseId,
+        verse,
         aoContractClientForProcess: context.clients.aoContractClientForProcess
       });
     },
-    warpVerseScene: ({ context, event }) => {
-      // assertEvent(event, "done.invoke.loadVerse")
+    warpVerseScene: ({ context }, params: {
+      verseId: string,
+      verse: VerseState,
+    }) => {
+      const { verseId, verse } = params;
       context.typedScenes.verseScene!.warpToVerse(
         context.playerAddress,
-        event.output.verseId,
-        event.output.verse,
+        verseId,
+        verse,
         context.clients.aoContractClientForProcess
       );
     },
@@ -161,41 +168,43 @@ export const renderMachine = setup({
     clearProcesssingPosition: assign(() => ({
       processingPosition: undefined
     })),
-    updateVerseSceneEntities: ({ context, event }) => {
+    updateVerseSceneEntities: ({ context, event }, params: {
+      entities: Awaited<ReturnType<VerseClient['readEntitiesDynamic']>>,
+      profiles: Awaited<ReturnType<ProfileClient['readProfiles']>>,
+    }) => {
       console.log('updateVerseSceneEntities', event);
-      const { entities, profiles } = event.output as {
-        entities: Awaited<ReturnType<VerseClient['readEntitiesDynamic']>>,
-        profiles: Awaited<ReturnType<ProfileClient['readProfiles']>>,
-      };
+      const { entities, profiles } = params;
       context.typedScenes.verseScene!.mergeEntities(entities, profiles);
     },
-    saveLastEntityUpdate: assign(({ event }) => ({
-      lastEntityUpdate: event.output.beforeTimestamp
+    saveLastEntityUpdate: assign((_, params: { beforeTimestamp: Date }) => ({
+      lastEntityUpdate: params.beforeTimestamp,
     })),
     sendRegistrationConfirmed: ({ self }) => {
       console.log('sendRegistrationConfirmed');
       self.send({ type: 'Registration Confirmed' });
     },
-    assignChatMessageOffset: assign(({ event }) => {
-      const offset = event.output;
+    assignChatMessageOffset: assign((_, params: { messageCount: number }) => {
+      const { messageCount } = params;
       return {
-        initialChatMessageOffset: offset,
-        currentChatMessageOffset: offset,
+        initialChatMessageOffset: messageCount,
+        currentChatMessageOffset: messageCount,
       };
     }),
-    updateChatMessageOffset: assign(({ event }) => {
-      const messages = event.output as MessageHistory;
-      if (messages.length === 0) return {};
+    updateChatMessageOffset: assign((_, params: { messages: MessageHistory}) => {
+      const { messages } = params;
+      if (messages.length === 0) return {
+        currentChatMessageOffset: 0,
+      };
       return {
         currentChatMessageOffset: messages[0].Id,
       };
     }),
-    notifyRendererOfNewMessages: ({ context, event }) => {
-      const messages = event.output as MessageHistory;
+    notifyRendererOfNewMessages: ({ context }, params: { messages: MessageHistory}) => {
+      const { messages } = params;
       context.typedScenes.verseScene!.showEntityChatMessages(messages);
     },
-    appendChatMessages: assign(({ context, event }) => {
-      const messages = event.output as MessageHistory;
+    appendChatMessages: assign(({ context }, params: { messages: MessageHistory}) => {
+      const { messages } = params;
       return { chatMessages: context.chatMessages.concat(messages) };
     }),
     clearChatMessages: assign(() => ({
@@ -340,7 +349,10 @@ export const renderMachine = setup({
 
                 onDone: {
                   target: "Start Verse Scene",
-                  actions: "startVerseScene"
+                  actions: {
+                    type: "startVerseScene",
+                    params: ({ event }) => event.output,
+                  },
                 }
               }
             },
@@ -385,7 +397,10 @@ export const renderMachine = setup({
                 src: "loadVerse",
                 onDone: {
                   target: "Start Verse Scene",
-                  actions: "startVerseScene"
+                  actions: {
+                    type: "startVerseScene",
+                    params: ({ event }) => event.output,
+                  },
                 }
               }
             }
@@ -422,7 +437,10 @@ export const renderMachine = setup({
                     }),
                     onDone: {
                       target: "Warp Verse Scene",
-                      actions: "warpVerseScene"
+                      actions: {
+                        type: "warpVerseScene",
+                        params: ({ event }) => event.output,
+                      }
                     }
                   }
                 },
@@ -449,7 +467,16 @@ export const renderMachine = setup({
                     }),
                     onDone: {
                       target: "Idle",
-                      actions: ["updateVerseSceneEntities", "saveLastEntityUpdate"]
+                      actions: [
+                        {
+                          type: "updateVerseSceneEntities",
+                          params: ({ event }) => event.output
+                        },
+                        {
+                          type: "saveLastEntityUpdate",
+                          params: ({ event }) => event.output
+                        }
+                      ]
                     }
                   }
                 }
@@ -563,7 +590,12 @@ export const renderMachine = setup({
                     }),
                     onDone: {
                       target: "Idle",
-                      actions: "assignChatMessageOffset"
+                      actions: {
+                        type: "assignChatMessageOffset",
+                        params: ({ event }) => ({
+                          messageCount: event.output
+                        })
+                      }
                     }
                   }
                 },
@@ -584,9 +616,24 @@ export const renderMachine = setup({
                     onDone: {
                       target: "Idle",
                       actions: [
-                        "updateChatMessageOffset",
-                        "notifyRendererOfNewMessages",
-                        "appendChatMessages"
+                        {
+                          type: "updateChatMessageOffset",
+                          params: ({ event }) => ({
+                            messages: event.output
+                          })
+                        },
+                        {
+                          type: "notifyRendererOfNewMessages",
+                          params: ({ event }) => ({
+                            messages: event.output
+                          })
+                        },
+                        {
+                          type: "appendChatMessages",
+                          params: ({ event }) => ({
+                            messages: event.output
+                          })
+                        },
                       ],
                       reenter: true
                     }
