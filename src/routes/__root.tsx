@@ -1,6 +1,7 @@
 import { Toaster } from '@/components/ui/sonner'
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 export const Route = createRootRoute({
   component: () => (
@@ -17,7 +18,10 @@ export const Route = createRootRoute({
       <Outlet />
       <Toaster />
       {
-        import.meta.env.DEV && <TanStackRouterDevtools />
+        import.meta.env.DEV && <>
+          <TanStackRouterDevtools />
+          <ReactQueryDevtools />
+        </>
       }
     </div>
   ),

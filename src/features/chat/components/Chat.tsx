@@ -1,7 +1,7 @@
 import { ArweaveId } from "@/features/arweave/lib/model";
 import { ChatClient } from "../contract/chatClient";
 import './Chat.css';
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
@@ -15,23 +15,53 @@ const highlightedAuthorIds = [
   'ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk', // BankerDummy
 ]
 
+const queryPageSize = 10;
+
 interface ChatProps {
   userAddress: ArweaveId;
-  chatClient?: ChatClient;
+  historyIndex?: number;
+  chatClient: ChatClient;
+  newMessages: Array<Message>;
   onUserMessageSent?: () => void;
 }
 
 export function Chat({
   userAddress,
+  historyIndex,
   chatClient,
+  newMessages,
   onUserMessageSent,
 }: ChatProps) {
-  const messages = useQuery({
-    queryKey: ['messages', chatClient?.aoContractClient.processId],
-    queryFn: async () => chatClient!.readHistory(),
-    enabled: chatClient !== undefined,
-    refetchInterval: 1000,
+  const messageHistoryQuery = useInfiniteQuery({
+    queryKey: ['messageHistory', chatClient.aoContractClient.processId, historyIndex],
+    queryFn: async ({ pageParam }) => {
+      if (pageParam === undefined) {
+        return []
+      }
+      return chatClient.readHistory({
+        idBefore: pageParam + 1,
+        limit: queryPageSize,
+      })
+    },
+    initialPageParam: historyIndex,
+    getNextPageParam: () => undefined,
+    getPreviousPageParam: (nextPage) => {
+      if (nextPage.length === 0) {
+        return undefined
+      }
+      const sortedIds = nextPage
+        .map(m => m.Id)
+        .sort((a, b) => a - b)
+      const lowestId = sortedIds[0]
+      if (lowestId === 0) {
+        return undefined
+      }
+      return lowestId
+    },
   })
+
+  const messageHistory = messageHistoryQuery.isSuccess ? messageHistoryQuery.data.pages.flatMap(x => x) : []
+  const allMessages = messageHistory.concat(newMessages)
 
   const messagesRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -39,19 +69,15 @@ export function Chat({
       // Scroll to bottom
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
     }
-  }, [messages.data])
+  }, [allMessages])
 
   const form = useForm()
-
-  if (chatClient === undefined) {
-    return null
-  }
 
   return (
     <>
       <div ref={messagesRef} className="chat-page-messages-container">
         {
-          messages.isSuccess ? renderMessages(userAddress, messages.data) : renderMessages(userAddress, [])
+          renderMessages(userAddress, allMessages)
         }
       </div>
 
@@ -68,7 +94,7 @@ export function Chat({
             if (message === undefined || message === '') return;
             await chatClient.postMessage({ Content: message, AuthorName: userAddress.slice(0, 6) })
             setTimeout(() => {
-              messages.refetch();
+              messageHistoryQuery.refetch();
               onUserMessageSent?.();
             }, 1000)
           })}
@@ -210,11 +236,4 @@ function formatTimestamp(time: number, ago?: boolean) {
  */
 function secondsOfNow() {
   return Math.floor(new Date().getTime() / 1000);
-}
-
-function shortStr(str: string, max: number) {
-  if (str.length > max) {
-    return str.substring(0, max) + '...';
-  }
-  return str;
 }

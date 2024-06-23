@@ -42,12 +42,17 @@ export function Renderer({ userAddress, aoContractClientForProcess, profileClien
     return (
         <div className='relative'>
             <div className='absolute right-0 top-0 bottom-0'>
-                <Chat
-                    userAddress={userAddress}
-                    chatClient={current.context.currentVerseId
-                            ? chatClientForProcess(current.context.currentVerseId!)
-                            : undefined}
-                />
+                {
+                    current.context.currentVerseId && (
+                        <Chat
+                            userAddress={userAddress}
+                            chatClient={chatClientForProcess(current.context.currentVerseId!)}
+                            historyIndex={current.context.initialChatMessageOffset}
+                            newMessages={current.context.chatMessages}
+                        />
+                    )
+                }
+                
             </div>
             <PhaserGame />
         </div>
