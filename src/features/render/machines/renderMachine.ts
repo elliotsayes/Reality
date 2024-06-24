@@ -1,4 +1,4 @@
-import { ProfileClient } from "@/features/profile/contract/profileClient";
+import { ProfileRegistryClient } from "@/features/profile/contract/profileRegistryClient";
 import {
   VerseClient,
   VerseClientForProcess,
@@ -24,7 +24,7 @@ export const renderMachine = setup({
       initialVerseId?: string;
       clients: {
         aoContractClientForProcess: AoContractClientForProcess;
-        profileClient: ProfileClient;
+        profileClient: ProfileRegistryClient;
         verseClientForProcess: VerseClientForProcess;
         chatClientForProcess: ChatClientForProcess;
       };
@@ -36,7 +36,7 @@ export const renderMachine = setup({
       initialVerseId?: string;
       clients: {
         aoContractClientForProcess: AoContractClientForProcess;
-        profileClient: ProfileClient;
+        profileClient: ProfileRegistryClient;
         verseClientForProcess: VerseClientForProcess;
         chatClientForProcess: ChatClientForProcess;
       };
@@ -184,7 +184,7 @@ export const renderMachine = setup({
       { context, event },
       params: {
         entities: Awaited<ReturnType<VerseClient["readEntitiesDynamic"]>>;
-        profiles: Awaited<ReturnType<ProfileClient["readProfiles"]>>;
+        profiles: Awaited<ReturnType<ProfileRegistryClient["readProfiles"]>>;
       },
     ) => {
       console.log("updateVerseSceneEntities", event);
@@ -262,7 +262,7 @@ export const renderMachine = setup({
       }: {
         input: {
           verseClient: VerseClient;
-          profileClient: ProfileClient;
+          profileClient: ProfileRegistryClient;
           phaserLoader: Phaser.Loader.LoaderPlugin;
         };
       }) => {
@@ -284,7 +284,7 @@ export const renderMachine = setup({
       }: {
         input: {
           verseClient: VerseClient;
-          profileClient: ProfileClient;
+          profileClient: ProfileRegistryClient;
           lastEntityUpdate?: Date;
         };
       }) => {

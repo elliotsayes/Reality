@@ -3,7 +3,7 @@ import { ArweaveId } from "@/features/arweave/lib/model";
 import { createVerseClientForProcess } from "@/features/verse/contract/verseClient";
 import { createChatClientForProcess } from "@/features/chat/contract/chatClient";
 import { useNavigate } from "@tanstack/react-router";
-import { ProfileClient } from "@/features/profile/contract/profileClient";
+import { ProfileRegistryClient } from "@/features/profile/contract/profileRegistryClient";
 import { useMachine } from "@xstate/react";
 import { renderMachine } from "../machines/renderMachine";
 import { Chat } from "@/features/chat/components/Chat";
@@ -12,7 +12,7 @@ import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 interface RendererProps {
   userAddress: ArweaveId;
   aoContractClientForProcess: AoContractClientForProcess;
-  profileClient: ProfileClient;
+  profileClient: ProfileRegistryClient;
   verseClientForProcess: ReturnType<typeof createVerseClientForProcess>;
   chatClientForProcess: ReturnType<typeof createChatClientForProcess>;
   verseId?: string;

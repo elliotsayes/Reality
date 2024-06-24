@@ -3,7 +3,7 @@ import { VerseClient } from "@/features/verse/contract/verseClient";
 import PQueue from "p-queue";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
 import { VerseState } from "./model";
-import { ProfileClient } from "@/features/profile/contract/profileClient";
+import { ProfileRegistryClient } from "@/features/profile/contract/profileRegistryClient";
 
 export function phaserTilesetKey(txId: string) {
   return `Tileset-Primary-${txId}`;
@@ -15,7 +15,7 @@ export function phaserTilemapKey(txId: string) {
 
 export async function loadVersePhaser(
   verseClient: VerseClient,
-  profileClient: ProfileClient,
+  profileClient: ProfileRegistryClient,
   phaserLoader: Phaser.Loader.LoaderPlugin,
 ) {
   const processQueue = new PQueue({ concurrency: 3 });

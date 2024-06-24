@@ -3,7 +3,7 @@ import { createAoContractClientForProcess } from "@/features/ao/lib/aoContractCl
 import { truncateAddress } from "@/features/arweave/lib/utils";
 import { createChatClientForProcess } from "@/features/chat/contract/chatClient";
 import { Login } from "@/features/login/components/Login";
-import { createProfileClientForProcess } from "@/features/profile/contract/profileClient";
+import { createProfileRegistryClientForProcess } from "@/features/profile/contract/profileRegistryClient";
 import { Renderer } from "@/features/render/components/Renderer";
 import { createVerseClientForProcess } from "@/features/verse/contract/verseClient";
 import { createLazyFileRoute, useParams } from "@tanstack/react-router";
@@ -80,7 +80,7 @@ function VerseId() {
                   aoContractClientForProcess={createAoContractClientForProcess(
                     wallet,
                   )}
-                  profileClient={createProfileClientForProcess(wallet)(
+                  profileClient={createProfileRegistryClientForProcess(wallet)(
                     profileProcessId,
                   )}
                   verseClientForProcess={createVerseClientForProcess(wallet)}
