@@ -13,6 +13,7 @@ export const mainMachine = setup({
       initialContext: InitialContext;
     },
     context: {} as InitialContext & {
+      profileId?: string;
       profileInfo?: ProfileInfo;
     },
   },
@@ -20,19 +21,24 @@ export const mainMachine = setup({
     hasProfile: (
       _,
       params: {
+        profileId?: string;
         profileInfo?: ProfileInfo;
       },
-    ) => params.profileInfo !== undefined,
+    ) => params.profileId !== undefined && params.profileInfo !== undefined,
   },
   actions: {
-    assignProfileInfo: assign({
-      profileInfo: (
+    assignProfileIdAndInfo: assign(
+      (
         _,
         params: {
+          profileId: string;
           profileInfo: ProfileInfo;
         },
-      ) => params.profileInfo,
-    }),
+      ) => ({
+        profileId: params.profileId,
+        profileInfo: params.profileInfo,
+      }),
+    ),
   },
   actors: {
     checkForProfile: fromPromise(
@@ -45,38 +51,32 @@ export const mainMachine = setup({
         };
       }) => {
         const { address, profileRegistryClient } = input;
-        console.log("address", address);
-        console.log(
-          "profileRegistryClientId",
-          profileRegistryClient.aoContractClient.processId,
-        );
+
+        const noProfile = {
+          profileId: undefined,
+          profileInfo: undefined,
+        };
+
         const profiles =
           await profileRegistryClient.getProfilesByDelegate(address);
-        console.log("profileIds", profiles);
-        if (profiles.length === 0) {
-          return {
-            profileInfo: undefined,
-          };
-        }
+        if (profiles.length === 0) return noProfile;
+
         const primaryProfileId = profiles[0].ProfileId;
-        console.log("primaryProfileId", primaryProfileId);
+
         const profileInfos = await profileRegistryClient.readProfiles([
           primaryProfileId,
         ]);
-        console.log("profileInfos", profileInfos);
-        if (profileInfos.length === 0) {
-          return {
-            profileInfo: undefined,
-          };
-        }
+        if (profileInfos.length === 0) return noProfile;
+
         return {
+          profileId: primaryProfileId,
           profileInfo: profileInfos[0],
         };
       },
     ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QFsCGBLAdgOgJKfQBd1UAbAYgG0AGAXUVAAcB7WI9ZzBkAD0QFoATABZq2AKzUAjOIAc1QQDZhATkHVFggDQgAnoikBmFROoqVsqSvHDDk6uIC+jnWizYAwgAswAYwDWWFAABABmzABOwYwRzKHopGDkEJxg2FgAbsz+aW443n6BmCHhUTFxCWAImcy+qMScNLRN3CxsDVxIvAJ2UtiytgDshtSDgoaD4oriOvoIvdiGilKTVlOCgrIqzq4Y+T4BQWGR0bHxicmp6ZhZOdh5ngdFJSfl51U1dR1NlFL0XW12JxuHwEEJsOZJMMpMJBEYpHCBrNEKJFNgpBjZIJrOIjFjJjsQA8CodiscymdKuQwBFYhFsIxSPVSsh7ntHoUjqVThVEtUbrV6hxMD86K1WEDOqBQTYJGNqLIJuJDOMsTM9IhxiZpoo1NYNoYEYZhM4XCBMMwIHBuHlxe1hSCeuZ+kMRmMldNkWC4f1NK6pLJJsJhIpFISHvh2GQ7ZLHd7YYtBJJ1INA7qpl7pthxvCNKmsTJBuH2STnuSee8Yx04-wRiZBINpuJ1M3A2YvXDhNhpoZLA2ETZxDZi+4PMxkIywIQwMEAO5ELzBAAKlMSVYdXVBteoYkGqIb2KDva9wnk3ZUKqxKh3F9kTjNDwAylOjgBXRgVyrr4GbxCKQbZtQp6DBiQ4hsqignmeuqXtiN69veuzuI+XjMLOwQAKK0pE35St08zCOI6JmGswb-nYwgdhMEKSIoWxYgoaiyKajhAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QFsCGBLAdgOgJKfQBd1UAbAYgG0AGAXUVAAcB7WI9ZzBkAD0QFoATABZq2AKzUAjOIAc1QQDZhATkHVFggDQgAnoikBmFROoqVsqSvHDDk6uIC+jnWizYAwgAswAYwDWWFAABABmzABOwYwRzKHopGDkEJxg2FgAbsz+aW443n6BmCHhUTFxCWAImcy+qMScNLRN3CxsDVxIvAJ2UtiytgDshtSDgoaD4oriOvoIvdiGilKTVlOCgrIqzq4Y+T4BQWGR0bHxicmp6ZhZOdh5ngdFJSfl51U1dR1NlFL0XW12JxuHwEEJsOZJMMpMJBEYpHCBrNEKJFNgpBjZIJrOIjFjJjsQA8CodiscymdKuQwBFYhFsIxSPVSsh7ntHoUjqVThVEtUbrV6hxMD86K1WEDOqBQTYJGNqLIJuJDOMsTM9IhxiZpoo1NYNoYEYZhM4XCBMMwIHBuHlxe1hSCeuZ+kMRmMldNkWC4f1NLYRIpjcJFKNCQ98OwyHbJY7vbDFoJJOpBrJBrqpl7pthxvCNCmsTJBmH2STnuSee9ox1Y-wRiZBGnxOJ1M3U2YvXDhNhpoZLA2ETYmyazcTmMhGWBCGBggB3IheYIABUpiSrDq6oNr1DEg1RDexk1ssi9wnk3ZUKqxKm3F9kThH7IAypPiGSAK6MCuVNfAjeIZSLEmGyyCBgzUKe2gaggp5iLql7YjevaKMW7iPl4zAzsEACitKRD+UrdPMwjiOiZhrMIwbDDYHYTBCkiKFsWIKGosimo4QA */
   context: ({ input }) => ({
     ...input.initialContext,
     profileInfo: undefined,
@@ -106,14 +106,15 @@ export const mainMachine = setup({
               params: ({ event }) => event.output,
             },
             actions: {
-              type: "assignProfileInfo",
+              type: "assignProfileIdAndInfo",
               params: ({ event }) => ({
+                profileId: event.output.profileId!,
                 profileInfo: event.output.profileInfo!,
               }),
             },
           },
           {
-            target: "Seting up profile",
+            target: "Setting up profile",
             reenter: true,
           },
         ],
@@ -123,7 +124,7 @@ export const mainMachine = setup({
     },
 
     "Complete with Profile": {},
-    "Seting up profile": {},
+    "Setting up profile": {},
     "Show Error": {},
   },
 

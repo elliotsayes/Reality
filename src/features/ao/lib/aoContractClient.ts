@@ -3,7 +3,7 @@ import { AoClient, Message, MessageWithResult } from "./aoClient";
 import { AoWallet } from "./aoWallet";
 import { connect } from "@permaweb/aoconnect";
 
-class AoContractError extends Error {
+export class AoContractError extends Error {
   error: unknown | undefined;
 
   constructor(message: string, error?: unknown) {
@@ -29,6 +29,10 @@ export type AoContractClient = {
   aoWallet: AoWallet;
 
   dryrunReadReplyOptional: (readArgs: ReadArgs) => Promise<Message | undefined>;
+  dryrunReadReplyOptionalJson: <T>(
+    readArgs: ReadArgs,
+    schema?: z.Schema,
+  ) => Promise<T | undefined>;
   dryrunReadReplyOne: (readArgs: ReadArgs) => Promise<Message>;
   dryrunReadReplyOneJson: <T>(
     readArgs: ReadArgs,
@@ -60,6 +64,31 @@ export const createAoContractClient = (
     return reply;
   };
 
+  const dryrunReadReplyOptionalJson = async (
+    readArgs: ReadArgs,
+    schema?: z.Schema,
+  ) => {
+    const reply = await dryrunReadReplyOptional(readArgs);
+    if (!reply) {
+      return undefined;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let json: any;
+    try {
+      json = JSON.parse(reply.Data);
+    } catch (error) {
+      return undefined;
+    }
+    if (schema) {
+      const result = schema.safeParse(json);
+      if (!result.success) {
+        return undefined;
+      }
+    }
+    return json;
+  };
+
   const dryrunReadReplyOne = async (readArgs: ReadArgs) => {
     const reply = await dryrunReadReplyOptional(readArgs);
     if (!reply) {
@@ -86,7 +115,6 @@ export const createAoContractClient = (
       if (!result.success) {
         throw new AoContractError("JSON does not match schema", result.error);
       }
-      return result.data;
     }
     return json;
   };
@@ -121,6 +149,7 @@ export const createAoContractClient = (
     aoWallet,
 
     dryrunReadReplyOptional,
+    dryrunReadReplyOptionalJson,
     dryrunReadReplyOne,
     dryrunReadReplyOneJson,
     message,

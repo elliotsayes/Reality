@@ -24,7 +24,9 @@ export const createProfileRegistryClient = (
 
   // Read
   getProfilesByDelegate: async (address: ArweaveId) => {
-    return aoContractClient.dryrunReadReplyOneJson<Array<ProfileEntry>>(
+    const maybeEntries = await aoContractClient.dryrunReadReplyOptionalJson<
+      Array<ProfileEntry>
+    >(
       {
         tags: [{ name: "Action", value: "Get-Profiles-By-Delegate" }],
         data: JSON.stringify({
@@ -32,6 +34,10 @@ export const createProfileRegistryClient = (
         }),
       } /* Array<ArweaveId> */,
     );
+    if (maybeEntries === undefined) {
+      return [];
+    }
+    return maybeEntries;
   },
   readProfiles: async (profileIds: Array<ArweaveId>) => {
     if (profileIds.length === 0) {

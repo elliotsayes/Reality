@@ -36,7 +36,10 @@ export default function Main({
     },
   });
 
-  const renderer = (profileInfo?: ProfileInfo) => (
+  const renderer = (profile?: {
+    profileId: string;
+    profileInfo: ProfileInfo;
+  }) => (
     <Renderer
       userAddress={wallet.address}
       aoContractClientForProcess={createAoContractClientForProcess(
@@ -64,7 +67,10 @@ export default function Main({
     <div className="fixed top-14 right-0 left-0 bottom-0">
       {
         current.matches("Complete with Profile") ? (
-          renderer(current.context.profileInfo)
+          renderer({
+            profileId: current.context.profileId!,
+            profileInfo: current.context.profileInfo!,
+          })
         ) : (
           <div>{JSON.stringify(current.value)}</div>
         )
