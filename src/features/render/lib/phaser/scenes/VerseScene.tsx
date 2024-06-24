@@ -34,6 +34,7 @@ const bankerEntityIds = ["ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk"];
 
 export class VerseScene extends WarpableScene {
   playerAddress!: string;
+  playerProfileInfo?: ProfileInfo;
   verseId!: string;
   verse!: VerseState;
   aoContractClientForProcess!: AoContractClientForProcess;
@@ -80,11 +81,13 @@ export class VerseScene extends WarpableScene {
 
   init({
     playerAddress,
+    playerProfileInfo,
     verseId,
     verse,
     aoContractClientForProcess,
   }: {
     playerAddress: string;
+    playerProfileInfo?: ProfileInfo;
     verseId: string;
     verse: VerseState;
     aoContractClientForProcess: AoContractClientForProcess;
@@ -96,6 +99,7 @@ export class VerseScene extends WarpableScene {
     this.slowMs = 120;
 
     this.playerAddress = playerAddress;
+    this.playerProfileInfo = playerProfileInfo;
     this.verseId = verseId;
     this.verse = verse;
     this.aoContractClientForProcess = aoContractClientForProcess;
@@ -246,8 +250,13 @@ export class VerseScene extends WarpableScene {
         `Player entity ${this.playerAddress} not found in entities list`,
       );
       this.verse.entities[this.playerAddress] = {
-        Position: spawnTile,
         Type: "Avatar",
+        Position: spawnTile,
+        ...(this.playerProfileInfo && {
+          Metadata: {
+            ProfileId: this.playerProfileInfo.ProfileId,
+          },
+        })
       };
     }
     const avatarEntityIds = Object.keys(this.verse.entities).filter(
@@ -523,10 +532,14 @@ export class VerseScene extends WarpableScene {
       },
       this,
     );
-
+    
+    const resolvedProfile = (isPlayer
+        ? this.playerProfileInfo
+        : undefined)
+      ?? profile;
     const displayText =
-      profile?.DisplayName ??
-      profile?.Username ??
+      resolvedProfile?.DisplayName ??
+      resolvedProfile?.Username ??
       truncateAddress(entityId, 4, 3, "…");
 
     const nameText = this.add

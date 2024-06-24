@@ -28,6 +28,7 @@ export default function Main({
     profileRegistryProcessId,
   )
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [current, send] = useMachine(mainMachine, {
     input: {
       initialContext: {

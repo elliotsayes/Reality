@@ -131,6 +131,7 @@ export const renderMachine = setup({
       const { verseId, verse } = params;
       context.currentScene?.scene.start("VerseScene", {
         playerAddress: context.playerAddress,
+        playerProfileInfo: context.playerProfile,
         verseId,
         verse,
         aoContractClientForProcess: context.clients.aoContractClientForProcess,
@@ -146,6 +147,7 @@ export const renderMachine = setup({
       const { verseId, verse } = params;
       context.typedScenes.verseScene!.warpToVerse(
         context.playerAddress,
+        context.playerProfile,
         verseId,
         verse,
         context.clients.aoContractClientForProcess,
@@ -268,16 +270,14 @@ export const renderMachine = setup({
         };
       }) => {
         console.log("loadVerse");
-        const verseState = await loadVersePhaser(
+        const verse = await loadVersePhaser(
           input.verseClient,
           input.profileRegistryClient,
           input.phaserLoader,
-          input.profileInfo?.ProfileId,
         );
-        console.log({ verseState });
         return {
           verseId: input.verseClient.verseId,
-          verse: verseState,
+          verse: verse,
         };
       },
     ),
@@ -519,6 +519,7 @@ export const renderMachine = setup({
                       profileRegistryClient:
                         context.clients.profileRegistryClient,
                       phaserLoader: context.currentScene!.load,
+                      profileInfo: context.playerProfile,
                     }),
                     onDone: {
                       target: "Warp Verse Scene",
