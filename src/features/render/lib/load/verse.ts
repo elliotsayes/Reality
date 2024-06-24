@@ -17,6 +17,7 @@ export async function loadVersePhaser(
   verseClient: VerseClient,
   profileClient: ProfileRegistryClient,
   phaserLoader: Phaser.Loader.LoaderPlugin,
+  profileId?: string,
 ) {
   const processQueue = new PQueue({ concurrency: 3 });
 
@@ -66,6 +67,7 @@ export async function loadVersePhaser(
     });
     console.log("Entities", entities);
 
+    const initialSet = profileId ? new Set([profileId]) : new Set<string>();
     const profileIds = Object.values(entities)
       .filter((entity) => {
         return entity.Type === "Avatar";
@@ -75,7 +77,7 @@ export async function loadVersePhaser(
           acc.add(entity.Metadata.ProfileId);
         }
         return acc;
-      }, new Set<string>());
+      }, initialSet);
     console.log("ProfileIds", profileIds);
 
     await queryClient.ensureQueryData({

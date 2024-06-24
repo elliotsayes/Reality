@@ -264,6 +264,7 @@ export const renderMachine = setup({
           verseClient: VerseClient;
           profileRegistryClient: ProfileRegistryClient;
           phaserLoader: Phaser.Loader.LoaderPlugin;
+          profileInfo?: ProfileInfo;
         };
       }) => {
         console.log("loadVerse");
@@ -271,6 +272,7 @@ export const renderMachine = setup({
           input.verseClient,
           input.profileRegistryClient,
           input.phaserLoader,
+          input.profileInfo?.ProfileId,
         );
         console.log({ verseState });
         return {
@@ -419,6 +421,7 @@ export const renderMachine = setup({
                   ),
                   profileRegistryClient: context.clients.profileRegistryClient,
                   phaserLoader: context.currentScene!.load,
+                  profileInfo: context.playerProfile,
                 }),
 
                 onDone: {

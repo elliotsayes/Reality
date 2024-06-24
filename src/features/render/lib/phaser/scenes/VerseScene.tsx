@@ -55,7 +55,7 @@ export class VerseScene extends WarpableScene {
   tilemap?: Phaser.Tilemaps.Tilemap;
   layers?: Phaser.Tilemaps.TilemapLayer[];
 
-  player!: Phaser.Physics.Arcade.Sprite;
+  player!: Phaser.GameObjects.Container;
 
   arrows?: object;
   wasd?: object;
@@ -240,26 +240,17 @@ export class VerseScene extends WarpableScene {
 
     this.camera.centerOn(this.spawnPixel[0], this.spawnPixel[1]);
 
-    this.player = this.physics.add
-      .sprite(this.spawnPixel[0], this.spawnPixel[1], "llama_0")
-      .setSize(20, 18)
-      .setOffset(1, 18)
-      .setScale(SCALE_ENTITIES)
-      .setOrigin(0.5)
-      .setDepth(DEPTH_PLAYER_BASE);
-    this.player.play(`llama_0_idle`);
-    this.camera.startFollow(this.player);
 
-    if (this.layers) {
-      this.physics.add.collider(this.player, this.layers);
+    if (!this.verse.entities[this.playerAddress]) {
+      console.warn(
+        `Player entity ${this.playerAddress} not found in entities list`,
+      );
+      this.verse.entities[this.playerAddress] = {
+        Position: spawnTile,
+        Type: "Avatar",
+      };
     }
-
-    console.log(this.verse.entities);
-    const otherEntityIds = Object.keys(this.verse.entities).filter(
-      (entityId) => entityId !== this.playerAddress,
-    );
-
-    const avatarEntityIds = otherEntityIds.filter(
+    const avatarEntityIds = Object.keys(this.verse.entities).filter(
       (entityId) => this.verse.entities[entityId].Type === "Avatar",
     );
     this.avatarEntityContainers = avatarEntityIds
@@ -268,7 +259,7 @@ export class VerseScene extends WarpableScene {
         const profileMaybe = this.verse.profiles.find(
           (profile) => profile.ProfileId === entity.Metadata?.ProfileId,
         );
-        const entityContainer = this.createEntityContainer(
+        const entityContainer = this.createAvatarEntityContainer(
           entityId,
           entity,
           profileMaybe,
@@ -283,7 +274,13 @@ export class VerseScene extends WarpableScene {
       `Created ${this.avatarEntityContainers.length} avatar entities`,
     );
 
-    const warpEntityIds = otherEntityIds.filter(
+    this.player = this.avatarEntityContainers[this.playerAddress];
+    this.camera.startFollow(this.player);
+    if (this.layers) {
+      this.physics.add.collider(this.player, this.layers);
+    }
+
+    const warpEntityIds = Object.keys(this.verse.entities).filter(
       (entityId) => this.verse.entities[entityId].Interaction?.Type === "Warp",
     );
     this.warpSprites = warpEntityIds
@@ -377,7 +374,8 @@ export class VerseScene extends WarpableScene {
             this.entityTargets[entityId],
             () => {
               console.log(`Entity ${entityId} collided with target`);
-              (entityContainer.body as Phaser.Physics.Arcade.Body).setVelocity(
+              const containerBody = entityContainer.body as Phaser.Physics.Arcade.Body;
+              containerBody.setVelocity(
                 0,
                 0,
               );
@@ -394,7 +392,7 @@ export class VerseScene extends WarpableScene {
         const profileMaybe = profiles?.find(
           (profile) => profile.ProfileId === entityId,
         );
-        const entitySprite = this.createEntityContainer(
+        const entitySprite = this.createAvatarEntityContainer(
           entityId,
           entityUpdate,
           profileMaybe,
@@ -456,11 +454,14 @@ export class VerseScene extends WarpableScene {
     return sprite;
   }
 
-  createEntityContainer(
+  createAvatarEntityContainer(
     entityId: string,
     entity: VerseEntity,
     profile?: ProfileInfo,
   ) {
+    const isPlayer = entityId === this.playerAddress;
+    const llamaSpriteIndex = isPlayer ? 0 : 4;
+    
     const container = this.add
       .container(
         entity.Position[0] *
@@ -468,91 +469,57 @@ export class VerseScene extends WarpableScene {
         entity.Position[1] *
           (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
       )
-      .setDepth(DEPTH_ENTITY_BASE + 1);
+      .setDepth(isPlayer ? DEPTH_PLAYER_BASE + 1 : DEPTH_ENTITY_BASE + 1);
 
     const sprite = this.add
-      .sprite(0, 0, entity.Type === "Avatar" ? "llama_4" : "invis")
+      .sprite(0, 0, `llama_${llamaSpriteIndex}`)
       .setScale(SCALE_ENTITIES)
       .setOrigin(0.5)
       .setInteractive();
 
-    if (entity.Interaction?.Type === "Warp") {
-      console.log(`Creating warp entity ${entityId}`);
-      if (entity.Interaction.Size) {
-        sprite.setSize(
-          (entity.Interaction.Size[0] * this.tileSizeScaled[0]) / 2,
-          (entity.Interaction.Size[1] * this.tileSizeScaled[1]) / 2,
-        );
-      }
-      this.physics.add.overlap(
-        this.player,
-        sprite,
+    // TODO: SchemaForm
+    if (kingEntityIds.includes(entityId)) {
+      // Llama Assistant
+      sprite.play(`llama_6_idle`);
+      sprite.on(
+        "pointerdown",
         () => {
-          console.log(`Collided with entity ${entityId}`);
-          if (this.isWarping) return;
-          this.isWarping = true;
-          emitSceneEvent({
-            type: "Warp Immediate",
-            verseId: entityId,
-          });
-          this.camera.fadeOut(5_000);
-          this.tweens.addCounter({
-            duration: 2_000,
-            from: 60,
-            to: 0,
-            onUpdate: (tween) => {
-              this.slowMs = tween.getValue();
-            },
-          });
+          console.log(`Clicked on SchemaFormExternal ${entityId}`);
+          this.showSchemaForm(entityId, entity);
         },
-        undefined,
+        this,
+      );
+    } else if (bankerEntityIds.includes(entityId)) {
+      // Banker
+      sprite.play(`llama_8_idle`);
+      sprite.on(
+        "pointerdown",
+        () => {
+          console.log(`Clicked on Banker ${entityId}`);
+          this.showSchemaForm(entityId, entity);
+        },
+        this,
+      );
+    } else if (isPlayer) {
+      sprite.play(`llama_0_idle`);
+    } else {
+      sprite.play(`llama_4_idle`);
+      sprite.on(
+        "pointerdown",
+        () => {
+          sprite.play(`llama_4_emote`);
+          setTimeout(() => {
+            sprite.play(`llama_4_idle`);
+          }, 1000);
+        },
         this,
       );
     }
-
-    if (entity.Type === "Avatar") {
-      // TODO: SchemaForm
-      if (kingEntityIds.includes(entityId)) {
-        // Llama Assistant
-        sprite.play(`llama_6_idle`);
-        sprite.on(
-          "pointerdown",
-          () => {
-            console.log(`Clicked on SchemaFormExternal ${entityId}`);
-            this.showSchemaForm(entityId, entity);
-          },
-          this,
-        );
-      } else if (bankerEntityIds.includes(entityId)) {
-        // Banker
-        sprite.play(`llama_8_idle`);
-        sprite.on(
-          "pointerdown",
-          () => {
-            console.log(`Clicked on Banker ${entityId}`);
-            this.showSchemaForm(entityId, entity);
-          },
-          this,
-        );
-      } else {
-        sprite.play(`llama_4_idle`);
-        sprite.on(
-          "pointerdown",
-          () => {
-            sprite.play(`llama_4_emote`);
-            setTimeout(() => {
-              sprite.play(`llama_4_idle`);
-            }, 1000);
-          },
-          this,
-        );
-      }
-    }
-
+    
     sprite.on(
       "pointerover",
       () => {
-        console.log(`Hovered over entity ${entityId}`);
+        console.log(`Hovered over avatar ${entityId}`);
       },
       this,
     );
@@ -693,32 +660,34 @@ export class VerseScene extends WarpableScene {
     const isDown =
     //@ts-expect-error - Phaser types are wrong
       (this.arrows?.down.isDown || this.wasd?.down.isDown) ?? false;
-
+    
+    const playerSprite = this.player.getAt(0) as Phaser.GameObjects.Sprite;
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
     if (isLeft) {
-      this.player.flipX = true;
-      this.player.setVelocityX(-speed);
+      playerSprite.flipX = true;
+      playerBody.setVelocityX(-speed);
     } else if (isRight) {
-      this.player.flipX = false;
-      this.player.setVelocityX(speed);
+      playerSprite.flipX = false;
+      playerBody.setVelocityX(speed);
     } else {
-      this.player.setVelocityX(0);
+      playerBody.setVelocityX(0);
     }
 
     if (isUp) {
-      this.player.setVelocityY(-speed);
+      playerBody.setVelocityY(-speed);
     } else if (isDown) {
-      this.player.setVelocityY(speed);
+      playerBody.setVelocityY(speed);
     } else {
-      this.player.setVelocityY(0);
+      playerBody.setVelocityY(0);
     }
 
     const isMoving = isLeft || isRight || isUp || isDown;
     if (isMoving) {
-      if (!this.lastTickMoving) this.player.play("llama_0_walk");
+      if (!this.lastTickMoving) playerSprite.play("llama_0_walk");
       this.lastTickMoving = true;
     } else {
       if (this.lastTickMoving) {
-        this.player.play("llama_0_idle");
+        playerSprite.play("llama_0_idle");
         emitSceneEvent({
           type: "Update Position",
           position: [
