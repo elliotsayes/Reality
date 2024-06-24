@@ -64,11 +64,19 @@ export async function loadVersePhaser(
         return { ...entitiesStatic, ...entitiesDynamic };
       },
     });
+    console.log("Entities", entities);
 
-    const profileEntites = Object.keys(entities).filter((entityId) => {
-      const entity = entities[entityId];
-      return entity.Type === "Avatar";
-    });
+    const profileIds = Object.values(entities)
+      .filter((entity) => {
+        return entity.Type === "Avatar";
+      })
+      .reduce((acc, entity) => {
+        if (entity.Metadata?.ProfileId) {
+          acc.add(entity.Metadata.ProfileId);
+        }
+        return acc;
+      }, new Set<string>());
+    console.log("ProfileIds", profileIds);
 
     await queryClient.ensureQueryData({
       queryKey: [
@@ -76,7 +84,7 @@ export async function loadVersePhaser(
         profileClient.aoContractClient.processId,
         verseClient.verseId,
       ],
-      queryFn: async () => profileClient.readProfiles(profileEntites),
+      queryFn: async () => profileClient.readProfiles(Array.from(profileIds)),
     });
   });
 

@@ -266,7 +266,7 @@ export class VerseScene extends WarpableScene {
       .map((entityId) => {
         const entity = this.verse.entities[entityId];
         const profileMaybe = this.verse.profiles.find(
-          (profile) => profile.ProfileId === entityId,
+          (profile) => profile.ProfileId === entity.Metadata?.ProfileId,
         );
         const entityContainer = this.createEntityContainer(
           entityId,
@@ -682,16 +682,16 @@ export class VerseScene extends WarpableScene {
 
     const speed = this.isWarping ? this.slowMs : 120;
 
-    //@ts-expect-error - Phaser types are wrong
     const isLeft =
-      (this.arrows?.left.isDown || this.wasd?.left.isDown) ?? false;
     //@ts-expect-error - Phaser types are wrong
+      (this.arrows?.left.isDown || this.wasd?.left.isDown) ?? false;
     const isRight =
+    //@ts-expect-error - Phaser types are wrong
       (this.arrows?.right.isDown || this.wasd?.right.isDown) ?? false;
     //@ts-expect-error - Phaser types are wrong
     const isUp = (this.arrows?.up.isDown || this.wasd?.up.isDown) ?? false;
-    //@ts-expect-error - Phaser types are wrong
     const isDown =
+    //@ts-expect-error - Phaser types are wrong
       (this.arrows?.down.isDown || this.wasd?.down.isDown) ?? false;
 
     if (isLeft) {

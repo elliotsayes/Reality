@@ -16,11 +16,13 @@ import {
 } from "@/features/chat/contract/chatClient";
 import { MessageHistory } from "@/features/chat/contract/model";
 import { VerseState } from "../lib/load/model";
+import { ProfileInfo } from "@/features/profile/contract/model";
 
 export const renderMachine = setup({
   types: {
     input: {} as {
       playerAddress: string;
+      playerProfile?: ProfileInfo;
       initialVerseId?: string;
       clients: {
         aoContractClientForProcess: AoContractClientForProcess;
@@ -32,6 +34,7 @@ export const renderMachine = setup({
     },
     context: {} as {
       playerAddress: string;
+      playerProfile?: ProfileInfo;
 
       initialVerseId?: string;
       clients: {
@@ -269,6 +272,7 @@ export const renderMachine = setup({
           input.profileRegistryClient,
           input.phaserLoader,
         );
+        console.log({ verseState });
         return {
           verseId: input.verseClient.verseId,
           verse: verseState,
@@ -290,8 +294,22 @@ export const renderMachine = setup({
         const entities = await input.verseClient.readEntitiesDynamic(
           input.lastEntityUpdate ?? tenSecondsAgo,
         );
+        console.log("updateEntities", entities);
+
+        const profileIds = Object.values(entities)
+          .filter((entity) => {
+            return entity.Type === "Avatar";
+          })
+          .reduce((acc, entity) => {
+            if (entity.Metadata?.ProfileId) {
+              acc.add(entity.Metadata.ProfileId);
+            }
+            return acc;
+          }, new Set<string>());
+        console.log("ProfileIds", profileIds);
+
         const profiles = await input.profileRegistryClient.readProfiles(
-          Object.keys(entities),
+          Array.from(profileIds),
         );
         return {
           entities,
@@ -319,12 +337,20 @@ export const renderMachine = setup({
       }: {
         input: {
           verseClient: VerseClient;
+          profileInfo?: ProfileInfo;
         };
       }) => {
         const verseParams = await input.verseClient.readParameters();
         const msgId = await input.verseClient.createEntity({
           Type: "Avatar",
           Position: verseParams["2D-Tile-0"]?.Spawn || [0, 0],
+          ...(input.profileInfo?.ProfileId
+            ? {
+                Metadata: {
+                  ProfileId: input.profileInfo.ProfileId,
+                },
+              }
+            : {}),
         });
         return msgId;
       },
@@ -618,6 +644,7 @@ export const renderMachine = setup({
                       verseClient: context.clients.verseClientForProcess(
                         context.currentVerseId!,
                       ),
+                      profileInfo: context.playerProfile,
                     }),
                     onDone: {
                       target: "Waiting for confimation",

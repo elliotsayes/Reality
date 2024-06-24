@@ -34,6 +34,7 @@ export function Renderer({
   const [current, send] = useMachine(renderMachine, {
     input: {
       playerAddress: userAddress,
+      playerProfile: profileInfo,
       initialVerseId,
       clients: {
         aoContractClientForProcess,
