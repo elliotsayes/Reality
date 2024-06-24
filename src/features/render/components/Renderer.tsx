@@ -8,6 +8,7 @@ import { useMachine } from "@xstate/react";
 import { renderMachine } from "../machines/renderMachine";
 import { Chat } from "@/features/chat/components/Chat";
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
+import { ProfileInfo } from "@/features/profile/contract/model";
 
 interface RendererProps {
   userAddress: ArweaveId;
@@ -15,7 +16,8 @@ interface RendererProps {
   profileRegistryClient: ProfileRegistryClient;
   verseClientForProcess: ReturnType<typeof createVerseClientForProcess>;
   chatClientForProcess: ReturnType<typeof createChatClientForProcess>;
-  verseId?: string;
+  initialVerseId?: string;
+  profileInfo?: ProfileInfo;
 }
 
 export function Renderer({
@@ -24,14 +26,15 @@ export function Renderer({
   profileRegistryClient,
   verseClientForProcess,
   chatClientForProcess,
-  verseId: verseIdProp,
+  initialVerseId,
+  profileInfo,
 }: RendererProps) {
   const navigate = useNavigate();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [current, send] = useMachine(renderMachine, {
     input: {
       playerAddress: userAddress,
-      initialVerseId: verseIdProp,
+      initialVerseId,
       clients: {
         aoContractClientForProcess,
         profileRegistryClient: profileRegistryClient,

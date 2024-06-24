@@ -9,6 +9,7 @@ import { Renderer } from "@/features/render/components/Renderer";
 import { createVerseClientForProcess } from "@/features/verse/contract/verseClient";
 import { mainMachine } from "../machines/mainMachine";
 import { useMachine } from "@xstate/react";
+import ProfileButton from "@/features/profile/components/ProfileButton";
 
 const profileRegistryProcessId = import.meta.env.VITE_PROFILE_PROCESS_ID as string;
 
@@ -48,31 +49,41 @@ export default function Main({
       profileRegistryClient={profileRegistryClient}
       verseClientForProcess={createVerseClientForProcess(wallet)}
       chatClientForProcess={createChatClientForProcess(wallet)}
-      verseId={verseId}
+      initialVerseId={verseId}
+      profileInfo={profile?.profileInfo}
     />
   )
 
   return (<div>
-    <div className="flex flex-row gap-4 items-baseline fixed top-0 right-0 py-2 px-2">
+    <div className="flex flex-row gap-4 items-center fixed top-0 right-0 py-2 px-2">
       <p>
         Wallet:{" "}
         <span className="font-mono text-sm text-muted-foreground">
           {truncateAddress(wallet.address)}
         </span>
       </p>
+      <ProfileButton
+        profileInfo={current.context.profileInfo}
+      />
       <Button onClick={disconnect} size={"sm"} variant={"secondary"}>
         Log out
       </Button>
     </div>
     <div className="fixed top-14 right-0 left-0 bottom-0">
       {
-        current.matches("Complete with Profile") ? (
-          renderer({
-            profileId: current.context.profileId!,
-            profileInfo: current.context.profileInfo!,
-          })
+        current.hasTag("showRenderer") ? (
+          current.matches("Complete with Profile") ? (
+            renderer({
+              profileId: current.context.profileId!,
+              profileInfo: current.context.profileInfo!,
+            })
+          ) : (
+            renderer()
+          )
         ) : (
-          <div>{JSON.stringify(current.value)}</div>
+          <div className="flex flex-col items-center justify-center h-full">
+            <p className="text-xl font-bold">Loading profile...</p>
+          </div>
         )
       }
     </div>

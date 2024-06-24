@@ -76,7 +76,7 @@ export const mainMachine = setup({
     ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QFsCGBLAdgOgJKfQBd1UAbAYgG0AGAXUVAAcB7WI9ZzBkAD0QFoATABZq2AKzUAjOIAc1QQDZhATkHVFggDQgAnoikBmFROoqVsqSvHDDk6uIC+jnWizYAwgAswAYwDWWFAABABmzABOwYwRzKHopGDkEJxg2FgAbsz+aW443n6BmCHhUTFxCWAImcy+qMScNLRN3CxsDVxIvAJ2UtiytgDshtSDgoaD4oriOvoIvdiGilKTVlOCgrIqzq4Y+T4BQWGR0bHxicmp6ZhZOdh5ngdFJSfl51U1dR1NlFL0XW12JxuHwEEJsOZJMMpMJBEYpHCBrNEKJFNgpBjZIJrOIjFjJjsQA8CodiscymdKuQwBFYhFsIxSPVSsh7ntHoUjqVThVEtUbrV6hxMD86K1WEDOqBQTYJGNqLIJuJDOMsTM9IhxiZpoo1NYNoYEYZhM4XCBMMwIHBuHlxe1hSCeuZ+kMRmMldNkWC4f1NLYRIpjcJFKNCQ98OwyHbJY7vbDFoJJOpBrJBrqpl7pthxvCNCmsTJBmH2STnuSee9ox1Y-wRiZBGnxOJ1M3U2YvXDhNhpoZLA2ETYmyazcTmMhGWBCGBggB3IheYIABUpiSrDq6oNr1DEg1RDexk1ssi9wnk3ZUKqxKm3F9kThH7IAypPiGSAK6MCuVNfAjeIZSLEmGyyCBgzUKe2gaggp5iLql7YjevaKMW7iPl4zAzsEACitKRD+UrdPMwjiOiZhrMIwbDDYHYTBCkiKFsWIKGosimo4QA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QFsCGBLAdgOgJKfQBd1UAbAYgG0AGAXUVAAcB7WI9ZzBkAD0QFoATABZq2AKzUAjOIAc1QQDZhATkHVFggDQgAnoikBmFROoqVsqSvHDDk6uIC+jnWizYAwgAswAYwDWWFAABABmzABOwYwRzKHopGDkEJxg2FgAbsz+aW443n6BmCHhUTFxCWAImcy+qMScNLRN3CxsDVxIvAJ2UtiytgDshtSDgoaD4oriOvoIvdiGilKTVlOCgrIqzq4Y+T4BQWGR0bHxicmp6ZhZOdh5ngdFJSfl51U1dR1NlFL0XW12JxuHwEEJsOZJMMpMJBEYpHCBrNEKJFNgpBjZIJrOIjFjJjsQA8CodiscymdKuQwBFYhFsIxSPVSsh7ntHoUjqVThVEtUbrV6hxMD86K1WEDOqBQTYJGNqLIJuJDOMsTM9IhxiZpoo1NYNoYEYZhM4XCBMMwIHBuHlxe1hSCeuZ+kMRmMldNkWC4f1NMJ-cIVoYllNCQ98OwyHbJY7vbDFoJJOpBrJBrqpl7pthxvCNCmsTJBmH2STnuSee9ox1Y-wRiZBGnxOJ1M3U2YvXDhNhpoZLA2ETYmyazcTmMhGWBCGBggB3IheYIABUpiSrDq6oNr1DEg1RDexk1ssi9wnk3ZUKqxKm3F9kThHJbHE6ns-nzAAroQlyuwGvgRvEGURYkw2WQwMGahT20DUEFPMRdUvbEb17RRi3cABlLxmBnYIAFFaUiP8pW6eZhHEdEzDWf1FGGGwOwmCFJEULYsQUNRZFNRwgA */
   context: ({ input }) => ({
     ...input.initialContext,
     profileInfo: undefined,
@@ -114,7 +114,7 @@ export const mainMachine = setup({
             },
           },
           {
-            target: "Setting up profile",
+            target: "Complete without Profile",
             reenter: true,
           },
         ],
@@ -123,8 +123,12 @@ export const mainMachine = setup({
       },
     },
 
-    "Complete with Profile": {},
-    "Setting up profile": {},
+    "Complete with Profile": {
+      tags: ["showRenderer"],
+    },
+    "Complete without Profile": {
+      tags: ["showRenderer"],
+    },
     "Show Error": {},
   },
 
