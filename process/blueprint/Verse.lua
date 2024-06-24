@@ -11,7 +11,8 @@ SQLITE_TABLE_VERSE_ENTITIES = [[
     Id TEXT PRIMARY KEY,
     LastUpdated INTEGER,
     Position TEXT,
-    Type TEXT
+    Type TEXT,
+    Metadata TEXT
   );
 ]]
 
@@ -95,6 +96,7 @@ Handlers.add(
       entities[row.Id] = {
         Position = json.decode(row.Position),
         Type = row.Type,
+        Metadata = json.decode(row.Metadata)
       }
     end
 
@@ -190,20 +192,31 @@ Handlers.add(
       Type = data.Type
     end
 
-    VerseDbAdmin:exec(string.format([[
-        INSERT INTO Entities (Id, LastUpdated, Position, Type)
-        VALUES ('%s', %d, '%s', '%s')
-      ]],
+    local Metadata = data.Metadata or {}
+    -- Is it necessary to validate this?
+
+    -- Ugly workaround for empty tables!
+    Metadata['_'] = false;
+
+    local stmt = VerseDb:prepare([[
+        INSERT INTO Entities (Id, LastUpdated, Position, Type, Metadata)
+        VALUES (?, ?, ?, ?, ?)
+    ]])
+    stmt:bind_values(
       entityId,
       msg.Timestamp,
       json.encode(Position),
-      Type
-    ))
+      Type,
+      json.encode(Metadata)
+    )
+    stmt:step()
+    stmt:finalize()
 
     local result = {
       [entityId] = {
         Position = Position,
         Type = Type,
+        Metadata = Metadata
       }
     }
 

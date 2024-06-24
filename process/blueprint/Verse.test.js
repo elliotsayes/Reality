@@ -71,6 +71,7 @@ test("check VerseEntityCreate handler", async () => {
     LastUpdated: 10003,
     Type: "Avatar",
     Position: "[1,2]",
+    Metadata: '{"_":false}',
   });
 });
 
@@ -96,6 +97,7 @@ test("check VerseEntityUpdatePosition handler", async () => {
     LastUpdated: 10006,
     Type: "Avatar",
     Position: "[3,4]",
+    Metadata: '{"_":false}',
   });
 });
 
@@ -108,7 +110,7 @@ test("check VerseEntitiesDynamic handler", async () => {
 
   assert.equal(result.Output.data, "VerseEntitiesDynamic");
   assert.deepEqual(JSON.parse(result.Messages[0].Data), {
-    TestOwner: { Type: "Avatar", Position: [3, 4] },
+    TestOwner: { Type: "Avatar", Position: [3, 4], Metadata: { _: false } },
   });
 });
 
