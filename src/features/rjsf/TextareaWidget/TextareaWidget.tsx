@@ -4,16 +4,16 @@ import {
   RJSFSchema,
   StrictRJSFSchema,
   WidgetProps,
-} from "@rjsf/utils"
-import { ChangeEvent, FocusEvent } from "react"
+} from "@rjsf/utils";
+import { ChangeEvent, FocusEvent } from "react";
 
 type CustomWidgetProps<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
 > = WidgetProps<T, S, F> & {
-  options: any
-}
+  options: any;
+};
 
 export default function TextareaWidget<
   T = any,
@@ -33,11 +33,11 @@ export default function TextareaWidget<
   options,
 }: CustomWidgetProps<T, S, F>) {
   const _onChange = ({ target: { value } }: ChangeEvent<HTMLTextAreaElement>) =>
-    onChange(value === "" ? options.emptyValue : value)
+    onChange(value === "" ? options.emptyValue : value);
   const _onBlur = ({ target: { value } }: FocusEvent<HTMLTextAreaElement>) =>
-    onBlur(id, value)
+    onBlur(id, value);
   const _onFocus = ({ target: { value } }: FocusEvent<HTMLTextAreaElement>) =>
-    onFocus(id, value)
+    onFocus(id, value);
 
   return (
     <div className="flex">
@@ -58,5 +58,5 @@ export default function TextareaWidget<
         aria-describedby={ariaDescribedByIds<T>(id)}
       />
     </div>
-  )
+  );
 }

@@ -1,5 +1,8 @@
 import { ConnectConfig } from "@/features/ao/lib/aoWallet";
-import { permissionsRequested, permissionsRequired } from "@/features/ao/lib/config";
+import {
+  permissionsRequested,
+  permissionsRequired,
+} from "@/features/ao/lib/config";
 
 export const defaultConnectConfig: ConnectConfig = {
   permissionsRequested,
@@ -7,10 +10,10 @@ export const defaultConnectConfig: ConnectConfig = {
   appInfo: {
     name: "WeaveWorld",
     // TODO: Add logo
-    // logo: 
+    // logo:
   },
-}
+};
 
 export const dummyConnectConfig: ConnectConfig = {
   permissionsRequested: [],
-}
+};

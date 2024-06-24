@@ -9,7 +9,7 @@ export const VerseInfo = z.object({
   Parent: z.string(),
   Name: z.string(),
   Dimensions: z.number(),
-  'Render-With': z.string(),
+  "Render-With": z.string(),
 });
 export type VerseInfo = z.infer<typeof VerseInfo>;
 
@@ -20,7 +20,7 @@ export const VerseParameterBounds = z.object({
 
 export const VerseParameters = z.object({
   Bounds: z.optional(VerseParameterBounds),
-  '2D-Tile-0': z.optional(_2dTileParams),
+  "2D-Tile-0": z.optional(_2dTileParams),
 });
 export type VerseParameters = z.infer<typeof VerseParameters>;
 
@@ -51,11 +51,9 @@ export type SchemaExternalForm = z.infer<typeof SchemaForm>;
 export const VerseEntity = z.object({
   Position: VerseEntityPosition,
   Type: VerseEntityType,
-  Interaction: z.optional(z.discriminatedUnion("Type", [
-    Warp,
-    SchemaForm,
-    SchemaExternalForm,
-  ]))
+  Interaction: z.optional(
+    z.discriminatedUnion("Type", [Warp, SchemaForm, SchemaExternalForm]),
+  ),
 });
 export type VerseEntity = z.infer<typeof VerseEntity>;
 
@@ -65,16 +63,13 @@ export const VerseEntityCreate = z.object({
 });
 export type VerseEntityCreate = z.infer<typeof VerseEntityCreate>;
 
-export const VerseEntities = z.record(
-  ArweaveAddress,
-  VerseEntity,
-);
+export const VerseEntities = z.record(ArweaveAddress, VerseEntity);
 export type VerseEntities = z.infer<typeof VerseEntities>;
 
 export const VerseEntityKeyed = VerseEntities.refine(
   (entities) => Object.keys(entities).length === 1,
   {
     message: "Expected exactly one entity",
-  }
+  },
 );
 export type VerseEntityKeyed = z.infer<typeof VerseEntityKeyed>;

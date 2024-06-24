@@ -4,14 +4,14 @@ import {
   RJSFSchema,
   StrictRJSFSchema,
   TranslatableString,
-} from "@rjsf/utils"
+} from "@rjsf/utils";
 
 export default function ErrorList<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
 >({ errors, registry }: ErrorListProps<T, S, F>) {
-  const { translateString } = registry
+  const { translateString } = registry;
 
   return (
     <div className="mb-4 rounded border border-red-700">
@@ -25,10 +25,10 @@ export default function ErrorList<
               <li key={i} className="border-0 p-3">
                 <span>{error.stack}</span>
               </li>
-            )
+            );
           })}
         </ul>
       </div>
     </div>
-  )
+  );
 }

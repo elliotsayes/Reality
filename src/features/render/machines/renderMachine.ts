@@ -1,73 +1,79 @@
-import { ProfileClient } from '@/features/profile/contract/profileClient';
-import { VerseClient, VerseClientForProcess } from '@/features/verse/contract/verseClient';
-import { setup, assign, assertEvent, fromPromise } from 'xstate';
-import { Preloader } from '../lib/phaser/scenes/Preloader';
-import { MainMenu } from '../lib/phaser/scenes/MainMenu';
-import { VerseScene } from '../lib/phaser/scenes/VerseScene';
-import { listenScene, listenSceneEvent } from '../lib/EventBus';
-import { loadVersePhaser } from '../lib/load/verse';
-import { AoContractClientForProcess } from '@/features/ao/lib/aoContractClient';
-import { ChatClient, ChatClientForProcess } from '@/features/chat/contract/chatClient';
-import { MessageHistory } from '@/features/chat/contract/model';
-import { VerseState } from '../lib/load/model';
+import { ProfileClient } from "@/features/profile/contract/profileClient";
+import {
+  VerseClient,
+  VerseClientForProcess,
+} from "@/features/verse/contract/verseClient";
+import { setup, assign, assertEvent, fromPromise } from "xstate";
+import { Preloader } from "../lib/phaser/scenes/Preloader";
+import { MainMenu } from "../lib/phaser/scenes/MainMenu";
+import { VerseScene } from "../lib/phaser/scenes/VerseScene";
+import { listenScene, listenSceneEvent } from "../lib/EventBus";
+import { loadVersePhaser } from "../lib/load/verse";
+import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
+import {
+  ChatClient,
+  ChatClientForProcess,
+} from "@/features/chat/contract/chatClient";
+import { MessageHistory } from "@/features/chat/contract/model";
+import { VerseState } from "../lib/load/model";
 
 export const renderMachine = setup({
   types: {
     input: {} as {
-      playerAddress: string,
-      initialVerseId?: string,
+      playerAddress: string;
+      initialVerseId?: string;
       clients: {
-        aoContractClientForProcess: AoContractClientForProcess,
-        profileClient: ProfileClient,
-        verseClientForProcess: VerseClientForProcess,
-        chatClientForProcess: ChatClientForProcess,
-      }
-      setVerseIdUrl: (verseId: string) => void
+        aoContractClientForProcess: AoContractClientForProcess;
+        profileClient: ProfileClient;
+        verseClientForProcess: VerseClientForProcess;
+        chatClientForProcess: ChatClientForProcess;
+      };
+      setVerseIdUrl: (verseId: string) => void;
     },
     context: {} as {
-      playerAddress: string,
+      playerAddress: string;
 
-      initialVerseId?: string,
+      initialVerseId?: string;
       clients: {
-        aoContractClientForProcess: AoContractClientForProcess,
-        profileClient: ProfileClient,
-        verseClientForProcess: VerseClientForProcess,
-        chatClientForProcess: ChatClientForProcess,
-      }
-      setVerseIdUrl: (verseId: string) => void
+        aoContractClientForProcess: AoContractClientForProcess;
+        profileClient: ProfileClient;
+        verseClientForProcess: VerseClientForProcess;
+        chatClientForProcess: ChatClientForProcess;
+      };
+      setVerseIdUrl: (verseId: string) => void;
 
-      cleanupGameEventListeners?: () => void,
+      cleanupGameEventListeners?: () => void;
 
-      currentScene?: Phaser.Scene,
+      currentScene?: Phaser.Scene;
       typedScenes: {
-        preloader?: Preloader,
-        mainMenu?: MainMenu,
-        verseScene?: VerseScene,
-      },
+        preloader?: Preloader;
+        mainMenu?: MainMenu;
+        verseScene?: VerseScene;
+      };
 
-      targetVerseId?: string,
-      currentVerseId?: string,
-      lastEntityUpdate?: Date,
+      targetVerseId?: string;
+      currentVerseId?: string;
+      lastEntityUpdate?: Date;
 
-      nextPosition?: Array<number>,
-      processingPosition?: Array<number>,
+      nextPosition?: Array<number>;
+      processingPosition?: Array<number>;
 
-      initialChatMessageOffset?: number,
-      currentChatMessageOffset?: number,
-      chatMessages: MessageHistory,
+      initialChatMessageOffset?: number;
+      currentChatMessageOffset?: number;
+      chatMessages: MessageHistory;
     },
-    events: {} as 
-      | { type: 'Scene Ready', scene: Phaser.Scene }
-      | { type: 'Warp Immediate', verseId: string }
+    events: {} as
+      | { type: "Scene Ready"; scene: Phaser.Scene }
+      | { type: "Warp Immediate"; verseId: string }
       // | { type: 'Warp Overlap Start', verseId: string }
-      | { type: 'Update Position', position: Array<number> }
-      | { type: 'Registration Confirmed' }
+      | { type: "Update Position"; position: Array<number> }
+      | { type: "Registration Confirmed" },
   },
   actions: {
     activateGameEventListener: assign({
-      cleanupGameEventListeners: ({ self}) => {
-        const c1 = listenScene('scene-ready', (scene: Phaser.Scene) => {
-          self.send({ type: 'Scene Ready', scene });
+      cleanupGameEventListeners: ({ self }) => {
+        const c1 = listenScene("scene-ready", (scene: Phaser.Scene) => {
+          self.send({ type: "Scene Ready", scene });
         });
         const c2 = listenSceneEvent((event) => {
           self.send(event);
@@ -76,103 +82,112 @@ export const renderMachine = setup({
           c1();
           c2();
         };
-      }
+      },
     }),
     cleanupGameEventListeners: ({ context }) => {
       context.cleanupGameEventListeners?.();
     },
     assignPreloader: assign(({ event }) => {
-      assertEvent(event, 'Scene Ready');
-      return { 
+      assertEvent(event, "Scene Ready");
+      return {
         currentScene: event.scene,
         typedScenes: { preloader: event.scene as Preloader },
       };
     }),
     assignMainMenu: assign(({ event }) => {
-      assertEvent(event, 'Scene Ready');
+      assertEvent(event, "Scene Ready");
       return {
         currentScene: event.scene,
         typedScenes: { mainMenu: event.scene as MainMenu },
       };
     }),
     assignVerseScene: assign(({ event }) => {
-      assertEvent(event, 'Scene Ready');
+      assertEvent(event, "Scene Ready");
       return {
         currentScene: event.scene,
         typedScenes: { verseScene: event.scene as VerseScene },
       };
     }),
     assignOtherScene: assign(({ event }) => {
-      assertEvent(event, 'Scene Ready');
+      assertEvent(event, "Scene Ready");
       return { currentScene: event.scene };
     }),
     clearScenes: assign(() => {
       return { currentScene: undefined, typedScenes: {} };
     }),
     startMainMenu: ({ context }) => {
-      context.currentScene?.scene.start('MainMenu');
+      context.currentScene?.scene.start("MainMenu");
     },
-    startVerseScene: ({ context }, params: {
-      verseId: string,
-      verse: VerseState,
-    }) => {
+    startVerseScene: (
+      { context },
+      params: {
+        verseId: string;
+        verse: VerseState;
+      },
+    ) => {
       const { verseId, verse } = params;
-      context.currentScene?.scene.start('VerseScene', {
+      context.currentScene?.scene.start("VerseScene", {
         playerAddress: context.playerAddress,
         verseId,
         verse,
-        aoContractClientForProcess: context.clients.aoContractClientForProcess
+        aoContractClientForProcess: context.clients.aoContractClientForProcess,
       });
     },
-    warpVerseScene: ({ context }, params: {
-      verseId: string,
-      verse: VerseState,
-    }) => {
+    warpVerseScene: (
+      { context },
+      params: {
+        verseId: string;
+        verse: VerseState;
+      },
+    ) => {
       const { verseId, verse } = params;
       context.typedScenes.verseScene!.warpToVerse(
         context.playerAddress,
         verseId,
         verse,
-        context.clients.aoContractClientForProcess
+        context.clients.aoContractClientForProcess,
       );
     },
     assignTargetVerseId: assign(({ event }) => {
-      assertEvent(event, 'Warp Immediate');
+      assertEvent(event, "Warp Immediate");
       return { targetVerseId: event.verseId };
     }),
     assignTargetVerseIdFromInitialVerseId: assign(({ context }) => ({
-      targetVerseId: context.initialVerseId
+      targetVerseId: context.initialVerseId,
     })),
     assignCurrentVerseIdFromTargetVerseId: assign(({ context }) => ({
-      currentVerseId: context.targetVerseId
+      currentVerseId: context.targetVerseId,
     })),
     clearCurrentVerseId: assign(() => ({
-      currentVerseId: undefined
+      currentVerseId: undefined,
     })),
     updateUrl: ({ context }) => {
       context.setVerseIdUrl(context.currentVerseId!);
     },
     assignNextPosition: assign(({ event }) => {
-      assertEvent(event, 'Update Position');
+      assertEvent(event, "Update Position");
       return {
-        nextPosition: event.position
+        nextPosition: event.position,
       };
     }),
     consumePositionFromQueue: assign(({ context }) => ({
       processingPosition: context.nextPosition,
-      nextPosition: undefined
+      nextPosition: undefined,
     })),
     clearPositionQueue: assign(() => ({
-      nextPosition: undefined
+      nextPosition: undefined,
     })),
     clearProcesssingPosition: assign(() => ({
-      processingPosition: undefined
+      processingPosition: undefined,
     })),
-    updateVerseSceneEntities: ({ context, event }, params: {
-      entities: Awaited<ReturnType<VerseClient['readEntitiesDynamic']>>,
-      profiles: Awaited<ReturnType<ProfileClient['readProfiles']>>,
-    }) => {
-      console.log('updateVerseSceneEntities', event);
+    updateVerseSceneEntities: (
+      { context, event },
+      params: {
+        entities: Awaited<ReturnType<VerseClient["readEntitiesDynamic"]>>;
+        profiles: Awaited<ReturnType<ProfileClient["readProfiles"]>>;
+      },
+    ) => {
+      console.log("updateVerseSceneEntities", event);
       const { entities, profiles } = params;
       context.typedScenes.verseScene!.mergeEntities(entities, profiles);
     },
@@ -180,8 +195,8 @@ export const renderMachine = setup({
       lastEntityUpdate: params.beforeTimestamp,
     })),
     sendRegistrationConfirmed: ({ self }) => {
-      console.log('sendRegistrationConfirmed');
-      self.send({ type: 'Registration Confirmed' });
+      console.log("sendRegistrationConfirmed");
+      self.send({ type: "Registration Confirmed" });
     },
     assignChatMessageOffset: assign((_, params: { messageCount: number }) => {
       const { messageCount } = params;
@@ -190,121 +205,155 @@ export const renderMachine = setup({
         currentChatMessageOffset: messageCount,
       };
     }),
-    updateChatMessageOffset: assign((_, params: { messages: MessageHistory}) => {
-      const { messages } = params;
-      if (messages.length === 0) return {
-        currentChatMessageOffset: 0,
-      };
-      return {
-        currentChatMessageOffset: messages[0].Id,
-      };
-    }),
-    notifyRendererOfNewMessages: ({ context }, params: { messages: MessageHistory}) => {
+    updateChatMessageOffset: assign(
+      (_, params: { messages: MessageHistory }) => {
+        const { messages } = params;
+        if (messages.length === 0)
+          return {
+            currentChatMessageOffset: 0,
+          };
+        return {
+          currentChatMessageOffset: messages[0].Id,
+        };
+      },
+    ),
+    notifyRendererOfNewMessages: (
+      { context },
+      params: { messages: MessageHistory },
+    ) => {
       const { messages } = params;
       context.typedScenes.verseScene!.showEntityChatMessages(messages);
     },
-    appendChatMessages: assign(({ context }, params: { messages: MessageHistory}) => {
-      const { messages } = params;
-      return { chatMessages: context.chatMessages.concat(messages) };
-    }),
+    appendChatMessages: assign(
+      ({ context }, params: { messages: MessageHistory }) => {
+        const { messages } = params;
+        return { chatMessages: context.chatMessages.concat(messages) };
+      },
+    ),
     clearChatMessages: assign(() => ({
-      chatMessages: []
+      chatMessages: [],
     })),
   },
   guards: {
     hasIntialVerseId: ({ context }) => {
-      console.log('hasIntialVerseId', context.initialVerseId);
+      console.log("hasIntialVerseId", context.initialVerseId);
       return context.initialVerseId !== undefined;
     },
     sceneKeyIsPreloader: ({ event }) => {
-      assertEvent(event, 'Scene Ready');
-      return event.scene.scene.key === 'Preloader';
+      assertEvent(event, "Scene Ready");
+      return event.scene.scene.key === "Preloader";
     },
     sceneKeyIsMainMenu: ({ event }) => {
-      assertEvent(event, 'Scene Ready');
-      return event.scene.scene.key === 'MainMenu';
+      assertEvent(event, "Scene Ready");
+      return event.scene.scene.key === "MainMenu";
     },
     sceneKeyIsVerseScene: ({ event }) => {
-      assertEvent(event, 'Scene Ready');
-      return event.scene.scene.key === 'VerseScene';
+      assertEvent(event, "Scene Ready");
+      return event.scene.scene.key === "VerseScene";
     },
     hasNextPosition: ({ context }) => {
       return context.nextPosition !== undefined;
     },
   },
   actors: {
-    loadVerse: fromPromise(async ({ input }: {
+    loadVerse: fromPromise(
+      async ({
+        input,
+      }: {
         input: {
-          verseClient: VerseClient,
-          profileClient: ProfileClient,
-          phaserLoader: Phaser.Loader.LoaderPlugin
-        }
+          verseClient: VerseClient;
+          profileClient: ProfileClient;
+          phaserLoader: Phaser.Loader.LoaderPlugin;
+        };
       }) => {
-        console.log('loadVerse');
-        const verseState = await loadVersePhaser(input.verseClient, input.profileClient, input.phaserLoader);
+        console.log("loadVerse");
+        const verseState = await loadVersePhaser(
+          input.verseClient,
+          input.profileClient,
+          input.phaserLoader,
+        );
         return {
           verseId: input.verseClient.verseId,
-          verse: verseState
-        }
-      }
+          verse: verseState,
+        };
+      },
     ),
-    updateEntities: fromPromise(async ({ input }: {
+    updateEntities: fromPromise(
+      async ({
+        input,
+      }: {
         input: {
-          verseClient: VerseClient,
-          profileClient: ProfileClient,
-          lastEntityUpdate?: Date,
-        }
+          verseClient: VerseClient;
+          profileClient: ProfileClient;
+          lastEntityUpdate?: Date;
+        };
       }) => {
         const beforeTimestamp = new Date();
         const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
-        const entities = await input.verseClient.readEntitiesDynamic(input.lastEntityUpdate ?? tenSecondsAgo);
-        const profiles = await input.profileClient.readProfiles(Object.keys(entities));
+        const entities = await input.verseClient.readEntitiesDynamic(
+          input.lastEntityUpdate ?? tenSecondsAgo,
+        );
+        const profiles = await input.profileClient.readProfiles(
+          Object.keys(entities),
+        );
         return {
           entities,
           profiles,
           beforeTimestamp,
         };
-      }
+      },
     ),
-    updatePosition: fromPromise(async ({ input }: {
+    updatePosition: fromPromise(
+      async ({
+        input,
+      }: {
         input: {
-          verseClient: VerseClient,
-          position: Array<number>
-        }
+          verseClient: VerseClient;
+          position: Array<number>;
+        };
       }) => {
-        console.log('updatePosition', input.position);
+        console.log("updatePosition", input.position);
         return await input.verseClient.updateEntityPosition(input.position);
-      }
+      },
     ),
-    registerEntity: fromPromise(async ({ input }: {
+    registerEntity: fromPromise(
+      async ({
+        input,
+      }: {
         input: {
-          verseClient: VerseClient
-        }
+          verseClient: VerseClient;
+        };
       }) => {
         const verseParams = await input.verseClient.readParameters();
         const msgId = await input.verseClient.createEntity({
-          Type: 'Avatar',
-          Position: verseParams['2D-Tile-0']?.Spawn || [0, 0]
+          Type: "Avatar",
+          Position: verseParams["2D-Tile-0"]?.Spawn || [0, 0],
         });
         return msgId;
-      }
+      },
     ),
-    loadChatMessageCount: fromPromise(async ({ input }: {
+    loadChatMessageCount: fromPromise(
+      async ({
+        input,
+      }: {
         input: {
-          chatClient: ChatClient
-        }
+          chatClient: ChatClient;
+        };
       }) => {
         return await input.chatClient.readCount();
       },
     ),
-    loadChatMessagesSinceOffset: fromPromise(async ({ input }: {
+    loadChatMessagesSinceOffset: fromPromise(
+      async ({
+        input,
+      }: {
         input: {
-          chatClient: ChatClient,
-          offset: number
-        }
+          chatClient: ChatClient;
+          offset: number;
+        };
       }) => {
         return await input.chatClient.readHistory({
-          idAfter: input.offset
+          idAfter: input.offset,
         });
       },
     ),
@@ -321,7 +370,7 @@ export const renderMachine = setup({
 
   states: {
     Initial: {
-      always: "Idle"
+      always: "Idle",
     },
     "In Game": {
       states: {
@@ -333,18 +382,20 @@ export const renderMachine = setup({
               on: {
                 "Warp Immediate": {
                   target: "Load Verse",
-                  actions: "assignTargetVerseId"
-                }
-              }
+                  actions: "assignTargetVerseId",
+                },
+              },
             },
 
             "Load Verse": {
               invoke: {
                 src: "loadVerse",
                 input: ({ context }) => ({
-                  verseClient: context.clients.verseClientForProcess(context.targetVerseId!),
+                  verseClient: context.clients.verseClientForProcess(
+                    context.targetVerseId!,
+                  ),
                   profileClient: context.clients.profileClient,
-                  phaserLoader: context.currentScene!.load
+                  phaserLoader: context.currentScene!.load,
                 }),
 
                 onDone: {
@@ -353,18 +404,18 @@ export const renderMachine = setup({
                     type: "startVerseScene",
                     params: ({ event }) => event.output,
                   },
-                }
-              }
+                },
+              },
             },
 
-            "Start Verse Scene": {}
+            "Start Verse Scene": {},
           },
 
-          initial: "Initial"
+          initial: "Initial",
         },
 
         "In Other Scene": {
-          exit: "clearScenes"
+          exit: "clearScenes",
         },
 
         "In Preloader": {
@@ -372,16 +423,19 @@ export const renderMachine = setup({
 
           states: {
             Initial: {
-              always: [{
-                target: "Load Verse",
-                reenter: true,
-                guard: "hasIntialVerseId",
-                actions: "assignTargetVerseIdFromInitialVerseId"
-              }, {
-                target: "Start Main Menu",
-                reenter: true,
-                actions: "startMainMenu"
-              }]
+              always: [
+                {
+                  target: "Load Verse",
+                  reenter: true,
+                  guard: "hasIntialVerseId",
+                  actions: "assignTargetVerseIdFromInitialVerseId",
+                },
+                {
+                  target: "Start Main Menu",
+                  reenter: true,
+                  actions: "startMainMenu",
+                },
+              ],
             },
 
             "Start Main Menu": {},
@@ -389,9 +443,11 @@ export const renderMachine = setup({
             "Load Verse": {
               invoke: {
                 input: ({ context }) => ({
-                  verseClient: context.clients.verseClientForProcess(context.targetVerseId!),
+                  verseClient: context.clients.verseClientForProcess(
+                    context.targetVerseId!,
+                  ),
                   profileClient: context.clients.profileClient,
-                  phaserLoader: context.currentScene!.load
+                  phaserLoader: context.currentScene!.load,
                 }),
 
                 src: "loadVerse",
@@ -401,12 +457,12 @@ export const renderMachine = setup({
                     type: "startVerseScene",
                     params: ({ event }) => event.output,
                   },
-                }
-              }
-            }
+                },
+              },
+            },
           },
 
-          initial: "Initial"
+          initial: "Initial",
         },
 
         Idle: {},
@@ -422,67 +478,71 @@ export const renderMachine = setup({
                   on: {
                     "Warp Immediate": {
                       target: "Load Verse",
-                      actions: "assignTargetVerseId"
-                    }
-                  }
+                      actions: "assignTargetVerseId",
+                    },
+                  },
                 },
 
                 "Load Verse": {
                   invoke: {
                     src: "loadVerse",
                     input: ({ context }) => ({
-                      verseClient: context.clients.verseClientForProcess(context.targetVerseId!),
+                      verseClient: context.clients.verseClientForProcess(
+                        context.targetVerseId!,
+                      ),
                       profileClient: context.clients.profileClient,
-                      phaserLoader: context.currentScene!.load
+                      phaserLoader: context.currentScene!.load,
                     }),
                     onDone: {
                       target: "Warp Verse Scene",
                       actions: {
                         type: "warpVerseScene",
                         params: ({ event }) => event.output,
-                      }
-                    }
-                  }
+                      },
+                    },
+                  },
                 },
-                "Warp Verse Scene": {}
+                "Warp Verse Scene": {},
               },
 
-              initial: "Initial"
+              initial: "Initial",
             },
 
             "Entity Download": {
               states: {
                 Idle: {
                   after: {
-                    "1000": "Update Entities"
-                  }
+                    "1000": "Update Entities",
+                  },
                 },
                 "Update Entities": {
                   invoke: {
                     src: "updateEntities",
                     input: ({ context }) => ({
-                      verseClient: context.clients.verseClientForProcess(context.currentVerseId!),
+                      verseClient: context.clients.verseClientForProcess(
+                        context.currentVerseId!,
+                      ),
                       profileClient: context.clients.profileClient,
-                      lastEntityUpdate: context.lastEntityUpdate
+                      lastEntityUpdate: context.lastEntityUpdate,
                     }),
                     onDone: {
                       target: "Idle",
                       actions: [
                         {
                           type: "updateVerseSceneEntities",
-                          params: ({ event }) => event.output
+                          params: ({ event }) => event.output,
                         },
                         {
                           type: "saveLastEntityUpdate",
-                          params: ({ event }) => event.output
-                        }
-                      ]
-                    }
-                  }
-                }
+                          params: ({ event }) => event.output,
+                        },
+                      ],
+                    },
+                  },
+                },
               },
 
-              initial: "Idle"
+              initial: "Idle",
             },
 
             "Player Position": {
@@ -493,36 +553,38 @@ export const renderMachine = setup({
                       on: {
                         "Update Position": {
                           target: "Idle",
-                          actions: "assignNextPosition"
-                        }
-                      }
-                    }
+                          actions: "assignNextPosition",
+                        },
+                      },
+                    },
                   },
 
                   initial: "Idle",
-                  exit: "clearPositionQueue"
+                  exit: "clearPositionQueue",
                 },
 
                 "Position Upload": {
                   states: {
                     Idle: {
                       on: {
-                        "Registration Confirmed": "Ready"
-                      }
+                        "Registration Confirmed": "Ready",
+                      },
                     },
 
                     "Update Position": {
                       invoke: {
                         src: "updatePosition",
                         input: ({ context }) => ({
-                          verseClient: context.clients.verseClientForProcess(context.currentVerseId!),
+                          verseClient: context.clients.verseClientForProcess(
+                            context.currentVerseId!,
+                          ),
                           position: context.processingPosition!,
                         }),
                         onDone: {
                           target: "Ready",
-                          actions: "clearProcesssingPosition"
-                        }
-                      }
+                          actions: "clearProcesssingPosition",
+                        },
+                      },
                     },
 
                     Ready: {
@@ -530,22 +592,22 @@ export const renderMachine = setup({
                         target: "Update Position",
                         guard: "hasNextPosition",
                         actions: ["consumePositionFromQueue"],
-                        reenter: true
-                      }
-                    }
+                        reenter: true,
+                      },
+                    },
                   },
 
-                  initial: "Idle"
-                }
+                  initial: "Idle",
+                },
               },
 
-              type: "parallel"
+              type: "parallel",
             },
 
             "Entity Registration": {
               states: {
                 Initial: {
-                  always: "Registering"
+                  always: "Registering",
                 },
 
                 Done: {},
@@ -554,63 +616,69 @@ export const renderMachine = setup({
                   invoke: {
                     src: "registerEntity",
                     input: ({ context }) => ({
-                      verseClient: context.clients.verseClientForProcess(context.currentVerseId!)
+                      verseClient: context.clients.verseClientForProcess(
+                        context.currentVerseId!,
+                      ),
                     }),
                     onDone: {
                       target: "Waiting for confimation",
-                      reenter: true
-                    }
-                  }
+                      reenter: true,
+                    },
+                  },
                 },
 
                 "Waiting for confimation": {
                   after: {
                     "1000": {
                       target: "Done",
-                      actions: "sendRegistrationConfirmed"
-                    }
-                  }
-                }
+                      actions: "sendRegistrationConfirmed",
+                    },
+                  },
+                },
               },
 
-              initial: "Initial"
+              initial: "Initial",
             },
 
             "Chat messages": {
               states: {
                 Initial: {
-                  always: "Get message count"
+                  always: "Get message count",
                 },
 
                 "Get message count": {
                   invoke: {
                     src: "loadChatMessageCount",
                     input: ({ context }) => ({
-                      chatClient: context.clients.chatClientForProcess(context.currentVerseId!)
+                      chatClient: context.clients.chatClientForProcess(
+                        context.currentVerseId!,
+                      ),
                     }),
                     onDone: {
                       target: "Idle",
                       actions: {
                         type: "assignChatMessageOffset",
                         params: ({ event }) => ({
-                          messageCount: event.output
-                        })
-                      }
-                    }
-                  }
+                          messageCount: event.output,
+                        }),
+                      },
+                    },
+                  },
                 },
 
                 Idle: {
                   after: {
-                    "1000": "Check new messages"
-                  }
+                    "1000": "Check new messages",
+                  },
                 },
 
                 "Check new messages": {
                   invoke: {
                     src: "loadChatMessagesSinceOffset",
                     input: ({ context }) => ({
-                      chatClient: context.clients.chatClientForProcess(context.currentVerseId!),
+                      chatClient: context.clients.chatClientForProcess(
+                        context.currentVerseId!,
+                      ),
                       offset: context.currentChatMessageOffset!,
                     }),
                     onDone: {
@@ -619,60 +687,65 @@ export const renderMachine = setup({
                         {
                           type: "updateChatMessageOffset",
                           params: ({ event }) => ({
-                            messages: event.output
-                          })
+                            messages: event.output,
+                          }),
                         },
                         {
                           type: "notifyRendererOfNewMessages",
                           params: ({ event }) => ({
-                            messages: event.output
-                          })
+                            messages: event.output,
+                          }),
                         },
                         {
                           type: "appendChatMessages",
                           params: ({ event }) => ({
-                            messages: event.output
-                          })
+                            messages: event.output,
+                          }),
                         },
                       ],
-                      reenter: true
-                    }
-                  }
-                }
+                      reenter: true,
+                    },
+                  },
+                },
               },
 
               initial: "Initial",
-              exit: "clearChatMessages"
-            }
+              exit: "clearChatMessages",
+            },
           },
 
-          type: "parallel"
-        }
+          type: "parallel",
+        },
       },
 
-      initial: "Idle"
+      initial: "Idle",
     },
-    Idle: {}
+    Idle: {},
   },
 
   initial: "Initial",
 
   on: {
-    "Scene Ready": [{
-      target: ".In Game.In Preloader",
-      guard: "sceneKeyIsPreloader",
-      actions: "assignPreloader"
-    }, {
-      target: ".In Game.In Main Menu",
-      guard: "sceneKeyIsMainMenu",
-      actions: "assignMainMenu"
-    }, {
-      target: ".In Game.In Verse Scene",
-      guard: "sceneKeyIsVerseScene",
-      actions: "assignVerseScene"
-    }, ".In Game.In Other Scene"]
+    "Scene Ready": [
+      {
+        target: ".In Game.In Preloader",
+        guard: "sceneKeyIsPreloader",
+        actions: "assignPreloader",
+      },
+      {
+        target: ".In Game.In Main Menu",
+        guard: "sceneKeyIsMainMenu",
+        actions: "assignMainMenu",
+      },
+      {
+        target: ".In Game.In Verse Scene",
+        guard: "sceneKeyIsVerseScene",
+        actions: "assignVerseScene",
+      },
+      ".In Game.In Other Scene",
+    ],
   },
 
   entry: "activateGameEventListener",
-  exit: "cleanupGameEventListeners"
-})
+  exit: "cleanupGameEventListeners",
+});

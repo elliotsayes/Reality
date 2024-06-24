@@ -1,4 +1,7 @@
-import { AoContractClient, createAoContractClient } from "../../ao/lib/aoContractClient";
+import {
+  AoContractClient,
+  createAoContractClient,
+} from "../../ao/lib/aoContractClient";
 import { AoWallet } from "../../ao/lib/aoWallet";
 import { ArweaveTxId } from "../../arweave/lib/model";
 import { WaitlistState } from "./model";
@@ -13,7 +16,7 @@ export type WaitlistClient = {
   // Writes
   register(): Promise<ArweaveTxId>;
   bump(): Promise<ArweaveTxId>;
-}
+};
 
 // Placeholder
 // TODO: Define these methods properly
@@ -23,28 +26,42 @@ export const createWaitlistClient = (
   aoContractClient: aoContractClient,
 
   // Reads
-  readState: () => aoContractClient.dryrunReadReplyOneJson<WaitlistState>({
-    tags: [{ name: "Read", value: "Waitlist-State" }],
-  }),
+  readState: () =>
+    aoContractClient.dryrunReadReplyOneJson<WaitlistState>({
+      tags: [{ name: "Read", value: "Waitlist-State" }],
+    }),
 
   // Writes
-  register: () => aoContractClient.message({
-    tags: [{
-      name: "Action",
-      value: "Waitlist-Register",
-    }],
-  }),
-  bump: () => aoContractClient.message({
-    tags: [{
-      name: "Action",
-      value: "Waitlist-Bump",
-    }],
-  }), 
+  register: () =>
+    aoContractClient.message({
+      tags: [
+        {
+          name: "Action",
+          value: "Waitlist-Register",
+        },
+      ],
+    }),
+  bump: () =>
+    aoContractClient.message({
+      tags: [
+        {
+          name: "Action",
+          value: "Waitlist-Bump",
+        },
+      ],
+    }),
 });
 
-export const createWaitlistClientForProcess = (wallet: AoWallet) => (processId: string) => {
-  const aoContractClient = createAoContractClient(processId, connect(), wallet);
-  return createWaitlistClient(aoContractClient);
-}
+export const createWaitlistClientForProcess =
+  (wallet: AoWallet) => (processId: string) => {
+    const aoContractClient = createAoContractClient(
+      processId,
+      connect(),
+      wallet,
+    );
+    return createWaitlistClient(aoContractClient);
+  };
 
-export type WaitlistClientForProcess = ReturnType<typeof createWaitlistClientForProcess>;
+export type WaitlistClientForProcess = ReturnType<
+  typeof createWaitlistClientForProcess
+>;

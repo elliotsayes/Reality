@@ -8,7 +8,7 @@ import {
   RJSFSchema,
   StrictRJSFSchema,
   titleId,
-} from "@rjsf/utils"
+} from "@rjsf/utils";
 
 export default function ObjectFieldTemplate<
   T = any,
@@ -28,22 +28,22 @@ export default function ObjectFieldTemplate<
   readonly,
   registry,
 }: ObjectFieldTemplateProps<T, S, F>) {
-  const uiOptions = getUiOptions<T, S, F>(uiSchema)
+  const uiOptions = getUiOptions<T, S, F>(uiSchema);
   const TitleFieldTemplate = getTemplate<"TitleFieldTemplate", T, S, F>(
     "TitleFieldTemplate",
     registry,
     uiOptions,
-  )
+  );
   const DescriptionFieldTemplate = getTemplate<
     "DescriptionFieldTemplate",
     T,
     S,
     F
-  >("DescriptionFieldTemplate", registry, uiOptions)
+  >("DescriptionFieldTemplate", registry, uiOptions);
   // Button templates are not overridden in the uiSchema
   const {
     ButtonTemplates: { AddButton },
-  } = registry.templates
+  } = registry.templates;
 
   return (
     <>
@@ -90,5 +90,5 @@ export default function ObjectFieldTemplate<
         ) : null}
       </div>
     </>
-  )
+  );
 }

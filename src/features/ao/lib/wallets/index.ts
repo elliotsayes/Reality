@@ -4,10 +4,10 @@ import { connectOthentWallet } from "./othent";
 import { createGeneratedWallet } from "./generated";
 
 export const WalletType = ["Injected", "Othent", "Keyfile"] as const;
-export type WalletType = typeof WalletType[number];
+export type WalletType = (typeof WalletType)[number];
 
-export  const wallets: Record<WalletType, AoWalletConnector> = {
-  "Injected": connectInjectedWallet,
-  "Othent": connectOthentWallet,
-  "Keyfile": createGeneratedWallet,
+export const wallets: Record<WalletType, AoWalletConnector> = {
+  Injected: connectInjectedWallet,
+  Othent: connectOthentWallet,
+  Keyfile: createGeneratedWallet,
 } as const;

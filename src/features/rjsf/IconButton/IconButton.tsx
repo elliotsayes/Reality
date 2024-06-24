@@ -1,14 +1,14 @@
-import { ArrowDown } from "lucide-react"
-import { ArrowUp } from "lucide-react"
-import { CopyIcon } from "lucide-react"
-import { X } from "lucide-react"
+import { ArrowDown } from "lucide-react";
+import { ArrowUp } from "lucide-react";
+import { CopyIcon } from "lucide-react";
+import { X } from "lucide-react";
 import {
   FormContextType,
   IconButtonProps,
   RJSFSchema,
   StrictRJSFSchema,
   TranslatableString,
-} from "@rjsf/utils"
+} from "@rjsf/utils";
 
 export default function IconButton<
   T = any,
@@ -23,15 +23,15 @@ export default function IconButton<
     registry,
     disabled,
     ...otherProps
-  } = props
-  const buttonClass = iconType === "block" ? "w-full" : ""
+  } = props;
+  const buttonClass = iconType === "block" ? "w-full" : "";
   const variantClass =
     // @ts-expect-error incomplete type from rjsf
     props.variant === "danger"
       ? "bg-red-500 hover:bg-red-700 text-white"
       : disabled
-      ? "bg-gray-100 text-gray-300"
-      : "bg-gray-200 hover:bg-gray-500 text-gray-700"
+        ? "bg-gray-100 text-gray-300"
+        : "bg-gray-200 hover:bg-gray-500 text-gray-700";
 
   return (
     <button
@@ -40,7 +40,7 @@ export default function IconButton<
     >
       {icon}
     </button>
-  )
+  );
 }
 
 export function CopyButton<
@@ -50,14 +50,14 @@ export function CopyButton<
 >(props: IconButtonProps<T, S, F>) {
   const {
     registry: { translateString },
-  } = props
+  } = props;
   return (
     <IconButton
       title={translateString(TranslatableString.CopyButton)}
       {...props}
       icon={<CopyIcon />}
     />
-  )
+  );
 }
 
 export function MoveDownButton<
@@ -67,14 +67,14 @@ export function MoveDownButton<
 >(props: IconButtonProps<T, S, F>) {
   const {
     registry: { translateString },
-  } = props
+  } = props;
   return (
     <IconButton
       title={translateString(TranslatableString.MoveDownButton)}
       {...props}
       icon={<ArrowDown />}
     />
-  )
+  );
 }
 
 export function MoveUpButton<
@@ -84,14 +84,14 @@ export function MoveUpButton<
 >(props: IconButtonProps<T, S, F>) {
   const {
     registry: { translateString },
-  } = props
+  } = props;
   return (
     <IconButton
       title={translateString(TranslatableString.MoveUpButton)}
       {...props}
       icon={<ArrowUp />}
     />
-  )
+  );
 }
 
 export function RemoveButton<
@@ -101,7 +101,7 @@ export function RemoveButton<
 >(props: IconButtonProps<T, S, F>) {
   const {
     registry: { translateString },
-  } = props
+  } = props;
   return (
     <IconButton
       title={translateString(TranslatableString.RemoveButton)}
@@ -110,5 +110,5 @@ export function RemoveButton<
       variant="danger"
       icon={<X />}
     />
-  )
+  );
 }

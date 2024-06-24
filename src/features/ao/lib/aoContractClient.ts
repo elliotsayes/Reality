@@ -13,9 +13,15 @@ class AoContractError extends Error {
   }
 }
 
-export type ReadArgs = Pick<Parameters<AoClient["dryrun"]>[0], "tags" | "data" | "anchor">
+export type ReadArgs = Pick<
+  Parameters<AoClient["dryrun"]>[0],
+  "tags" | "data" | "anchor"
+>;
 
-export type SendArgs = Pick<Parameters<AoClient["message"]>[0], "tags" | "data" | "anchor">
+export type SendArgs = Pick<
+  Parameters<AoClient["message"]>[0],
+  "tags" | "data" | "anchor"
+>;
 
 export type AoContractClient = {
   processId: string;
@@ -24,9 +30,12 @@ export type AoContractClient = {
 
   dryrunReadReplyOptional: (readArgs: ReadArgs) => Promise<Message | undefined>;
   dryrunReadReplyOne: (readArgs: ReadArgs) => Promise<Message>;
-  dryrunReadReplyOneJson: <T>(readArgs: ReadArgs, schema?: z.Schema) => Promise<T>;
+  dryrunReadReplyOneJson: <T>(
+    readArgs: ReadArgs,
+    schema?: z.Schema,
+  ) => Promise<T>;
   message: (sendArgs: SendArgs) => Promise<string>;
-}
+};
 
 export const createAoContractClient = (
   processId: string,
@@ -48,7 +57,7 @@ export const createAoContractClient = (
 
     const reply = messages.find((msg) => msg.Target === aoWallet.address);
     return reply;
-  }
+  };
 
   const dryrunReadReplyOne = async (readArgs: ReadArgs) => {
     const reply = await dryrunReadReplyOptional(readArgs);
@@ -56,11 +65,14 @@ export const createAoContractClient = (
       throw new AoContractError("No reply");
     }
     return reply;
-  }
+  };
 
-  const dryrunReadReplyOneJson = async (readArgs: ReadArgs, schema?: z.Schema) => {
+  const dryrunReadReplyOneJson = async (
+    readArgs: ReadArgs,
+    schema?: z.Schema,
+  ) => {
     const reply = await dryrunReadReplyOne(readArgs);
-    
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let json: any;
     try {
@@ -76,9 +88,9 @@ export const createAoContractClient = (
       return result.data;
     }
     return json;
-  }
+  };
 
-  const message = async (sendArgs: SendArgs) => 
+  const message = async (sendArgs: SendArgs) =>
     aoClient.message({
       ...sendArgs,
       process: processId,
@@ -94,11 +106,14 @@ export const createAoContractClient = (
     dryrunReadReplyOne,
     dryrunReadReplyOneJson,
     message,
-  }
-}
+  };
+};
 
-export const createAoContractClientForProcess = (wallet: AoWallet) => (processId: string) => {
-  const aoClient = connect();
-  return createAoContractClient(processId, aoClient, wallet);
-}
-export type AoContractClientForProcess = ReturnType<typeof createAoContractClientForProcess>;
+export const createAoContractClientForProcess =
+  (wallet: AoWallet) => (processId: string) => {
+    const aoClient = connect();
+    return createAoContractClient(processId, aoClient, wallet);
+  };
+export type AoContractClientForProcess = ReturnType<
+  typeof createAoContractClientForProcess
+>;

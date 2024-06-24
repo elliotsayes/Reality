@@ -11,40 +11,46 @@ export function DemoConnect() {
   return (
     <div>
       <h1>Demo Connect</h1>
-      <select onChange={(e) => setWalletOption(e.target.value as WalletType)} value={walletOption}>
-        {
-          WalletType.map((option) => (
-            <option key={option} value={option}>{option}</option>
-          ))
-        }
+      <select
+        onChange={(e) => setWalletOption(e.target.value as WalletType)}
+        value={walletOption}
+      >
+        {WalletType.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
       </select>
       <br />
-      <button onClick={async () => {
-        if (!walletOption) {
-          return;
-        }
-        setAoWallet(null);
-        const walletConnector = wallets[walletOption];
-        const res = await walletConnector({
-          permissionsRequested: permissionsRequested,
-        }, () => setAoWallet(null));
-        if (res.success) {
-          setAoWallet(res.result);
-        } else {
-          console.error(res.error);
-        }
-      }}>
+      <button
+        onClick={async () => {
+          if (!walletOption) {
+            return;
+          }
+          setAoWallet(null);
+          const walletConnector = wallets[walletOption];
+          const res = await walletConnector(
+            {
+              permissionsRequested: permissionsRequested,
+            },
+            () => setAoWallet(null),
+          );
+          if (res.success) {
+            setAoWallet(res.result);
+          } else {
+            console.error(res.error);
+          }
+        }}
+      >
         Connect
       </button>
-      {
-        aoWallet && (
-          <div>
-            <h2>Connected</h2>
-            <p>Address: {aoWallet.address}</p>
-            <DemoAo aoWallet={aoWallet} />
-          </div>
-        )
-      }
-    </div> 
-  )
+      {aoWallet && (
+        <div>
+          <h2>Connected</h2>
+          <p>Address: {aoWallet.address}</p>
+          <DemoAo aoWallet={aoWallet} />
+        </div>
+      )}
+    </div>
+  );
 }

@@ -9,8 +9,8 @@ import {
   RJSFSchema,
   StrictRJSFSchema,
   WidgetProps,
-} from "@rjsf/utils"
-import { ChangeEvent, FocusEvent } from "react"
+} from "@rjsf/utils";
+import { ChangeEvent, FocusEvent } from "react";
 
 export default function CheckboxesWidget<
   T = any,
@@ -28,8 +28,8 @@ export default function CheckboxesWidget<
   onBlur,
   onFocus,
 }: WidgetProps<T, S, F>) {
-  const { enumOptions, enumDisabled, inline, emptyValue } = options
-  const checkboxesValues = Array.isArray(value) ? value : [value]
+  const { enumOptions, enumDisabled, inline, emptyValue } = options;
+  const checkboxesValues = Array.isArray(value) ? value : [value];
 
   const _onChange =
     (index: number) =>
@@ -37,18 +37,18 @@ export default function CheckboxesWidget<
       if (checked) {
         onChange(
           enumOptionsSelectValue<S>(index, checkboxesValues, enumOptions),
-        )
+        );
       } else {
         onChange(
           enumOptionsDeselectValue<S>(index, checkboxesValues, enumOptions),
-        )
+        );
       }
-    }
+    };
 
   const _onBlur = ({ target: { value } }: FocusEvent<HTMLInputElement>) =>
-    onBlur(id, enumOptionsValueForIndex<S>(value, enumOptions, emptyValue))
+    onBlur(id, enumOptionsValueForIndex<S>(value, enumOptions, emptyValue));
   const _onFocus = ({ target: { value } }: FocusEvent<HTMLInputElement>) =>
-    onFocus(id, enumOptionsValueForIndex<S>(value, enumOptions, emptyValue))
+    onFocus(id, enumOptionsValueForIndex<S>(value, enumOptions, emptyValue));
 
   return (
     <div className="space-y-4">
@@ -57,10 +57,10 @@ export default function CheckboxesWidget<
           const checked = enumOptionsIsSelected<S>(
             option.value,
             checkboxesValues,
-          )
+          );
           const itemDisabled =
             Array.isArray(enumDisabled) &&
-            enumDisabled.indexOf(option.value) !== -1
+            enumDisabled.indexOf(option.value) !== -1;
 
           return (
             <div
@@ -85,8 +85,8 @@ export default function CheckboxesWidget<
                 {option.label}
               </label>
             </div>
-          )
+          );
         })}
     </div>
-  )
+  );
 }

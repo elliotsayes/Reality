@@ -14,17 +14,19 @@ export type ProfileInfo = z.infer<typeof ProfileInfo>;
 export const ProfileInfoCreate = ProfileInfo.omit({
   ProfileId: true,
   Username: true,
-}).extend({
-  UserName: z.string(),
-  DateCreated: z.number(),
-  DateUpdated: z.number(),
-}).partial({
-  // Username: true,
-  // ProfileImage: true,
-  // CoverImage: true,
-  // Description: true,
-  // DisplayName: true,
-});
+})
+  .extend({
+    UserName: z.string(),
+    DateCreated: z.number(),
+    DateUpdated: z.number(),
+  })
+  .partial({
+    // Username: true,
+    // ProfileImage: true,
+    // CoverImage: true,
+    // Description: true,
+    // DisplayName: true,
+  });
 export type ProfileInfoCreate = z.infer<typeof ProfileInfoCreate>;
 
 export const ProfileInfoUpdate = ProfileInfoCreate.omit({

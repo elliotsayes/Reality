@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react";
 import { Size2D } from "../lib/model";
 import { useState } from "react";
 
@@ -9,24 +9,28 @@ interface ButtonOnceProps {
   onClick: () => void;
 }
 
-export function ButtonOnce({ elementSize, children, onClick }: ButtonOnceProps) {
+export function ButtonOnce({
+  elementSize,
+  children,
+  onClick,
+}: ButtonOnceProps) {
   const [isClicked, setIsClicked] = useState(false);
-  
+
   return (
-    <div className={`w-[${elementSize.w}px] h-[${elementSize.h}px] flex flex-col items-center justify-center`}>
+    <div
+      className={`w-[${elementSize.w}px] h-[${elementSize.h}px] flex flex-col items-center justify-center`}
+    >
       <Button
         disabled={isClicked}
-        className='flex text-xl font-bold'
+        className="flex text-xl font-bold"
         onClick={() => {
           setIsClicked(true);
           onClick();
         }}
       >
-        {
-          isClicked && <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        }
+        {isClicked && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {children}
       </Button>
     </div>
-  )
+  );
 }

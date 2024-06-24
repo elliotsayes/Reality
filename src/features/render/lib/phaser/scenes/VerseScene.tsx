@@ -1,4 +1,3 @@
-
 import { WarpableScene } from "./WarpableScene";
 import { VerseState } from "../../load/model";
 import { phaserTilemapKey, phaserTilesetKey } from "../../load/verse";
@@ -29,13 +28,9 @@ const DEPTH_TEXT_BASE = 500;
 
 const OBJECT_SIZE_ENTITY = 2;
 
-const kingEntityIds = [
-  'kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA'
-]
+const kingEntityIds = ["kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA"];
 
-const bankerEntityIds = [
-  'ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk',
-]
+const bankerEntityIds = ["ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk"];
 
 export class VerseScene extends WarpableScene {
   playerAddress!: string;
@@ -47,7 +42,10 @@ export class VerseScene extends WarpableScene {
   tilesetTxId?: string;
   tilemapTxId?: string;
 
-  tileSizeScaled: [number, number] = [DEFAULT_TILE_SIZE_SCALED, DEFAULT_TILE_SIZE_SCALED];
+  tileSizeScaled: [number, number] = [
+    DEFAULT_TILE_SIZE_SCALED,
+    DEFAULT_TILE_SIZE_SCALED,
+  ];
   spawnPixel: [number, number] = [0, 0];
 
   loadText!: Phaser.GameObjects.Text;
@@ -77,21 +75,20 @@ export class VerseScene extends WarpableScene {
   slowMs: number = 120;
 
   constructor() {
-    super('VerseScene');
+    super("VerseScene");
   }
 
-  init ({
+  init({
     playerAddress,
     verseId,
     verse,
     aoContractClientForProcess,
   }: {
-    playerAddress: string,
-    verseId: string,
-    verse: VerseState,
-    aoContractClientForProcess: AoContractClientForProcess,
-  })
-  {
+    playerAddress: string;
+    verseId: string;
+    verse: VerseState;
+    aoContractClientForProcess: AoContractClientForProcess;
+  }) {
     // reset some vars
     this.isWarping = false;
     this.activeEntityEvent = undefined;
@@ -112,42 +109,45 @@ export class VerseScene extends WarpableScene {
     this.pixelateIn();
   }
 
-  inputEnable()
-  {
-    const keyboard = this.input.keyboard
+  inputEnable() {
+    const keyboard = this.input.keyboard;
     if (keyboard) {
-      console.log('inputEnable: Keyboard found')
+      console.log("inputEnable: Keyboard found");
       keyboard.manager.enabled = true;
-      this.arrows = keyboard.addKeys({
-        left: Phaser.Input.Keyboard.KeyCodes.LEFT,
-        right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
-        up: Phaser.Input.Keyboard.KeyCodes.UP,
-        down: Phaser.Input.Keyboard.KeyCodes.DOWN,
-      }, false);
-      this.wasd = keyboard.addKeys({
-        left: Phaser.Input.Keyboard.KeyCodes.A,
-        right: Phaser.Input.Keyboard.KeyCodes.D,
-        up: Phaser.Input.Keyboard.KeyCodes.W,
-        down: Phaser.Input.Keyboard.KeyCodes.S,
-      }, false);
+      this.arrows = keyboard.addKeys(
+        {
+          left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+          right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+          up: Phaser.Input.Keyboard.KeyCodes.UP,
+          down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+        },
+        false,
+      );
+      this.wasd = keyboard.addKeys(
+        {
+          left: Phaser.Input.Keyboard.KeyCodes.A,
+          right: Phaser.Input.Keyboard.KeyCodes.D,
+          up: Phaser.Input.Keyboard.KeyCodes.W,
+          down: Phaser.Input.Keyboard.KeyCodes.S,
+        },
+        false,
+      );
     } else {
-      console.warn('inputEnable: No keyboard found')
+      console.warn("inputEnable: No keyboard found");
     }
   }
 
-  inputDisable()
-  {
-    const keyboard = this.input.keyboard
+  inputDisable() {
+    const keyboard = this.input.keyboard;
     if (keyboard) {
-      console.log('inputDisable: Keyboard found')
+      console.log("inputDisable: Keyboard found");
       keyboard.manager.enabled = false;
     } else {
-      console.warn('inputDisable: No keyboard found')
+      console.warn("inputDisable: No keyboard found");
     }
   }
 
-  topLeft()
-  {
+  topLeft() {
     const cameraCenter = {
       x: this.spawnPixel[0],
       y: this.spawnPixel[1],
@@ -156,66 +156,80 @@ export class VerseScene extends WarpableScene {
       w: this.camera.width,
       h: this.camera.height,
     };
-    console.log(`Camera center: ${cameraCenter.x}, ${cameraCenter.y}`)
-    console.log(`Camera size: ${cameraSize.w}, ${cameraSize.h}`)
+    console.log(`Camera center: ${cameraCenter.x}, ${cameraCenter.y}`);
+    console.log(`Camera size: ${cameraSize.w}, ${cameraSize.h}`);
 
     return {
       x: cameraCenter.x - cameraSize.w / 2,
       y: cameraCenter.y - cameraSize.h / 2,
-    }
+    };
   }
 
-  preload()
-  {
-    
-  }
+  preload() {}
 
-  create()
-  {
-    this.camera = this.cameras.main
+  create() {
+    this.camera = this.cameras.main;
     this.camera.setBackgroundColor(0x111111);
 
     if (this.tilesetTxId && this.tilemapTxId) {
-      console.log(`[${this.verse.info.Name}] Loading tilemap ${this.tilemapTxId} and tileset ${this.tilesetTxId}`)
+      console.log(
+        `[${this.verse.info.Name}] Loading tilemap ${this.tilemapTxId} and tileset ${this.tilesetTxId}`,
+      );
 
       this.tilemap = this.make.tilemap({
         key: phaserTilemapKey(this.tilemapTxId),
-      })
+      });
       const tileset = this.tilemap.addTilesetImage(
-        'Primary',
+        "Primary",
         phaserTilesetKey(this.tilesetTxId),
       )!;
 
-      this.tileSizeScaled = [this.tilemap.tileWidth * SCALE_TILES, this.tilemap.tileHeight * SCALE_TILES];
+      this.tileSizeScaled = [
+        this.tilemap.tileWidth * SCALE_TILES,
+        this.tilemap.tileHeight * SCALE_TILES,
+      ];
 
-      const mapOffsetTiles = this.verse.parameters["2D-Tile-0"]?.Tilemap.Offset ?? [0, 0];
+      const mapOffsetTiles = this.verse.parameters["2D-Tile-0"]?.Tilemap
+        .Offset ?? [0, 0];
       // Center the tiles around the origins
       const mapOffsetPixels = [
         mapOffsetTiles[0] * this.tileSizeScaled[0] - this.tileSizeScaled[0] / 2,
         mapOffsetTiles[1] * this.tileSizeScaled[1] - this.tileSizeScaled[1] / 2,
       ];
 
-      this.layers = this.tilemap.layers.map((layerData, index) => {
-        const isBg = layerData.name.startsWith('BG_');
-        const isFg = layerData.name.startsWith('FG_');
-        if (!isBg && !isFg) return;
+      this.layers = this.tilemap.layers
+        .map((layerData, index) => {
+          const isBg = layerData.name.startsWith("BG_");
+          const isFg = layerData.name.startsWith("FG_");
+          if (!isBg && !isFg) return;
 
-        const layer = this.tilemap!.createLayer(layerData.name, tileset, mapOffsetPixels[0], mapOffsetPixels[1])!
-          .setScale(SCALE_TILES)
-          .setDepth((isFg ? DEPTH_FG_BASE : DEPTH_BG_BASE) + index);
-        layer.setCollisionByProperty({ collides: true })
-        
-        if (isDebug) {
-          const debugGraphics = this.add.graphics().setAlpha(0.5).setDepth(999);
-          layer.renderDebug(debugGraphics, {
-            tileColor: null,
-            collidingTileColor: new Phaser.Display.Color(243, 234, 48),
-            faceColor: new Phaser.Display.Color(40, 39, 37),
-          })
-        }
+          const layer = this.tilemap!.createLayer(
+            layerData.name,
+            tileset,
+            mapOffsetPixels[0],
+            mapOffsetPixels[1],
+          )!
+            .setScale(SCALE_TILES)
+            .setDepth((isFg ? DEPTH_FG_BASE : DEPTH_BG_BASE) + index);
+          layer.setCollisionByProperty({ collides: true });
 
-        return layer;
-      }).filter((layer) => layer !== undefined) as Phaser.Tilemaps.TilemapLayer[];
+          if (isDebug) {
+            const debugGraphics = this.add
+              .graphics()
+              .setAlpha(0.5)
+              .setDepth(999);
+            layer.renderDebug(debugGraphics, {
+              tileColor: null,
+              collidingTileColor: new Phaser.Display.Color(243, 234, 48),
+              faceColor: new Phaser.Display.Color(40, 39, 37),
+            });
+          }
+
+          return layer;
+        })
+        .filter(
+          (layer) => layer !== undefined,
+        ) as Phaser.Tilemaps.TilemapLayer[];
     }
 
     const spawnTile = this._2dTileParams?.Spawn ?? [0, 0];
@@ -224,13 +238,10 @@ export class VerseScene extends WarpableScene {
       spawnTile[1] * this.tileSizeScaled[1],
     ];
 
-    this.camera.centerOn(this.spawnPixel[0], this.spawnPixel[1])
+    this.camera.centerOn(this.spawnPixel[0], this.spawnPixel[1]);
 
-    this.player = this.physics.add.sprite(
-      this.spawnPixel[0],
-      this.spawnPixel[1],
-      'llama_0',
-    )
+    this.player = this.physics.add
+      .sprite(this.spawnPixel[0], this.spawnPixel[1], "llama_0")
       .setSize(20, 18)
       .setOffset(1, 18)
       .setScale(SCALE_ENTITIES)
@@ -238,34 +249,43 @@ export class VerseScene extends WarpableScene {
       .setDepth(DEPTH_PLAYER_BASE);
     this.player.play(`llama_0_idle`);
     this.camera.startFollow(this.player);
-    
+
     if (this.layers) {
-      this.physics.add.collider(
-        this.player,
-        this.layers,
-      );
+      this.physics.add.collider(this.player, this.layers);
     }
 
-    console.log(this.verse.entities)
-    const otherEntityIds = Object.keys(this.verse.entities)
-      .filter(entityId => entityId !== this.playerAddress);
-    
-    const avatarEntityIds = otherEntityIds
-      .filter(entityId => this.verse.entities[entityId].Type === 'Avatar');
+    console.log(this.verse.entities);
+    const otherEntityIds = Object.keys(this.verse.entities).filter(
+      (entityId) => entityId !== this.playerAddress,
+    );
+
+    const avatarEntityIds = otherEntityIds.filter(
+      (entityId) => this.verse.entities[entityId].Type === "Avatar",
+    );
     this.avatarEntityContainers = avatarEntityIds
       .map((entityId) => {
         const entity = this.verse.entities[entityId];
-        const profileMaybe = this.verse.profiles.find((profile) => profile.ProfileId === entityId);
-        const entityContainer = this.createEntityContainer(entityId, entity, profileMaybe);
+        const profileMaybe = this.verse.profiles.find(
+          (profile) => profile.ProfileId === entityId,
+        );
+        const entityContainer = this.createEntityContainer(
+          entityId,
+          entity,
+          profileMaybe,
+        );
 
         return {
           [entityId]: entityContainer,
         };
-    }).reduce((acc, val) => ({ ...acc, ...val }), {});
-    console.log(`Created ${this.avatarEntityContainers.length} avatar entities`)
+      })
+      .reduce((acc, val) => ({ ...acc, ...val }), {});
+    console.log(
+      `Created ${this.avatarEntityContainers.length} avatar entities`,
+    );
 
-    const warpEntityIds = otherEntityIds
-      .filter(entityId => this.verse.entities[entityId].Interaction?.Type === 'Warp');
+    const warpEntityIds = otherEntityIds.filter(
+      (entityId) => this.verse.entities[entityId].Interaction?.Type === "Warp",
+    );
     this.warpSprites = warpEntityIds
       .map((entityId) => {
         const entity = this.verse.entities[entityId];
@@ -274,89 +294,129 @@ export class VerseScene extends WarpableScene {
         return {
           [entityId]: warpSprite,
         };
-    }).reduce((acc, val) => ({ ...acc, ...val }), {});
+      })
+      .reduce((acc, val) => ({ ...acc, ...val }), {});
 
     if (isDebug) {
-      this.add.text(this.spawnPixel[0], this.spawnPixel[1], 'X', {
-        font: '20px Courier', color: '#ff0000',
-      }).setOrigin(0.5);
-      this.add.text(0, 0, 'O', {
-        font: '20px Courier', color: '#0000ff',
-      }).setOrigin(0.5);
+      this.add
+        .text(this.spawnPixel[0], this.spawnPixel[1], "X", {
+          font: "20px Courier",
+          color: "#ff0000",
+        })
+        .setOrigin(0.5);
+      this.add
+        .text(0, 0, "O", {
+          font: "20px Courier",
+          color: "#0000ff",
+        })
+        .setOrigin(0.5);
 
       const topLeft = this.topLeft();
-      this.add.text(topLeft.x + 10, topLeft.y + 10, `Verse ID: ${this.verseId}`, { font: '20px Courier', color: '#ff0000' });
-      this.add.text(topLeft.x + 10, topLeft.y + 40, `Verse Name: ${this.verse.info.Name}`, { font: '20px Courier', color: '#ff0000' });
+      this.add.text(
+        topLeft.x + 10,
+        topLeft.y + 10,
+        `Verse ID: ${this.verseId}`,
+        { font: "20px Courier", color: "#ff0000" },
+      );
+      this.add.text(
+        topLeft.x + 10,
+        topLeft.y + 40,
+        `Verse Name: ${this.verse.info.Name}`,
+        { font: "20px Courier", color: "#ff0000" },
+      );
     }
     emitSceneReady(this);
   }
 
-  public mergeEntities(entityUpdates: VerseEntityKeyed, profiles: Array<ProfileInfo>)
-  {
+  public mergeEntities(
+    entityUpdates: VerseEntityKeyed,
+    profiles: Array<ProfileInfo>,
+  ) {
     Object.keys(entityUpdates).forEach((entityId) => {
       // Ignore player character
       if (entityId === this.playerAddress) return;
 
       const entityUpdate = entityUpdates[entityId];
-      if (entityUpdate.Type !== 'Avatar') return;
+      if (entityUpdate.Type !== "Avatar") return;
 
       if (this.avatarEntityContainers[entityId]) {
-        console.log(`Updating entity ${entityId}`)
-        const entityContainer = this.avatarEntityContainers[entityId]
+        console.log(`Updating entity ${entityId}`);
+        const entityContainer = this.avatarEntityContainers[entityId];
         if (!entityContainer) return;
-        const entitySprite = entityContainer.getAt(0) as Phaser.GameObjects.Sprite;
-        
+        const entitySprite = entityContainer.getAt(
+          0,
+        ) as Phaser.GameObjects.Sprite;
+
         const updatePosition: Point2D = {
           x: entityUpdate.Position[0] * this.tileSizeScaled[0],
           y: entityUpdate.Position[1] * this.tileSizeScaled[1],
-        }
-        if (!this.withinBox(entityContainer, {
-          center: updatePosition,
-          edgeLength: SCALE_ENTITIES * OBJECT_SIZE_ENTITY * 2,
-        })) {
+        };
+        if (
+          !this.withinBox(entityContainer, {
+            center: updatePosition,
+            edgeLength: SCALE_ENTITIES * OBJECT_SIZE_ENTITY * 2,
+          })
+        ) {
           this.entityTargets[entityId]?.destroy();
           delete this.entityTargets[entityId];
 
-          this.entityTargets[entityId] = this.physics.add.sprite(
-            updatePosition.x,
-            updatePosition.y,
-            'invis',
-          )
+          this.entityTargets[entityId] = this.physics.add
+            .sprite(updatePosition.x, updatePosition.y, "invis")
             .setScale(SCALE_ENTITIES)
             .setOrigin(0.5)
             .setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
 
-          entitySprite.play('llama_4_walk')
-          this.physics.moveToObject(entityContainer, this.entityTargets[entityId], 120);
-          this.physics.add.overlap(entityContainer, this.entityTargets[entityId], () => {
-            console.log(`Entity ${entityId} collided with target`);
-            (entityContainer.body as Phaser.Physics.Arcade.Body).setVelocity(0, 0);
-            entitySprite.play('llama_4_idle')
-            // entitySprite.setPosition(updatePosition.x, updatePosition.y);
+          entitySprite.play("llama_4_walk");
+          this.physics.moveToObject(
+            entityContainer,
+            this.entityTargets[entityId],
+            120,
+          );
+          this.physics.add.overlap(
+            entityContainer,
+            this.entityTargets[entityId],
+            () => {
+              console.log(`Entity ${entityId} collided with target`);
+              (entityContainer.body as Phaser.Physics.Arcade.Body).setVelocity(
+                0,
+                0,
+              );
+              entitySprite.play("llama_4_idle");
+              // entitySprite.setPosition(updatePosition.x, updatePosition.y);
 
-            this.entityTargets[entityId]?.destroy();
-            delete this.entityTargets[entityId];
-          });
+              this.entityTargets[entityId]?.destroy();
+              delete this.entityTargets[entityId];
+            },
+          );
         }
       } else {
-        console.log(`Creating entity ${entityId}`)
-        const profileMaybe = profiles?.find((profile) => profile.ProfileId === entityId);
-        const entitySprite = this.createEntityContainer(entityId, entityUpdate, profileMaybe);
+        console.log(`Creating entity ${entityId}`);
+        const profileMaybe = profiles?.find(
+          (profile) => profile.ProfileId === entityId,
+        );
+        const entitySprite = this.createEntityContainer(
+          entityId,
+          entityUpdate,
+          profileMaybe,
+        );
         this.avatarEntityContainers[entityId] = entitySprite;
       }
     });
   }
 
   createWarpEntity(entityId: string, entity: VerseEntity) {
-    console.log(`Creating warp entity ${entityId}`)
-    if (entity.Interaction?.Type !== 'Warp') {
-      throw new Error(`Entity ${entityId} is not a warp entity`)
+    console.log(`Creating warp entity ${entityId}`);
+    if (entity.Interaction?.Type !== "Warp") {
+      throw new Error(`Entity ${entityId} is not a warp entity`);
     }
-    const sprite = this.physics.add.sprite(
-      entity.Position[0] * (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
-      entity.Position[1] * (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
-      'invis',
-    )
+    const sprite = this.physics.add
+      .sprite(
+        entity.Position[0] *
+          (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
+        entity.Position[1] *
+          (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
+        "invis",
+      )
       .setScale(SCALE_ENTITIES)
       .setOrigin(0.5)
       .setDepth(DEPTH_ENTITY_BASE + 1)
@@ -364,63 +424,21 @@ export class VerseScene extends WarpableScene {
 
     if (entity.Interaction.Size) {
       sprite.setSize(
-        entity.Interaction.Size[0] * this.tileSizeScaled[0] / 2,
-        entity.Interaction.Size[1] * this.tileSizeScaled[1] / 2,
-      )
+        (entity.Interaction.Size[0] * this.tileSizeScaled[0]) / 2,
+        (entity.Interaction.Size[1] * this.tileSizeScaled[1]) / 2,
+      );
     }
-    this.physics.add.overlap(this.player, sprite, () => {
-      console.log(`Collided with entity ${entityId}`)
-      if (this.isWarping) return;
-      this.isWarping = true;
-      emitSceneEvent({
-        type: 'Warp Immediate',
-        verseId: entityId,
-      })
-      this.camera.fadeOut(5_000);
-      this.tweens.addCounter({
-        duration: 2_000,
-        from: 60,
-        to: 0,
-        onUpdate: (tween) => {
-          this.slowMs = tween.getValue();
-        },
-      });
-    }, undefined, this);
-
-    return sprite;
-  }
-
-  createEntityContainer(entityId: string, entity: VerseEntity, profile?: ProfileInfo) {
-    const container = this.add.container(
-      entity.Position[0] * (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
-      entity.Position[1] * (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
-    )
-      .setDepth(DEPTH_ENTITY_BASE + 1);
-    
-    const sprite = this.add.sprite(
-      0, 0,
-      entity.Type === 'Avatar' ? 'llama_4' : 'invis',
-    )
-      .setScale(SCALE_ENTITIES)
-      .setOrigin(0.5)
-      .setInteractive();
-
-    if (entity.Interaction?.Type === 'Warp') {
-      console.log(`Creating warp entity ${entityId}`)
-      if (entity.Interaction.Size) {
-        sprite.setSize(
-          entity.Interaction.Size[0] * this.tileSizeScaled[0] / 2,
-          entity.Interaction.Size[1] * this.tileSizeScaled[1] / 2,
-        )
-      }
-      this.physics.add.overlap(this.player, sprite, () => {
-        console.log(`Collided with entity ${entityId}`)
+    this.physics.add.overlap(
+      this.player,
+      sprite,
+      () => {
+        console.log(`Collided with entity ${entityId}`);
         if (this.isWarping) return;
         this.isWarping = true;
         emitSceneEvent({
-          type: 'Warp Immediate',
+          type: "Warp Immediate",
           verseId: entityId,
-        })
+        });
         this.camera.fadeOut(5_000);
         this.tweens.addCounter({
           duration: 2_000,
@@ -430,144 +448,204 @@ export class VerseScene extends WarpableScene {
             this.slowMs = tween.getValue();
           },
         });
-      }, undefined, this);
+      },
+      undefined,
+      this,
+    );
+
+    return sprite;
+  }
+
+  createEntityContainer(
+    entityId: string,
+    entity: VerseEntity,
+    profile?: ProfileInfo,
+  ) {
+    const container = this.add
+      .container(
+        entity.Position[0] *
+          (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
+        entity.Position[1] *
+          (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
+      )
+      .setDepth(DEPTH_ENTITY_BASE + 1);
+
+    const sprite = this.add
+      .sprite(0, 0, entity.Type === "Avatar" ? "llama_4" : "invis")
+      .setScale(SCALE_ENTITIES)
+      .setOrigin(0.5)
+      .setInteractive();
+
+    if (entity.Interaction?.Type === "Warp") {
+      console.log(`Creating warp entity ${entityId}`);
+      if (entity.Interaction.Size) {
+        sprite.setSize(
+          (entity.Interaction.Size[0] * this.tileSizeScaled[0]) / 2,
+          (entity.Interaction.Size[1] * this.tileSizeScaled[1]) / 2,
+        );
+      }
+      this.physics.add.overlap(
+        this.player,
+        sprite,
+        () => {
+          console.log(`Collided with entity ${entityId}`);
+          if (this.isWarping) return;
+          this.isWarping = true;
+          emitSceneEvent({
+            type: "Warp Immediate",
+            verseId: entityId,
+          });
+          this.camera.fadeOut(5_000);
+          this.tweens.addCounter({
+            duration: 2_000,
+            from: 60,
+            to: 0,
+            onUpdate: (tween) => {
+              this.slowMs = tween.getValue();
+            },
+          });
+        },
+        undefined,
+        this,
+      );
     }
-    
-    if (entity.Type === 'Avatar') {
+
+    if (entity.Type === "Avatar") {
       // TODO: SchemaForm
       if (kingEntityIds.includes(entityId)) {
         // Llama Assistant
         sprite.play(`llama_6_idle`);
-        sprite.on('pointerdown', () => {
-          console.log(`Clicked on SchemaFormExternal ${entityId}`)
-          this.showSchemaForm(entityId, entity);
-        }, this)
+        sprite.on(
+          "pointerdown",
+          () => {
+            console.log(`Clicked on SchemaFormExternal ${entityId}`);
+            this.showSchemaForm(entityId, entity);
+          },
+          this,
+        );
       } else if (bankerEntityIds.includes(entityId)) {
         // Banker
         sprite.play(`llama_8_idle`);
-        sprite.on('pointerdown', () => {
-          console.log(`Clicked on Banker ${entityId}`)
-          this.showSchemaForm(entityId, entity);
-        }, this)
+        sprite.on(
+          "pointerdown",
+          () => {
+            console.log(`Clicked on Banker ${entityId}`);
+            this.showSchemaForm(entityId, entity);
+          },
+          this,
+        );
       } else {
         sprite.play(`llama_4_idle`);
-        sprite.on('pointerdown', () => {
-          sprite.play(`llama_4_emote`);
-          setTimeout(() => {
-            sprite.play(`llama_4_idle`);
-          }, 1000)
-        }, this)
+        sprite.on(
+          "pointerdown",
+          () => {
+            sprite.play(`llama_4_emote`);
+            setTimeout(() => {
+              sprite.play(`llama_4_idle`);
+            }, 1000);
+          },
+          this,
+        );
       }
     }
 
-    sprite.on('pointerover', () => {
-      console.log(`Hovered over entity ${entityId}`)
-    }, this)
+    sprite.on(
+      "pointerover",
+      () => {
+        console.log(`Hovered over entity ${entityId}`);
+      },
+      this,
+    );
 
-    const displayText = profile?.DisplayName 
-      ?? profile?.Username 
-      ?? truncateAddress(entityId, 4, 3, '…');
+    const displayText =
+      profile?.DisplayName ??
+      profile?.Username ??
+      truncateAddress(entityId, 4, 3, "…");
 
-    const nameText = this.add.text(
-      0, -40,
-      displayText,
-      { 
-        fontSize: '10px',
+    const nameText = this.add
+      .text(0, -40, displayText, {
+        fontSize: "10px",
         fontFamily: '"Press Start 2P"',
-        color: '#eeeeee',
+        color: "#eeeeee",
         strokeThickness: 2,
-        stroke: '#111111',
+        stroke: "#111111",
         // resolution: 8,
         shadow: {
           offsetX: 1,
           offsetY: 1,
-          color: '#111111',
+          color: "#111111",
           blur: 1,
           stroke: true,
           fill: true,
         },
-      },
-    ).setOrigin(0.5);
+      })
+      .setOrigin(0.5);
 
     container.add(sprite);
     container.add(nameText);
-    container.setSize(
-      OBJECT_SIZE_ENTITY,
-      OBJECT_SIZE_ENTITY,
-    );
+    container.setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
     this.physics.world.enable(container);
 
     return container;
   }
 
-  public withinBox(point: Point2D, bounds: BoxCentered)
-  {
-    const withinX = point.x >= bounds.center.x - bounds.edgeLength / 2 
-      && point.x <= bounds.center.x + bounds.edgeLength / 2;
-    const withinY = point.y >= bounds.center.y - bounds.edgeLength / 2
-      && point.y <= bounds.center.y + bounds.edgeLength / 2;
-    
+  public withinBox(point: Point2D, bounds: BoxCentered) {
+    const withinX =
+      point.x >= bounds.center.x - bounds.edgeLength / 2 &&
+      point.x <= bounds.center.x + bounds.edgeLength / 2;
+    const withinY =
+      point.y >= bounds.center.y - bounds.edgeLength / 2 &&
+      point.y <= bounds.center.y + bounds.edgeLength / 2;
+
     return withinX && withinY;
   }
 
-  public showEntityChatMessages(messages: MessageHistory)
-  {
+  public showEntityChatMessages(messages: MessageHistory) {
     messages.forEach((message) => {
       const entityId = message.AuthorId;
       const entityContainer = this.avatarEntityContainers[entityId];
 
       if (!entityContainer) return;
 
-      const chatBubble = this.add.container(
-        25, -30,
-      )
+      const chatBubble = this.add.container(25, -30);
 
       if (message.Content.length <= 8) {
         // speech_sm
-        const speechBubbleSm = this.add.sprite(
-          0, 0,
-          'speech_sm',
-        )
+        const speechBubbleSm = this.add
+          .sprite(0, 0, "speech_sm")
           .setScale(1)
-          .setOrigin(0)
-  
-        const chatText = this.add.text(
-          10, 6,
-          message.Content,
-          { 
-            fontSize: '10px',
+          .setOrigin(0);
+
+        const chatText = this.add
+          .text(10, 6, message.Content, {
+            fontSize: "10px",
             fontFamily: '"Press Start 2P"',
-            color: '#111111',
+            color: "#111111",
             // resolution: 8,
             shadow: {
               offsetX: 1,
               offsetY: 1,
-              color: '#11111177',
+              color: "#11111177",
               blur: 1,
               stroke: true,
               fill: true,
             },
-          },
-        )
+          })
           .setOrigin(0)
-          .setDepth(DEPTH_TEXT_BASE + 1)
-        
+          .setDepth(DEPTH_TEXT_BASE + 1);
+
         chatBubble.add(speechBubbleSm);
         chatBubble.add(chatText);
       } else {
-        const speechBubbleMd = this.add.sprite(
-          0, 0,
-          'speech_md',
-        )
+        const speechBubbleMd = this.add
+          .sprite(0, 0, "speech_md")
           .setScale(1)
-          .setOrigin(0)
-        const chatText = this.add.text(
-          9, 5,
-          message.Content,
-          { 
-            fontSize: '8px',
+          .setOrigin(0);
+        const chatText = this.add
+          .text(9, 5, message.Content, {
+            fontSize: "8px",
             fontFamily: '"Press Start 2P"',
-            color: '#111111',
+            color: "#111111",
             maxLines: 3,
             lineSpacing: 2,
             wordWrap: {
@@ -578,110 +656,102 @@ export class VerseScene extends WarpableScene {
             shadow: {
               offsetX: 1,
               offsetY: 1,
-              color: '#11111177',
+              color: "#11111177",
               blur: 1,
               stroke: true,
               fill: true,
             },
-          },
-        )
+          })
           .setOrigin(0)
-          .setDepth(DEPTH_TEXT_BASE + 1)
-        
+          .setDepth(DEPTH_TEXT_BASE + 1);
+
         chatBubble.add(speechBubbleMd);
         chatBubble.add(chatText);
       }
 
-
-
       entityContainer.add(chatBubble);
       setTimeout(() => {
         chatBubble.destroy();
-      }, 5000)
+      }, 5000);
     });
   }
 
-  public update(/* t: number, dt: number */)
-  {
+  public update(/* t: number, dt: number */) {
     if (!this.player) return;
     if (!this.arrows) return;
 
     const speed = this.isWarping ? this.slowMs : 120;
 
     //@ts-expect-error - Phaser types are wrong
-    const isLeft = (this.arrows?.left.isDown || this.wasd?.left.isDown) ?? false;
+    const isLeft =
+      (this.arrows?.left.isDown || this.wasd?.left.isDown) ?? false;
     //@ts-expect-error - Phaser types are wrong
-    const isRight = (this.arrows?.right.isDown || this.wasd?.right.isDown) ?? false;
+    const isRight =
+      (this.arrows?.right.isDown || this.wasd?.right.isDown) ?? false;
     //@ts-expect-error - Phaser types are wrong
     const isUp = (this.arrows?.up.isDown || this.wasd?.up.isDown) ?? false;
     //@ts-expect-error - Phaser types are wrong
-    const isDown = (this.arrows?.down.isDown || this.wasd?.down.isDown) ?? false;
+    const isDown =
+      (this.arrows?.down.isDown || this.wasd?.down.isDown) ?? false;
 
-    if (isLeft)
-    {
+    if (isLeft) {
       this.player.flipX = true;
       this.player.setVelocityX(-speed);
-    }
-    else if (isRight)
-    {
+    } else if (isRight) {
       this.player.flipX = false;
       this.player.setVelocityX(speed);
-    }
-    else
-    {
+    } else {
       this.player.setVelocityX(0);
     }
 
-
-    if (isUp)
-    {
+    if (isUp) {
       this.player.setVelocityY(-speed);
-    }
-    else if (isDown)
-    {
+    } else if (isDown) {
       this.player.setVelocityY(speed);
-    }
-    else
-    {
+    } else {
       this.player.setVelocityY(0);
     }
 
     const isMoving = isLeft || isRight || isUp || isDown;
-    if (isMoving)
-    {
-      if (!this.lastTickMoving) this.player.play('llama_0_walk');
+    if (isMoving) {
+      if (!this.lastTickMoving) this.player.play("llama_0_walk");
       this.lastTickMoving = true;
     } else {
       if (this.lastTickMoving) {
-        this.player.play('llama_0_idle');
+        this.player.play("llama_0_idle");
         emitSceneEvent({
-          type: 'Update Position',
+          type: "Update Position",
           position: [
             this.player.x / DEFAULT_TILE_SIZE_SCALED,
             this.player.y / DEFAULT_TILE_SIZE_SCALED,
           ],
-        })
+        });
       }
       this.lastTickMoving = false;
     }
   }
 
-  public showSchemaForm(entityId: string, entity: VerseEntity)
-  {
+  public showSchemaForm(entityId: string, entity: VerseEntity) {
     if (this.schemaForm) {
       this.schemaForm.destroy();
     }
 
-    if (entity.Interaction?.Type !== 'SchemaExternalForm'
-      && entity.Interaction?.Type !== 'SchemaForm') return;
-    const isExternal = entity.Interaction?.Type === 'SchemaExternalForm';
+    if (
+      entity.Interaction?.Type !== "SchemaExternalForm" &&
+      entity.Interaction?.Type !== "SchemaForm"
+    )
+      return;
+    const isExternal = entity.Interaction?.Type === "SchemaExternalForm";
 
     const formSize: Size2D = {
       w: 350,
       h: 500,
-    }
+    };
     const memElement = document.createElement("div");
-    memElement.setAttribute('style', `width: ${formSize.w}px; height: ${formSize.h}px; display: flex; justify-content: center; align-items: center;`)
+    memElement.setAttribute(
+      "style",
+      `width: ${formSize.w}px; height: ${formSize.h}px; display: flex; justify-content: center; align-items: center;`,
+    );
     ReactDOM.createRoot(memElement).render(
       <FormOverlay
         aoContractClientForProcess={this.aoContractClientForProcess}
@@ -693,14 +763,16 @@ export class VerseScene extends WarpableScene {
           this.camera.startFollow(this.player);
           this.inputEnable();
         }}
-      />
+      />,
     );
 
-    this.schemaForm = this.add.dom(
-      entity.Position[0] * this.tileSizeScaled[0] - 60,
-      entity.Position[1] * this.tileSizeScaled[1],
-      memElement,
-    ).setOrigin(1, 0.25);
+    this.schemaForm = this.add
+      .dom(
+        entity.Position[0] * this.tileSizeScaled[0] - 60,
+        entity.Position[1] * this.tileSizeScaled[1],
+        memElement,
+      )
+      .setOrigin(1, 0.25);
 
     this.camera.stopFollow();
     this.camera.pan(
@@ -709,21 +781,24 @@ export class VerseScene extends WarpableScene {
       500,
       Phaser.Math.Easing.Linear,
       false,
-    )
+    );
 
     this.inputDisable();
   }
 
-  public onWarpBegin()
-  {
+  public onWarpBegin() {
     if (this.isWarping) {
       const topLeft = this.topLeft();
-      this.loadText = this.add.text(topLeft.x + 10, topLeft.y + 70, 'Loading...', { font: '20px Courier', color: '#00ff00' });
+      this.loadText = this.add.text(
+        topLeft.x + 10,
+        topLeft.y + 70,
+        "Loading...",
+        { font: "20px Courier", color: "#00ff00" },
+      );
     }
   }
 
-  public onWarpAbort()
-  {
+  public onWarpAbort() {
     if (!this.isWarping) {
       this.loadText.destroy();
     }

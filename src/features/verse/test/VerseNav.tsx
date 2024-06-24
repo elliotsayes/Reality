@@ -10,31 +10,27 @@ interface VerseNavProps {
 }
 
 function VerseNav({ wallet }: VerseNavProps) {
-  const [processId, setProcessId] = useState<string>(import.meta.env.VITE_UNIVERSE_PROCESS_ID)
-  
+  const [processId, setProcessId] = useState<string>(
+    import.meta.env.VITE_UNIVERSE_PROCESS_ID,
+  );
+
   const verseClientBuilder = createVerseClientForProcess(wallet);
   const verseClient = verseClientBuilder(processId);
 
-  const info = useSuspenseQuery(
-    {
-      queryKey: [processId, "verseInfo"],
-      queryFn: async () => verseClient.readInfo(),
-    },
-  )
+  const info = useSuspenseQuery({
+    queryKey: [processId, "verseInfo"],
+    queryFn: async () => verseClient.readInfo(),
+  });
 
-  const params = useSuspenseQuery(
-    {
-      queryKey: [processId, "verseParameters"],
-      queryFn: async () => verseClient.readParameters(),
-    },
-  )
+  const params = useSuspenseQuery({
+    queryKey: [processId, "verseParameters"],
+    queryFn: async () => verseClient.readParameters(),
+  });
 
-  const entities = useSuspenseQuery(
-    {
-      queryKey: [processId, "verseEntities"],
-      queryFn: async () => verseClient.readEntitiesStatic(),
-    },
-  )
+  const entities = useSuspenseQuery({
+    queryKey: [processId, "verseEntities"],
+    queryFn: async () => verseClient.readEntitiesStatic(),
+  });
 
   return (
     <div>
@@ -42,25 +38,29 @@ function VerseNav({ wallet }: VerseNavProps) {
       <h2>Info</h2>
       <pre className="text-sm">{JSON.stringify(info.data, null, 2)}</pre>
       <h2>Parameters</h2>
-      <pre className="text-xs max-h-32 overflow-y-scroll">{JSON.stringify(params.data, null, 2)}</pre>
+      <pre className="text-xs max-h-32 overflow-y-scroll">
+        {JSON.stringify(params.data, null, 2)}
+      </pre>
       <h2>Entities</h2>
-      <pre className="text-xs max-h-32 overflow-y-scroll">{JSON.stringify(entities.data, null, 2)}</pre>
+      <pre className="text-xs max-h-32 overflow-y-scroll">
+        {JSON.stringify(entities.data, null, 2)}
+      </pre>
       <div className="flex flex-col items-start gap-2 py-2">
-        {
-          Object.keys(entities.data)
-            .filter((entityId) => entities.data[entityId].Interaction?.Type === "Warp")
-            .map((verseId) => (
-              <VerseLink
-                key={`${processId}-${verseId}`}
-                verseId={verseId}
-                verseClient={verseClientBuilder(verseId)}
-                onClick={() => setProcessId(verseId)}
-              />
-            ))
-        }
+        {Object.keys(entities.data)
+          .filter(
+            (entityId) => entities.data[entityId].Interaction?.Type === "Warp",
+          )
+          .map((verseId) => (
+            <VerseLink
+              key={`${processId}-${verseId}`}
+              verseId={verseId}
+              verseClient={verseClientBuilder(verseId)}
+              onClick={() => setProcessId(verseId)}
+            />
+          ))}
       </div>
     </div>
-  )
+  );
 }
 
 export default function VerseNavAnonymous() {
@@ -72,5 +72,5 @@ export default function VerseNavAnonymous() {
         </Suspense>
       )}
     </AnonymousLoader>
-  )
+  );
 }

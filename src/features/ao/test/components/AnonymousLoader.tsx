@@ -4,13 +4,13 @@ import { createGeneratedWallet } from "../../lib/wallets/generated";
 import { AoWallet } from "../../lib/aoWallet";
 
 interface AnonymousProps {
-  children: (wallet: AoWallet) => React.ReactNode
+  children: (wallet: AoWallet) => React.ReactNode;
 }
 
 function AnonymousGenerator({ children }: AnonymousProps) {
   const wallet = useSuspenseQuery({
     queryKey: ["anonymous"],
-    queryFn: async () => 
+    queryFn: async () =>
       createGeneratedWallet({
         permissionsRequested: [],
       }).then((wallet) => {
@@ -18,20 +18,16 @@ function AnonymousGenerator({ children }: AnonymousProps) {
           throw wallet.error;
         }
         return wallet.result;
-      })
-  })
+      }),
+  });
 
-  return children(wallet.data)
+  return children(wallet.data);
 }
 
-export default function AnonymousLoader({children}: AnonymousProps) {
+export default function AnonymousLoader({ children }: AnonymousProps) {
   return (
     <Suspense fallback={<div>Generating...</div>}>
-      <AnonymousGenerator>
-        {(wallet) => (
-          children(wallet)
-        )}
-      </AnonymousGenerator>
+      <AnonymousGenerator>{(wallet) => children(wallet)}</AnonymousGenerator>
     </Suspense>
-  )
+  );
 }

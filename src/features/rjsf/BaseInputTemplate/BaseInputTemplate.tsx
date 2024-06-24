@@ -1,4 +1,4 @@
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/ui/input";
 import {
   ariaDescribedByIds,
   BaseInputTemplateProps,
@@ -7,8 +7,8 @@ import {
   getInputProps,
   RJSFSchema,
   StrictRJSFSchema,
-} from "@rjsf/utils"
-import { ChangeEvent, FocusEvent } from "react"
+} from "@rjsf/utils";
+import { ChangeEvent, FocusEvent } from "react";
 
 export default function BaseInputTemplate<
   T = any,
@@ -36,15 +36,15 @@ export default function BaseInputTemplate<
   const inputProps = {
     ...extraProps,
     ...getInputProps<T, S, F>(schema, type, options),
-  }
+  };
   const _onChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) =>
-    onChange(value === "" ? options.emptyValue : value)
+    onChange(value === "" ? options.emptyValue : value);
   const _onBlur = ({ target: { value } }: FocusEvent<HTMLInputElement>) =>
-    onBlur(id, value)
+    onBlur(id, value);
   const _onFocus = ({ target: { value } }: FocusEvent<HTMLInputElement>) =>
-    onFocus(id, value)
+    onFocus(id, value);
 
-  const inputClass = `${rawErrors.length > 0 ? "border-red-500" : ""}`
+  const inputClass = `${rawErrors.length > 0 ? "border-red-500" : ""}`;
 
   return (
     <>
@@ -77,10 +77,10 @@ export default function BaseInputTemplate<
                 : [],
             )
             .map((example: any) => {
-              return <option key={example} value={example} />
+              return <option key={example} value={example} />;
             })}
         </datalist>
       ) : null}
     </>
-  )
+  );
 }

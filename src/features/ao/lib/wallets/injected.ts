@@ -10,19 +10,28 @@ export const connectInjectedWallet: AoWalletConnector = async (
     return {
       success: false,
       error: "No injected wallet",
-    }
+    };
   }
 
   try {
-    await window.arweaveWallet.connect(config.permissionsRequested, config.appInfo, config.gateway);
+    await window.arweaveWallet.connect(
+      config.permissionsRequested,
+      config.appInfo,
+      config.gateway,
+    );
     // TODO: Confirm that permissions have been granted
     const permissionsGranted = await window.arweaveWallet.getPermissions();
-    if (config.permissionsRequired && !config.permissionsRequired.every((permission) => permissionsGranted.includes(permission))){
+    if (
+      config.permissionsRequired &&
+      !config.permissionsRequired.every((permission) =>
+        permissionsGranted.includes(permission),
+      )
+    ) {
       await window.arweaveWallet.disconnect();
       return {
         success: false,
         error: "Insufficient permissions granted",
-      }
+      };
     }
 
     const address = await window.arweaveWallet.getActiveAddress();
@@ -31,7 +40,7 @@ export const connectInjectedWallet: AoWalletConnector = async (
       return {
         success: false,
         error: "No valid address",
-      }
+      };
     }
 
     let interval: NodeJS.Timeout | undefined;
@@ -39,7 +48,7 @@ export const connectInjectedWallet: AoWalletConnector = async (
       // Repeatedly check for the address until it is un available
       interval = setInterval(async () => {
         try {
-          const activeAddress = await window.arweaveWallet.getActiveAddress()
+          const activeAddress = await window.arweaveWallet.getActiveAddress();
           if (activeAddress !== address) {
             clearInterval(interval);
             window.arweaveWallet.disconnect();
@@ -64,11 +73,11 @@ export const connectInjectedWallet: AoWalletConnector = async (
         clearInterval(interval);
         await window.arweaveWallet.disconnect();
       },
-    }
+    };
   } catch (error) {
     return {
       success: false,
       error,
-    }
+    };
   }
-}
+};

@@ -5,8 +5,8 @@ import {
   StrictRJSFSchema,
   TranslatableString,
   WrapIfAdditionalTemplateProps,
-} from "@rjsf/utils"
-import { FocusEvent } from "react"
+} from "@rjsf/utils";
+import { FocusEvent } from "react";
 
 export default function WrapIfAdditionalTemplate<
   T = any,
@@ -27,23 +27,23 @@ export default function WrapIfAdditionalTemplate<
   uiSchema,
   registry,
 }: WrapIfAdditionalTemplateProps<T, S, F>) {
-  const { templates, translateString } = registry
+  const { templates, translateString } = registry;
   // Button templates are not overridden in the uiSchema
-  const { RemoveButton } = templates.ButtonTemplates
-  const keyLabel = translateString(TranslatableString.KeyLabel, [label])
-  const additional = ADDITIONAL_PROPERTY_FLAG in schema
+  const { RemoveButton } = templates.ButtonTemplates;
+  const keyLabel = translateString(TranslatableString.KeyLabel, [label]);
+  const additional = ADDITIONAL_PROPERTY_FLAG in schema;
 
   if (!additional) {
     return (
       <div className={classNames} style={style}>
         {children}
       </div>
-    )
+    );
   }
 
   const handleBlur = ({ target }: FocusEvent<HTMLInputElement>) =>
-    onKeyChange(target.value)
-  const keyId = `${id}-key`
+    onKeyChange(target.value);
+  const keyId = `${id}-key`;
 
   return (
     <div className={`flex ${classNames}`} style={style}>
@@ -77,5 +77,5 @@ export default function WrapIfAdditionalTemplate<
         />
       </div>
     </div>
-  )
+  );
 }

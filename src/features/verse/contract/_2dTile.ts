@@ -2,19 +2,16 @@ import { ArweaveTxId } from "@/features/arweave/lib/model";
 import { z } from "zod";
 import { VerseVector } from "./model";
 
-export const Vector2 = VerseVector.refine(
-  (position) => position.length === 2,
-  {
-    message: "Expected an array of length 2",
-  }
-);
+export const Vector2 = VerseVector.refine((position) => position.length === 2, {
+  message: "Expected an array of length 2",
+});
 export type Vector2 = z.infer<typeof Vector2>;
 
 export const Vector2Int = Vector2.refine(
   (position) => position.every((n) => Number.isInteger(n)),
   {
     message: "Expected integers",
-  }
+  },
 );
 export type Vector2Int = z.infer<typeof Vector2Int>;
 
@@ -31,11 +28,11 @@ export const Tileset = z.object({
 });
 export type Tileset = z.infer<typeof Tileset>;
 
-export const TilemapType = z.enum(["Fixed"])
-export type TilemapType = z.infer<typeof TilemapType>
+export const TilemapType = z.enum(["Fixed"]);
+export type TilemapType = z.infer<typeof TilemapType>;
 
-export const TilemapFormat = z.enum(["TMJ"])
-export type TilemapFormat = z.infer<typeof TilemapFormat>
+export const TilemapFormat = z.enum(["TMJ"]);
+export type TilemapFormat = z.infer<typeof TilemapFormat>;
 
 export const TilemapOffset = Vector2Int;
 export type TilemapOffset = z.infer<typeof TilemapOffset>;

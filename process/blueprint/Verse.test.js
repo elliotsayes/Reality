@@ -1,55 +1,55 @@
-import { test } from 'node:test'
-import * as assert from 'node:assert'
-import { Send } from '../aos.helper.js'
-import fs from 'node:fs'
+import { test } from "node:test";
+import * as assert from "node:assert";
+import { Send } from "../aos.helper.js";
+import fs from "node:fs";
 
-test('load DbAdmin module', async () => {
-  const dbAdminCode = fs. readFileSync('./blueprint/DbAdmin.lua', 'utf-8')
+test("load DbAdmin module", async () => {
+  const dbAdminCode = fs.readFileSync("./blueprint/DbAdmin.lua", "utf-8");
   const result = await Send({
-  Action: 'Eval',
-  Data: `
+    Action: "Eval",
+    Data: `
 local function _load()
   ${dbAdminCode}
 end
 _G.package.loaded["DbAdmin"] = _load()
 return "ok"`,
-  })
-  assert.equal(result.Output.data.output, "ok")
-})
+  });
+  assert.equal(result.Output.data.output, "ok");
+});
 
-test('load source', async () => {
-  const code = fs.readFileSync('./blueprint/Verse.lua', 'utf-8')
-  const result = await Send({ Action: "Eval", Data: code })
+test("load source", async () => {
+  const code = fs.readFileSync("./blueprint/Verse.lua", "utf-8");
+  const result = await Send({ Action: "Eval", Data: code });
 
-  assert.equal(result.Output.data.output, "Loaded Verse Protocol")
-})
+  assert.equal(result.Output.data.output, "Loaded Verse Protocol");
+});
 
-test('load llama land', async () => {
-  const code = fs.readFileSync('./verse/3_LlamaLand.lua', 'utf-8')
-  const result = await Send({ Action: "Eval", Data: code })
+test("load llama land", async () => {
+  const code = fs.readFileSync("./verse/3_LlamaLand.lua", "utf-8");
+  const result = await Send({ Action: "Eval", Data: code });
 
-  assert.equal(result.Output.data.output, undefined)
-})
+  assert.equal(result.Output.data.output, undefined);
+});
 
-test('check table exists', async () => {
+test("check table exists", async () => {
   const result = await Send({
     Action: "Eval",
-    Data: `require('json').encode(VerseDbAdmin:tables())`
-  })
+    Data: `require('json').encode(VerseDbAdmin:tables())`,
+  });
 
-  assert.deepEqual(JSON.parse(result.Output.data.output), ["Entities"])
-})
+  assert.deepEqual(JSON.parse(result.Output.data.output), ["Entities"]);
+});
 
-test('check Entities table empty', async () => {
+test("check Entities table empty", async () => {
   const result = await Send({
-    Action: "Eval", 
-    Data: `VerseDbAdmin:count('Entities')`
-  })
+    Action: "Eval",
+    Data: `VerseDbAdmin:count('Entities')`,
+  });
 
-  assert.deepEqual(result.Output.data.output, "0")
-})
+  assert.deepEqual(result.Output.data.output, "0");
+});
 
-test('check VerseEntityCreate handler', async () => {
+test("check VerseEntityCreate handler", async () => {
   const result = await Send({
     From: "TestOwner",
     Action: "VerseEntityCreate",
@@ -57,20 +57,24 @@ test('check VerseEntityCreate handler', async () => {
       Type: "Avatar",
       Position: [1, 2],
     }),
-  })
+  });
 
-  assert.equal(result.Output.data, "VerseEntityCreate")
+  assert.equal(result.Output.data, "VerseEntityCreate");
 
   const result2 = await Send({
     Action: "Eval",
     Data: `require('json').encode(VerseDbAdmin:exec('SELECT * FROM Entities')[1])`,
-  })
+  });
 
-  assert.deepEqual(JSON.parse(result2.Output.data.output), { Id: 'TestOwner', LastUpdated: 10003, Type: 'Avatar', Position: '[1,2]' })
-})
+  assert.deepEqual(JSON.parse(result2.Output.data.output), {
+    Id: "TestOwner",
+    LastUpdated: 10003,
+    Type: "Avatar",
+    Position: "[1,2]",
+  });
+});
 
-
-test('check VerseEntityUpdatePosition handler', async () => {
+test("check VerseEntityUpdatePosition handler", async () => {
   const result = await Send({
     From: "TestOwner",
     Action: "VerseEntityUpdatePosition",
@@ -78,36 +82,43 @@ test('check VerseEntityUpdatePosition handler', async () => {
       Position: [3, 4],
     }),
     Timestamp: 10006,
-  })
+  });
 
-  assert.equal(result.Output.data, "VerseEntityUpdatePosition")
+  assert.equal(result.Output.data, "VerseEntityUpdatePosition");
 
   const result2 = await Send({
     Action: "Eval",
     Data: `require('json').encode(VerseDbAdmin:exec('SELECT * FROM Entities')[1])`,
-  })
+  });
 
-  assert.deepEqual(JSON.parse(result2.Output.data.output), { Id: 'TestOwner', LastUpdated: 10006, Type: 'Avatar', Position: '[3,4]' })
+  assert.deepEqual(JSON.parse(result2.Output.data.output), {
+    Id: "TestOwner",
+    LastUpdated: 10006,
+    Type: "Avatar",
+    Position: "[3,4]",
+  });
 });
 
-test('check VerseEntitiesDynamic handler', async () => {
+test("check VerseEntitiesDynamic handler", async () => {
   const result = await Send({
     From: "TestOwner",
     Action: "VerseEntitiesDynamic",
-    Data: JSON.stringify({ Timestamp: 0 })
-  })
+    Data: JSON.stringify({ Timestamp: 0 }),
+  });
 
-  assert.equal(result.Output.data, "VerseEntitiesDynamic")
-  assert.deepEqual(JSON.parse(result.Messages[0].Data), { TestOwner: { Type: 'Avatar', Position: [3, 4] } })
-})
+  assert.equal(result.Output.data, "VerseEntitiesDynamic");
+  assert.deepEqual(JSON.parse(result.Messages[0].Data), {
+    TestOwner: { Type: "Avatar", Position: [3, 4] },
+  });
+});
 
-test('check VerseEntitiesDynamic handler future timestamp', async () => {
+test("check VerseEntitiesDynamic handler future timestamp", async () => {
   const result = await Send({
     From: "TestOwner",
     Action: "VerseEntitiesDynamic",
-    Data: JSON.stringify({ Timestamp: 99999 })
-  })
+    Data: JSON.stringify({ Timestamp: 99999 }),
+  });
 
-  assert.equal(result.Output.data, "VerseEntitiesDynamic")
-  assert.deepEqual(JSON.parse(result.Messages[0].Data), [])
-})
+  assert.equal(result.Output.data, "VerseEntitiesDynamic");
+  assert.deepEqual(JSON.parse(result.Messages[0].Data), []);
+});

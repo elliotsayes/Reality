@@ -1,23 +1,25 @@
 import { createDataItemSigner } from "@permaweb/aoconnect";
 import { WalletType } from "./wallets";
 
-export type AoSigner = ReturnType<typeof createDataItemSigner>
+export type AoSigner = ReturnType<typeof createDataItemSigner>;
 
 export type AoWallet = {
   type: WalletType;
   anonymous: boolean;
   address: string;
   signer: AoSigner;
-}
+};
 
-export type AoWalletConnectionResult = {
-  success: true;
-  result: AoWallet;
-  disconnect?: () => void;
-} | {
-  success: false;
-  error: unknown;
-}
+export type AoWalletConnectionResult =
+  | {
+      success: true;
+      result: AoWallet;
+      disconnect?: () => void;
+    }
+  | {
+      success: false;
+      error: unknown;
+    };
 
 // TODO: Import these from somewhere more official
 export type PermissionType =
@@ -47,7 +49,7 @@ export type ConnectConfig = {
   permissionsRequired?: PermissionType[];
   appInfo?: AppInfo;
   gateway?: GatewayConfig;
-}
+};
 
 export type AoWalletConnector = (
   config: ConnectConfig,

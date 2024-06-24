@@ -3,8 +3,8 @@ import {
   FormContextType,
   RJSFSchema,
   StrictRJSFSchema,
-} from "@rjsf/utils"
-import { CSSProperties } from "react"
+} from "@rjsf/utils";
+import { CSSProperties } from "react";
 
 export default function ArrayFieldItemTemplate<
   T = any,
@@ -26,16 +26,16 @@ export default function ArrayFieldItemTemplate<
     readonly,
     registry,
     uiSchema,
-  } = props
+  } = props;
 
   const { CopyButton, MoveDownButton, MoveUpButton, RemoveButton } =
-    registry.templates.ButtonTemplates
+    registry.templates.ButtonTemplates;
   const btnStyle: CSSProperties = {
     flex: 1,
     paddingLeft: 6,
     paddingRight: 6,
     fontWeight: "bold",
-  }
+  };
 
   return (
     <div>
@@ -94,5 +94,5 @@ export default function ArrayFieldItemTemplate<
         </div>
       </div>
     </div>
-  )
+  );
 }

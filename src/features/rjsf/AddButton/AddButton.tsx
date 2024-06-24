@@ -1,18 +1,18 @@
-import { Plus } from "lucide-react"
+import { Plus } from "lucide-react";
 import {
   FormContextType,
   IconButtonProps,
   RJSFSchema,
   StrictRJSFSchema,
   TranslatableString,
-} from "@rjsf/utils"
+} from "@rjsf/utils";
 
 export default function AddButton<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
 >({ uiSchema, registry, ...props }: IconButtonProps<T, S, F>) {
-  const { translateString } = registry
+  const { translateString } = registry;
   return (
     <button
       {...props}
@@ -22,5 +22,5 @@ export default function AddButton<
     >
       <Plus />
     </button>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { PermissionType } from "./aoWallet"
+import { PermissionType } from "./aoWallet";
 
 export const permissionsRequired: Array<PermissionType> = [
   "ACCESS_ADDRESS",
@@ -8,9 +8,9 @@ export const permissionsRequired: Array<PermissionType> = [
   // "DECRYPT",
   "SIGNATURE",
   "ACCESS_ARWEAVE_CONFIG",
-]
+];
 
 export const permissionsRequested = [
   ...permissionsRequired,
   // ...optionalPermissions,
-]
+];

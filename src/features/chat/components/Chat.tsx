@@ -1,6 +1,6 @@
 import { ArweaveId } from "@/features/arweave/lib/model";
 import { ChatClient } from "../contract/chatClient";
-import './Chat.css';
+import "./Chat.css";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -11,9 +11,9 @@ import { Message } from "../contract/model";
 import { truncateAddress } from "@/features/arweave/lib/utils";
 
 const highlightedAuthorIds = [
-  'kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA', // KingDummy
-  'ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk', // BankerDummy
-]
+  "kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA", // KingDummy
+  "ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk", // BankerDummy
+];
 
 const queryPageSize = 10;
 
@@ -33,35 +33,39 @@ export function Chat({
   onUserMessageSent,
 }: ChatProps) {
   const messageHistoryQuery = useInfiniteQuery({
-    queryKey: ['messageHistory', chatClient.aoContractClient.processId, historyIndex],
+    queryKey: [
+      "messageHistory",
+      chatClient.aoContractClient.processId,
+      historyIndex,
+    ],
     queryFn: async ({ pageParam }) => {
       if (pageParam === undefined) {
-        return []
+        return [];
       }
       return chatClient.readHistory({
         idBefore: pageParam + 1,
         limit: queryPageSize,
-      })
+      });
     },
     initialPageParam: historyIndex,
     getNextPageParam: () => undefined,
     getPreviousPageParam: (nextPage) => {
       if (nextPage.length === 0) {
-        return undefined
+        return undefined;
       }
-      const sortedIds = nextPage
-        .map(m => m.Id)
-        .sort((a, b) => a - b)
-      const lowestId = sortedIds[0]
+      const sortedIds = nextPage.map((m) => m.Id).sort((a, b) => a - b);
+      const lowestId = sortedIds[0];
       if (lowestId === 0) {
-        return undefined
+        return undefined;
       }
-      return lowestId
+      return lowestId;
     },
-  })
+  });
 
-  const messageHistory = messageHistoryQuery.isSuccess ? messageHistoryQuery.data.pages.flatMap(x => x) : []
-  const allMessages = messageHistory.concat(newMessages)
+  const messageHistory = messageHistoryQuery.isSuccess
+    ? messageHistoryQuery.data.pages.flatMap((x) => x)
+    : [];
+  const allMessages = messageHistory.concat(newMessages);
 
   const messagesRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -69,34 +73,33 @@ export function Chat({
       // Scroll to bottom
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
     }
-  }, [allMessages])
+  }, [allMessages]);
 
-  const form = useForm()
+  const form = useForm();
 
   return (
     <>
       <div ref={messagesRef} className="chat-page-messages-container">
-        {
-          renderMessages(userAddress, allMessages)
-        }
+        {renderMessages(userAddress, allMessages)}
       </div>
 
-      <Form
-        {...form}
-      >
+      <Form {...form}>
         <form
           className="chat-page-send-container"
           onSubmit={form.handleSubmit(async () => {
-            console.log('submit')
-            const message = form.getValues('message')
-            form.setValue('message', '')
+            console.log("submit");
+            const message = form.getValues("message");
+            form.setValue("message", "");
 
-            if (message === undefined || message === '') return;
-            await chatClient.postMessage({ Content: message, AuthorName: userAddress.slice(0, 6) })
+            if (message === undefined || message === "") return;
+            await chatClient.postMessage({
+              Content: message,
+              AuthorName: userAddress.slice(0, 6),
+            });
             setTimeout(() => {
               messageHistoryQuery.refetch();
               onUserMessageSent?.();
-            }, 1000)
+            }, 1000);
           })}
         >
           <FormField
@@ -115,16 +118,13 @@ export function Chat({
               </FormItem>
             )}
           />
-          <Button
-            className="chat-send-button"
-            type="submit"
-          >
+          <Button className="chat-send-button" type="submit">
             Send
           </Button>
         </form>
       </Form>
     </>
-  )
+  );
 }
 
 function renderMessages(userAddress: string, messages: Array<Message>) {
@@ -133,61 +133,85 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
 
   const divs = [];
 
-  const messageList = messages.map((msg) => {
-    return {
-      id: msg.MessageId,
-      address: msg.AuthorId,
-      authorName: msg.AuthorName,
-      message: msg.Content,
-      time: msg.Timestamp,
-    }
-  }).sort((a, b) => a.time - b.time);
+  const messageList = messages
+    .map((msg) => {
+      return {
+        id: msg.MessageId,
+        address: msg.AuthorId,
+        authorName: msg.AuthorName,
+        message: msg.Content,
+        time: msg.Timestamp,
+      };
+    })
+    .sort((a, b) => a.time - b.time);
 
   for (let i = 0; i < messageList.length; i++) {
     const data = messageList[i];
-    const owner = (data.address == userAddress);
+    const owner = data.address == userAddress;
     const highlighted = highlightedAuthorIds.includes(data.address);
 
     divs.push(
-      <div key={data.id} className={`chat-msg-line ${owner ? 'my-line' : 'other-line'}`}>
-        {!owner && <img className='chat-msg-portrait' src='llamaland_profilePic.png' />}
+      <div
+        key={data.id}
+        className={`chat-msg-line ${owner ? "my-line" : "other-line"}`}
+      >
+        {!owner && (
+          <img className="chat-msg-portrait" src="llamaland_profilePic.png" />
+        )}
 
         <div>
-          <div className={`chat-msg-header ${owner ? 'my-line' : 'other-line'}`}>
-            <div className="chat-msg-nickname">
-              {data.authorName}
-            </div>
+          <div
+            className={`chat-msg-header ${owner ? "my-line" : "other-line"}`}
+          >
+            <div className="chat-msg-nickname">{data.authorName}</div>
 
-            <div className="chat-msg-address">{truncateAddress(data.address)}</div>
+            <div className="chat-msg-address">
+              {truncateAddress(data.address)}
+            </div>
           </div>
 
-          <div className={`chat-message ${owner ? 'my-message' : (highlighted ? 'highlight-message' : 'other-message')}`}>
+          <div
+            className={`chat-message ${owner ? "my-message" : highlighted ? "highlight-message" : "other-message"}`}
+          >
             {data.message}
           </div>
 
-          <div className={`chat-msg-time ${owner ? 'my-line' : 'other-line'}`}>
+          <div className={`chat-msg-time ${owner ? "my-line" : "other-line"}`}>
             {formatTimestamp(data.time / 1000, true)}
           </div>
         </div>
 
-        {owner && <img className='chat-msg-portrait' src='llamaland_profilePic.png' />}
-      </div>
-    )
+        {owner && (
+          <img className="chat-msg-portrait" src="llamaland_profilePic.png" />
+        )}
+      </div>,
+    );
   }
 
-  return divs.length > 0 ? divs : <div>No messages yet.</div>
+  return divs.length > 0 ? divs : <div>No messages yet.</div>;
 }
-
 
 /**
  * Format time to twitter style ones
  * @param time timestamp in seconds
- * @param ago the 'ago' suffix 
+ * @param ago the 'ago' suffix
  * @returns the time formatted
  */
 function formatTimestamp(time: number, ago?: boolean) {
-  const m = new Map([[1, 'Jan'], [2, 'Feb'], [3, 'Mar'], [4, 'Apr'], [5, 'May'], [6, 'Jun'],
-  [7, 'Jul'], [8, 'Aug'], [9, 'Sep'], [10, 'Oct'], [11, 'Nov'], [12, 'Dec']]);
+  const m = new Map([
+    [1, "Jan"],
+    [2, "Feb"],
+    [3, "Mar"],
+    [4, "Apr"],
+    [5, "May"],
+    [6, "Jun"],
+    [7, "Jul"],
+    [8, "Aug"],
+    [9, "Sep"],
+    [10, "Oct"],
+    [11, "Nov"],
+    [12, "Dec"],
+  ]);
 
   const now = secondsOfNow();
   const diff = now - time;
@@ -205,29 +229,29 @@ function formatTimestamp(time: number, ago?: boolean) {
     } else {
       const month = date.getMonth() + 1;
       const day = date.getDate();
-      return m.get(month) + ' ' + day;
+      return m.get(month) + " " + day;
     }
   }
 
   if (hours > 0) {
-    let t = hours + 'h';
-    if (ago) t += ' ago';
+    let t = hours + "h";
+    if (ago) t += " ago";
     return t;
   }
 
   if (minutes > 0) {
-    let t = minutes + 'm';
-    if (ago) t += ' ago';
+    let t = minutes + "m";
+    if (ago) t += " ago";
     return t;
   }
 
   if (seconds > 0) {
-    let t = seconds + 's';
-    if (ago) t += ' ago';
+    let t = seconds + "s";
+    if (ago) t += " ago";
     return t;
   }
 
-  return 'just now';
+  return "just now";
 }
 
 /**

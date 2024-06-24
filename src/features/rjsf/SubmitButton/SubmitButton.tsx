@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   FormContextType,
   getSubmitButtonOptions,
   RJSFSchema,
   StrictRJSFSchema,
   SubmitButtonProps,
-} from "@rjsf/utils"
+} from "@rjsf/utils";
 
 export default function SubmitButton<
   T = any,
@@ -16,20 +16,17 @@ export default function SubmitButton<
     submitText,
     norender,
     props: submitButtonProps,
-  } = getSubmitButtonOptions<T, S, F>(props.uiSchema)
+  } = getSubmitButtonOptions<T, S, F>(props.uiSchema);
 
   if (norender) {
-    return null
+    return null;
   }
 
   return (
     <div>
-      <Button
-        type="submit"
-        {...submitButtonProps}
-      >
+      <Button type="submit" {...submitButtonProps}>
         {submitText}
       </Button>
     </div>
-  )
+  );
 }

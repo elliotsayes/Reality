@@ -2,8 +2,8 @@ import { ProfileClient } from "@/features/profile/contract/profileClient";
 import { VerseClient } from "@/features/verse/contract/verseClient";
 
 export type VerseState = {
-  info: Awaited<ReturnType<VerseClient['readInfo']>>,
-  parameters: Awaited<ReturnType<VerseClient['readParameters']>>,
-  entities: Awaited<ReturnType<VerseClient['readEntitiesStatic']>>,
-  profiles: Awaited<ReturnType<ProfileClient['readProfiles']>>,
-}
+  info: Awaited<ReturnType<VerseClient["readInfo"]>>;
+  parameters: Awaited<ReturnType<VerseClient["readParameters"]>>;
+  entities: Awaited<ReturnType<VerseClient["readEntitiesStatic"]>>;
+  profiles: Awaited<ReturnType<ProfileClient["readProfiles"]>>;
+};

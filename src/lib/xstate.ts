@@ -1,3 +1,3 @@
 // import { createBrowserInspector } from '@statelyai/inspect';
 
-export const { inspect } = { inspect: undefined } //  createBrowserInspector();
+export const { inspect } = { inspect: undefined }; //  createBrowserInspector();
