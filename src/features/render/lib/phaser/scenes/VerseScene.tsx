@@ -550,8 +550,18 @@ export class VerseScene extends WarpableScene {
 
     container.add(sprite);
     container.add(nameText);
-    container.setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
+
+    if (isPlayer) {
+      container.setSize(20 * 2, 18 * 2)
+    } else {
+      container.setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
+    }
+
     this.physics.world.enable(container);
+
+    if (isPlayer) {
+      (container.body as Phaser.Physics.Arcade.Body).setOffset(1, 9);
+    }
 
     return container;
   }
