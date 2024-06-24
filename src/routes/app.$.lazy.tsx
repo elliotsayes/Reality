@@ -80,7 +80,7 @@ function VerseId() {
                   aoContractClientForProcess={createAoContractClientForProcess(
                     wallet,
                   )}
-                  profileClient={createProfileRegistryClientForProcess(wallet)(
+                  profileRegistryClient={createProfileRegistryClientForProcess(wallet)(
                     profileProcessId,
                   )}
                   verseClientForProcess={createVerseClientForProcess(wallet)}

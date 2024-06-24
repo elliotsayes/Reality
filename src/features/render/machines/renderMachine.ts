@@ -24,7 +24,7 @@ export const renderMachine = setup({
       initialVerseId?: string;
       clients: {
         aoContractClientForProcess: AoContractClientForProcess;
-        profileClient: ProfileRegistryClient;
+        profileRegistryClient: ProfileRegistryClient;
         verseClientForProcess: VerseClientForProcess;
         chatClientForProcess: ChatClientForProcess;
       };
@@ -36,7 +36,7 @@ export const renderMachine = setup({
       initialVerseId?: string;
       clients: {
         aoContractClientForProcess: AoContractClientForProcess;
-        profileClient: ProfileRegistryClient;
+        profileRegistryClient: ProfileRegistryClient;
         verseClientForProcess: VerseClientForProcess;
         chatClientForProcess: ChatClientForProcess;
       };
@@ -262,14 +262,14 @@ export const renderMachine = setup({
       }: {
         input: {
           verseClient: VerseClient;
-          profileClient: ProfileRegistryClient;
+          profileRegistryClient: ProfileRegistryClient;
           phaserLoader: Phaser.Loader.LoaderPlugin;
         };
       }) => {
         console.log("loadVerse");
         const verseState = await loadVersePhaser(
           input.verseClient,
-          input.profileClient,
+          input.profileRegistryClient,
           input.phaserLoader,
         );
         return {
@@ -284,7 +284,7 @@ export const renderMachine = setup({
       }: {
         input: {
           verseClient: VerseClient;
-          profileClient: ProfileRegistryClient;
+          profileRegistryClient: ProfileRegistryClient;
           lastEntityUpdate?: Date;
         };
       }) => {
@@ -293,7 +293,7 @@ export const renderMachine = setup({
         const entities = await input.verseClient.readEntitiesDynamic(
           input.lastEntityUpdate ?? tenSecondsAgo,
         );
-        const profiles = await input.profileClient.readProfiles(
+        const profiles = await input.profileRegistryClient.readProfiles(
           Object.keys(entities),
         );
         return {
@@ -394,7 +394,7 @@ export const renderMachine = setup({
                   verseClient: context.clients.verseClientForProcess(
                     context.targetVerseId!,
                   ),
-                  profileClient: context.clients.profileClient,
+                  profileRegistryClient: context.clients.profileRegistryClient,
                   phaserLoader: context.currentScene!.load,
                 }),
 
@@ -446,7 +446,7 @@ export const renderMachine = setup({
                   verseClient: context.clients.verseClientForProcess(
                     context.targetVerseId!,
                   ),
-                  profileClient: context.clients.profileClient,
+                  profileRegistryClient: context.clients.profileRegistryClient,
                   phaserLoader: context.currentScene!.load,
                 }),
 
@@ -490,7 +490,8 @@ export const renderMachine = setup({
                       verseClient: context.clients.verseClientForProcess(
                         context.targetVerseId!,
                       ),
-                      profileClient: context.clients.profileClient,
+                      profileRegistryClient:
+                        context.clients.profileRegistryClient,
                       phaserLoader: context.currentScene!.load,
                     }),
                     onDone: {
@@ -522,7 +523,8 @@ export const renderMachine = setup({
                       verseClient: context.clients.verseClientForProcess(
                         context.currentVerseId!,
                       ),
-                      profileClient: context.clients.profileClient,
+                      profileRegistryClient:
+                        context.clients.profileRegistryClient,
                       lastEntityUpdate: context.lastEntityUpdate,
                     }),
                     onDone: {

@@ -12,7 +12,7 @@ import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 interface RendererProps {
   userAddress: ArweaveId;
   aoContractClientForProcess: AoContractClientForProcess;
-  profileClient: ProfileRegistryClient;
+  profileRegistryClient: ProfileRegistryClient;
   verseClientForProcess: ReturnType<typeof createVerseClientForProcess>;
   chatClientForProcess: ReturnType<typeof createChatClientForProcess>;
   verseId?: string;
@@ -21,19 +21,20 @@ interface RendererProps {
 export function Renderer({
   userAddress,
   aoContractClientForProcess,
-  profileClient,
+  profileRegistryClient,
   verseClientForProcess,
   chatClientForProcess,
   verseId: verseIdProp,
 }: RendererProps) {
   const navigate = useNavigate();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [current, send] = useMachine(renderMachine, {
     input: {
       playerAddress: userAddress,
       initialVerseId: verseIdProp,
       clients: {
         aoContractClientForProcess,
-        profileClient,
+        profileRegistryClient: profileRegistryClient,
         verseClientForProcess,
         chatClientForProcess,
       },
