@@ -15,6 +15,7 @@ export const spawnProfileProcess = async (
     tags: profileAOS.getTags(),
     signer: wallet.signer,
   });
+  // TODO: Do we have to confirm that the process has been spawned?
   const profileClient = createProfileClientForProcess(wallet)(profileId);
   await profileClient.initializeProcess();
   if (initialProfile !== undefined) {
