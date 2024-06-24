@@ -3,7 +3,7 @@ import {
   AoContractClient,
   createAoContractClient,
 } from "../../ao/lib/aoContractClient";
-import { ProfileInfo } from "./model";
+import { ProfileEntry, ProfileInfo } from "./model";
 import { AoWallet } from "@/features/ao/lib/aoWallet";
 import { connect } from "@permaweb/aoconnect";
 
@@ -11,6 +11,7 @@ export type ProfileRegistryClient = {
   aoContractClient: AoContractClient;
 
   // Reads
+  getProfilesByDelegate(address: ArweaveId): Promise<Array<ProfileEntry>>;
   readProfiles(profileIds: Array<ArweaveId>): Promise<Array<ProfileInfo>>;
 };
 
@@ -22,6 +23,16 @@ export const createProfileRegistryClient = (
   aoContractClient: aoContractClient,
 
   // Read
+  getProfilesByDelegate: async (address: ArweaveId) => {
+    return aoContractClient.dryrunReadReplyOneJson<Array<ProfileEntry>>(
+      {
+        tags: [{ name: "Action", value: "Get-Profiles-By-Delegate" }],
+        data: JSON.stringify({
+          Address: address,
+        }),
+      } /* Array<ArweaveId> */,
+    );
+  },
   readProfiles: async (profileIds: Array<ArweaveId>) => {
     if (profileIds.length === 0) {
       return [];
