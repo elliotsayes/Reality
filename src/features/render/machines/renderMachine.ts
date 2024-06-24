@@ -208,10 +208,7 @@ export const renderMachine = setup({
     updateChatMessageOffset: assign(
       (_, params: { messages: MessageHistory }) => {
         const { messages } = params;
-        if (messages.length === 0)
-          return {
-            currentChatMessageOffset: 0,
-          };
+        if (messages.length === 0) return {};
         return {
           currentChatMessageOffset: messages[0].Id,
         };
