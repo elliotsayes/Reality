@@ -573,7 +573,7 @@ export class VerseScene extends WarpableScene {
     this.physics.world.enable(container);
 
     if (isPlayer) {
-      (container.body as Phaser.Physics.Arcade.Body).setOffset(1, 9);
+      (container.body as Phaser.Physics.Arcade.Body).setOffset(1, 15);
     }
 
     return container;
