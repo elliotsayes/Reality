@@ -1,4 +1,4 @@
-import { connect } from "@permaweb/aoconnect";
+import { connect, result } from "@permaweb/aoconnect";
 
 export type MessageId = string;
 
@@ -10,3 +10,10 @@ export type Message = {
 type BaseAoClient = ReturnType<typeof connect>;
 
 export type AoClient = BaseAoClient;
+
+export type MessageResult = Awaited<ReturnType<typeof result>>;
+
+export type MessageWithResult = {
+  messageId: MessageId;
+  result: MessageResult;
+};
