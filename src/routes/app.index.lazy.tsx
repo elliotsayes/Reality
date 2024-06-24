@@ -12,7 +12,7 @@ function WaitlistRoute() {
       loginTitle="Sign in to access the Waitlist"
       temporaryWalletEnabled={false}
     >
-      {(wallet, disconnect) => <WaitlistScreen wallet={wallet} />}
+      {(wallet) => <WaitlistScreen wallet={wallet} />}
     </Login>
   );
 }

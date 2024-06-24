@@ -1,14 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { createAoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
-import { truncateAddress } from "@/features/arweave/lib/utils";
-import { createChatClientForProcess } from "@/features/chat/contract/chatClient";
 import { Login } from "@/features/login/components/Login";
-import { createProfileRegistryClientForProcess } from "@/features/profile/contract/profileRegistryClient";
-import { Renderer } from "@/features/render/components/Renderer";
-import { createVerseClientForProcess } from "@/features/verse/contract/verseClient";
+import Main from "@/features/main/components/Main";
 import { createLazyFileRoute, useParams } from "@tanstack/react-router";
-
-const profileProcessId = import.meta.env.VITE_PROFILE_PROCESS_ID as string;
 
 const versePathRegex = /^verse\/([a-zA-Z0-9_-]{43})$/;
 
@@ -60,36 +52,14 @@ function VerseId() {
     // <div className="bg-gray-100 h-dvh overflow-clip">
     <Login>
       {(wallet, disconnect) => {
-        if (addressWhitelist.includes(wallet.address))
+        if (import.meta.env.DEV || addressWhitelist.includes(wallet.address))
           return (
-            <div>
-              <div className="flex flex-row gap-4 items-baseline fixed top-0 right-0 py-2 px-2">
-                <p>
-                  Wallet:{" "}
-                  <span className="font-mono text-sm text-muted-foreground">
-                    {truncateAddress(wallet.address)}
-                  </span>
-                </p>
-                <Button onClick={disconnect} size={"sm"} variant={"secondary"}>
-                  Log out
-                </Button>
-              </div>
-              <div className="fixed top-14 right-0 left-0 bottom-0">
-                <Renderer
-                  userAddress={wallet.address}
-                  aoContractClientForProcess={createAoContractClientForProcess(
-                    wallet,
-                  )}
-                  profileRegistryClient={createProfileRegistryClientForProcess(wallet)(
-                    profileProcessId,
-                  )}
-                  verseClientForProcess={createVerseClientForProcess(wallet)}
-                  chatClientForProcess={createChatClientForProcess(wallet)}
-                  verseId={verseId}
-                />
-              </div>
-            </div>
-          );
+            <Main
+              wallet={wallet}
+              disconnect={disconnect}
+              verseId={verseId}
+            />
+          )
 
         return <div>Unauthorized</div>;
       }}
