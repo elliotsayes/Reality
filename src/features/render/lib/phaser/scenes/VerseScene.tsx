@@ -430,7 +430,7 @@ export class VerseScene extends WarpableScene {
       this.player,
       sprite,
       () => {
-        console.log(`Collided with entity ${entityId}`);
+        console.log(`Collided with warp ${entityId}`);
         if (this.isWarping) return;
         this.isWarping = true;
         emitSceneEvent({
@@ -698,6 +698,16 @@ export class VerseScene extends WarpableScene {
     } else {
       if (this.lastTickMoving) {
         playerSprite.play("llama_0_idle");
+        // Check if the player is overlapping with any warp entities
+        const isOverlappingWithWarp = this.physics.overlap(
+          this.player,
+          Object.values(this.warpSprites),
+        );
+        if (isOverlappingWithWarp) {
+          console.debug("Player is overlapping with warp, cancelling update");
+          return;
+        }
+
         emitSceneEvent({
           type: "Update Position",
           position: [
