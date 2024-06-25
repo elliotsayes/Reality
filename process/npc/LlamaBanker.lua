@@ -16,6 +16,8 @@ WRAPPED_ARWEAVE_MULTIPLIER = 10 ^ WRAPPED_ARWEAVE_DENOMINATION
 WRAPPED_ARWEAVE_MIN_QUANTITY = 1000000000   -- 1 Billion
 WRAPPED_ARWEAVE_MAX_QUANTITY = 100000000000 -- 100 Billion
 
+LLAMA_ROUTER_PROCESS_ID = LLAMA_ROUTER_PROCESS_ID or "TODO: LlamaRouterProcessId"
+
 LLAMA_KING_PROCESS = LLAMA_KING_PROCESS or "TODO: LlamaKingProcessId"
 
 LLAMA_FED_CHAT_PROCESS = LLAMA_FED_CHAT_PROCESS or "TODO: ChatProcessId"
@@ -68,6 +70,12 @@ function FormatWarTokenAmount(amount)
   return string.format("%.3f", amount / WRAPPED_ARWEAVE_MULTIPLIER)
 end
 
+function ValidatePetition(petition)
+  return petition ~= nil
+      and string.len(petition) > 0
+      and string.len(petition) <= 100
+end
+
 Handlers.add(
   "CreditNoticeHandler",
   Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
@@ -86,6 +94,9 @@ Handlers.add(
 
     local senderName = msg.Tags['X-Sender-Name']
     local petition = msg.Tags['X-Petition']
+    if not ValidatePetition(petition) then
+      return print("Invalid petition")
+    end
 
     -- Save metadata
     local stmt = BankerDb:prepare(
@@ -115,6 +126,16 @@ Handlers.add(
         ['Author-Name'] = 'Llama Banker',
       },
       Data = 'Received ' .. FormatWarTokenAmount(quantity) .. ' wrapped $AR from ' .. (senderName or sender),
+    })
+
+    -- Transfer the wrapped $AR on to the LlamaRouter
+    Send({
+      Target = WRAPPED_ARWEAVE_TOKEN_PROCESS,
+      Tags = {
+        Action = 'Transfer',
+        Recipient = LLAMA_ROUTER_PROCESS_ID,
+        Quantity = msg.Tags.Quantity,
+      }
     })
   end
 )
