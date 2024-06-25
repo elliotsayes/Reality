@@ -9,8 +9,9 @@ interface ProfileDetailsDropdownProps {
 export default function ProfileDetailsDropdown({
   profileInfo,
 }: ProfileDetailsDropdownProps) {
-  const hasDescription = profileInfo.Description && profileInfo.Description != '';
-  
+  const hasDescription =
+    profileInfo.Description && profileInfo.Description != "";
+
   return (
     <Card>
       <CardHeader>
@@ -18,12 +19,8 @@ export default function ProfileDetailsDropdown({
           <div className="flex flex-row gap-2">
             <ProfileImage profileImage={profileInfo.ProfileImage} />
             <div className="flex flex-grow flex-col">
-              <p className="text-xl font-bold">
-                {profileInfo.DisplayName}
-              </p>
-              <p className="text-sm text-gray-500">
-                @{profileInfo.Username}
-              </p>
+              <p className="text-xl font-bold">{profileInfo.DisplayName}</p>
+              <p className="text-sm text-gray-500">@{profileInfo.Username}</p>
             </div>
           </div>
         </CardTitle>
@@ -36,10 +33,13 @@ export default function ProfileDetailsDropdown({
             <p className="text-center text-gray-500 italic">No bio</p>
           )}
           <p className="mt-4 text-sm text-gray-400 italic">
-            Edit your profile on <a href="https://ao-bazar.arweave.dev/#/" className="underline">Bazar</a>
+            Edit your profile on{" "}
+            <a href="https://ao-bazar.arweave.dev/#/" className="underline">
+              Bazar
+            </a>
           </p>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

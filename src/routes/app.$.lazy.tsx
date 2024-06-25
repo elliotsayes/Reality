@@ -54,12 +54,8 @@ function VerseId() {
       {(wallet, disconnect) => {
         if (import.meta.env.DEV || addressWhitelist.includes(wallet.address))
           return (
-            <Main
-              wallet={wallet}
-              disconnect={disconnect}
-              verseId={verseId}
-            />
-          )
+            <Main wallet={wallet} disconnect={disconnect} verseId={verseId} />
+          );
 
         return <div>Unauthorized</div>;
       }}

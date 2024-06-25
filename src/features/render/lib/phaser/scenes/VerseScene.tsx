@@ -244,7 +244,6 @@ export class VerseScene extends WarpableScene {
 
     this.camera.centerOn(this.spawnPixel[0], this.spawnPixel[1]);
 
-
     if (!this.verse.entities[this.playerAddress]) {
       console.warn(
         `Player entity ${this.playerAddress} not found in entities list`,
@@ -256,7 +255,7 @@ export class VerseScene extends WarpableScene {
           Metadata: {
             ProfileId: this.playerProfileInfo.ProfileId,
           },
-        })
+        }),
       };
     }
     const avatarEntityIds = Object.keys(this.verse.entities).filter(
@@ -383,11 +382,9 @@ export class VerseScene extends WarpableScene {
             this.entityTargets[entityId],
             () => {
               console.log(`Entity ${entityId} collided with target`);
-              const containerBody = entityContainer.body as Phaser.Physics.Arcade.Body;
-              containerBody.setVelocity(
-                0,
-                0,
-              );
+              const containerBody =
+                entityContainer.body as Phaser.Physics.Arcade.Body;
+              containerBody.setVelocity(0, 0);
               entitySprite.play("llama_4_idle");
               // entitySprite.setPosition(updatePosition.x, updatePosition.y);
 
@@ -470,7 +467,7 @@ export class VerseScene extends WarpableScene {
   ) {
     const isPlayer = entityId === this.playerAddress;
     const llamaSpriteIndex = isPlayer ? 0 : 4;
-    
+
     const container = this.add
       .container(
         entity.Position[0] *
@@ -524,7 +521,7 @@ export class VerseScene extends WarpableScene {
         this,
       );
     }
-    
+
     sprite.on(
       "pointerover",
       () => {
@@ -532,11 +529,9 @@ export class VerseScene extends WarpableScene {
       },
       this,
     );
-    
-    const resolvedProfile = (isPlayer
-        ? this.playerProfileInfo
-        : undefined)
-      ?? profile;
+
+    const resolvedProfile =
+      (isPlayer ? this.playerProfileInfo : undefined) ?? profile;
     const displayText =
       resolvedProfile?.DisplayName ??
       resolvedProfile?.Username ??
@@ -565,7 +560,7 @@ export class VerseScene extends WarpableScene {
     container.add(nameText);
 
     if (isPlayer) {
-      container.setSize(20 * 2, 18 * 2)
+      container.setSize(20 * 2, 18 * 2);
     } else {
       container.setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
     }
@@ -673,17 +668,17 @@ export class VerseScene extends WarpableScene {
     const speed = this.isWarping ? this.slowMs : 120;
 
     const isLeft =
-    //@ts-expect-error - Phaser types are wrong
+      //@ts-expect-error - Phaser types are wrong
       (this.arrows?.left.isDown || this.wasd?.left.isDown) ?? false;
     const isRight =
-    //@ts-expect-error - Phaser types are wrong
+      //@ts-expect-error - Phaser types are wrong
       (this.arrows?.right.isDown || this.wasd?.right.isDown) ?? false;
     //@ts-expect-error - Phaser types are wrong
     const isUp = (this.arrows?.up.isDown || this.wasd?.up.isDown) ?? false;
     const isDown =
-    //@ts-expect-error - Phaser types are wrong
+      //@ts-expect-error - Phaser types are wrong
       (this.arrows?.down.isDown || this.wasd?.down.isDown) ?? false;
-    
+
     const playerSprite = this.player.getAt(0) as Phaser.GameObjects.Sprite;
     const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
     if (isLeft) {

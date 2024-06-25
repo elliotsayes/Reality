@@ -11,7 +11,8 @@ import { mainMachine } from "../machines/mainMachine";
 import { useMachine } from "@xstate/react";
 import ProfileButton from "@/features/profile/components/ProfileButton";
 
-const profileRegistryProcessId = import.meta.env.VITE_PROFILE_PROCESS_ID as string;
+const profileRegistryProcessId = import.meta.env
+  .VITE_PROFILE_PROCESS_ID as string;
 
 interface MainProps {
   wallet: AoWallet;
@@ -19,14 +20,10 @@ interface MainProps {
   verseId?: string;
 }
 
-export default function Main({
-  wallet,
-  disconnect,
-  verseId,
-}: MainProps) {
+export default function Main({ wallet, disconnect, verseId }: MainProps) {
   const profileRegistryClient = createProfileRegistryClientForProcess(wallet)(
     profileRegistryProcessId,
-  )
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [current, send] = useMachine(mainMachine, {
@@ -44,35 +41,31 @@ export default function Main({
   }) => (
     <Renderer
       userAddress={wallet.address}
-      aoContractClientForProcess={createAoContractClientForProcess(
-        wallet,
-      )}
+      aoContractClientForProcess={createAoContractClientForProcess(wallet)}
       profileRegistryClient={profileRegistryClient}
       verseClientForProcess={createVerseClientForProcess(wallet)}
       chatClientForProcess={createChatClientForProcess(wallet)}
       initialVerseId={verseId}
       profileInfo={profile?.profileInfo}
     />
-  )
+  );
 
-  return (<div>
-    <div className="flex flex-row gap-4 items-center fixed top-0 right-0 py-2 px-2">
-      <p>
-        Wallet:{" "}
-        <span className="font-mono text-sm text-muted-foreground">
-          {truncateAddress(wallet.address)}
-        </span>
-      </p>
-      <ProfileButton
-        profileInfo={current.context.profileInfo}
-      />
-      <Button onClick={disconnect} size={"sm"} variant={"secondary"}>
-        Log out
-      </Button>
-    </div>
-    <div className="fixed top-14 right-0 left-0 bottom-0">
-      {
-        current.hasTag("showRenderer") ? (
+  return (
+    <div>
+      <div className="flex flex-row gap-4 items-center fixed top-0 right-0 py-2 px-2">
+        <p>
+          Wallet:{" "}
+          <span className="font-mono text-sm text-muted-foreground">
+            {truncateAddress(wallet.address)}
+          </span>
+        </p>
+        <ProfileButton profileInfo={current.context.profileInfo} />
+        <Button onClick={disconnect} size={"sm"} variant={"secondary"}>
+          Log out
+        </Button>
+      </div>
+      <div className="fixed top-14 right-0 left-0 bottom-0">
+        {current.hasTag("showRenderer") ? (
           current.matches("Complete with Profile") ? (
             renderer({
               profileId: current.context.profileId!,
@@ -85,9 +78,8 @@ export default function Main({
           <div className="flex flex-col items-center justify-center h-full">
             <p className="text-xl font-bold">Loading profile...</p>
           </div>
-        )
-      }
+        )}
+      </div>
     </div>
-  </div>
-  )
+  );
 }
