@@ -2,3 +2,4 @@ node_modules
 dist
 fixtures
 .secret
+src/routeTree.gen.ts
