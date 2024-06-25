@@ -1,18 +1,6 @@
 -- A simple LLM router using Llama-Herder for inference.
--- setup: aos> .load-blueprint apm
---        aos> APM.install('@sam/Llama-Herder')
 
-if not APM then
-    print("Requires APM in order to run. Execute `.load-blueprint apm` to install.")
-    return
-end
-
-if not Llama then
-    print("Requires Llama-Herder in order to run. Execute `APM.install('@sam/Llama-Herder')` to install.")
-end
-
-local ao = require('ao')
-local json = require('json')
+local Llama = require('LlamaHerderClient')
 
 LlamaRouter = LlamaRouter or {}
 LlamaRouter.LlamaHerderProcessId = LlamaRouter.LlamaHerderProcessId or 'TODO: LlamaHerderProcessId'
@@ -41,7 +29,7 @@ Handlers.add(
         print("LlamaRouter.Inference")
 
         -- Whitelist
-        if not InferenceAllowList[msg.From] then
+        if not LlamaRouter.InferenceAllowList[msg.From] then
             print("Inference not allowed: " .. msg.From)
             return
         end
@@ -77,7 +65,7 @@ function LlamaRouter.InferenceResponseHandler(_, msg)
         return
     end
 
-    ao.Send({
+    Send({
         Target = route.ReplyTo,
         Tags = {
             Action = "Inference-Response",
