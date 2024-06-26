@@ -5,13 +5,16 @@
   "description": "AOS Integration Test Kit",
   "scripts": {
     "test": "node --test",
-    "test:sqlite": "FORMAT=wasm32-unknown-emscripten2 WASM=./module/AOS-SQLITE.wasm node --test"
+    "test:sqlite": "FORMAT=wasm32-unknown-emscripten2 WASM=./module/AOS-SQLITE.wasm node --test",
+    "dump": "node misc/WaitlistDump.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@permaweb/ao-loader": "^0.0.26"
+    "@permaweb/ao-loader": "^0.0.26",
+    "@permaweb/aoconnect": "^0.0.56",
+    "json2csv": "^6.0.0-alpha.2"
   },
   "engines": {
     "node": ">=22"
