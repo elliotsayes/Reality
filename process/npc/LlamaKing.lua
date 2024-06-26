@@ -26,7 +26,7 @@ MESSAGES_TO_PROCESS = {
 
 function clearExpiredLlamas(currentTime)
     for llamaId, llama in pairs(LLM_WORKERS) do
-        if llama.busyWithMessage and currentTime - llama.submittedTimestamp >= 600 then
+        if llama.busyWithMessage and ((currentTime - llama.submittedTimestamp) >= 600000) then
             print("Llama " .. llamaId .. " is expired!")
             llama.busyWithMessage = nil
             llama.submittedTimestamp = nil
@@ -61,6 +61,7 @@ function dispatchHighestPriorityMessage(currentTime)
     local highestPriorityMessage = getHighestPriorityUnprocessedMessage()
     if highestPriorityMessage then
         local messageId = highestPriorityMessage.originalMessageId
+        local llamaFound = false
 
         for llamaId, llama in pairs(LLM_WORKERS) do
             if not llama.busyWithMessage then
@@ -73,8 +74,22 @@ function dispatchHighestPriorityMessage(currentTime)
                     ['Original-Message'] = highestPriorityMessage.originalMessageId,
                     Data = highestPriorityMessage.content
                 })
+                llamaFound = true
                 break
             end
+        end
+
+        local useSender = highestPriorityMessage.originalSenderName or highestPriorityMessage.originalSender
+        if not llamaFound then
+            print("No available Llama workers")
+            ao.send({
+                Target = LLAMA_FED_CHAT_PROCESS,
+                Tags = {
+                    Action = 'ChatMessage',
+                    ['Author-Name'] = 'Llama King',
+                },
+                Data = "Oh dear " .. useSender .. ", I'm teribly busy! I'll get to your petition in due time..."
+            })
         end
     end
 end
@@ -129,7 +144,8 @@ Handlers.add(
                 Action = 'ChatMessage',
                 ['Author-Name'] = 'Llama King',
             },
-            Data = 'To my loyal subject ' .. useSender .. ', please allow me a few minutes to ponder your petition...',
+            Data = 'Ah, my loyal subject ' ..
+                useSender .. ', please allow me a few minutes to carefully ponder your petition...',
         })
 
         dispatchHighestPriorityMessage(msg.Timestamp)
@@ -170,7 +186,7 @@ Handlers.add(
             Data = 'Attention ' ..
                 useSender ..
                 ', witness my response to your petition: \r\n' ..
-                comment .. '\r\nThe Llama Banker will arrange your payment shortly ;)',
+                comment .. '\r\nThe Llama Banker will arrange your payment shortly 🦙🤝🪙',
         })
     end
 )

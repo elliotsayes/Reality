@@ -8,7 +8,8 @@ InferenceAllowList = {
   "",
 }
 
-DefaultMaxResponse = 50
+CommentMaxResponse = 70
+GradeMaxResponse = 10
 
 function Init()
   Llama = require("llama")
@@ -41,7 +42,7 @@ function CommentPetition(userPrompt)
   local comment = nil
 
   local commentBuilder = ""
-  for i = 1, DefaultMaxResponse do
+  for i = 1, CommentMaxResponse do
     commentBuilder = commentBuilder .. Llama.next()
     comment = string.match(commentBuilder, "(.*)<|end|>.*")
         or string.match(commentBuilder, "(.*%w.*)\n.*")
@@ -66,7 +67,7 @@ function GradeComment(comment)
   local grade = nil
 
   local gradeBuilder = ""
-  for i = 1, DefaultMaxResponse do
+  for i = 1, GradeMaxResponse do
     gradeBuilder = gradeBuilder .. Llama.next()
     grade = string.match(gradeBuilder, ".*(%d).*")
 
@@ -82,7 +83,7 @@ Handlers.add(
   function(msg)
     ModelID = msg.Tags["Model-ID"] or ModelID
     Init()
-    DefaultMaxResponse = msg.Tags["Max-Response"] or DefaultMaxResponse
+    CommentMaxResponse = msg.Tags["Max-Response"] or CommentMaxResponse
     Send({
       Action = "Grader-Initialized",
     })
