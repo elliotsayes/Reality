@@ -3,7 +3,7 @@ HOURLY_EMISSION_LIMIT = 1000000
 AOCREDITS_PROCESS = "Sa0iBLPNyJQrwpTTG-tWLQU-1QeUAJA73DdxGGiKoJc"
 GATHER_PROCESS = "IoKrjjVCSvz2MTyUrZlI5Q06c7Bk29QcL6xpQzxjSHg"
 
-MESSAGES_TO_SEND = {
+MESSAGES_TO_PROCESS = {
     -- {
     --     originalMessageId = '1',
     --     sender = 'wallet',
@@ -24,13 +24,13 @@ EMISSIONS = {}
 JSON = require("json")
 
 function removeMessageAndResetLlama(messageId)
-    for i, message in ipairs(MESSAGES_TO_SEND) do
+    for i, message in ipairs(MESSAGES_TO_PROCESS) do
         if message.originalMessageId == messageId then
-            table.remove(MESSAGES_TO_SEND, i)
+            table.remove(MESSAGES_TO_PROCESS, i)
             break
         end
     end
-    
+
     for llamaId, llama in pairs(LLAMAS) do
         if llama.busyWithMessage == messageId then
             llama.busyWithMessage = nil
@@ -53,7 +53,7 @@ function processCreditNotice(msg)
     local sender = msg.Sender
     local amount = msg.Quantity
     local content = msg['Petition']
-    table.insert(MESSAGES_TO_SEND, {
+    table.insert(MESSAGES_TO_PROCESS, {
         originalMessageId = messageId,
         sender = sender,
         amount = tonumber(amount),
@@ -65,14 +65,14 @@ function calculateEmissions(grade, currentTime)
     local totalEmissions = 0
 
     local adjustment = 1
-    local latestEmission = EMISSIONS[#EMISSIONS] or {amount = 0, timestamp = 0}
+    local latestEmission = EMISSIONS[#EMISSIONS] or { amount = 0, timestamp = 0 }
     if latestEmission.timestamp + 3600 > currentTime then
         for i, emission in ipairs(EMISSIONS) do
             if currentTime - emission.timestamp <= 3600 then
                 totalEmissions = totalEmissions + emission.amount
             end
         end
-        adjustment = HOURLY_EMISSION_LIMIT / math.max(HOURLY_EMISSION_LIMIT/100, totalEmissions) -- 10k
+        adjustment = HOURLY_EMISSION_LIMIT / math.max(HOURLY_EMISSION_LIMIT / 100, totalEmissions) -- 10k
     end
     return 100 * grade * adjustment
 end
@@ -90,7 +90,6 @@ function sendLlamaToken(amount, recipient, currentTime)
         timestamp = currentTime
     })
 end
-
 
 function clearExpiredLlamas(currentTime)
     for llamaId, llama in pairs(LLAMAS) do
@@ -111,25 +110,25 @@ function isMessageProcessing(messageId)
 end
 
 function getHighestPriorityUnprocessedMessage()
-    table.sort(MESSAGES_TO_SEND, function(a, b) return a.amount > b.amount end)
-    
-    for _, message in ipairs(MESSAGES_TO_SEND) do
+    table.sort(MESSAGES_TO_PROCESS, function(a, b) return a.amount > b.amount end)
+
+    for _, message in ipairs(MESSAGES_TO_PROCESS) do
         if not isMessageProcessing(message.originalMessageId) then
             return message
         end
     end
-    
+
     return nil
 end
 
 function dispatchHighestPriorityMessage(currentTime)
     clearExpiredLlamas(currentTime)
-    
+
     local highestPriorityMessage = getHighestPriorityUnprocessedMessage()
     if highestPriorityMessage then
         local messageId = highestPriorityMessage.originalMessageId
         local llamaFound = false
-        
+
         for llamaId, llama in pairs(LLAMAS) do
             if not llama.busyWithMessage then
                 llama.busyWithMessage = messageId
@@ -145,19 +144,17 @@ function dispatchHighestPriorityMessage(currentTime)
                 break
             end
         end
-        
+
         if not llamaFound then
-            table.insert(MESSAGES_TO_SEND, 1, highestPriorityMessage)
+            table.insert(MESSAGES_TO_PROCESS, 1, highestPriorityMessage)
         end
     end
 end
 
-
-
 Handlers.add(
     "CreditNoticeHandler",
     Handlers.utils.hasMatchingTag("Action", "Credit-Notice"),
-    function (msg)
+    function(msg)
         if msg.From == AOCREDITS_PROCESS then
             processCreditNotice(msg)
             dispatchHighestPriorityMessage(msg.Timestamp)
@@ -169,11 +166,11 @@ Handlers.add(
 Handlers.add(
     "LlamaResponseHandler",
     Handlers.utils.hasMatchingTag("Action", "Llama-Response"),
-    function (msg)
+    function(msg)
         local grade = tonumber(msg.Grade)
         local recipient = msg['Original-Sender']
         local originalMessageId = msg['Original-Message']
-    
+
         local tokenAmount = calculateEmissions(grade, msg.Timestamp)
         sendLlamaToken(tokenAmount, recipient, msg.Timestamp)
         removeMessageAndResetLlama(originalMessageId)
@@ -206,7 +203,7 @@ Handlers.add(
 Handlers.add(
     "CronHandler",
     Handlers.utils.hasMatchingTag("Action", "Cron-Tick"),
-    function (msg)
+    function(msg)
         clearOldEmissions(msg.Timestamp)
         clearExpiredLlamas(msg.Timestamp)
     end

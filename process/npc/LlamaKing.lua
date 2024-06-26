@@ -8,17 +8,13 @@ LLAMA_BANKER_PROCESS = LLAMA_BANKER_PROCESS or "TODO: BankerProcessId"
 LLAMA_FED_CHAT_PROCESS = LLAMA_FED_CHAT_PROCESS or "TODO: ChatProcessId"
 
 LLM_WORKERS = LLM_WORKERS or {
-    ['4zQMuZlze_PoKcffdLTkXLv90_DusEENofq3Bg-hHQk'] = {
-        busyWithMessage = nil,
-        submittedTimestamp = nil,
-    },
-    ['FAKEWORKER2'] = {
-        busyWithMessage = nil,
-        submittedTimestamp = nil,
-    }
+    -- ['FAKEWORKER2'] = {
+    --     busyWithMessage = nil,
+    --     submittedTimestamp = nil,
+    -- }
 }
 
-MESSAGES_TO_SEND = {
+MESSAGES_TO_PROCESS = {
     -- [oriingalMessageId] = {
     --     originalMessageId = '1',
     --     originalSender = 'wallet',
@@ -31,6 +27,7 @@ MESSAGES_TO_SEND = {
 function clearExpiredLlamas(currentTime)
     for llamaId, llama in pairs(LLM_WORKERS) do
         if llama.busyWithMessage and currentTime - llama.submittedTimestamp >= 600 then
+            print("Llama " .. llamaId .. " is expired!")
             llama.busyWithMessage = nil
             llama.submittedTimestamp = nil
         end
@@ -47,9 +44,9 @@ function isMessageProcessing(messageId)
 end
 
 function getHighestPriorityUnprocessedMessage()
-    table.sort(MESSAGES_TO_SEND, function(a, b) return a.timestamp < b.timestamp end)
+    table.sort(MESSAGES_TO_PROCESS, function(a, b) return a.timestamp < b.timestamp end)
 
-    for _, message in pairs(MESSAGES_TO_SEND) do
+    for _, message in pairs(MESSAGES_TO_PROCESS) do
         if not isMessageProcessing(message.originalMessageId) then
             return message
         end
@@ -64,7 +61,6 @@ function dispatchHighestPriorityMessage(currentTime)
     local highestPriorityMessage = getHighestPriorityUnprocessedMessage()
     if highestPriorityMessage then
         local messageId = highestPriorityMessage.originalMessageId
-        local llamaFound = false
 
         for llamaId, llama in pairs(LLM_WORKERS) do
             if not llama.busyWithMessage then
@@ -77,22 +73,16 @@ function dispatchHighestPriorityMessage(currentTime)
                     ['Original-Message'] = highestPriorityMessage.originalMessageId,
                     Data = highestPriorityMessage.content
                 })
-                llamaFound = true
                 break
             end
-        end
-
-        -- TODO: Check if this is correct? Shouldn't we have to delete it rather than reinserting it?
-        if not llamaFound then
-            table.insert(MESSAGES_TO_SEND, 1, highestPriorityMessage)
         end
     end
 end
 
 function removeMessageAndResetLlama(messageId)
-    for _, message in pairs(MESSAGES_TO_SEND) do
+    for _, message in pairs(MESSAGES_TO_PROCESS) do
         if message.originalMessageId == messageId then
-            MESSAGES_TO_SEND[message.originalMessageId] = nil
+            MESSAGES_TO_PROCESS[message.originalMessageId] = nil
         end
     end
 
@@ -118,17 +108,29 @@ Handlers.add(
         if (not originalMessageId) then
             return print("No original message id found")
         end
-        if (MESSAGES_TO_SEND[originalMessageId] ~= nil) then
+        if (MESSAGES_TO_PROCESS[originalMessageId] ~= nil) then
             return print("Message already exists")
         end
 
-        MESSAGES_TO_SEND[originalMessageId] = {
+        local messageToSend = {
             originalMessageId = originalMessageId,
             originalSender = msg.Tags['Original-Sender'],
             originalSenderName = msg.Tags['Original-Sender-Name'],
             timestamp = msg.Timestamp,
             content = msg.Data,
         }
+
+        MESSAGES_TO_PROCESS[originalMessageId] = messageToSend
+
+        local useSender = messageToSend.originalSenderName or messageToSend.originalSender
+        ao.send({
+            Target = LLAMA_FED_CHAT_PROCESS,
+            Tags = {
+                Action = 'ChatMessage',
+                ['Author-Name'] = 'Llama King',
+            },
+            Data = 'To my loyal subject ' .. useSender .. ', please allow me a few minutes to ponder your petition...',
+        })
 
         dispatchHighestPriorityMessage(msg.Timestamp)
     end
@@ -139,6 +141,41 @@ function isLlmWorker(processId)
 end
 
 Handlers.add(
+    "InferenceCommentHandler",
+    Handlers.utils.hasMatchingTag("Action", "Inference-Comment"),
+    function(msg)
+        if (not isLlmWorker(msg.From)) then
+            return print("Not a Llama Worker")
+        end
+
+        local comment = msg.Data
+        local originalMessageId = msg.Tags['Original-Message']
+        if (not originalMessageId) then
+            return print("No original message id found")
+        end
+        if (not MESSAGES_TO_PROCESS[originalMessageId]) then
+            return print("Message not found")
+        end
+
+        local originalSender = MESSAGES_TO_PROCESS[originalMessageId].originalSender
+        local originalSenderName = MESSAGES_TO_PROCESS[originalMessageId].originalSenderName
+
+        local useSender = originalSenderName or originalSender
+        ao.send({
+            Target = LLAMA_FED_CHAT_PROCESS,
+            Tags = {
+                Action = 'ChatMessage',
+                ['Author-Name'] = 'Llama King',
+            },
+            Data = 'Attention ' ..
+                useSender ..
+                ', witness my response to your petition: \r\n' ..
+                comment .. '\r\nThe Llama Banker will arrange your payment shortly ;)',
+        })
+    end
+)
+
+Handlers.add(
     "InferenceResponseHandler",
     Handlers.utils.hasMatchingTag("Action", "Inference-Response"),
     function(msg)
@@ -146,19 +183,18 @@ Handlers.add(
             return print("Not a Llama Worker")
         end
 
-        local grade = tonumber(msg.Tags.Grade)
+        local grade = msg.Tags.Grade
         local reason = msg.Data
         local originalMessageId = msg.Tags['Original-Message']
         if (not originalMessageId) then
             return print("No original message id found")
         end
-        if (not MESSAGES_TO_SEND[originalMessageId]) then
+        if (not MESSAGES_TO_PROCESS[originalMessageId]) then
             return print("Message not found")
         end
 
-        local originalSender = MESSAGES_TO_SEND[originalMessageId].originalSender
-        local originalSenderName = MESSAGES_TO_SEND[originalMessageId].originalSenderName
-        local useSender = originalSenderName or originalSender
+        local originalSender = MESSAGES_TO_PROCESS[originalMessageId].originalSender
+        local originalSenderName = MESSAGES_TO_PROCESS[originalMessageId].originalSenderName
 
         removeMessageAndResetLlama(originalMessageId)
 
@@ -166,21 +202,22 @@ Handlers.add(
             Target = LLAMA_BANKER_PROCESS,
             Tags = {
                 Action = "Grade-Petition",
-                Grade = tostring(grade),
+                Grade = grade,
                 ['Original-Message'] = originalMessageId,
                 ['Original-Sender'] = originalSender,
                 ['Original-Sender-Name'] = originalSenderName,
             }
         })
 
-        ao.send({
-            Target = LLAMA_FED_CHAT_PROCESS,
-            Tags = {
-                Action = 'ChatMessage',
-                ['Author-Name'] = 'Llama King',
-            },
-            Data = 'Dearest ' .. useSender .. ', here is my response to your petition: \r\n' .. reason,
-        })
+        -- local useSender = originalSenderName or originalSender
+        -- ao.send({
+        --     Target = LLAMA_FED_CHAT_PROCESS,
+        --     Tags = {
+        --         Action = 'ChatMessage',
+        --         ['Author-Name'] = 'Llama King',
+        --     },
+        --     Data = 'Attention ' .. useSender .. ', witness my response to your petition: \r\n' .. reason,
+        -- })
 
         dispatchHighestPriorityMessage(msg.Timestamp)
     end
@@ -195,7 +232,6 @@ Handlers.add(
 )
 
 -- Schema
-
 
 function PetitionSchemaTags()
     return [[
