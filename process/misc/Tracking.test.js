@@ -73,14 +73,14 @@ test("Tracking-Login too early", async () => {
   const reply = result.Messages[0];
 
   const actionValue = reply.Tags.find((tag) => tag.name === "Action").value;
-  assert.equal(actionValue, "Login-Reward");
+  assert.equal(actionValue, "Login-Info");
   const messageValue = reply.Tags.find((tag) => tag.name === "Message").value;
   assert.equal(messageValue, "No Reward");
   const quantityTag = reply.Tags.find((tag) => tag.name === "Quantity");
   assert.equal(quantityTag, undefined);
 });
 
-test("Tracking-Login after Threshold", async () => {
+test("Tracking-Login after threshold", async () => {
   const result = await Send({
     Action: "Tracking-Login",
     Timestamp: afterThresholdTimestamp,

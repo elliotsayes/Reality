@@ -121,7 +121,7 @@ Handlers.add(
       Send({
         Target = msg.From,
         Tags = {
-          Action = "Login-Reward",
+          Action = "Login-Info",
           Message = "No Reward",
         },
       })
