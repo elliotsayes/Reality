@@ -88,7 +88,7 @@ function dispatchHighestPriorityMessage(currentTime)
                     Action = 'ChatMessage',
                     ['Author-Name'] = 'Llama King',
                 },
-                Data = "Oh dear " .. useSender .. ", I'm teribly busy! I'll get to your petition in due time..."
+                Data = "Oh dear " .. useSender .. ", I'm terribly busy! I'll get to your petition in due time..."
             })
         end
     end
@@ -206,7 +206,7 @@ Handlers.add(
             return print("No original message id found")
         end
         if (not MESSAGES_TO_PROCESS[originalMessageId]) then
-            return print("Message not found")
+            return print("Message not found: " .. (originalMessageId or '<nil>'))
         end
 
         local originalSender = MESSAGES_TO_PROCESS[originalMessageId].originalSender
