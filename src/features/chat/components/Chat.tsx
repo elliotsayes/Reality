@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useRef } from "react";
 import { Message } from "../contract/model";
 import { truncateAddress } from "@/features/arweave/lib/utils";
+import { ProfileInfo } from "@/features/profile/contract/model";
 
 const highlightedAuthorIds = [
   "kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA", // KingDummy
@@ -19,6 +20,7 @@ const queryPageSize = 10;
 
 interface ChatProps {
   userAddress: ArweaveId;
+  userProfile?: ProfileInfo;
   historyIndex?: number;
   chatClient: ChatClient;
   newMessages: Array<Message>;
@@ -27,6 +29,7 @@ interface ChatProps {
 
 export function Chat({
   userAddress,
+  userProfile,
   historyIndex,
   chatClient,
   newMessages,
@@ -94,7 +97,10 @@ export function Chat({
             if (message === undefined || message === "") return;
             await chatClient.postMessage({
               Content: message,
-              AuthorName: userAddress.slice(0, 6),
+              AuthorName:
+                userProfile?.DisplayName ??
+                userProfile?.Username ??
+                userAddress.slice(0, 6),
             });
             setTimeout(() => {
               messageHistoryQuery.refetch();

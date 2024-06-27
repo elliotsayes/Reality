@@ -38,7 +38,7 @@ export function Renderer({
       initialVerseId,
       clients: {
         aoContractClientForProcess,
-        profileRegistryClient: profileRegistryClient,
+        profileRegistryClient,
         verseClientForProcess,
         chatClientForProcess,
       },
@@ -57,6 +57,7 @@ export function Renderer({
         {current.context.currentVerseId && (
           <Chat
             userAddress={userAddress}
+            userProfile={profileInfo}
             chatClient={chatClientForProcess(current.context.currentVerseId!)}
             historyIndex={current.context.initialChatMessageOffset}
             newMessages={current.context.chatMessages}
