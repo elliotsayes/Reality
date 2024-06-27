@@ -170,7 +170,7 @@ Handlers.add(
             return print("No original message id found")
         end
         if (not MESSAGES_TO_PROCESS[originalMessageId]) then
-            return print("Message not found")
+            return print("Message not found: " .. (originalMessageId or '<nil>'))
         end
 
         local originalSender = MESSAGES_TO_PROCESS[originalMessageId].originalSender
@@ -271,6 +271,7 @@ function PetitionSchemaTags()
     },
     "Quantity": {
       "type": "number",
+      "default": 0.001,
       "minimum": 0.001,
       "maximum": 0.1,
       "title": "Wrapped $AR offering (0.001-0.1).",

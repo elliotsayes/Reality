@@ -44,17 +44,18 @@ function CommentPetition(userPrompt)
   local commentBuilder = ""
   for i = 1, CommentMaxResponse do
     commentBuilder = commentBuilder .. Llama.next()
-    comment = string.match(commentBuilder, "(.*)<|end|>.*")
+    comment = string.match(commentBuilder, "(.*)<|.*")
         or string.match(commentBuilder, "(.*%w.*)\n.*")
-        or string.match(commentBuilder, "(.*)<|user|>.*")
-        or string.match(commentBuilder, "(.*)<|assistant|>.*")
-        or string.match(commentBuilder, "(.*)<|system|>.*")
 
     if comment then break end
   end
 
+  if not comment and string.len(commentBuilder) > 10 then
+    return commentBuilder .. ' [rambles on...]'
+  end
+
   if not comment or string.len(comment) < 3 then
-    print("No comment in: " .. commentBuilder)
+    print("Not usable: " .. (comment or '<nil>'))
     return DefaultResponse.Comment
   end
 
