@@ -36,7 +36,7 @@ const afterThresholdTimestamp = (
   new Date().getTime() + TWENTYTHREE_HOURS_HALF_MS
 ).toString();
 
-test("Tracking-Login initial", async () => {
+test("Tracking-Login initial, first time reward", async () => {
   const result = await Send({
     Action: "Tracking-Login",
     Timestamp: intialTimestamp,
@@ -63,7 +63,7 @@ test("Tracking-Login initial", async () => {
   assert.equal(quantityValue2, "5000000000000");
 });
 
-test("Tracking-Login too early", async () => {
+test("Tracking-Login too early, no reward", async () => {
   const result = await Send({
     Action: "Tracking-Login",
     Timestamp: tooEarlyTimestamp,
@@ -80,7 +80,7 @@ test("Tracking-Login too early", async () => {
   assert.equal(quantityTag, undefined);
 });
 
-test("Tracking-Login after threshold", async () => {
+test("Tracking-Login after threshold, daily reward", async () => {
   const result = await Send({
     Action: "Tracking-Login",
     Timestamp: afterThresholdTimestamp,
