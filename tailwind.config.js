@@ -17,6 +17,12 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        "undead-pixel": ["Undead\\ Pixel\\ 11", "sans-serif"],
+      },
+      fontSize: {
+        "22px": "1.375rem",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

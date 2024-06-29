@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 @layer base {
+  @font-face {
+    font-family: "Undead Pixel 11";
+    src: url("/fonts/Undead\ Pixel\ 11.ttf"), format("truetype");
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;

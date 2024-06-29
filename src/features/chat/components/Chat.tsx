@@ -126,6 +126,7 @@ export function Chat({
           />
           <Button className="chat-send-button" type="submit">
             <div className="chat-send-button-inner-text">Send</div>
+            <div className="chat-send-button-back"></div>
           </Button>
         </form>
       </Form>
@@ -162,7 +163,10 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
         className={`chat-msg-line ${owner ? "my-line" : "other-line"}`}
       >
         {!owner && (
-          <img className="chat-msg-portrait" src="llamaland_profilePic.png" />
+          <img
+            className="chat-msg-portrait"
+            src="llamaland_profilePic_8bit.png"
+          />
         )}
 
         <div>
@@ -181,6 +185,7 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
           >
             <div className="chat-bubble-tail-graphic"></div>
             <div className="chat-inner-text">{data.message}</div>
+            <div className="highlight-message-back"></div>
           </div>
 
           <div className={`chat-msg-time ${owner ? "my-line" : "other-line"}`}>
@@ -189,7 +194,10 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
         </div>
 
         {owner && (
-          <img className="chat-msg-portrait" src="llamaland_profilePic.png" />
+          <img
+            className="chat-msg-portrait"
+            src="llamaland_profilePic_8bit_user.png"
+          />
         )}
       </div>,
     );
