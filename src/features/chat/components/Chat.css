@@ -1,3 +1,12 @@
+@font-face {
+  font-family: "Undead Pixel 11";
+  src: url(/fonts/Undead\ Pixel\ 11.ttf);
+}
+@font-face {
+  font-family: "Undead Pixel 8";
+  src: url(/fonts/Undead\ Pixel\ 8.ttf);
+}
+
 .chat-page {
   display: flex;
   flex-direction: column;
@@ -11,6 +20,7 @@
 
 .chat-page-messages-container {
   display: flex;
+  gap: 16px;
   flex-direction: column;
   align-items: flex-start;
   width: 350px;
@@ -22,33 +32,129 @@
   overflow-y: auto;
   margin-top: 20px;
   margin-right: 15px;
+  /* font style */
+  font-size: 16px;
+  line-height: 16px;
+  font-family: "Undead Pixel 8", sans-serif;
+  /* variables */
+  --before-after-div-distance: 3px;
+  --background-color: rgb(65, 67, 72);
+  --inner-text-padding-x: 12px;
+  --inner-text-padding-y: 6px;
+}
+
+.chat-page-messages-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-page-messages-container::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 10px;
+}
+
+.chat-page-messages-container::-webkit-scrollbar-thumb {
+  background-color: darkgray;
+  border-radius: 10px;
+}
+
+.chat-page-messages-container::-webkit-scrollbar-thumb:hover {
+  background-color: gray;
 }
 
 .chat-msg-line {
   display: flex;
-  column-gap: 10px;
+  column-gap: 14px;
   align-items: center;
   margin-bottom: 3px;
 }
 
 .chat-message {
+  /* properties */
   display: flex;
   align-items: center;
   column-gap: 10px;
   max-width: 250px;
-  overflow: hidden;
   word-break: break-word;
-  background-color: rgb(65, 67, 72);
-  border-radius: 20px;
-  padding: 5px 15px;
+  padding: var(--before-after-div-distance);
   color: white;
-  font-size: 16px;
+  position: relative;
+  /* font style */
+  font-size: 22px;
+  line-height: 22px;
+  font-family: "Undead Pixel 11", sans-serif;
+}
+
+.chat-message::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(2 * var(--before-after-div-distance));
+  right: calc(2 * var(--before-after-div-distance));
+  background-color: var(--background-color);
+}
+
+.chat-message::after {
+  content: "";
+  position: absolute;
+  top: calc(2 * var(--before-after-div-distance));
+  bottom: calc(2 * var(--before-after-div-distance));
+  left: 0;
+  right: 0;
+  background-color: var(--background-color);
+}
+
+.chat-bubble-tail-graphic {
+  position: absolute;
+  height: calc(2 * var(--before-after-div-distance));
+  width: calc(2 * var(--before-after-div-distance));
+  background-color: var(--background-color);
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.chat-bubble-tail-graphic::before {
+  content: "";
+  position: absolute;
+  height: var(--before-after-div-distance);
+  width: var(--before-after-div-distance);
+  background-color: var(--background-color);
+  right: 100%;
+  top: 0;
+}
+
+.chat-bubble-tail-graphic::after {
+  content: "";
+  position: absolute;
+  height: var(--before-after-div-distance);
+  width: var(--before-after-div-distance);
+  background-color: var(--background-color);
+  top: 100%;
+  right: 0;
+}
+
+.my-message .chat-bubble-tail-graphic {
+  right: auto;
+  left: calc(100% + var(--before-after-div-distance));
+  transform-origin: 0 0;
+  transform: scaleX(-1) translateX(calc(-1 * var(--before-after-div-distance)))
+    translateY(-50%);
+}
+
+.chat-inner-text {
+  position: relative;
+  z-index: 1;
+  background-color: var(--background-color);
+  width: 100%;
+  padding: var(--inner-text-padding-y) var(--inner-text-padding-x);
 }
 
 .chat-msg-header {
   display: flex;
   align-items: center;
   column-gap: 10px;
+  margin-bottom: 4px;
 }
 
 .chat-msg-portrait {
@@ -66,7 +172,6 @@
 
 .chat-msg-address {
   color: gray;
-  font-size: 12px;
 }
 
 .other-line {
@@ -84,7 +189,7 @@
 
 .my-message {
   border-bottom-right-radius: 0;
-  background-color: green;
+  --background-color: rgb(41, 148, 71);
 }
 
 .highlight-message {
@@ -97,12 +202,17 @@
 
 .chat-msg-time {
   display: flex;
-  font-size: 13px;
   color: gray;
-  margin-top: -3px;
+  margin-top: 4px;
 }
 
 .chat-page-send-container {
+  /* variables */
+  --before-after-div-distance: 3px;
+  --background-color: rgb(65, 67, 72);
+  --inner-text-padding-x: 12px;
+  --inner-text-padding-y: 6px;
+  /* properties */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -114,20 +224,70 @@
   flex-grow: 1;
   border-radius: 10px;
   border: 1px solid rgb(85, 103, 169);
-  padding: 5px 10px;
+  padding: 8px 16px;
   margin-right: 20px;
   height: 42px;
+  /* font style */
+  font-size: 16px;
+  line-height: 16px;
+  font-family: "Undead Pixel 8", sans-serif;
 }
 
 .chat-send-button {
   width: 90px;
   height: 40px;
-  font-size: 18px;
-  color: black;
-  background-color: rgb(189, 239, 189);
-  border-radius: 10px;
-  border: 2px solid rgb(46, 75, 180);
+  background-color: transparent;
   margin-left: 10px;
+  position: relative;
+  border-radius: 0px;
+  padding: var(--before-after-div-distance);
+  /* font style */
+  font-size: 16px;
+  line-height: 16px;
+  font-family: "Undead Pixel 8", sans-serif;
+}
+
+.chat-send-button:hover {
+  background-color: transparent;
+  --background-color: rgb(85, 103, 169);
+}
+
+.chat-send-button:active {
+  background-color: transparent;
+  transform: translateY(var(--before-after-div-distance));
+}
+
+.chat-send-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(2 * var(--before-after-div-distance));
+  right: calc(2 * var(--before-after-div-distance));
+  background-color: var(--background-color);
+}
+
+.chat-send-button::after {
+  content: "";
+  position: absolute;
+  top: calc(2 * var(--before-after-div-distance));
+  bottom: calc(2 * var(--before-after-div-distance));
+  left: 0;
+  right: 0;
+  background-color: var(--background-color);
+}
+
+.chat-send-button-inner-text {
+  position: absolute;
+  left: var(--before-after-div-distance);
+  right: var(--before-after-div-distance);
+  top: var(--before-after-div-distance);
+  bottom: var(--before-after-div-distance);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--background-color);
 }
 
 .chat-page-list-container {
@@ -161,12 +321,10 @@
 }
 
 .chat-page-list-nickname {
-  font-size: 16px;
   font-weight: 600;
 }
 
 .chat-page-list-addr {
-  font-size: 12px;
   color: gray;
 }
 

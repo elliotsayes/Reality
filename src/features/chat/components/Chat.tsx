@@ -125,7 +125,7 @@ export function Chat({
             )}
           />
           <Button className="chat-send-button" type="submit">
-            Send
+            <div className="chat-send-button-inner-text">Send</div>
           </Button>
         </form>
       </Form>
@@ -179,7 +179,8 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
           <div
             className={`chat-message ${owner ? "my-message" : highlighted ? "highlight-message" : "other-message"}`}
           >
-            {data.message}
+            <div className="chat-bubble-tail-graphic"></div>
+            <div className="chat-inner-text">{data.message}</div>
           </div>
 
           <div className={`chat-msg-time ${owner ? "my-line" : "other-line"}`}>
