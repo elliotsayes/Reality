@@ -19,6 +19,7 @@ module.exports = {
     extend: {
       fontFamily: {
         "undead-pixel": ["Undead\\ Pixel\\ 11", "sans-serif"],
+        "Press-Start-2P": ["Press\\ Start\\ 2P", "sans-serif"],
       },
       fontSize: {
         "22px": "1.375rem",
