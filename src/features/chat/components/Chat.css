@@ -258,9 +258,14 @@
 }
 
 .chat-input-message {
+  /* variables */
+  --background-color: rgb(255, 255, 255);
+  /* properties */
   flex-grow: 1;
-  border-radius: 10px;
-  border: 1px solid rgb(85, 103, 169);
+  overflow: visible;
+  border-radius: 0px;
+  background-color: var(--background-color);
+  border: none;
   padding: 8px 16px;
   margin-right: 20px;
   height: 42px;

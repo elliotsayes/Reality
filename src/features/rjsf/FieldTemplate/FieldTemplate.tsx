@@ -58,7 +58,7 @@ export default function FieldTemplate<
       uiSchema={uiSchema}
       registry={registry}
     >
-      <div className="mb-4 block font-undead-pixel text-22px">
+      <div className="mb-4 block">
         {displayLabel && (
           <label
             htmlFor={id}
