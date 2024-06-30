@@ -2,7 +2,7 @@
 
 local json = require("json")
 
-ModelID = "ISrbGzQot05rs_HKC08O_SmkipYQnqgB1yC3mjZZeEo"
+ModelID = ModelID or "ISrbGzQot05rs_HKC08O_SmkipYQnqgB1yC3mjZZeEo"
 Llama = Llama or nil
 
 InferenceAllowList = {
@@ -34,9 +34,11 @@ function Init()
 
   print("Loading model: " .. ModelID)
   Llama.load("/data/" .. ModelID)
+
   local initialPrompt = PrimePromptText(JsonSystemPrompt)
   print("Initial Prompt: " .. initialPrompt)
   Llama.setPrompt(initialPrompt)
+
   print("Save state")
   Llama.saveState()
 end
@@ -123,6 +125,7 @@ Handlers.add(
       Data = comment,
     })
 
+    print("Load state")
     Llama.loadState()
   end
 )
