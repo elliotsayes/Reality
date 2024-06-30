@@ -156,16 +156,25 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
     const data = messageList[i];
     const owner = data.address == userAddress;
     const highlighted = highlightedAuthorIds.includes(data.address);
+    const isKing =
+      data.address === "kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA";
 
     divs.push(
       <div
         key={data.id}
         className={`chat-msg-line ${owner ? "my-line" : "other-line"}`}
       >
-        {!owner && (
+        {!owner && !isKing && (
           <img
             className="chat-msg-portrait"
             src="llamaland_profilePic_8bit.png"
+          />
+        )}
+
+        {isKing && (
+          <img
+            className="chat-msg-portrait"
+            src="llamaland_profilePic_8bit_king.png"
           />
         )}
 
@@ -181,7 +190,7 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
           </div>
 
           <div
-            className={`chat-message ${owner ? "my-message" : highlighted ? "highlight-message" : "other-message"}`}
+            className={`chat-message ${isKing ? "king-message" : ""} ${owner ? "my-message" : highlighted ? "highlight-message" : "other-message"}`}
           >
             <div className="chat-bubble-tail-graphic"></div>
             <div className="chat-inner-text">{data.message}</div>

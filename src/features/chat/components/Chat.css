@@ -23,6 +23,7 @@
   --before-after-div-distance: 3px;
   --background-color: rgb(65, 67, 72);
   --chat-page-messages-background-color: #e6c9b3;
+  --highlight-color: #ffffff;
   --secondary-text: rgb(140, 125, 96);
   --inner-text-padding-x: 12px;
   --inner-text-padding-y: 6px;
@@ -122,7 +123,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: white;
+  background-color: var(--highlight-color);
 }
 
 .highlight-message .highlight-message-back::before {
@@ -133,7 +134,7 @@
   bottom: calc(-1 * var(--before-after-div-distance));
   left: var(--before-after-div-distance);
   right: var(--before-after-div-distance);
-  background-color: white;
+  background-color: var(--highlight-color);
 }
 
 .highlight-message .highlight-message-back::after {
@@ -144,7 +145,7 @@
   bottom: var(--before-after-div-distance);
   left: calc(-1 * var(--before-after-div-distance));
   right: calc(-1 * var(--before-after-div-distance));
-  background-color: white;
+  background-color: var(--highlight-color);
 }
 
 .chat-bubble-tail-graphic {
@@ -176,6 +177,11 @@
   background-color: var(--background-color);
   top: 100%;
   right: 0;
+}
+
+.king-message {
+  --background-color: #b70000;
+  --highlight-color: #ffea4b;
 }
 
 .my-message .chat-bubble-tail-graphic {
