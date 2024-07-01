@@ -16,7 +16,7 @@ export const Route = createRootRoute({
       </div>
       <hr /> */}
       <Outlet />
-      <Toaster />
+      <Toaster position="bottom-left" />
       {import.meta.env.DEV && (
         <>
           <TanStackRouterDevtools />
