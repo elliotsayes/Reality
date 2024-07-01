@@ -3,12 +3,19 @@
 @tailwind utilities;
 
 @layer base {
+  @font-face {
+    font-family: "Undead Pixel 11";
+    src: url("/fonts/Undead\ Pixel\ 11.ttf"), format("truetype");
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
+
+    --brown-custom: #e6c9b3;
 
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
@@ -41,6 +48,8 @@
 
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
+
+    --brown-custom: #53473e;
 
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;

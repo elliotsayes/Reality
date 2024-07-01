@@ -81,8 +81,8 @@ export const SchemaForm = ({
 
   return (
     <div className={`${isSubmitting ? "animate-pulse" : ""}`}>
-      <p className=" text-xl text-primary">{methodSchema.Title}</p>
-      <p className=" text-md text-secondary-foreground">
+      <p className="text-primary font-Press-Start-2P">{methodSchema.Title}</p>
+      <p className="text-22px text-secondary-foreground font-undead-pixel leading-none mt-2">
         {methodSchema.Description}
       </p>
       <Form
