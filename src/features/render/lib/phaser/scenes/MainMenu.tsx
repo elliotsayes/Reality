@@ -6,6 +6,7 @@ import { emitSceneEvent, emitSceneReady } from "../../EventBus";
 import { ButtonOnce } from "@/features/render/components/ButtonOnce";
 import { Size2D } from "../../model";
 import { LoginResult } from "@/features/tracking/contract/model";
+import { toast } from "sonner";
 
 export class MainMenu extends WarpableScene {
   background!: GameObjects.Image;
@@ -63,6 +64,10 @@ export class MainMenu extends WarpableScene {
 
   showLoginResult(loginResult: LoginResult) {
     console.log("MainMenu.showLoginResult", loginResult);
+    if (!loginResult.HasReward) {
+      toast("Daily reward already claimed :)");
+      return;
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
