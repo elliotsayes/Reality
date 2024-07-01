@@ -33,7 +33,7 @@ export function LoginMenu({
 
   return (
     <TooltipProvider>
-      <Card>
+      <Card className="border-[1px] border-[#512b1f]">
         <CardHeader>
           <CardTitle>{loginTitle ?? "Login with an Arweave wallet"}</CardTitle>
         </CardHeader>
