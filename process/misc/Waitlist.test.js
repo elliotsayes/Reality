@@ -26,6 +26,13 @@ test("load source", async () => {
   assert.equal(result.Output.data.output, "Loaded Waitlist Protocol");
 });
 
+test("load tracking", async () => {
+  const code = fs.readFileSync("./misc/Tracking.lua", "utf-8");
+  const result = await Send({ Action: "Eval", Data: code });
+
+  assert.equal(result.Output.data.output, "Loaded Tracking");
+});
+
 test("WaitlistState empty waitlist", async () => {
   const result = await Send({
     Read: "Waitlist-State",
@@ -304,12 +311,12 @@ test("Run migration", async () => {
     Action: "Eval",
     Data: "require('json').encode(WaitlistDbAdmin:exec('SELECT * FROM Waitlist'))",
   });
-  console.log(dbResult.Output.data.output);
   assert.deepEqual(JSON.parse(dbResult.Output.data.output), [
     {
       TimestampCreated: 10003,
-      Flagged: 0,
+      Authorised: 0,
       WalletId: "OWNER",
+      Flagged: 0,
       Id: 1,
       Claimed: 0,
       TimestampLastBumped: 86410105,
@@ -317,8 +324,9 @@ test("Run migration", async () => {
     },
     {
       TimestampCreated: 10006,
-      Flagged: 0,
+      Authorised: 0,
       WalletId: "ANOTHER",
+      Flagged: 0,
       Id: 2,
       Claimed: 0,
       TimestampLastBumped: 0,

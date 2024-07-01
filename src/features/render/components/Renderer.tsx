@@ -9,11 +9,13 @@ import { renderMachine } from "../machines/renderMachine";
 import { Chat } from "@/features/chat/components/Chat";
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import { ProfileInfo } from "@/features/profile/contract/model";
+import { createTrackingClient } from "@/features/tracking/contract/trackingClient";
 
 interface RendererProps {
   userAddress: ArweaveId;
   aoContractClientForProcess: AoContractClientForProcess;
   profileRegistryClient: ProfileRegistryClient;
+  trackingClient: ReturnType<typeof createTrackingClient>;
   verseClientForProcess: ReturnType<typeof createVerseClientForProcess>;
   chatClientForProcess: ReturnType<typeof createChatClientForProcess>;
   initialVerseId?: string;
@@ -24,6 +26,7 @@ export function Renderer({
   userAddress,
   aoContractClientForProcess,
   profileRegistryClient,
+  trackingClient,
   verseClientForProcess,
   chatClientForProcess,
   initialVerseId,
@@ -39,6 +42,7 @@ export function Renderer({
       clients: {
         aoContractClientForProcess,
         profileRegistryClient,
+        trackingClient,
         verseClientForProcess,
         chatClientForProcess,
       },

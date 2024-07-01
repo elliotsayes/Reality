@@ -5,12 +5,15 @@ import { WarpableScene } from "./WarpableScene";
 import { emitSceneEvent, emitSceneReady } from "../../EventBus";
 import { ButtonOnce } from "@/features/render/components/ButtonOnce";
 import { Size2D } from "../../model";
+import { LoginResult } from "@/features/tracking/contract/model";
 
 export class MainMenu extends WarpableScene {
   background!: GameObjects.Image;
   logo!: GameObjects.Image;
   title!: GameObjects.Text;
   logoTween!: Phaser.Tweens.Tween | null;
+
+  warpButton!: GameObjects.DOMElement;
 
   constructor() {
     super("MainMenu");
@@ -47,15 +50,19 @@ export class MainMenu extends WarpableScene {
       <ButtonOnce
         elementSize={buttonSize}
         onClick={cb}
-        children="Warp to Llama Land"
+        children="Login to Llama Land"
       />,
     );
 
-    this.add
+    this.warpButton = this.add
       .dom(camera.width / 2, camera.height / 2 + 100, memElement)
       .setOrigin(0.5);
 
     emitSceneReady(this);
+  }
+
+  showLoginResult(loginResult: LoginResult) {
+    console.log("MainMenu.showLoginResult", loginResult);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
