@@ -22,7 +22,8 @@
     "deploy-all-chat": "concurrently \"npm:aos-s-load-chat WeaveWorld\" \"npm:aos-s-load-chat OriginIsland\" \"npm:aos-s-load-chat LlamaFed\"",
     "deploy-all-specific": "concurrently \"npm:aos-s-load-specific Singularity 0\" \"npm:aos-s-load-specific Universe 1\" \"npm:aos-s-load-specific WeaveWorld 2\" \"npm:aos-s-load-specific OriginIsland 3\" \"npm:aos-s-load-specific LlamaFed 4\" \"npm:aos-s-load-specific LlamaAssistant 5\"",
     "deploy-all": "concurrently \"npm:deploy-all-verse\" \"npm:deploy-all-chat\" \"npm:deploy-all-specific\"",
-    "aos-l": "func() { aos ${1} --wallet ./.secret/deploy_llama_jwk.json --module=\"BlucTh6AJQvcbhNPa1t1UpNgHTM7UEmR0czYdAdCxXg\" ; }; func"
+    "aos-l": "func() { aos ${1} --wallet ./.secret/deploy_llama_jwk.json --module=\"BlucTh6AJQvcbhNPa1t1UpNgHTM7UEmR0czYdAdCxXg\" ; }; func",
+    "aos-l2": "func() { aos ${1} --wallet ./.secret/deploy_llama_jwk.json --module=\"AtNqNtLRykLvvgE9WsOe9Ua6xQRcRZIYWF8p5I09gws\" ; }; func"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.4.2",

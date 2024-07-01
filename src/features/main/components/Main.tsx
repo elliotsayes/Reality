@@ -10,6 +10,7 @@ import { createVerseClientForProcess } from "@/features/verse/contract/verseClie
 import { mainMachine } from "../machines/mainMachine";
 import { useMachine } from "@xstate/react";
 import ProfileButton from "@/features/profile/components/ProfileButton";
+import { createTrackingClientForProcess } from "@/features/tracking/contract/trackingClient";
 
 const profileRegistryProcessId = import.meta.env
   .VITE_PROFILE_PROCESS_ID as string;
@@ -23,6 +24,9 @@ interface MainProps {
 export default function Main({ wallet, disconnect, verseId }: MainProps) {
   const profileRegistryClient = createProfileRegistryClientForProcess(wallet)(
     profileRegistryProcessId,
+  );
+  const trackingClient = createTrackingClientForProcess(wallet)(
+    import.meta.env.VITE_TRACKING_TEST_PROCESS_ID,
   );
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -43,6 +47,7 @@ export default function Main({ wallet, disconnect, verseId }: MainProps) {
       userAddress={wallet.address}
       aoContractClientForProcess={createAoContractClientForProcess(wallet)}
       profileRegistryClient={profileRegistryClient}
+      trackingClient={trackingClient}
       verseClientForProcess={createVerseClientForProcess(wallet)}
       chatClientForProcess={createChatClientForProcess(wallet)}
       initialVerseId={verseId}

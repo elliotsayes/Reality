@@ -26,6 +26,13 @@ test("load source", async () => {
   assert.equal(result.Output.data.output, "Loaded Waitlist Protocol");
 });
 
+test("load tracking", async () => {
+  const code = fs.readFileSync("./misc/Tracking.lua", "utf-8");
+  const result = await Send({ Action: "Eval", Data: code });
+
+  assert.equal(result.Output.data.output, "Loaded Tracking");
+});
+
 test("WaitlistState empty waitlist", async () => {
   const result = await Send({
     Read: "Waitlist-State",
@@ -287,4 +294,43 @@ test("WaitlistState Unknown user", async () => {
   assert.equal(replyData.RankDesc.length, 2);
   assert.equal(replyData.Count, 2);
   assert.equal(replyData.UserPosition, 0);
+});
+
+test("Run migration", async () => {
+  const code = fs.readFileSync("./misc/WaitlistMigration1.lua", "utf-8");
+  const result = await Send({ Action: "Eval", Data: code });
+
+  assert.equal(result.Output.data.output, "Loaded Migration1 Script");
+
+  await Send({
+    Action: "Eval",
+    Data: "WaitlistDbMigration1()",
+  });
+
+  const dbResult = await Send({
+    Action: "Eval",
+    Data: "require('json').encode(WaitlistDbAdmin:exec('SELECT * FROM Waitlist'))",
+  });
+  assert.deepEqual(JSON.parse(dbResult.Output.data.output), [
+    {
+      TimestampCreated: 10003,
+      Authorised: 0,
+      WalletId: "OWNER",
+      Flagged: 0,
+      Id: 1,
+      Claimed: 0,
+      TimestampLastBumped: 86410105,
+      BumpCount: 2,
+    },
+    {
+      TimestampCreated: 10006,
+      Authorised: 0,
+      WalletId: "ANOTHER",
+      Flagged: 0,
+      Id: 2,
+      Claimed: 0,
+      TimestampLastBumped: 0,
+      BumpCount: 0,
+    },
+  ]);
 });

@@ -17,6 +17,8 @@ import {
 import { MessageHistory } from "@/features/chat/contract/model";
 import { VerseState } from "../lib/load/model";
 import { ProfileInfo } from "@/features/profile/contract/model";
+import { TrackingClient } from "@/features/tracking/contract/trackingClient";
+import { LoginResult } from "@/features/tracking/contract/model";
 
 export const renderMachine = setup({
   types: {
@@ -29,6 +31,7 @@ export const renderMachine = setup({
         profileRegistryClient: ProfileRegistryClient;
         verseClientForProcess: VerseClientForProcess;
         chatClientForProcess: ChatClientForProcess;
+        trackingClient: TrackingClient;
       };
       setVerseIdUrl: (verseId: string) => void;
     },
@@ -42,6 +45,7 @@ export const renderMachine = setup({
         profileRegistryClient: ProfileRegistryClient;
         verseClientForProcess: VerseClientForProcess;
         chatClientForProcess: ChatClientForProcess;
+        trackingClient: TrackingClient;
       };
       setVerseIdUrl: (verseId: string) => void;
 
@@ -53,8 +57,11 @@ export const renderMachine = setup({
         mainMenu?: MainMenu;
         verseScene?: VerseScene;
       };
+      loginResult?: LoginResult;
 
       targetVerseId?: string;
+      initialVerseState?: VerseState;
+
       currentVerseId?: string;
       lastEntityUpdate?: Date;
 
@@ -68,6 +75,7 @@ export const renderMachine = setup({
     events: {} as
       | { type: "Scene Ready"; scene: Phaser.Scene }
       | { type: "Warp Immediate"; verseId: string }
+      | { type: "Login"; verseId: string }
       // | { type: 'Warp Overlap Start', verseId: string }
       | { type: "Update Position"; position: Array<number> }
       | { type: "Registration Confirmed" },
@@ -121,6 +129,13 @@ export const renderMachine = setup({
     startMainMenu: ({ context }) => {
       context.currentScene?.scene.start("MainMenu");
     },
+    assignLoginResult: assign((_, params: { loginResult: LoginResult }) => {
+      const { loginResult } = params;
+      return { loginResult };
+    }),
+    showLoginResult: ({ context }) => {
+      context.typedScenes.mainMenu!.showLoginResult(context.loginResult!);
+    },
     startVerseScene: (
       { context },
       params: {
@@ -157,6 +172,16 @@ export const renderMachine = setup({
       assertEvent(event, "Warp Immediate");
       return { targetVerseId: event.verseId };
     }),
+    assignInitialVerseState: assign(
+      (
+        _,
+        params: {
+          verse: VerseState;
+        },
+      ) => {
+        return { initialVerseState: params.verse };
+      },
+    ),
     assignTargetVerseIdFromInitialVerseId: assign(({ context }) => ({
       targetVerseId: context.initialVerseId,
     })),
@@ -255,6 +280,18 @@ export const renderMachine = setup({
     },
     hasNextPosition: ({ context }) => {
       return context.nextPosition !== undefined;
+    },
+    isAuthorised: (
+      _,
+      params: {
+        loginResult: LoginResult;
+      },
+    ) => {
+      const { loginResult } = params;
+      return loginResult.IsAuthorized;
+    },
+    noLoginReward: ({ context }) => {
+      return !context.loginResult?.HasReward;
     },
   },
   actors: {
@@ -382,9 +419,27 @@ export const renderMachine = setup({
         });
       },
     ),
+    trackingLogin: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          trackingClient: TrackingClient;
+        };
+      }) => {
+        const result = await input.trackingClient.login();
+        // return {
+        //   IsAuthorized: true,
+        //   HasReward: true,
+        //   Reward: 100 * (Math.pow(10, 12),
+        //   Message: "You got a reward!",
+        // };
+        return result;
+      },
+    ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QCcwDsJmQWQIYGMALASzTAGIBlfdMAAgCUxcIBPAbQAYBdRUABwD2sYgBdigtHxAAPRAFYAnAEYAdAA51igEy752gMyL5WgDQhWiALTL1qgGzqDB+-ZcAWAOxL7n9QF9-c1QMLDwiUgpqWkZmNnZlXiQQIRFxSWk5BGVtRU9VThU85WNteUd3c0sEGztHZ1cPb0V7HUDg9EwcAhIyKhoyWJYObSSBYTEJKWSs3QN85WV7eU53Q04lRSrrWwcnFzd7Lx8j9pAQrvDeqIH6JmH2AzGUifTp0CyDd2VODVyj7SeFRzTzbbIGVQHTyudzueTzdycbT2M4XMI9SKqACSaEmuAANuQuM9UpMMjNEIDFKp5O5NJ4DOptIVFFp5GDAfl7IDOEZ1Kt5AyDKjOuiImRsWg6ABxXAAWzAkroeFIyvQAFdJXjCQB1XDIfh0LFyhUQYi4URgYnSUlvTKIZSIiGcHKcTTKPw-TygiyIbkQtyLRSKNaeZQmbQi0LdcWKnEy+VxqUq5Ma1QAGUELDoADUsLAKBBJIrSAA3QQAa0VaJj1yVsoVSpTarQmsz2bzyALCDLgnwFqmxOtyVtU3t2UR8khvM8ZVn7iO7N9CHU0MhR0U82U8zys6jlwxEvjDaTdAACqh8VmulrxASiTwba8xxSELS6stt679ECDGCjr8BicAynhIjo2iIoo+5inWx6JkqF5gFeLBYLe5qEgkJLPuSHyIOo3IaGsjjyNu9JHP+sIOAYOSuMis6eO4UFBOcoq1picGNvGiHITe7YQLm+aFsWqi9lWqg1lc7FSieCGXteqF8QJXZgD2aDlv2bxDo+I7Ye8sh+i6NL6HS+jaDkdJ-suq52PCO7LECKiOtBbFHtJ8Hxp2BZ0NEEp6gapBQGh95+YaxqmualrDuMaQvrh2TqI6qgtN6ZTGN43rqP+ii-NlsIqMBKiaJGzESYep4yR5gnebcqghQFGbXkpBbkEWEqidWrGSa5CacVKnn0D5ip1WggWKf1qnqQOkhaVhMU4fp8VlDSLh5M4OgqCRYLgQUgLhmZDFGGUzldeV7l9VVg2qAAomg4iiKwdAACKCAA7mgPHYhA+IUDIsCiBaiq4AAZpayAABQ-JwnAAJTkKVsb1mdTUDTVN13Q9z1vR9WJfVa2nRWSemzIy+TImZQG+BUmj-poqjfOo5SMiYtjHWViO9cj1W0Ndt1iBjr3vdeqgAKr8BAAN0GjkxwC1wnteJnVsxxp79VzEpS-dT0Cx9ovi5aku8+IcATX2U1oDNT5zUTlKOtSRjzG6jL-C0YLeO4qg-EsZRe18C6swjytKqrl1nviuCsFg566aoZ66XQACK6pgEnn3feQusS7HVtRS8VvjrohlwkUQJuAyS7VNuBjaDS3wenO8j6Ky-uwW5HPBzVofh5HWeEzHcei9juPkEwUDEH9yBm3QADCkhA8QyCmjno7zbMtL2NOwFhqBjJAZUy45MGBSOu4FMFaBKIlYrAetyrF0d2HEfIFHVt91bdAD0LGf6z3byy21amVg6tGE67Nb7KTVoqTuj9n69x-lMd+-AdZi0zrpE2GlBw8CXrpfOtI7bQlKFoVYXxy4OlpGoN0rJcicHqKcS+wClY3yDnfbmUDu7RzgZIBBH17hsAfLNQm+cnDuzdHCFY1F8JfB9BXJ0kISIMy8FXc+7hm5SR6mAryl0NYPRHmPUQE83hBQwvjXOAjXzaCcOvBECVCq6G0GCQU68WiOiRAYFYSgTAqO6hVc64DNGG20WAUe48zaqB0X9LAAU-4lgAWJeGLc1FMN8ajfxsQgl6JCWE0GAU0FmwtjpPOZjoTu0bmUVoTgdDKFdnSDQs4SgmW+LoTwnjTpt2YerFJmT9FTFqrgSYI06BA0EE-fAs9iByjNuQX6-1LSqGBqDCGUMYZwyvvE7xnM-Ho1Sborpkgel9KgAMoZdARloDnuMzSxjl7WwQLvOwCUBTckdOUEhCA-Du3DHScxDd5hGCYh0eh18EmVSSdzKehALR0AVLAWAuAYCwEMXwy2pi4rOCUDSfkwY8iuEyvvZk7tYQujdF8hcbpmmgMSRomqYKIVQphXC1Q0owCiEhXAOl9ARnqlulEkSMSgEHkBWs9uoLwXMtpbCuADKmUsuheK45ghOWiByRc7gWCCkosBHYMyGwKkLlWpZCuRgpx6CcGyWknoyWB2BZS4VNLWXivhTjNOUyAazJBlgBZUNYZxNUYKtpipqWirtfSx1eN+F2lfF8JkBRBSMgXICE+4YwThnmKoBidTd4MVAgEOh-LVlIyFRKAN0q2XwrBWAfAFY6BkBesW+13L5beq8fmv1qgi1ivpWWitVawA1vbcbXs6DpqYMudgiNRwITqG+K0QwLQ2T6odG4KcRxER7TWJuVwgRmJoEEJgeAyRG1gCReGuKuhqSbChvCEMQIShghsH4DQ1E-BlK0L85ROaYJSW1Ee2KC1OQ0mDBeowXgihJvKElaEUMviMhZMBC1N9v0r0QHCaurgSLUWZD+TcSalrxrDFuBuHoq5waBcmXpqZWwIeuduFYdNbBXoTc4eYYI1hLqUNRfQDdrFNPfS5Fpp5mzYDTDiL9+TkULWPu8loAHp1Q2hPYtFCUlhOEhm4WExG1kCbTGNQSlHxzOPIY0pk1FlhOCkYgbwvxtzapDK4ewSJ5DqaRpp1sqhKD-WQMygth7RPHvE3yWjWgvAMecGZ7IUNqTMkWMyZkRgSgX3+bmn1SMADyohCCR0GrpiNeVVC5F3KuXwGxKnLnmPkaiSIgQMk-FixzHNuLyWQFluKKxfioa-Bhqk86EBrrpluVxxh+S0jfQlj9Ta6tyRQsgQxTWFoATpnCBi3ytBMi2MuRm6LjC8n5OY1oyhaunnq5N1z7nmXOfVDNrIDNSYDd5PMWkgIXkl1TSUEuJQvhSf27JJCDXjv6k836i7CgQwOF8CBFQ07GJJqRNXRYjpQKhkXNxkbvHyVcQm7xRq-VAdvmyqm6hjpoPcgZKt6oi2j5V0nFoZErjPshuxyRX4LoIyMUneZRNJXErJrsztlKtIHM8ZAZanx1qyDY49LsZKs53HpT8ByHI-7oTekXJuHwtPhco25sNKAYvoSONB6lQUgpZdre+AUfChhmQMxMJoNX6yapa+mz5n9WRbBHAcEsWwTPgzGX-OYumhRwzfKoasW3Xmen+RGg1DsOmneIfiuGD2RRnnZUN6FwbHtGQJQ1c4MoxVkeC8YVajXvl9T8HqiFO3tAxcJTsF+NYmgNjlD3hXDY1cIJASrnZ2c4FQ8tq0VrLG15sdarUPbLNTspP2HsZRQwDSNiuMOntgXDCSOV-aZszGgsWCp28wTXzswYupseRTaEk7qbLkDEZeHfIeTzF7yC9ffMB9b4gCLZB+sNbEDgMPk+68E2sidlhCWFdhcAC0ZgZhr3vxF0gQfjYTVRMX30pEKHyBnHcUKGAnMSh0YkhH5BKEFBaBMEcCgOLxgK7ifg4TQFfkJgTiTiTmHyeQKDu022ylnBxQrm3HXiZHQLpCJxcGIIgRjlgPIPYTjkTmTjjFxnoM3EYOaBWBYMwNxVAnA0UR5G8BWCRxYgBTzVaQf1IOgQoKoLeC4SH1j2uQglZA3m9A9C213iTQ4Lx2ohKHb2W353zxX19V0MELIJgQMQoOMO3zp1MPznsA9BwIXC8GWBIlsGbwdF0GEWRFWGRGBB+GFGXwFWbU8NYWEJfj8I-m3y-noAoOHwsQcDDA9FcEKAAheWTRskK0YgYkMED34JDiEJ8O6VyMQSFh4WqD32d0pDszPRDFZH5Aq0MC60dATwZAgjWF2nwlgzSO0PURIJ5k2U6TNmHzDHXhKXKAAIqWYwglTR3nDBV2BBaGaOSVWMCW2RCWEzvHxGKK+DpnMMVxPjdBeRImrnxxnR3jiPi00MSzGyWIEP7zWIMWelFyCIjU9gKG5ybwjB+BeV8GEUnV5FSgSjUwWKSx0OgJWKf1BO6UyQiRGg2IYg9hIhMAblaBdBJz9EZCSmREFDKF5GAg3UxMBIpWWJBKuOCQMT1H2UOWGVGXOR-SuXznwTpjsyZGsl-BpJXEMHm0Yl5DXSDDz3+NGz4w5IELbSDW-0hPVSWEhEYmDDhCrggin33moV+DpAkSUC2zyHOJtUDRlWDVxDuOx1RS5EcNhDkTKAbjsK8A0EWGOB5Gyk3AdMLRFVrXpUZSdLZTlQVXdORHdne2NPhF+Ow28HRR+CcFyG9BaFSLcPSOxOWO1OdIlUCN6LjwaGrlEUNQOholC2TXyEgh0BPmrO8HDP9UjL7VLXSy7WrSjN1MrOuRcFyCSnuU9CgwUIrjQySmMA9GW2MHJItUkL1N-SjTWCrkI2oVhHMRiJuQsOMC8BW3+ApIvkCCAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QCcwDsJmQWQIYGMALASzTAGIBlfdMAAgCUxcIBPAbQAYBdRUABwD2sYgBdigtHxAAPRAFYAnAEYAdAA51igEy752gMyL5WgDQhWiALTL1qgGzqDB+-ZcAWAOxL7n9QF9-c1QMLDwiUgpqWkZmNnZlXiQQIRFxSWk5BGVtRU9VThU85WNteUd3c0sEGztHZ1cPb0V7HUDg9EwcAhIyKhoyWJYObSSBYTEJKWSs3QN85WV7eU53Q04lRSrrWwcnFzd7Lx8j9pAQrvDeqIH6JmH2AzGUifTp0Cz3Tl9VA3d5AwrTycTzabzbGqKVTaXz2ZTfdzLYGKJxnC5hHqRVQASTQk1wABtyFxnqlJhkZogwVD5O5NJ4DOptIUUcYIWD8vYwZwjOpVvIGQY0Z0MREyDi0HQAOK4AC2YAldDwpCV6AArhL8USAOq4ZD8OjY2XyiDEXCiMAk6Rkt6ZRDKAzw1RKdyLQzaJmOrYWBTqNSKP5+XSeRReb7C0LdMUK3HSuUxyXKxPq1SUQiCADupCgdAAMoIoCqmLA1QTRKp8yw6AA1LCwCgQSQK0gAN0EAGsFeio9dFTL5Yqk6q0Bq05ns3mC0W4KXy5WIDW62AEK3BPhzVMSVbkjapnbsn97AU-ooVGV5MpPO5vdVFipoUYweUviswRHLpjxbH+wmlbgVdgKZjlmaA5vmhaSsWs6qLWyD1kMbDkLq+qGsakBmha27jGke6UtkrhHoyrquE4rTAgYEIOvI8jOp4QaFNRoYMu+oq9t+8aDv+yYjqoAAqyAEO2E7gaQ5CNuKq6dqo3ZXFi7EDrGQ6ATx-GCcJU5oCuaBtuubxbjw1qvLhHz2jC+TqNez5+CGvgQn6NEok4fJuO4ziLCxPZyZKP6cQBKaqfgQmgZOEFiU2qiSV2IqeV+3kcYpXHDhqAVBWBGlaTpG6SFuiSGThFImfhnCcL8BGKN8LqrDeiDqOUqjGF8BHUYC6ieB5smxXGCmSgACqgBKCCwWCauIhLEgZO5GQVsgKHSDjLA6OQbNSFE+ggRwlQYILzJwuS6F8ijtZ+v4+bGfVgANQ3ICNZpEgkpJTe8M0IOoXIaGsjgXoyrVHBCRzuA4jowlyvhgteR3Rn28W9f1g1dBWcOLnBDbhZF0nRR1J3Q3Q52XfD85I-WGVrllaD6Q9+VPVk9icGo1HaHS+jaDkdKrdUrV2AC8wtAKp6LO4ENsXF3WE-Q0Tish-DZjdY2S6hJoYZaE3YeSVNUg6dh5B6jrKACazVQgnhLA+LieKDZvMsogteV1v6wfB4sKpL0sE-bKMSdpHZRZGmNQyLbt0I7qjO6BCNVm7xO6ZuPBYS8lP7sz17OmsIK1fSjQQkxvzlM4QYegzQpBOcGPHX7dtLoHtyqAAomg4iiKwdAACKZmgeM4hABIUDIsCiOaCq4AAZhayAABTwsVACU5AyaX8nl8jle0DXddiI3LcZm3cMd13se7tNsxG2oZmGCYoKeBCRsGKoV50ZZ3xwiU1udadkoB0Htf1+vrftwAqvwEB+50E-pMOAYUPZtikrPSG89FTvyriAhuzcf7b3-oAi0wDV7iDgJHUm5M8qqwTl4a+vI-SAj8EyZQl8QyqFcpwP09D4R0VOEXaBQtbZwIrkHHqBJcCsCwDjR6qgeqPToAARTVGASRO8KBoKASIyme9HoJ30DRREdDHRKBMPYSi5CNDkRMHMFoSxn5Y39lwquPC+ECIUarYRoj-7t2xJ3CgTBCy9wEm8OgABhSQg9iDIBNEo+OeEPTAl+BsH6WgWh+h0WtB0DNfiuThFyZ8u0BasJLjA4WC8HaWN4fw5AgjKb2MpnQRxqCAHyMeuA5snsoFZPYa-UWS9xRWMKcUuxtivEVJYKoORGDulTFwXpGOys46ENCa1EhTJIn0K5LVC+8TyhHldOVZQXglghhMKYsunDF7cIKTYoRQzJDlP4O3e4iFgmTMKpouw9CebUQ2XSOJt41h1AYV8RkixGTaF2bA2M8Dl6IMbm44gHjSYyzuuM-easECOhpr8EMOhXJ+BBA6P6u1oTlTPqecqYJ7AApyfsvJIKsFgrAO40QnipiqHBb3LA2ZakRXqd7D82SOFAoseSr+sRqW0skPSqlEKR7ZhGdHbgNzbR4S2poZ0fwXDMxDHRBm1CAaW0ZBsXa1F-jEq5W-Hl4pQX8tFYKtAwd-ziGCoPQQRT8B+OILKUm5Ae59wtKoIeI9x7FU4NPNhNtmnAuNRS01kK3iWsmDau1dAHVoH8c60ZFNbnPVztoDQutygbPhMROyhRaEWVpinZVl59VBqNQqbxhBzR0HlLAWAuAYCwGheNZNMq7n1GdK9HNLQYQXkoroKEZsdABgDIyHQRLMk+zniS7lByq5VprXWhtTbVBSjAKIWtcAV30AdWqOuLK0YBpftjYNlbq2buXY2uAa6N1bvrde2Ngh92iAldlMZbbjKpppum5m5Q8h-HzoiSiKdnTUXSTTIwVsp0cqaaeitqhF2Xu3de5tziu6ut7v3T1w8sA+qnjPRpgb4PzuXkh+9O60MuOlV+rIWqjzfAZloT0+clm3hzgUI+HpWhKF2pOjo07OXltI+KcjV7V1VrAIFOgZAMwUdQ4etl6NBNwfMSJ89S6UMScIFJ9sMmwByfEzg1cUd31Sthco2VLRzKIhVUoMGyxKKuBKgB5kjyHQVDLdjJSQF0wgTShBWIJYywwQrlc1graCHtuehsv0qhbDfA2H8REjHdHeFodeTQ+hAzwknUXNAghMDwGSMesAUXaNUlyM6U8xUARMSKBCGwNDbDOCZPoZJfhiVanKwfKkdFqvlSS-VkolE6p5BpjyVyfIattRg6xYj8oevwv+Om1wX0lr6BDGze0SctA8hRN4JhCyvMix8yOJb+4cglHesYI41lrMQhcJ8t0TIVCTZMXNmKZjfxnY1Librk0QmFQ8yVQxSrqQmH+BCFY19bCLFpL6raeQTs-cSspUcfn1KBagmWC7eEcgomPNeM8zyrwGx0MfBqrpcjJKUCj3y3EMfjmCiJSCM4QuuyXHj4HgJr4xOm4YPwl43n2g2DRbZawzbeB1QET7vtAWJjR755nAXpzBfLAHcL3OYspPeoYxYgpgRsdMhs34VEC6AlyG4enCU-IqQEoFLHpBtdZAdN8aEDIvhrEZEqyoa1gRqG8LMlo5U3DURt4ru3Gpf5oFwGqUQ6ZkAQsgC7+0rgFinnAx6Hk1FL5Iq8MsRE1Ejh7Qj3+KPqY+7IE3We1P2R-jmULQGBm+cDDaBAwyDQhhYT0M0COsvAB5BPAjHZ1-cIzWhd3NtaMBI993ZRx+MRDLrcGcuZ0GpxrDK6deVglTW4tZkm2AwQn1gULQF4ry6GZCofjxcVMLd-LjOGw1-ujQJHXjaGWBT-ABMx3I0O3Au1jAeQ+RuMVAy8n8rpK89RN1fs69FkcUTAeR5haQnxL4Wgb4SgbISgTxWgICt94ZKAq8a8K0d9Qx5o6JuYlhUUDZ4RdB4t+ZgRJcjgBR8CLpn9rpOdkYyCSpgQ4QptGMGQDYrwaJaY28XwtAYRAQbcXEd8nRaZDFMtqdXR5BHtTddYXBdpXpVVaR5Ay9a9AcU1ZhVh00tYnB4dAMDZBdfhypeQ4RchHJ9CEMQ4oA69r8XNQRzCND9YACjxDAvCmQadZcBNYMH9SUxYq4XDoU3DbA6hmYPQARqI+QXA-oAQb4fdXQ4dnBDAnD1NLV9QXZEY3YYijB4s8hvhLxXoPpjcXotpJ8UULJHRvBZsQj5sT01MyUJY9QpZQ45YDCVZotZgNl00PM9Zips1VD4kQR8gBRdBbBzxQQMlWivs9k51OiFQTUN4t4WA3C1gaJSEqIKFmYACoRGQuQSgAxgR7Ncj1iV4+UtinFZDDDBiqRNsb5QYWpz5UijxNAuQrcdZARb9StVjDU8jNiUE+kBl6BEFiA4A3DpcCgYRNB5jLx5hqEHIBQNhR10U2g18hMSNbj2ljkgcJkXiEAW81ATDgQtCkRaCQQAYtoGY-i-QmSbiIjl4iSilTkLVuTxFJFJFdjWgChJdipuNeZKIlg1BQDNk8gAQ9A2TWkFROTOkI1eSJEpEYwniBiKtySL9hTuQaTxT4krcIkGYTBAQlA2sFTDlrEuSTkHELk4Y3DAiIkz5HBTxHAlgJS4QNB6ZbAWDyhyhrT8lbSVS6VeTekIAZE3DQw1Bx1vAEjCgyIB0k4LTdB9gWg1hgyOSjk7SSkIzHTISqlBlLNtTesEUlg98LY-Q+RaQVAajdZACtAuRedypb5C5lj5dZ1QTCTcywyhUCzLk4hqgyz4VchnAHBfUAwShFkod4lx9KSUlqRmQ9o9C8TVNcl2SQ0+UGUaVSY68tovgFVkllU8hFiT9dtyoVDc5eZjBszty14w09yI1X9boDzdY7A6FGEAwtAPBod5gbCTCYclhnx7yNjQ1dzzVVAW4yADy9iChlgXAQLGpLw-pTxaEEl5ii8g8wK7jHzIKoVdymVQIDzCg7BGzWgQQjhWoeQ-ojhoRqIg9dZdZ6Eli79Qj2jNzFS8KkECKI1dQo0cxbV7VHVE0v04V9wkdr4i8x0URuZVg7I5o75HlpjnlcKxMtM4TnidTAQjyLSWRPDChQRKIQCHBGoRCziWT1KL15NV1XzCQDzPTAYuRrwjZXRvgGzUT4tGoaYig-h3J1ywi1ityNNkMH1V110wqd0n0X0DyTA7B9LTxDKtZdFip6o6D3TER0zoNOz19hNbiNLwqb10MyttLyyntVkaZd8fy8h1BRs3ohD4RTxZklAOz2K2jvtwjuLCrKNEMdNpNZNbKtLRzJLjA+du19gtpLxj9llSjxCPA3AQx9gAUtTSSdT85aF3RUSEQPk-dqheR6paQgwR1lhao8t-AgA */
   id: "renderMachine",
 
   context: ({ input }) => ({
@@ -406,35 +461,105 @@ export const renderMachine = setup({
             Initial: {
               on: {
                 "Warp Immediate": {
-                  target: "Load Verse",
+                  target: "Tracking Login",
+                  reenter: true,
                   actions: "assignTargetVerseId",
                 },
               },
             },
 
-            "Load Verse": {
-              invoke: {
-                src: "loadVerse",
-                input: ({ context }) => ({
-                  verseClient: context.clients.verseClientForProcess(
-                    context.targetVerseId!,
-                  ),
-                  profileRegistryClient: context.clients.profileRegistryClient,
-                  phaserLoader: context.currentScene!.load,
-                  profileInfo: context.playerProfile,
-                }),
+            "Showing Login Result": {
+              initial: "Load Verse",
 
-                onDone: {
-                  target: "Start Verse Scene",
-                  actions: {
-                    type: "startVerseScene",
-                    params: ({ event }) => event.output,
+              states: {
+                "Load Verse": {
+                  invoke: {
+                    src: "loadVerse",
+                    input: ({ context }) => ({
+                      verseClient: context.clients.verseClientForProcess(
+                        context.targetVerseId!,
+                      ),
+                      profileRegistryClient:
+                        context.clients.profileRegistryClient,
+                      phaserLoader: context.currentScene!.load,
+                      profileInfo: context.playerProfile,
+                    }),
+
+                    onDone: {
+                      target: "Verse Ready",
+                      actions: {
+                        type: "assignInitialVerseState",
+                        params: ({ event }) => ({
+                          verse: event.output.verse,
+                        }),
+                      },
+                    },
+                  },
+                },
+
+                "Verse Ready": {
+                  on: {
+                    "Warp Immediate": {
+                      target:
+                        "#renderMachine.In Game.In Main Menu.Start Verse Scene",
+                      actions: "assignTargetVerseId",
+                    },
+                  },
+
+                  always: {
+                    target:
+                      "#renderMachine.In Game.In Main Menu.Start Verse Scene",
+                    guard: "noLoginReward",
                   },
                 },
               },
+
+              entry: "showLoginResult",
             },
 
-            "Start Verse Scene": {},
+            "Tracking Login": {
+              invoke: {
+                src: "trackingLogin",
+                input: ({ context }) => ({
+                  trackingClient: context.clients.trackingClient,
+                }),
+                onDone: [
+                  {
+                    target: "Showing Login Result",
+
+                    guard: {
+                      type: "isAuthorised",
+                      params: ({ event }) => ({
+                        loginResult: event.output,
+                      }),
+                    },
+
+                    actions: {
+                      type: "assignLoginResult",
+                      params: ({ event }) => ({
+                        loginResult: event.output,
+                      }),
+                    },
+                  },
+                  {
+                    target: "Unauthorised",
+                    reenter: true,
+                  },
+                ],
+              },
+            },
+
+            Unauthorised: {},
+
+            "Start Verse Scene": {
+              entry: {
+                type: "startVerseScene",
+                params: ({ context }) => ({
+                  verseId: context.targetVerseId!,
+                  verse: context.initialVerseState!,
+                }),
+              },
+            },
           },
 
           initial: "Initial",
@@ -465,7 +590,15 @@ export const renderMachine = setup({
             },
 
             "Start Main Menu": {},
-            "Start Verse Scene": {},
+            "Start Verse Scene": {
+              entry: {
+                type: "startVerseScene",
+                params: ({ context }) => ({
+                  verseId: context.targetVerseId!,
+                  verse: context.initialVerseState!,
+                }),
+              },
+            },
             "Load Verse": {
               invoke: {
                 input: ({ context }) => ({
@@ -480,8 +613,10 @@ export const renderMachine = setup({
                 onDone: {
                   target: "Start Verse Scene",
                   actions: {
-                    type: "startVerseScene",
-                    params: ({ event }) => event.output,
+                    type: "assignInitialVerseState",
+                    params: ({ event }) => ({
+                      verse: event.output.verse,
+                    }),
                   },
                 },
               },

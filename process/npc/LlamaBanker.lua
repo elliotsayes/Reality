@@ -16,6 +16,8 @@ WRAPPED_ARWEAVE_MULTIPLIER = 10 ^ WRAPPED_ARWEAVE_DENOMINATION
 WRAPPED_ARWEAVE_MIN_QUANTITY = 1000000000   -- 1 Billion
 WRAPPED_ARWEAVE_MAX_QUANTITY = 100000000000 -- 100 Billion
 
+MAXIMUM_PETITIONS_PER_DAY = 2
+
 LLAMA_KING_PROCESS = LLAMA_KING_PROCESS or "TODO: LlamaKingProcessId"
 
 LLAMA_FED_CHAT_PROCESS = LLAMA_FED_CHAT_PROCESS or "TODO: ChatProcessId"
@@ -25,6 +27,7 @@ LLAMA_FED_CHAT_PROCESS = LLAMA_FED_CHAT_PROCESS or "TODO: ChatProcessId"
 SQLITE_TABLE_WAR_CREDIT = [[
   CREATE TABLE IF NOT EXISTS WarCredit (
     MessageId TEXT PRIMARY KEY,
+    Timestamp INTEGER,
     Sender TEXT,
     Quantity INTEGER
   );
@@ -43,10 +46,10 @@ function InitDb()
   BankerDb:exec(SQLITE_TABLE_EMISSIONS)
 end
 
-ChatInitialized = ChatInitialized or false
-if (not ChatInitialized) then
+BankerInitialized = BankerInitialized or false
+if (not BankerInitialized) then
   InitDb()
-  ChatInitialized = true
+  BankerInitialized = true
 end
 
 --#endregion
@@ -87,11 +90,48 @@ Handlers.add(
     local senderName = msg.Tags['X-Sender-Name']
     local petition = msg.Tags['X-Petition']
 
+    -- Check most recent credit in Db
+    -- Sender is generated from a trusted process
+    local lastDayCredits = BankerDbAdmin:exec(
+      "SELECT * FROM WarCredit WHERE Sender = '" ..
+      sender .. "' ORDER BY Timestamp DESC LIMIT " .. tostring(MAXIMUM_PETITIONS_PER_DAY)
+    )
+    if (#lastDayCredits >= MAXIMUM_PETITIONS_PER_DAY) then
+      local lastCreditTimestamp = lastDayCredits[1].Timestamp
+      if ((msg.Timestamp - lastCreditTimestamp) < (23 * 60 * 60 * 1000)) then
+        print("Credit too soon, last: " .. lastCreditTimestamp .. ", current: " .. msg.Timestamp)
+        -- Return $wAR to sender
+        Send({
+          Target = WRAPPED_ARWEAVE_TOKEN_PROCESS,
+          Tags = {
+            Action = 'Transfer',
+            Target = msg.Tags.Sender,
+            Quantity = msg.Tags.Quantity,
+          },
+        })
+        -- Write in chat
+        Send({
+          Target = LLAMA_FED_CHAT_PROCESS,
+          Tags = {
+            Action = 'ChatMessage',
+            ['Author-Name'] = 'Llama Banker',
+          },
+          Data = 'Sorry ' ..
+              (senderName or sender) ..
+              ', but you can only petition the Llama King ' ..
+              tostring(MAXIMUM_PETITIONS_PER_DAY) .. ' times per day!' ..
+              ' But don\'t worry, I\'ll return your ' .. FormatWarTokenAmount(quantity) .. ' wrapped $AR to you 🦙🤝🪙' ..
+              ' Come back and try again tomorrow!',
+        })
+        return -- Don't save to db or forward to the Llama King
+      end
+    end
+
     -- Save metadata
     local stmt = BankerDb:prepare(
-      "INSERT INTO WarCredit (MessageId, Sender, Quantity) VALUES (?, ?, ?)"
+      "INSERT INTO WarCredit (MessageId, Timestamp, Sender, Quantity) VALUES (?, ?, ?, ?)"
     )
-    stmt:bind_values(messageId, sender, quantity)
+    stmt:bind_values(messageId, msg.Timestamp, sender, quantity)
     stmt:step()
     stmt:finalize()
 
@@ -115,7 +155,9 @@ Handlers.add(
         ['Author-Name'] = 'Llama Banker',
       },
       Data = 'The court acknowledges an offering of ' ..
-          FormatWarTokenAmount(quantity) .. ' wrapped $AR from ' .. (senderName or sender) .. '!',
+          FormatWarTokenAmount(quantity) .. ' wrapped $AR from ' .. (senderName or sender) .. '!' ..
+          ' This is petition ' ..
+          tostring(#lastDayCredits + 1) .. ' out of ' .. MAXIMUM_PETITIONS_PER_DAY .. ' from your allowance for today.',
     })
   end
 )
@@ -129,7 +171,7 @@ function CalculateBaseEmissions(currentTime)
   return baseEmissions
 end
 
-function SendLlamaToken(amount, recipient, currentTime)
+function RecordEmissionsAndSendLlamaToken(amount, recipient, currentTime)
   BankerDbAdmin:exec(
     string.format(
       "INSERT INTO Emissions (Amount, Recipient, Timestamp) VALUES (%d, '%s', %d)",
@@ -169,11 +211,18 @@ Handlers.add(
     local originalQuantity = creditEntries[1].Quantity
     local quantityMultiplier = originalQuantity / WRAPPED_ARWEAVE_MAX_QUANTITY
 
-    local grade = tonumber(msg.Tags.Grade) -- 0 to 10
-    local gradeMultiplier = grade / 10
+    local grade = tonumber(msg.Tags.Grade) -- 0 to 5
+    -- local gradeMultiplier = grade / 10
 
-    local baseEmissions = CalculateBaseEmissions(msg.Timestamp)
-    local weightedEmissions = math.floor(baseEmissions * gradeMultiplier * quantityMultiplier)
+    -- local baseEmissions = CalculateBaseEmissions(msg.Timestamp)
+    -- local weightedEmissions = math.floor(baseEmissions * gradeMultiplier * quantityMultiplier)
+
+    local gradeMultiplier = 0
+    if (grade > 0) then
+      gradeMultiplier = 10 ^ grade
+    end
+    local baseEmissions = 1 * LLAMA_TOKEN_MULTIPLIER
+    local weightedEmissions = math.floor(baseEmissions * quantityMultiplier * gradeMultiplier)
 
     -- TODO: Message chat / DM
 
@@ -181,7 +230,7 @@ Handlers.add(
     local originalSenderName = msg.Tags['Original-Sender-Name']
     local useSenderName = originalSenderName or originalSender
 
-    SendLlamaToken(weightedEmissions, originalSender, msg.Timestamp)
+    RecordEmissionsAndSendLlamaToken(weightedEmissions, originalSender, msg.Timestamp)
 
     local chatMessage = 'Sorry ' ..
         useSenderName ..

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AoClient, Message, MessageWithResult } from "./aoClient";
+import { AoClient, Message, MessageResult } from "./aoClient";
 import { AoWallet } from "./aoWallet";
 import { connect } from "@permaweb/aoconnect";
 
@@ -39,7 +39,7 @@ export type AoContractClient = {
     schema?: z.Schema,
   ) => Promise<T>;
   message: (sendArgs: SendArgs) => Promise<string>;
-  messageWithResult: (sendArgs: SendArgs) => Promise<MessageWithResult>;
+  messageResult: (sendArgs: SendArgs) => Promise<MessageResult>;
 };
 
 export const createAoContractClient = (
@@ -126,7 +126,7 @@ export const createAoContractClient = (
       signer: aoWallet.signer,
     });
 
-  const messageWithResult = async (sendArgs: SendArgs) => {
+  const messageResult = async (sendArgs: SendArgs) => {
     const messageId = await aoClient.message({
       ...sendArgs,
       process: processId,
@@ -137,10 +137,7 @@ export const createAoContractClient = (
       message: messageId,
       process: processId,
     });
-    return {
-      messageId,
-      result,
-    };
+    return result;
   };
 
   return {
@@ -153,7 +150,7 @@ export const createAoContractClient = (
     dryrunReadReplyOne,
     dryrunReadReplyOneJson,
     message,
-    messageWithResult,
+    messageResult,
   };
 };
 
