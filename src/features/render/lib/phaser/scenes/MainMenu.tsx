@@ -117,7 +117,7 @@ export class MainMenu extends WarpableScene {
           this.cameras.main.height / 2 + Math.sin(i) * this.cameras.main.height,
           "coin_icon",
         )
-        .setScale(0.5);
+        .setScale(1);
       this.tweens.add({
         targets: coin,
         x: center.x,
@@ -125,6 +125,13 @@ export class MainMenu extends WarpableScene {
         duration: 2000,
         ease: "Back.easeOut",
         delay: 1000 + i * 200,
+      });
+      // Fade out the coins
+      this.tweens.add({
+        targets: coin,
+        alpha: 0,
+        duration: 1000,
+        delay: 3000 + i * 200,
       });
     }
 

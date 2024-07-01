@@ -431,7 +431,7 @@ export const renderMachine = setup({
         // return {
         //   IsAuthorized: true,
         //   HasReward: true,
-        //   Reward: 100 * (Math.pow(10, 12),
+        //   Reward: 100 * Math.pow(10, 12),
         //   Message: "You got a reward!",
         // };
         return result;
