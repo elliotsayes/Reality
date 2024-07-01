@@ -288,3 +288,41 @@ test("WaitlistState Unknown user", async () => {
   assert.equal(replyData.Count, 2);
   assert.equal(replyData.UserPosition, 0);
 });
+
+test("Run migration", async () => {
+  const code = fs.readFileSync("./misc/WaitlistMigration1.lua", "utf-8");
+  const result = await Send({ Action: "Eval", Data: code });
+
+  assert.equal(result.Output.data.output, "Loaded Migration1 Script");
+
+  await Send({
+    Action: "Eval",
+    Data: "WaitlistDbMigration1()",
+  });
+
+  const dbResult = await Send({
+    Action: "Eval",
+    Data: "require('json').encode(WaitlistDbAdmin:exec('SELECT * FROM Waitlist'))",
+  });
+  console.log(dbResult.Output.data.output);
+  assert.deepEqual(JSON.parse(dbResult.Output.data.output), [
+    {
+      TimestampCreated: 10003,
+      Flagged: 0,
+      WalletId: "OWNER",
+      Id: 1,
+      Claimed: 0,
+      TimestampLastBumped: 86410105,
+      BumpCount: 2,
+    },
+    {
+      TimestampCreated: 10006,
+      Flagged: 0,
+      WalletId: "ANOTHER",
+      Id: 2,
+      Claimed: 0,
+      TimestampLastBumped: 0,
+      BumpCount: 0,
+    },
+  ]);
+});
