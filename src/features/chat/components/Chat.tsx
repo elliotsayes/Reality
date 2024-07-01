@@ -6,7 +6,7 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Message } from "../contract/model";
 import { truncateAddress } from "@/features/arweave/lib/utils";
 import { ProfileInfo } from "@/features/profile/contract/model";
@@ -70,25 +70,28 @@ export function Chat({
     : [];
   const allMessages = messageHistory.concat(newMessages);
 
-  const initialScroll = useRef(true);
+  const lastMessageCount = useRef(0);
   const messagesRef = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (messagesRef.current) {
       if (allMessages.length === 0) return;
 
-      if (initialScroll.current) {
+      if (lastMessageCount.current === 0) {
         messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-        initialScroll.current = false;
+        lastMessageCount.current = allMessages.length;
         return;
       }
 
       // Check if the user is near the bottom
-      const atBottom =
+      const newMessage = lastMessageCount.current !== allMessages.length;
+      const nearBottom =
         messagesRef.current.scrollTop + messagesRef.current.clientHeight >=
-        messagesRef.current.scrollHeight - 100;
+        messagesRef.current.scrollHeight - 400;
       // Scroll to bottom
-      if (atBottom)
+      if (newMessage && nearBottom) {
         messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+        lastMessageCount.current = allMessages.length;
+      }
     }
   }, [allMessages]);
 
