@@ -427,7 +427,14 @@ export const renderMachine = setup({
           trackingClient: TrackingClient;
         };
       }) => {
-        return await input.trackingClient.login();
+        const result = await input.trackingClient.login();
+        // return {
+        //   IsAuthorized: true,
+        //   HasReward: true,
+        //   Reward: 100 * (Math.pow(10, 12),
+        //   Message: "You got a reward!",
+        // };
+        return result;
       },
     ),
   },
