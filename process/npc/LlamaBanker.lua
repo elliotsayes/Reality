@@ -265,21 +265,6 @@ Handlers.add(
     print('RequestBalanceMessage')
     -- If the user has no emissions, the token process might
     -- send the balance of the banker instead!!
-    local emissionsCount = BankerDbAdmin:exec(
-      "SELECT COUNT(*) as Value FROM Emissions WHERE Recipient = '" .. msg.From .. "'"
-    )[1].Value or 0
-
-    if (emissionsCount == 0) then
-      return Send({
-        Target = LLAMA_FED_CHAT_PROCESS,
-        Tags = {
-          Action = 'ChatMessage',
-          ['Author-Name'] = 'Llama Banker',
-        },
-        Data = 'Address ' ..
-            msg.From .. ', sorry but I can\'t help you till the king has personally approved some tokens for you!',
-      })
-    end
 
     Send({
       Target = LLAMA_TOKEN_PROCESS,
@@ -344,7 +329,7 @@ Schema = {
   Balance = {
     Title = "Check your $LLAMA Balance",
     Description =
-    "Llama Banker will check your $LLAMA account and write your balance in the chat. Llama Banker will only help you if you've already received some $LLAMA tokens from the Llama King.", -- TODO: nil Descriptions?
+    "Llama Banker will check your $LLAMA account and write your balance in the chat.", -- TODO: nil Descriptions?
     Schema = {
       Tags = json.decode(RequestBalanceMessageSchemaTags),
       -- Data

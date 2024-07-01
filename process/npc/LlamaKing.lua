@@ -300,7 +300,7 @@ function SchemaExternal()
             Target = WRAPPED_ARWEAVE_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
             Title = "Petition the Llama King",
             Description =
-            "Offer some wrapped $AR tokens for a chance to earn $LLAMA coin. Make sure you have enough wrapped $AR in your ao wallet, or the Llama King will ignore you!",
+            "Offer wrapped $AR tokens for a chance to earn $LLAMA coin. To wrap your $AR, go to aox.xyz",
             Schema = {
                 Tags = json.decode(PetitionSchemaTags()),
                 -- Data
