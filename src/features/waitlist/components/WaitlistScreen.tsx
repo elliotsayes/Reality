@@ -39,13 +39,15 @@ export function WaitlistScreen({ wallet }: WaitlistScreenProps) {
           muted
           loop
         />
-        <Button
-          className="absolute top-2 right-2 z-20"
-          onClick={() => setMusicPlaying(!musicPlaying)}
-          variant={"ghost"}
-        >
-          {musicPlaying ? <Volume2 /> : <VolumeX />}
-        </Button>
+        <div className="absolute top-2 right-2 z-20 text-right">
+          <Button
+            className=""
+            onClick={() => setMusicPlaying(!musicPlaying)}
+            variant={"ghost"}
+          >
+            {musicPlaying ? <Volume2 /> : <VolumeX />}
+          </Button>
+        </div>
         <div className="z-20 h-[380px] flex flex-col items-center justify-start gap-1">
           <img
             src="assets/branding/LLAMA_coin_large.png"
