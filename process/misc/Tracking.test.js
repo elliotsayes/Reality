@@ -56,7 +56,7 @@ test("Tracking-Login initial, first time reward", async () => {
   const transfer = result.Messages[1];
   assert.equal(transfer.Target, LLAMA_TOKEN_PORECESS_ID);
   const actionValue2 = transfer.Tags.find((tag) => tag.name === "Action").value;
-  assert.equal(actionValue2, "Transfer");
+  assert.equal(actionValue2, "Grant");
   const quantityValue2 = transfer.Tags.find(
     (tag) => tag.name === "Quantity",
   ).value;
@@ -97,7 +97,7 @@ test("Tracking-Login after threshold, daily reward", async () => {
   const transfer = result.Messages[1];
   assert.equal(transfer.Target, LLAMA_TOKEN_PORECESS_ID);
   const actionValue2 = transfer.Tags.find((tag) => tag.name === "Action").value;
-  assert.equal(actionValue2, "Transfer");
+  assert.equal(actionValue2, "Grant");
   const quantityValue2 = transfer.Tags.find(
     (tag) => tag.name === "Quantity",
   ).value;
