@@ -1,7 +1,6 @@
 -- ProcessId: Btm_9_fvwb7eXbQ2VswA4V19HxYWnFsYRB4gIl3Dahw
 
--- To ensure correct starting balances, load this script prior to the token blueprint.
--- To load the token blueprint:
+-- Load this source file prior to loading the token blueprint:
 -- aos> .load-blueprint token
 
 local ao = require('ao')
@@ -25,23 +24,24 @@ local utils = {
 local initialSupply = 0;
 
 Denomination = 12
-TotalSupply = utils.toBalanceValue(initialSupply * 10 ^ Denomination)
 Name = 'Llama Coin'
 Ticker = 'LLAMA'
--- Logo = '' -- TODO: 'SBCCXwwecBlDqRLUjb8dYABExTJXLieawf7m2aBJ-KY'
+Logo = '9FSEgmUsrug7kTdZJABDekwTGJy7YG7KaN5khcbwcX4'
 
--- Don't overwrite Balances
+-- Don't overwrite TotalSupply or Balances
+TotalSupply = TotalSupply or utils.toBalanceValue(initialSupply * 10 ^ Denomination)
 Balances = Balances or { [ao.id] = utils.toBalanceValue(initialSupply * 10 ^ Denomination) }
 
 -- LlamaBankerDummy
 LlamaBanker = 'ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk'
-Tracking = '7sniCE5rEM92PYgvIr0H9xK_yJf56FxSYN-eazRE__Y'
 Waitlist = '2dFSGGlc5xJb0sWinAnEFHM-62tQEbhDzi1v5ldWX5k'
+Tracking = '7sniCE5rEM92PYgvIr0H9xK_yJf56FxSYN-eazRE__Y'
 
 GrantWhitelist = {
   [LlamaBanker] = true,
-  [Tracking] = true,
   [Waitlist] = true,
+  -- TODO: Tracking will be merged into waitlist process
+  [Tracking] = true,
 }
 
 -- "grant" handler - like "mint", but adds tokens to a certain address
