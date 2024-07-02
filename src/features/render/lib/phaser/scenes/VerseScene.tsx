@@ -533,6 +533,7 @@ export class VerseScene extends WarpableScene {
     const resolvedProfile =
       (isPlayer ? this.playerProfileInfo : undefined) ?? profile;
     const displayText =
+      entity.Metadata?.DisplayName ??
       resolvedProfile?.DisplayName ??
       resolvedProfile?.Username ??
       truncateAddress(entityId, 4, 3, "…");

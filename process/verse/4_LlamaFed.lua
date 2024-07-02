@@ -47,6 +47,9 @@ VerseEntitiesStatic = {
       Type = 'SchemaExternalForm',
       Id = 'Petition',
     },
+    Metadata = {
+      DisplayName = 'Llama King',
+    },
   },
   -- LlamaBankerDummyProcess
   ['ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk'] = {
@@ -55,6 +58,9 @@ VerseEntitiesStatic = {
     Interaction = {
       Type = 'SchemaForm',
       Id = 'Balance',
+    },
+    Metadata = {
+      DisplayName = 'Llama Banker',
     },
   },
   -- ['SomePlayerProcessId'] = {
