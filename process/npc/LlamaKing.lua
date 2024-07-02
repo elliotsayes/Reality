@@ -273,8 +273,8 @@ function PetitionSchemaTags()
       "type": "number",
       "default": 0.001,
       "minimum": 0.001,
-      "maximum": 0.1,
-      "title": "Wrapped $AR offering (0.001-0.1).",
+      "maximum": 0.001,
+      "title": "Wrapped $AR offering (0.001).",
       "$comment": "1000000000000"
     },
     "X-Petition": {
