@@ -35,6 +35,7 @@ export function Chat({
   newMessages,
   onUserMessageSent,
 }: ChatProps) {
+  console.log({ historyIndex });
   const messageHistoryQuery = useInfiniteQuery({
     queryKey: [
       "messageHistory",
@@ -63,6 +64,7 @@ export function Chat({
       }
       return lowestId;
     },
+    enabled: historyIndex !== undefined,
   });
 
   const messageHistory = messageHistoryQuery.isSuccess
@@ -73,27 +75,34 @@ export function Chat({
   const lastMessageCount = useRef(0);
   const messagesRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    if (historyIndex === undefined) {
+      lastMessageCount.current = 0;
+      return;
+    }
     if (messagesRef.current) {
       if (allMessages.length === 0) return;
 
       if (lastMessageCount.current === 0) {
+        // console.log(`First scrolling to ${messagesRef.current.scrollHeight}`);
         messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
         lastMessageCount.current = allMessages.length;
         return;
       }
 
       // Check if the user is near the bottom
-      const newMessage = lastMessageCount.current !== allMessages.length;
+      const newMessages = allMessages.length - lastMessageCount.current;
       const nearBottom =
         messagesRef.current.scrollTop + messagesRef.current.clientHeight >=
-        messagesRef.current.scrollHeight - 400;
+        messagesRef.current.scrollHeight - newMessages * 250;
+      // console.log({ newMessages, nearBottom });
       // Scroll to bottom
-      if (newMessage && nearBottom) {
+      if (newMessages > 0 && nearBottom) {
+        // console.log(`New scrolling to ${messagesRef.current.scrollHeight}`);
         messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
         lastMessageCount.current = allMessages.length;
       }
     }
-  }, [allMessages]);
+  }, [allMessages, historyIndex]);
 
   const form = useForm();
 

@@ -257,8 +257,10 @@ export const renderMachine = setup({
         return { chatMessages: context.chatMessages.concat(messages) };
       },
     ),
-    clearChatMessages: assign(() => ({
+    clearChat: assign(() => ({
       chatMessages: [],
+      initialChatMessageOffset: undefined,
+      currentChatMessageOffset: undefined,
     })),
   },
   guards: {
@@ -875,7 +877,7 @@ export const renderMachine = setup({
               },
 
               initial: "Initial",
-              exit: "clearChatMessages",
+              exit: "clearChat",
             },
           },
 

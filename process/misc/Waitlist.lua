@@ -333,4 +333,35 @@ Handlers.add(
 
 --#endregion
 
+local bint = require('.bint')(256)
+
+CanLogin = function(walletId)
+  local currentRows = WaitlistDbAdmin:exec(string.format([[
+    SELECT * FROM Waitlist WHERE WalletId = '%s'
+  ]], walletId))
+  -- Get length of currentRow table
+  if (not currentRows or #currentRows == 0) then
+    return false
+  end
+
+  local currentRow = currentRows[1]
+  return currentRow.Flagged == 0 and currentRow.Authorised ~= 0
+end
+
+LLAMA_TOKEN_DENOMINATION = LLAMA_TOKEN_DENOMINATION or 12
+LLAMA_TOKEN_MULTIPLIER = 10 ^ LLAMA_TOKEN_DENOMINATION
+
+CalculateFirstLoginReward = function(walletId)
+  local currentRows = WaitlistDbAdmin:exec(string.format([[
+    SELECT * FROM Waitlist WHERE WalletId = '%s'
+  ]], walletId))
+
+  if (not currentRows or #currentRows == 0) then
+    return "0"
+  end
+
+  local currentRow = currentRows[1]
+  return tostring(bint(math.max(currentRow.BumpCount, 1) * 5 * LLAMA_TOKEN_MULTIPLIER))
+end
+
 return "Loaded Waitlist Protocol"

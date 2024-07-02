@@ -129,10 +129,10 @@ export class VerseScene extends WarpableScene {
       );
       this.wasd = keyboard.addKeys(
         {
-          left: Phaser.Input.Keyboard.KeyCodes.A,
-          right: Phaser.Input.Keyboard.KeyCodes.D,
-          up: Phaser.Input.Keyboard.KeyCodes.W,
-          down: Phaser.Input.Keyboard.KeyCodes.S,
+          // left: Phaser.Input.Keyboard.KeyCodes.A,
+          // right: Phaser.Input.Keyboard.KeyCodes.D,
+          // up: Phaser.Input.Keyboard.KeyCodes.W,
+          // down: Phaser.Input.Keyboard.KeyCodes.S,
         },
         false,
       );
@@ -669,15 +669,15 @@ export class VerseScene extends WarpableScene {
 
     const isLeft =
       //@ts-expect-error - Phaser types are wrong
-      (this.arrows?.left.isDown || this.wasd?.left.isDown) ?? false;
+      (this.arrows?.left.isDown || this.wasd?.left?.isDown) ?? false;
     const isRight =
       //@ts-expect-error - Phaser types are wrong
-      (this.arrows?.right.isDown || this.wasd?.right.isDown) ?? false;
+      (this.arrows?.right.isDown || this.wasd?.right?.isDown) ?? false;
     //@ts-expect-error - Phaser types are wrong
-    const isUp = (this.arrows?.up.isDown || this.wasd?.up.isDown) ?? false;
+    const isUp = (this.arrows?.up.isDown || this.wasd?.up?.isDown) ?? false;
     const isDown =
       //@ts-expect-error - Phaser types are wrong
-      (this.arrows?.down.isDown || this.wasd?.down.isDown) ?? false;
+      (this.arrows?.down.isDown || this.wasd?.down?.isDown) ?? false;
 
     const playerSprite = this.player.getAt(0) as Phaser.GameObjects.Sprite;
     const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
