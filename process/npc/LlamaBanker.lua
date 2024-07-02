@@ -182,7 +182,7 @@ function RecordEmissionsAndSendLlamaToken(amount, recipient, currentTime)
   )
   ao.send({
     Target = LLAMA_TOKEN_PROCESS,
-    Action = "Transfer",
+    Action = "Grant",
     Recipient = recipient,
     Quantity = tostring(amount)
   })

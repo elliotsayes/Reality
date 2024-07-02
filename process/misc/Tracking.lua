@@ -82,7 +82,7 @@ Handlers.add(
       Send({
         Target = LLAMA_TOKEN_PROCESS,
         Tags = {
-          Action = "Transfer",
+          Action = "Grant",
           Recipient = msg.From,
           Quantity = quantity,
         },
@@ -114,7 +114,7 @@ Handlers.add(
       Send({
         Target = LLAMA_TOKEN_PROCESS,
         Tags = {
-          Action = "Transfer",
+          Action = "Grant",
           Recipient = msg.From,
           Quantity = quantity,
         },
