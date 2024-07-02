@@ -218,7 +218,7 @@ Handlers.add(
 
     local gradeMultiplier = 0
     if (grade > 0) then
-      gradeMultiplier = 10 ^ grade
+      gradeMultiplier = 10 ^ (grade - 1)
     end
     local baseEmissions = 1 * LLAMA_TOKEN_MULTIPLIER
     local weightedEmissions = math.floor(baseEmissions * quantityMultiplier * gradeMultiplier)
