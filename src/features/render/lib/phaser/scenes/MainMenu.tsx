@@ -89,7 +89,7 @@ export class MainMenu extends WarpableScene {
     this.tweens.add({
       targets: this.logo,
       alpha: 0.5,
-      duration: 1000,
+      duration: 2000,
     });
 
     // create big llama
@@ -145,6 +145,8 @@ export class MainMenu extends WarpableScene {
           fontFamily: "'Press Start 2P'",
           fontSize: "18px",
           color: "#fff",
+          strokeThickness: 2,
+          stroke: "#111111",
           align: "center",
         })
         .setOrigin(0.5)
@@ -154,6 +156,8 @@ export class MainMenu extends WarpableScene {
           fontFamily: "'Press Start 2P'",
           fontSize: "24px",
           color: "#fff",
+          strokeThickness: 2,
+          stroke: "#111111",
           align: "center",
         })
         .setOrigin(0.5)
@@ -162,7 +166,7 @@ export class MainMenu extends WarpableScene {
       // fade the text out slightly
       this.tweens.add({
         targets: [message, llamaQuantity],
-        alpha: 0.5,
+        alpha: 0.8,
         duration: 1000,
         delay: 2000,
       });
@@ -185,7 +189,7 @@ export class MainMenu extends WarpableScene {
         <ButtonOnce
           elementSize={{ w: 300, h: 50 }}
           onClick={cb}
-          children="Enter Llama Land"
+          children="Continue to Llama Land"
         />,
       );
 
