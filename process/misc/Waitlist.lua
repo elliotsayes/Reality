@@ -361,7 +361,7 @@ CalculateFirstLoginReward = function(walletId)
   end
 
   local currentRow = currentRows[1]
-  return tostring(bint(math.min(currentRow.BumpCount, 1) * LLAMA_TOKEN_MULTIPLIER))
+  return tostring(bint(math.max(currentRow.BumpCount, 1) * LLAMA_TOKEN_MULTIPLIER))
 end
 
 return "Loaded Waitlist Protocol"

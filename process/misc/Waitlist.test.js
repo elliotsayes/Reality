@@ -380,7 +380,7 @@ test("Tracking-Login when authorised, first time reward", async () => {
     "Congratulations! Enjoy this reward for your first time logging in!",
   );
   const quantityValue = reply.Tags.find((tag) => tag.name === "Quantity").value;
-  assert.equal(quantityValue, "1000000000000");
+  assert.equal(quantityValue, "2000000000000");
 
   const transfer = result.Messages[1];
   assert.equal(transfer.Target, LLAMA_TOKEN_PORECESS_ID);
@@ -389,7 +389,7 @@ test("Tracking-Login when authorised, first time reward", async () => {
   const quantityValue2 = transfer.Tags.find(
     (tag) => tag.name === "Quantity",
   ).value;
-  assert.equal(quantityValue2, "1000000000000");
+  assert.equal(quantityValue2, "2000000000000");
 });
 
 test("Tracking-Login too soon, no reward", async () => {
