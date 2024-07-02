@@ -12,6 +12,7 @@ const addressWhitelist = [
   "0cQJ5Hd4oCaL57CWP-Pqe5_e0D4_ZDWuxKBgR9ke1SI", // me
   "0yTSTgkCdcgxZHshUDHobfo_sHzW7ZIbqse8eMy_wJY", // sam
   "hKibO41ULSd4cbh7rrHSZXy8bwd6t0fRGkihmPkklGY", // alberto
+  "D_zXubpRWd5Z-MASCJMB9EIGkNEu2D_a6GGN1JOpj2Y", // moira
   "71jBJuC2FPubKtv687Q1kc8ee43l_a_8D9TZGIgShzg",
   "uf_FqRvLqjnFMc8ZzGkF4qWKuNmUIQcYP0tPlCGORQk",
   "v2XXwq_FvVqH2KR4p_x8H-SQ7rDwZBbykSv-59__Avc",
