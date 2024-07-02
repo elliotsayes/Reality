@@ -47,9 +47,9 @@ export function Renderer({
         chatClientForProcess,
       },
       setVerseIdUrl: (verseId: string) => {
-        navigate({
-          to: `/app/verse/${verseId}`,
-        });
+        // navigate({
+        //   to: `/app/verse/${verseId}`,
+        // });
       },
     },
     inspect: (e) => console.debug(e),
