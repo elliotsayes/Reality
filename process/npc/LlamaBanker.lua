@@ -91,41 +91,39 @@ Handlers.add(
     local senderName = msg.Tags['X-Sender-Name']
     local petition = msg.Tags['X-Petition']
 
-    -- Check most recent credit in Db
+    -- Check last day credits in Db
     -- Sender is generated from a trusted process
     local lastDayCredits = BankerDbAdmin:exec(
-      "SELECT * FROM WarCredit WHERE Sender = '" ..
-      sender .. "' ORDER BY Timestamp DESC LIMIT " .. tostring(MAXIMUM_PETITIONS_PER_DAY)
+      "SELECT * FROM WarCredit WHERE Sender = '" .. sender
+      .. "' AND Timestamp > " .. (msg.Timestamp - 23 * 60 * 60 * 1000)
+      .. " ORDER BY Timestamp DESC"
     )
+    print("Last day credits: " .. #lastDayCredits)
     if (#lastDayCredits >= MAXIMUM_PETITIONS_PER_DAY) then
-      local lastCreditTimestamp = lastDayCredits[1].Timestamp
-      if ((msg.Timestamp - lastCreditTimestamp) < (23 * 60 * 60 * 1000)) then
-        print("Credit too soon, last: " .. lastCreditTimestamp .. ", current: " .. msg.Timestamp)
-        -- Return $wAR to sender
-        Send({
-          Target = WRAPPED_ARWEAVE_TOKEN_PROCESS,
-          Tags = {
-            Action = 'Transfer',
-            Target = msg.Tags.Sender,
-            Quantity = msg.Tags.Quantity,
-          },
-        })
-        -- Write in chat
-        Send({
-          Target = LLAMA_FED_CHAT_PROCESS,
-          Tags = {
-            Action = 'ChatMessage',
-            ['Author-Name'] = 'Llama Banker',
-          },
-          Data = 'Sorry ' ..
-              (senderName or sender) ..
-              ', but you can only petition the Llama King ' ..
-              tostring(MAXIMUM_PETITIONS_PER_DAY) .. ' times per day!' ..
-              ' But don\'t worry, I\'ll return your ' .. FormatWarTokenAmount(quantity) .. ' wrapped $AR to you 🦙🤝🪙' ..
-              ' Come back and try again tomorrow!',
-        })
-        return -- Don't save to db or forward to the Llama King
-      end
+      -- Return $wAR to sender
+      Send({
+        Target = WRAPPED_ARWEAVE_TOKEN_PROCESS,
+        Tags = {
+          Action = 'Transfer',
+          Target = msg.Tags.Sender,
+          Quantity = msg.Tags.Quantity,
+        },
+      })
+      -- Write in chat
+      Send({
+        Target = LLAMA_FED_CHAT_PROCESS,
+        Tags = {
+          Action = 'ChatMessage',
+          ['Author-Name'] = 'Llama Banker',
+        },
+        Data = 'Sorry ' ..
+            (senderName or sender) ..
+            ', but you can only petition the Llama King ' ..
+            tostring(MAXIMUM_PETITIONS_PER_DAY) .. ' times per day!' ..
+            ' But don\'t worry, I\'ll return your ' .. FormatWarTokenAmount(quantity) .. ' wrapped $AR to you 🦙🤝🪙' ..
+            ' Come back and try again tomorrow!',
+      })
+      return -- Don't save to db or forward to the Llama King
     end
 
     -- Save metadata
