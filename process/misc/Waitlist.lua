@@ -357,7 +357,7 @@ CalculateFirstLoginReward = function(walletId)
   ]], walletId))
 
   if (not currentRows or #currentRows == 0) then
-    return 0
+    return "0"
   end
 
   local currentRow = currentRows[1]
