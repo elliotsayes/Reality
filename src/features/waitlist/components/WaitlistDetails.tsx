@@ -163,7 +163,7 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
               <span
                 className={`bg-gradient-to-r from-[#cb559e] via-[#EBAEC6] to-[#d47deb] inline-block text-transparent bg-clip-text transition-colors`}
               >
-                {waitlistState.data.User.BumpCount} $LLAMA
+                {waitlistState.data.User.BumpCount * 5} $LLAMA
               </span>
             </p>
           </div>
