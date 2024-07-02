@@ -41,6 +41,14 @@ end
 
 --#endregion
 
+CanLogin = CanLogin or function(walletId)
+  return true
+end
+
+CalculateFirstLoginReward = CalculateFirstLoginReward or function(walletId)
+  return tostring(bint(LLAMA_TOKEN_WHOLE_FIRST_LOGIN_REWARD))
+end
+
 --#region Writes
 
 Handlers.add(
@@ -50,6 +58,17 @@ Handlers.add(
     print("Tracking-Login")
 
     local walletId = msg.From
+
+    if CanLogin(walletId) ~= true then
+      Send({
+        Target = msg.From,
+        Tags = {
+          Action = "Login-Failed",
+          Message = "You are not high enough on the waitlist yet!",
+        },
+      })
+      return
+    end
 
     -- Find last login, if any
     local lastLogin = nil
@@ -70,7 +89,7 @@ Handlers.add(
         VALUES ('%s', %d)
       ]], walletId, msg.Timestamp))
       -- Give first login reward
-      local quantity = tostring(bint(LLAMA_TOKEN_WHOLE_FIRST_LOGIN_REWARD))
+      local quantity = CalculateFirstLoginReward(walletId)
       Send({
         Target = msg.From,
         Tags = {
