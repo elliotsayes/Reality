@@ -104,6 +104,8 @@ Handlers.add(
     -- end
 
     local userPrompt = msg.Data
+    print("User Prompt: " .. userPrompt)
+
     local comment = CommentPetition(userPrompt)
 
     print("Comment: " .. comment)
