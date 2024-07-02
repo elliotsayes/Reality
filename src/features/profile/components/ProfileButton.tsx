@@ -38,7 +38,11 @@ export default function ProfileButton({ profileInfo }: ProfileButtonProps) {
             <CardContent>
               <p>
                 Go to{" "}
-                <a href="https://ao-bazar.arweave.dev/#/" className="underline">
+                <a
+                  href="https://ao-bazar.arweave.dev/#/"
+                  target="_blank"
+                  className="underline"
+                >
                   Bazar
                 </a>{" "}
                 to create your profile

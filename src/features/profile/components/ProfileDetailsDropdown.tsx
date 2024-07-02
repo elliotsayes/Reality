@@ -34,7 +34,11 @@ export default function ProfileDetailsDropdown({
           )}
           <p className="mt-4 text-sm text-gray-400 italic">
             Edit your profile on{" "}
-            <a href="https://ao-bazar.arweave.dev/#/" className="underline">
+            <a
+              href="https://ao-bazar.arweave.dev/#/"
+              target="_blank"
+              className="underline"
+            >
               Bazar
             </a>
           </p>
