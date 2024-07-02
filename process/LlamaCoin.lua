@@ -22,7 +22,7 @@ local utils = {
   end
 }
 
-local initialSupply = 100;
+local initialSupply = 0;
 
 Denomination = 12
 TotalSupply = utils.toBalanceValue(initialSupply * 10 ^ Denomination)
@@ -30,41 +30,103 @@ Name = 'Llama Coin'
 Ticker = 'LLAMA'
 -- Logo = '' -- TODO: 'SBCCXwwecBlDqRLUjb8dYABExTJXLieawf7m2aBJ-KY'
 
+-- Don't overwrite Balances
+Balances = Balances or { [ao.id] = utils.toBalanceValue(initialSupply * 10 ^ Denomination) }
+
 -- LlamaBankerDummy
 LlamaBanker = 'ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk'
+Tracking = '7sniCE5rEM92PYgvIr0H9xK_yJf56FxSYN-eazRE__Y'
+Waitlist = '2dFSGGlc5xJb0sWinAnEFHM-62tQEbhDzi1v5ldWX5k'
 
--- Don't overwrite Balances
-Balances = Balances or { [LlamaBanker] = utils.toBalanceValue(initialSupply * 10 ^ Denomination) }
+GrantWhitelist = {
+  [LlamaBanker] = true,
+  [Tracking] = true,
+  [Waitlist] = true,
+}
 
-local inflationAmount = 100;
-INFLATION_QUANTITY = utils.toBalanceValue(inflationAmount * 10 ^ Denomination);
+-- "grant" handler - like "mint", but adds tokens to a certain address
+--[[
+    Grant
+   ]]
+--
+Handlers.add('grant', Handlers.utils.hasMatchingTag('Action', 'Grant'), function(msg)
+  assert(type(msg.Recipient) == 'string', 'Recipient is required!')
+  assert(type(msg.Quantity) == 'string', 'Quantity is required!')
+  assert(bint(0) < bint(msg.Quantity), 'Quantity must be greater than zero!')
 
--- Should be run every hour?
-Handlers.add(
-  'CronHandler',
-  Handlers.utils.hasMatchingTag('Action', 'Cron-Tick'),
-  function(msg)
-    if (msg.From ~= ao.id) then
-      return print('Cron-Tick not from own process')
+  if not Balances[msg.Recipient] then Balances[msg.Recipient] = "0" end
+
+  if GrantWhitelist[msg.From] then
+    -- Add tokens to the token pool, according to Quantity
+    Balances[msg.Recipient] = utils.add(Balances[msg.Recipient], msg.Quantity)
+    TotalSupply = utils.add(TotalSupply, msg.Quantity)
+    ao.send({
+      Target = msg.From,
+      Data = Colors.gray ..
+          "Successfully granted " .. Colors.blue .. msg.Quantity .. Colors.reset .. " to " .. msg.Recipient
+    })
+
+    local grantNotice = {
+      Target = msg.Recipient,
+      Action = 'Grant-Notice',
+      Sender = msg.From,
+      Quantity = msg.Quantity,
+      Data = Colors.gray ..
+          "You were granted " ..
+          Colors.blue .. msg.Quantity .. Colors.gray .. " from " .. Colors.green .. msg.From .. Colors.reset
+    }
+
+    -- Add forwarded tags to the credit and debit notice messages
+    for tagName, tagValue in pairs(msg) do
+      -- Tags beginning with "X-" are forwarded
+      if string.sub(tagName, 1, 2) == "X-" then
+        grantNotice[tagName] = tagValue
+      end
     end
 
-    local mintQuantity = INFLATION_QUANTITY;
-    -- Mint $LLAMA
-    Send({
-      Target = ao.id,
-      Tags = {
-        Action = 'Mint',
-        Quantity = mintQuantity,
-      }
-    })
-    -- Allocate the newly minted $LLAMA to the banker
-    Send({
-      Target = ao.id,
-      Tags = {
-        Action = 'Transfer',
-        Quantity = mintQuantity,
-        Recipient = LlamaBanker,
-      }
+    -- Send Grant-Notice
+    ao.send(grantNotice)
+  else
+    ao.send({
+      Target = msg.From,
+      Action = 'Grant-Error',
+      ['Message-Id'] = msg.Id,
+      Error = 'Only Grant Whitelist can grant new ' .. Ticker .. ' tokens!'
     })
   end
-)
+end)
+
+-- Implementing Inflation for later
+
+-- local inflationAmount = 100;
+-- INFLATION_QUANTITY = utils.toBalanceValue(inflationAmount * 10 ^ Denomination);
+
+-- -- Should be run every hour?
+-- Handlers.add(
+--   'CronHandler',
+--   Handlers.utils.hasMatchingTag('Action', 'Cron-Tick'),
+--   function(msg)
+--     if (msg.From ~= ao.id) then
+--       return print('Cron-Tick not from own process')
+--     end
+
+--     local mintQuantity = INFLATION_QUANTITY;
+--     -- Mint $LLAMA
+--     Send({
+--       Target = ao.id,
+--       Tags = {
+--         Action = 'Mint',
+--         Quantity = mintQuantity,
+--       }
+--     })
+--     -- Allocate the newly minted $LLAMA to the banker
+--     Send({
+--       Target = ao.id,
+--       Tags = {
+--         Action = 'Transfer',
+--         Quantity = mintQuantity,
+--         Recipient = LlamaBanker,
+--       }
+--     })
+--   end
+-- )
