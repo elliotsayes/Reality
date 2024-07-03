@@ -26,6 +26,7 @@ export async function loadVersePhaser(
       queryFn: async () => verseClient.readInfo(),
     }),
   );
+
   processQueue.add(async () => {
     // Return the data so we can use it in the next query
     const data = await queryClient.ensureQueryData({
@@ -53,6 +54,8 @@ export async function loadVersePhaser(
 
     return data;
   });
+
+  let profileIds: Set<string> | undefined;
   processQueue.add(async () => {
     const entities = await queryClient.ensureQueryData({
       queryKey: ["verseEntities", verseClient.verseId],
@@ -66,7 +69,7 @@ export async function loadVersePhaser(
     });
     console.log("Entities", entities);
 
-    const profileIds = Object.values(entities)
+    profileIds = Object.values(entities)
       .filter((entity) => {
         return entity.Type === "Avatar";
       })
@@ -83,8 +86,10 @@ export async function loadVersePhaser(
         "verseEntityProfiles",
         profileClient.aoContractClient.processId,
         verseClient.verseId,
+        profileIds,
       ],
-      queryFn: async () => profileClient.readProfiles(Array.from(profileIds)),
+      queryFn: async () =>
+        profileClient.readProfiles(Array.from(profileIds ?? [])),
     });
   });
 
@@ -105,6 +110,7 @@ export async function loadVersePhaser(
       "verseEntityProfiles",
       profileClient.aoContractClient.processId,
       verseClient.verseId,
+      profileIds,
     ]),
   } as VerseState;
 
