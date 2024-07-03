@@ -370,4 +370,12 @@ CalculateFirstLoginReward = function(walletId)
   return tostring(bint(math.max(currentRow.BumpCount, 1) * 5 * LLAMA_TOKEN_MULTIPLIER))
 end
 
+function AuthoriseWallet(walletId)
+  WaitlistDbAdmin:exec(string.format([[
+    UPDATE Waitlist
+    SET Authorised = %d
+    WHERE WalletId = '%s'
+  ]], 1, walletId))
+end
+
 return "Loaded Waitlist Protocol"
