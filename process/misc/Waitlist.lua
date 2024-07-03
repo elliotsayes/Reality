@@ -157,7 +157,8 @@ Handlers.add(
         TimestampCreated = row.TimestampCreated,
         TimestampLastBumped = row.TimestampLastBumped,
         BumpCount = row.BumpCount,
-        Authorised = row.Authorised
+        Authorised = row.Authorised,
+        Claimed = row.Claimed,
       }
     end
 
@@ -366,6 +367,13 @@ CalculateFirstLoginReward = function(walletId)
     return "0"
   end
 
+  -- Flag as claimed
+  WaitlistDbAdmin:exec(string.format([[
+    UPDATE Waitlist
+    SET Claimed = %d
+    WHERE WalletId = '%s'
+  ]], 1, walletId))
+
   local currentRow = currentRows[1]
   return tostring(bint(math.max(currentRow.BumpCount, 1) * 5 * LLAMA_TOKEN_MULTIPLIER))
 end
@@ -374,6 +382,14 @@ function AuthoriseWallet(walletId)
   WaitlistDbAdmin:exec(string.format([[
     UPDATE Waitlist
     SET Authorised = %d
+    WHERE WalletId = '%s'
+  ]], 1, walletId))
+end
+
+function ClaimWallet(walletId)
+  WaitlistDbAdmin:exec(string.format([[
+    UPDATE Waitlist
+    SET Claimed = %d
     WHERE WalletId = '%s'
   ]], 1, walletId))
 end

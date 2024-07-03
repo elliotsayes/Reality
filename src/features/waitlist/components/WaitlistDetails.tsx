@@ -87,6 +87,7 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
   const canRegister = waitlistState.data.Count < 10_000;
   const canBump = timeLeft <= 0;
   const canEnter = waitlistState.data.User?.Authorised === 1;
+  const isClaimed = waitlistState.data.User?.Claimed === 1;
 
   useEffect(() => {
     if (!lastBumpMaybe) {
@@ -153,32 +154,50 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
         )
       ) : (
         <p className="text-xl leading-8">
-          You are{" "}
-          <span className="text-purple-300">
-            {waitlistState.data.UserPosition}
-          </span>
-          /<span className="text-purple-300">{waitlistState.data.Count}</span>{" "}
-          in line!
-          <br />
-          <div className="flex flex-row justify-center flex-wrap">
-            Waitlist earnings:
-            <p>
-              <img
-                src="assets/branding/LLAMA_coin_icon.png"
-                height={30}
-                width={30}
-                className="inline-block mb-2 ml-2 mr-1"
-              ></img>
-              <span
-                className={`bg-gradient-to-r from-[#cb559e] via-[#EBAEC6] to-[#d47deb] inline-block text-transparent bg-clip-text transition-colors`}
-              >
-                {waitlistState.data.User.BumpCount * 5} $LLAMA
+          {canEnter ? (
+            <>
+              <span className="bg-gradient-to-r from-[#cb559e] via-[#EBAEC6] to-[#d47deb] inline-block text-transparent bg-clip-text">
+                You have been granted
+                <br />
+                access to Llama Land!
+              </span>{" "}
+            </>
+          ) : (
+            <>
+              You are{" "}
+              <span className="text-purple-300">
+                {waitlistState.data.UserPosition}
               </span>
-            </p>
-          </div>
+              /
+              <span className="text-purple-300">
+                {waitlistState.data.Count}
+              </span>{" "}
+              in line!
+              <br />
+            </>
+          )}
+          {!isClaimed && (
+            <div className="flex flex-row justify-center flex-wrap">
+              Waitlist earnings:
+              <p>
+                <img
+                  src="assets/branding/LLAMA_coin_icon.png"
+                  height={30}
+                  width={30}
+                  className="inline-block mb-2 ml-2 mr-1"
+                ></img>
+                <span
+                  className={`bg-gradient-to-r from-[#cb559e] via-[#EBAEC6] to-[#d47deb] inline-block text-transparent bg-clip-text transition-colors`}
+                >
+                  {waitlistState.data.User.BumpCount * 5} $LLAMA
+                </span>
+              </p>
+            </div>
+          )}
         </p>
       )}
       {waitlistState.data.User !== undefined &&
+        !canEnter &&
         (timeLeft > 0 ? (
           <p className="text-sm max-w-2xl">
             Come back in{" "}
@@ -230,14 +249,14 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
                 }
                 disabled={!canEnter}
                 size={"lg"}
-                className={`px-8 py-6 z-20 bg-indigo-950/80`}
+                className={`px-8 py-6 z-20 ${canEnter ? "bg-gradient-to-r from-[#d47deb] via-[#e570ac] to-[#cb559e] hover:via-[#EBAEC6] hover:to-[#cb559e]" : "bg-indigo-950/80"} ${isClaimed ? "" : "animate-bounce"}`}
               >
-                Claim $LLAMA and Enter!
+                {isClaimed ? "Enter Llama Land" : "Claim $LLAMA and Enter!"}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="opacity-50">
-              <TooltipArrow className="animate-pulse" />
-              <div className="text-xs bg-black px-2 py-1 rounded-md">
+              <TooltipArrow />
+              <div className={`text-xs bg-black px-2 py-1 rounded-md`}>
                 {canEnter ? "Let's go!!!" : "Coming soon!"}
               </div>
             </TooltipContent>
