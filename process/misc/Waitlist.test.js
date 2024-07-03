@@ -435,3 +435,50 @@ test("Tracking-Login after threshold, daily reward", async () => {
   ).value;
   assert.equal(quantityValue2, quantityValue);
 });
+
+test("load reset", async () => {
+  const code = fs.readFileSync(
+    "./misc/_DANGER_WaitlistTrackingResetAuthClaimLogin.lua",
+    "utf-8",
+  );
+  const result = await Send({ Action: "Eval", Data: code });
+
+  assert.equal(result.Output.data.output, "Reset Auth/Claim/Login");
+});
+
+test("Auth/Claim/Login is reset", async () => {
+  const waitlistResult = await Send({
+    Action: "Eval",
+    Data: "require('json').encode(WaitlistDbAdmin:exec('SELECT * FROM Waitlist'))",
+  });
+  const waitlistDbOutput = JSON.parse(waitlistResult.Output.data.output);
+  assert.deepEqual(waitlistDbOutput, [
+    {
+      TimestampCreated: 10003,
+      Flagged: 0,
+      WalletId: "OWNER",
+      Claimed: 0,
+      Id: 1,
+      Authorised: 0,
+      TimestampLastBumped: 86410105,
+      BumpCount: 1,
+    },
+    {
+      TimestampCreated: 10006,
+      Flagged: 0,
+      WalletId: "ANOTHER",
+      Claimed: 0,
+      Id: 2,
+      Authorised: 0,
+      TimestampLastBumped: 10006,
+      BumpCount: 0,
+    },
+  ]);
+
+  const trackingResult = await Send({
+    Action: "Eval",
+    Data: "require('json').encode(TrackingDbAdmin:exec('SELECT * FROM Login'))",
+  });
+  const trackingDbOutput = JSON.parse(trackingResult.Output.data.output);
+  assert.deepEqual(trackingDbOutput, []);
+});
