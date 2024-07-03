@@ -249,7 +249,7 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
                 }
                 disabled={!canEnter}
                 size={"lg"}
-                className={`px-8 py-6 z-20 ${canEnter ? "bg-gradient-to-r from-[#d47deb] via-[#e570ac] to-[#cb559e] hover:via-[#EBAEC6] hover:to-[#cb559e]" : "bg-indigo-950/80"} ${isClaimed ? "" : "animate-bounce"}`}
+                className={`px-8 py-6 z-20 ${canEnter ? "bg-gradient-to-r from-[#d47deb] via-[#e570ac] to-[#cb559e] hover:via-[#EBAEC6] hover:to-[#cb559e]" : "bg-indigo-950/80"} ${canEnter && !isClaimed ? "animate-bounce" : ""}`}
               >
                 {isClaimed ? "Enter Llama Land" : "Claim $LLAMA and Enter!"}
               </Button>
