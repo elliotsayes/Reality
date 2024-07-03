@@ -94,7 +94,7 @@ Handlers.add(
         Target = msg.From,
         Tags = {
           Action = "Login-Reward",
-          Message = "Congratulations! Enjoy this reward for your first time logging in!",
+          Message = "You claimed your waitlist reward, congratulations!",
           Quantity = quantity,
         },
       })
