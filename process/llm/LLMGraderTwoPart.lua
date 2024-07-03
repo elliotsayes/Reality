@@ -24,7 +24,7 @@ GradeSystemPrompt =
     "Below is a comment. Grade its sentiment between 0 and 5. E.g.:\n" ..
     "GRADE:0"
 DefaultResponse = {
-  Grade = "1",
+  Grade = "2",
   Comment = "Your plea confused me immensely. Take these coins as a consolation.",
 }
 
