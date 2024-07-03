@@ -10,6 +10,7 @@ import { Chat } from "@/features/chat/components/Chat";
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import { ProfileInfo } from "@/features/profile/contract/model";
 import { createTrackingClient } from "@/features/tracking/contract/trackingClient";
+import { toast } from "sonner";
 
 interface RendererProps {
   userAddress: ArweaveId;
@@ -50,6 +51,12 @@ export function Renderer({
         // navigate({
         //   to: `/app/verse/${verseId}`,
         // });
+      },
+      onUnauthorised: () => {
+        toast("Unauthorized, please wait for access!");
+        navigate({
+          to: "/",
+        });
       },
     },
     inspect: (e) => console.debug(e),

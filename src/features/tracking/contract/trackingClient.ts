@@ -70,6 +70,13 @@ export const createTrackingClient = (
         Reward: parseInt(quantityTagValue || "0"),
         Message: messageTagValue || "",
       };
+    } else if (actionTagValue === "Login-Failed") {
+      return {
+        IsAuthorised: false,
+        HasReward: false,
+        Reward: undefined,
+        Message: messageTagValue || "",
+      };
     } else {
       throw new AoContractError(`Unexpected action: ${actionTagValue}`);
     }
