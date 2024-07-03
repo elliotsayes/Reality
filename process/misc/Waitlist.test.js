@@ -380,7 +380,7 @@ test("Tracking-Login when authorised, first time reward", async () => {
   const messageValue = reply.Tags.find((tag) => tag.name === "Message").value;
   assert.equal(
     messageValue,
-    "Congratulations! Enjoy this reward for your first time logging in!",
+    "You claimed your waitlist reward, congratulations!",
   );
   const quantityValue = reply.Tags.find((tag) => tag.name === "Quantity").value;
   assert.equal(quantityValue, "5000000000000");
