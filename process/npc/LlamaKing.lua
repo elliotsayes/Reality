@@ -225,15 +225,15 @@ Handlers.add(
             }
         })
 
-        -- local useSender = originalSenderName or originalSender
-        -- ao.send({
-        --     Target = LLAMA_FED_CHAT_PROCESS,
-        --     Tags = {
-        --         Action = 'ChatMessage',
-        --         ['Author-Name'] = 'Llama King',
-        --     },
-        --     Data = 'Attention ' .. useSender .. ', witness my response to your petition: \r\n' .. reason,
-        -- })
+        local useSender = originalSenderName or originalSender
+        ao.send({
+            Target = LLAMA_FED_CHAT_PROCESS,
+            Tags = {
+                Action = 'ChatMessage',
+                ['Author-Name'] = 'Llama King',
+            },
+            Data = 'Attention ' .. useSender .. ', witness my response to your petition: \r\n' .. reason,
+        })
 
         dispatchHighestPriorityMessage(msg.Timestamp)
     end

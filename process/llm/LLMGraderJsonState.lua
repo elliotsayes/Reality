@@ -7,10 +7,10 @@ Llama = Llama or nil
 
 InferenceAllowList = {
   -- LlamaKing ProcessId
-  "",
+  ["kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA"] = true,
 }
 
-DefaultMaxResponse = 50
+DefaultMaxResponse = DefaultMaxResponse or 80
 
 JsonSystemPrompt =
 [[You are the Llama King of Llama Land, with a harsh and eccentric personality.
@@ -102,10 +102,10 @@ Handlers.add(
     print("Inference")
 
     -- TODO: Whitelist
-    -- if not InferenceAllowList[msg.From] then
-    --   print("Inference not allowed: " .. msg.From)
-    --   return
-    -- end
+    if not InferenceAllowList[msg.From] then
+      print("Inference not allowed: " .. msg.From)
+      return
+    end
 
     local userPrompt = msg.Data
     local response = ProcessPetition(userPrompt)
@@ -118,7 +118,7 @@ Handlers.add(
       Target = msg.From,
       Tags = {
         Action = "Inference-Response",
-        Grade = grade,
+        Grade = tostring(grade),
         ["Original-Sender"] = msg.Tags["Original-Sender"],
         ["Original-Message"] = msg.Tags["Original-Message"],
       },
