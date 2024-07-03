@@ -74,7 +74,7 @@ test("WaitlistAdd success", async () => {
   const replyData = JSON.parse(reply.Data);
   assert.deepEqual(replyData, {
     TimestampCreated: 10003,
-    TimestampLastBumped: 0,
+    TimestampLastBumped: 10003,
     WalletId: "OWNER",
     BumpCount: 0,
   });
@@ -89,7 +89,7 @@ test("WaitlistAdd success", async () => {
       TimestampCreated: 10003,
       WalletId: "OWNER",
       Id: 1,
-      TimestampLastBumped: 0,
+      TimestampLastBumped: 10003,
       BumpCount: 0,
     },
   ]);
@@ -115,27 +115,30 @@ test("WaitlistAdd retry reject", async () => {
       TimestampCreated: 10003,
       WalletId: "OWNER",
       Id: 1,
-      TimestampLastBumped: 0,
+      TimestampLastBumped: 10003,
       BumpCount: 0,
     },
   ]);
 });
 
-test("WaitlistBump first is free", async () => {
+test("WaitlistBump first is NOT free", async () => {
   const earlyTs = 10005 + TWELVE_HOURS_MS - 200;
   const result = await Send({
     Action: "Waitlist-Bump",
     Timestamp: earlyTs,
   });
 
-  const reply = result.Messages[0];
-  const replyData = JSON.parse(reply.Data);
-  assert.deepEqual(replyData, {
-    TimestampCreated: 10003,
-    TimestampLastBumped: earlyTs,
-    WalletId: "OWNER",
-    BumpCount: 1,
-  });
+  assert.equal(result.Messages.length, 0);
+  assert.ok(result.Output.data.endsWith("User cannot bump yet"));
+
+  // const reply = result.Messages[0];
+  // const replyData = JSON.parse(reply.Data);
+  // assert.deepEqual(replyData, {
+  //   TimestampCreated: 10003,
+  //   TimestampLastBumped: earlyTs,
+  //   WalletId: "OWNER",
+  //   BumpCount: 1,
+  // });
 
   // Db should be the same
   const dbResult = await Send({
@@ -148,8 +151,8 @@ test("WaitlistBump first is free", async () => {
       TimestampCreated: 10003,
       WalletId: "OWNER",
       Id: 1,
-      TimestampLastBumped: earlyTs,
-      BumpCount: 1,
+      TimestampLastBumped: 10003,
+      BumpCount: 0,
     },
   ]);
 });
@@ -174,8 +177,8 @@ test("WaitlistBump too soon fails", async () => {
       TimestampCreated: 10003,
       WalletId: "OWNER",
       Id: 1,
-      TimestampLastBumped: 43209805,
-      BumpCount: 1,
+      TimestampLastBumped: 10003,
+      BumpCount: 0,
     },
   ]);
 });
@@ -193,7 +196,7 @@ test("WaitlistBump in ages success", async () => {
     WalletId: "OWNER",
     TimestampCreated: 10003,
     TimestampLastBumped: agesTs,
-    BumpCount: 2,
+    BumpCount: 1,
   });
 });
 
@@ -219,7 +222,7 @@ test("WaitlistAdd another success", async () => {
   const replyData = JSON.parse(reply.Data);
   assert.deepEqual(replyData, {
     TimestampCreated: 10006,
-    TimestampLastBumped: 0,
+    TimestampLastBumped: 10006,
     WalletId: "ANOTHER",
     BumpCount: 0,
   });
@@ -235,13 +238,13 @@ test("WaitlistAdd another success", async () => {
       WalletId: "OWNER",
       Id: 1,
       TimestampLastBumped: 86410105,
-      BumpCount: 2,
+      BumpCount: 1,
     },
     {
       TimestampCreated: 10006,
       WalletId: "ANOTHER",
       Id: 2,
-      TimestampLastBumped: 0,
+      TimestampLastBumped: 10006,
       BumpCount: 0,
     },
   ]);
@@ -324,7 +327,7 @@ test("Run migration", async () => {
       Id: 1,
       Claimed: 0,
       TimestampLastBumped: 86410105,
-      BumpCount: 2,
+      BumpCount: 1,
     },
     {
       TimestampCreated: 10006,
@@ -333,7 +336,7 @@ test("Run migration", async () => {
       Flagged: 0,
       Id: 2,
       Claimed: 0,
-      TimestampLastBumped: 0,
+      TimestampLastBumped: 10006,
       BumpCount: 0,
     },
   ]);
@@ -380,7 +383,7 @@ test("Tracking-Login when authorised, first time reward", async () => {
     "Congratulations! Enjoy this reward for your first time logging in!",
   );
   const quantityValue = reply.Tags.find((tag) => tag.name === "Quantity").value;
-  assert.equal(quantityValue, "2000000000000");
+  assert.equal(quantityValue, "5000000000000");
 
   const transfer = result.Messages[1];
   assert.equal(transfer.Target, LLAMA_TOKEN_PORECESS_ID);
@@ -389,7 +392,7 @@ test("Tracking-Login when authorised, first time reward", async () => {
   const quantityValue2 = transfer.Tags.find(
     (tag) => tag.name === "Quantity",
   ).value;
-  assert.equal(quantityValue2, "2000000000000");
+  assert.equal(quantityValue2, "5000000000000");
 });
 
 test("Tracking-Login too soon, no reward", async () => {
