@@ -436,6 +436,36 @@ test("Tracking-Login after threshold, daily reward", async () => {
   assert.equal(quantityValue2, quantityValue);
 });
 
+test("Waitlist entry is claimed", async () => {
+  const result = await Send({
+    Action: "Eval",
+    Data: "require('json').encode(WaitlistDbAdmin:exec('SELECT * FROM Waitlist'))",
+  });
+  const dbOutput = JSON.parse(result.Output.data.output);
+  assert.deepEqual(dbOutput, [
+    {
+      TimestampCreated: 10003,
+      Flagged: 0,
+      WalletId: "OWNER",
+      Claimed: 1,
+      Id: 1,
+      Authorised: 1,
+      TimestampLastBumped: 86410105,
+      BumpCount: 1,
+    },
+    {
+      TimestampCreated: 10006,
+      Flagged: 0,
+      WalletId: "ANOTHER",
+      Claimed: 0,
+      Id: 2,
+      Authorised: 0,
+      TimestampLastBumped: 10006,
+      BumpCount: 0,
+    },
+  ]);
+});
+
 test("load reset", async () => {
   const code = fs.readFileSync(
     "./misc/_DANGER_WaitlistTrackingResetAuthClaimLogin.lua",
