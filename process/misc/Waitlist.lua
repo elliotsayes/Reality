@@ -342,6 +342,22 @@ Handlers.add(
 
 local bint = require('.bint')(256)
 
+function AuthoriseWallet(walletId)
+  WaitlistDbAdmin:exec(string.format([[
+    UPDATE Waitlist
+    SET Authorised = %d
+    WHERE WalletId = '%s'
+  ]], 1, walletId))
+end
+
+function ClaimWallet(walletId)
+  WaitlistDbAdmin:exec(string.format([[
+    UPDATE Waitlist
+    SET Claimed = %d
+    WHERE WalletId = '%s'
+  ]], 1, walletId))
+end
+
 CanLogin = function(walletId)
   local currentRows = WaitlistDbAdmin:exec(string.format([[
     SELECT * FROM Waitlist WHERE WalletId = '%s'
@@ -358,7 +374,7 @@ end
 LLAMA_TOKEN_DENOMINATION = LLAMA_TOKEN_DENOMINATION or 12
 LLAMA_TOKEN_MULTIPLIER = 10 ^ LLAMA_TOKEN_DENOMINATION
 
-CalculateFirstLoginReward = function(walletId)
+CalcAndClaimFirstLoginReward = function(walletId)
   local currentRows = WaitlistDbAdmin:exec(string.format([[
     SELECT * FROM Waitlist WHERE WalletId = '%s'
   ]], walletId))
@@ -368,30 +384,10 @@ CalculateFirstLoginReward = function(walletId)
   end
 
   -- Flag as claimed
-  WaitlistDbAdmin:exec(string.format([[
-    UPDATE Waitlist
-    SET Claimed = %d
-    WHERE WalletId = '%s'
-  ]], 1, walletId))
+  ClaimWallet(walletId)
 
   local currentRow = currentRows[1]
   return tostring(bint(math.max(currentRow.BumpCount, 1) * 5 * LLAMA_TOKEN_MULTIPLIER))
-end
-
-function AuthoriseWallet(walletId)
-  WaitlistDbAdmin:exec(string.format([[
-    UPDATE Waitlist
-    SET Authorised = %d
-    WHERE WalletId = '%s'
-  ]], 1, walletId))
-end
-
-function ClaimWallet(walletId)
-  WaitlistDbAdmin:exec(string.format([[
-    UPDATE Waitlist
-    SET Claimed = %d
-    WHERE WalletId = '%s'
-  ]], 1, walletId))
 end
 
 return "Loaded Waitlist Protocol"

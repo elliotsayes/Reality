@@ -45,7 +45,7 @@ CanLogin = CanLogin or function(walletId)
   return true
 end
 
-CalculateFirstLoginReward = CalculateFirstLoginReward or function(walletId)
+CalcAndClaimFirstLoginReward = CalcAndClaimFirstLoginReward or function(walletId)
   return tostring(bint(LLAMA_TOKEN_WHOLE_FIRST_LOGIN_REWARD))
 end
 
@@ -89,7 +89,7 @@ Handlers.add(
         VALUES ('%s', %d)
       ]], walletId, msg.Timestamp))
       -- Give first login reward
-      local quantity = CalculateFirstLoginReward(walletId)
+      local quantity = CalcAndClaimFirstLoginReward(walletId)
       Send({
         Target = msg.From,
         Tags = {
