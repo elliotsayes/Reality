@@ -87,7 +87,7 @@ function QueryRankWaitlist(offset, limit, bumpCountOrder, timestampLastBumpedOrd
       WalletId = row.WalletId,
       TimestampCreated = row.TimestampCreated,
       TimestampLastBumped = row.TimestampLastBumped,
-      BumpCount = row.BumpCount
+      BumpCount = row.BumpCount,
     })
     index = index + 1
   end
@@ -156,7 +156,8 @@ Handlers.add(
         WalletId = row.WalletId,
         TimestampCreated = row.TimestampCreated,
         TimestampLastBumped = row.TimestampLastBumped,
-        BumpCount = row.BumpCount
+        BumpCount = row.BumpCount,
+        Authorised = row.Authorised
       }
     end
 

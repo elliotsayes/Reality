@@ -6,6 +6,7 @@ export const WaitlistEntry = z.object({
   TimestampCreated: z.number(),
   TimestampLastBumped: z.number(),
   BumpCount: z.number(),
+  Authorised: z.optional(z.number()),
 });
 export type WaitlistEntry = z.infer<typeof WaitlistEntry>;
 

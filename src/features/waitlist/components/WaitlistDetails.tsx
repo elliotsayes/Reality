@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
 import JSConfetti from "js-confetti";
+import { useNavigate } from "@tanstack/react-router";
 
 const waitlistProcessId = import.meta.env.VITE_WAITLIST_PROCESS_ID! as string;
 const bumpCooldown = 12 * 60 * 60 * 1000;
@@ -23,6 +24,8 @@ interface WaitlistDetailsProps {
 
 export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
   const resolvedWallet = wallet;
+
+  const navigate = useNavigate();
 
   const waitlistState = useSuspenseQuery({
     queryKey: ["waitlist", waitlistProcessId, resolvedWallet.address, "state"],
@@ -83,6 +86,7 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
   );
   const canRegister = waitlistState.data.Count < 10_000;
   const canBump = timeLeft <= 0;
+  const canEnter = waitlistState.data.User?.Authorized === 1;
 
   useEffect(() => {
     if (!lastBumpMaybe) {
@@ -216,8 +220,15 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
           <Tooltip open={true}>
             <TooltipTrigger className="cursor-wait">
               <Button
-                onClick={() => walletlistBump.mutate()}
-                disabled={true}
+                onClick={() =>
+                  navigate({
+                    to: "/app/$",
+                    params: {
+                      _splat: "main",
+                    },
+                  })
+                }
+                disabled={!canEnter}
                 size={"lg"}
                 className={`px-8 py-6 z-20 bg-indigo-950/80`}
               >
@@ -227,7 +238,7 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
             <TooltipContent side="bottom" className="opacity-50">
               <TooltipArrow className="animate-pulse" />
               <div className="text-xs bg-black px-2 py-1 rounded-md">
-                Coming soon!
+                {canEnter ? "Let's go!!!" : "Coming soon!"}
               </div>
             </TooltipContent>
           </Tooltip>
