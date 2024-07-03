@@ -5,7 +5,7 @@ Llama = Llama or nil
 
 InferenceAllowList = {
   -- LlamaKing ProcessId
-  "",
+  ["kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA"] = true,
 }
 
 CommentMaxResponse = 70
@@ -97,11 +97,11 @@ Handlers.add(
   function(msg)
     print("Inference")
 
-    -- TODO: Whitelist
-    -- if not InferenceAllowList[msg.From] then
-    --   print("Inference not allowed: " .. msg.From)
-    --   return
-    -- end
+    -- Whitelist
+    if not InferenceAllowList[msg.From] then
+      print("Inference not allowed: " .. msg.From)
+      return
+    end
 
     local userPrompt = msg.Data
     print("User Prompt: " .. userPrompt)
