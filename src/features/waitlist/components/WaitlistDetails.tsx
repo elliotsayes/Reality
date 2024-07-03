@@ -81,6 +81,7 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
   const [timeLeft, setTimeLeft] = useState(
     calculateTimeLeft(lastBumpMaybe ?? 0),
   );
+  const canRegister = waitlistState.data.Count < 10_000;
   const canBump = timeLeft <= 0;
 
   useEffect(() => {
@@ -141,7 +142,11 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
       }}
     >
       {waitlistState.data.User === undefined ? (
-        <p className="text-xl">You are not on the Waitlist yet!</p>
+        canRegister ? (
+          <p className="text-xl">You are not on the Waitlist yet!</p>
+        ) : (
+          <p className="text-xl">The Waitlist is full! Check back later.</p>
+        )
       ) : (
         <p className="text-xl leading-8">
           You are{" "}
@@ -187,11 +192,15 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
       {waitlistState.data.User === undefined ? (
         <Button
           onClick={() => waitlistRegister.mutate()}
-          disabled={waitlistRegister.isPending || waitlistRegister.isSuccess}
+          disabled={
+            !canRegister ||
+            waitlistRegister.isPending ||
+            waitlistRegister.isSuccess
+          }
           size={"lg"}
           className="px-8 py-6 z-20 bg-gradient-to-r from-[#d47deb] via-[#e570ac] to-[#cb559e] hover:via-[#EBAEC6] hover:to-[#cb559e]"
         >
-          Sign me up!
+          {canRegister ? "Sign me up!" : "Sign up later..."}
         </Button>
       ) : canBump ? (
         <Button

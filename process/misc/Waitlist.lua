@@ -240,6 +240,11 @@ Handlers.add(
     local userAddress = msg.From
     local nowMs = msg.Timestamp
 
+    local waitlistCount = WaitlistDbAdmin:count('Waitlist')
+    if (waitlistCount >= 10000) then
+      return print("Waitlist is full")
+    end
+
     local stmt = WaitlistDb:prepare([[
       INSERT INTO Waitlist (WalletId, TimestampCreated, TimestampLastBumped, BumpCount)
       VALUES (?, ?, ?, ?)
