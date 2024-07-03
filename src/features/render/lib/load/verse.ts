@@ -19,6 +19,7 @@ export async function loadVersePhaser(
   phaserLoader: Phaser.Loader.LoaderPlugin,
 ) {
   const processQueue = new PQueue({ concurrency: 3 });
+  const nonce = Date.now().toString();
 
   processQueue.add(() =>
     queryClient.ensureQueryData({
@@ -55,42 +56,55 @@ export async function loadVersePhaser(
     return data;
   });
 
-  let profileIds: Set<string> | undefined;
+  let profileIds: Array<string> | undefined;
   processQueue.add(async () => {
-    const entities = await queryClient.ensureQueryData({
-      queryKey: ["verseEntities", verseClient.verseId],
+    const entitiesStatic = await queryClient.ensureQueryData({
+      queryKey: ["verseEntitiesStatic", verseClient.verseId],
       queryFn: async () => {
         const entitiesStatic = await verseClient.readEntitiesStatic();
+        return entitiesStatic;
+      },
+    });
+    const entitiesDynamic = await queryClient.ensureQueryData({
+      queryKey: ["verseEntitiesDynamic", verseClient.verseId, nonce],
+      queryFn: async () => {
         const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
         const entitiesDynamic =
           await verseClient.readEntitiesDynamic(fiveMinsAgo);
-        return { ...entitiesStatic, ...entitiesDynamic };
+        return entitiesDynamic;
       },
     });
-    console.log("Entities", entities);
+    const entitiesAll = { ...entitiesStatic, ...entitiesDynamic };
+    console.log("entitiesAll", entitiesAll);
 
-    profileIds = Object.values(entities)
-      .filter((entity) => {
-        return entity.Type === "Avatar";
-      })
-      .reduce((acc, entity) => {
-        if (entity.Metadata?.ProfileId) {
-          acc.add(entity.Metadata.ProfileId);
-        }
-        return acc;
-      }, new Set<string>());
+    queryClient.setQueryData(
+      ["verseEntities", verseClient.verseId],
+      entitiesAll,
+    );
+
+    profileIds = Array.from(
+      Object.values(entitiesAll)
+        .filter((entity) => {
+          return entity.Type === "Avatar";
+        })
+        .reduce((acc, entity) => {
+          if (entity.Metadata?.ProfileId) {
+            acc.add(entity.Metadata.ProfileId);
+          }
+          return acc;
+        }, new Set<string>()),
+    );
     console.log("ProfileIds", profileIds);
 
-    await queryClient.ensureQueryData({
+    const profiles = await queryClient.ensureQueryData({
       queryKey: [
         "verseEntityProfiles",
         profileClient.aoContractClient.processId,
-        verseClient.verseId,
         profileIds,
       ],
-      queryFn: async () =>
-        profileClient.readProfiles(Array.from(profileIds ?? [])),
+      queryFn: async () => profileClient.readProfiles(profileIds ?? []),
     });
+    console.log("Profiles", profiles);
   });
 
   await processQueue.onIdle();
@@ -109,7 +123,6 @@ export async function loadVersePhaser(
     profiles: queryClient.getQueryData([
       "verseEntityProfiles",
       profileClient.aoContractClient.processId,
-      verseClient.verseId,
       profileIds,
     ]),
   } as VerseState;
