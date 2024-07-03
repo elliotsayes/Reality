@@ -1,7 +1,7 @@
 import { Scene } from "phaser";
-import { VerseState } from "@/features/verse/load/model";
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import { ProfileInfo } from "@/features/profile/contract/model";
+import { VerseState } from "../../load/model";
 
 export class WarpableScene extends Scene {
   public isWarping: boolean = false;
