@@ -72,6 +72,7 @@ function ProcessPetition(userPrompt)
   end
 
   if not responseJson or not responseJson.grade or not responseJson.response then
+    print("Unusable response: " .. responseBuilder)
     return DefaultResponse
   end
 
