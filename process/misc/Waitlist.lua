@@ -247,7 +247,7 @@ Handlers.add(
     stmt:bind_values(
       userAddress,
       nowMs,
-      0,
+      nowMs,
       0
     )
     stmt:step()
