@@ -86,7 +86,7 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
   );
   const canRegister = waitlistState.data.Count < 10_000;
   const canBump = timeLeft <= 0;
-  const canEnter = waitlistState.data.User?.Authorized === 1;
+  const canEnter = waitlistState.data.User?.Authorised === 1;
 
   useEffect(() => {
     if (!lastBumpMaybe) {

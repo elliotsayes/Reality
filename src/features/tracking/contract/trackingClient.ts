@@ -46,16 +46,16 @@ export const createTrackingClient = (
     const messageTagValue = replyTags.find(
       (tag) => tag.name === "Message",
     )?.value;
-    if (actionTagValue === "Login-Unauthorized") {
+    if (actionTagValue === "Login-UnAuthorised") {
       return {
-        IsAuthorized: false,
+        IsAuthorised: false,
         HasReward: false,
         Reward: undefined,
         Message: messageTagValue || "",
       };
     } else if (actionTagValue === "Login-Info") {
       return {
-        IsAuthorized: true,
+        IsAuthorised: true,
         HasReward: false,
         Reward: undefined,
         Message: messageTagValue || "",
@@ -65,7 +65,7 @@ export const createTrackingClient = (
         (tag) => tag.name === "Quantity",
       )?.value;
       return {
-        IsAuthorized: true,
+        IsAuthorised: true,
         HasReward: true,
         Reward: parseInt(quantityTagValue || "0"),
         Message: messageTagValue || "",

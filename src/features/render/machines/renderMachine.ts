@@ -290,7 +290,7 @@ export const renderMachine = setup({
       },
     ) => {
       const { loginResult } = params;
-      return loginResult.IsAuthorized;
+      return loginResult.IsAuthorised;
     },
     noLoginReward: ({ context }) => {
       return !context.loginResult?.HasReward;
@@ -431,7 +431,7 @@ export const renderMachine = setup({
       }) => {
         const result = await input.trackingClient.login();
         // return {
-        //   IsAuthorized: true,
+        //   IsAuthorised: true,
         //   HasReward: true,
         //   Reward: 100 * Math.pow(10, 12),
         //   Message: "You got a reward!",
