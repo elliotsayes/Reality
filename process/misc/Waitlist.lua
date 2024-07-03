@@ -270,7 +270,7 @@ Handlers.add(
       Data = json.encode({
         WalletId = userAddress,
         TimestampCreated = nowMs,
-        TimestampLastBumped = 0,
+        TimestampLastBumped = nowMs,
         BumpCount = 0
       })
     })
