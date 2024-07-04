@@ -243,7 +243,7 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
         >
           {canRegister ? "Sign me up!" : "Sign up later..."}
         </Button>
-      ) : canBump ? (
+      ) : canBump && !isClaimed ? (
         <Button
           onClick={() => walletlistBump.mutate()}
           disabled={walletlistBump.isPending || walletlistBump.isSuccess}
