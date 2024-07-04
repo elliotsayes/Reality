@@ -32,11 +32,8 @@ const meta = {
             <Story
               args={{
                 ...options.args,
-                schemaContractClient: createAoContractClient(
-                  import.meta.env.VITE_LLAMAASSISTANT_PROCESS_ID,
-                  connect(),
-                  wallet,
-                ),
+                aoContractClientForProcess: (processId) =>
+                  createAoContractClient(processId, connect(), wallet),
               }}
             />
           )}
@@ -52,6 +49,8 @@ type Story = StoryObj<typeof meta>;
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {
   args: {
+    schemaProcessId: import.meta.env.VITE_LLAMAKING_PROCESS_ID,
     methodName: "Petition",
+    isExternal: true,
   },
 };
