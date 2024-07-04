@@ -345,6 +345,7 @@ Handlers.add(
 local bint = require('.bint')(256)
 
 function AuthoriseWallet(walletId)
+  print("Authorising: " .. walletId)
   WaitlistDbAdmin:exec(string.format([[
     UPDATE Waitlist
     SET Authorised = %d
