@@ -8,6 +8,7 @@ const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
 const TWENTYTWO_HOURS_HALF_MS = 22.5 * 60 * 60 * 1000;
 const TWENTYTHREE_HOURS_HALF_MS = 23.5 * 60 * 60 * 1000;
 const LLAMA_TOKEN_PORECESS_ID = "TODO: LlamaTokenProcessId";
+const WAITLIST_PROCESS = "ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk"; // Real one!
 
 test("load DbAdmin module", async () => {
   const dbAdminCode = fs.readFileSync("./misc/DbAdmin.lua", "utf-8");
@@ -464,6 +465,46 @@ test("Waitlist entry is claimed", async () => {
       BumpCount: 0,
     },
   ]);
+});
+
+test("Waitlist AuthoriseWallet updates db and sends message", async () => {
+  const result = await Send({
+    Action: "Eval",
+    Data: "AuthoriseWallet('ANOTHER')",
+  });
+
+  const dbResult = await Send({
+    Action: "Eval",
+    Data: "require('json').encode(WaitlistDbAdmin:exec('SELECT * FROM Waitlist'))",
+  });
+  const dbOutput = JSON.parse(dbResult.Output.data.output);
+  assert.deepEqual(dbOutput, [
+    {
+      TimestampCreated: 10003,
+      Flagged: 0,
+      WalletId: "OWNER",
+      Claimed: 1,
+      Id: 1,
+      Authorised: 1,
+      TimestampLastBumped: 86410105,
+      BumpCount: 1,
+    },
+    {
+      TimestampCreated: 10006,
+      Flagged: 0,
+      WalletId: "ANOTHER",
+      Claimed: 0,
+      Id: 2,
+      Authorised: 1,
+      TimestampLastBumped: 10006,
+      BumpCount: 0,
+    },
+  ]);
+
+  const reply = result.Messages[0];
+  assert.equal(reply.Target, WAITLIST_PROCESS);
+  const actionValue = reply.Tags.find((tag) => tag.name === "Action").value;
+  assert.equal(actionValue, "Authorise");
 });
 
 test("load reset", async () => {

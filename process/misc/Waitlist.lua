@@ -3,6 +3,8 @@
 local json = require("json")
 local sqlite3 = require('lsqlite3')
 
+LLAMA_BANKER_PROCESS = LLAMA_BANKER_PROCESS or "ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk"
+
 -- 12 Hours
 BUMP_DELAY_MS = 12 * 60 * 60 * 1000
 
@@ -348,6 +350,13 @@ function AuthoriseWallet(walletId)
     SET Authorised = %d
     WHERE WalletId = '%s'
   ]], 1, walletId))
+  -- Propagate authorisation to Llama Banker
+  Send({
+    Target = LLAMA_BANKER_PROCESS,
+    Tags = {
+      Action = "Authorise",
+    },
+  })
 end
 
 function ClaimWallet(walletId)

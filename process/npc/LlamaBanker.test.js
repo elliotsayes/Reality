@@ -6,6 +6,7 @@ import fs from "node:fs";
 const WarToken = "TODO: WarProcessId";
 const LlamaToken = "TODO: LlamaTokenProcessId";
 const LlamaKing = "TODO: LlamaKingProcessId";
+const Waitlist = "TODO: WaitlistProcessId";
 
 const exampleSender = "SOME RANDOM GUY";
 
@@ -43,7 +44,29 @@ test("Credits from wrong source", async () => {
   assert.equal(result.Output.data, "Credit Notice not from wrapped $AR");
 });
 
-test("Credits from wAR", async () => {
+test("Credits from $wAR no Auth", async () => {
+  const plea = "My Plea to the king";
+  const result = await Send({
+    Id: "MyMessageId",
+    From: WarToken,
+    Action: "Credit-Notice",
+    Quantity: oneBillionStr,
+    Sender: exampleSender,
+    ["X-Petition"]: plea,
+    ["X-Sender-Name"]: "Cool guy :)",
+  });
+
+  assert.ok(result.Output.data.endsWith("Sender not authorised"));
+});
+
+test("Credits from wAR with auth", async () => {
+  const auth = await Send({
+    From: Waitlist,
+    Action: "Authorise",
+    WalletId: exampleSender,
+  });
+  assert.ok(auth.Output.data.endsWith("Authorising: SOME RANDOM GUY"));
+
   const plea = "My Plea to the king";
   const result = await Send({
     Id: "MyMessageId",

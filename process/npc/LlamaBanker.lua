@@ -4,6 +4,8 @@ local sqlite3 = require('lsqlite3')
 BankerDb = BankerDb or sqlite3.open_memory()
 BankerDbAdmin = BankerDbAdmin or require('DbAdmin').new(BankerDb)
 
+WAITLIST_PROCESS = WAITLIST_PROCESS or "TODO: WaitlistProcessId"
+
 LLAMA_TOKEN_PROCESS = LLAMA_TOKEN_PROCESS or "TODO: LlamaTokenProcessId"
 LLAMA_TOKEN_DENOMINATION = LLAMA_TOKEN_DENOMINATION or 12
 LLAMA_TOKEN_MULTIPLIER = 10 ^ LLAMA_TOKEN_DENOMINATION
@@ -25,6 +27,13 @@ LLAMA_FED_CHAT_PROCESS = LLAMA_FED_CHAT_PROCESS or "TODO: ChatProcessId"
 
 --#region Initialization
 
+SQLITE_TABLE_AUTHORISED = [[
+  CREATE TABLE IF NOT EXISTS Authorised (
+    WalletId TEXT PRIMARY KEY,
+    Timestamp INTEGER
+  );
+]]
+
 SQLITE_TABLE_WAR_CREDIT = [[
   CREATE TABLE IF NOT EXISTS WarCredit (
     MessageId TEXT PRIMARY KEY,
@@ -43,6 +52,7 @@ SQLITE_TABLE_EMISSIONS = [[
 ]]
 
 function InitDb()
+  BankerDb:exec(SQLITE_TABLE_AUTHORISED)
   BankerDb:exec(SQLITE_TABLE_WAR_CREDIT)
   BankerDb:exec(SQLITE_TABLE_EMISSIONS)
 end
@@ -54,6 +64,40 @@ if (not BankerInitialized) then
 end
 
 --#endregion
+
+Handlers.add(
+  "Authorise",
+  Handlers.utils.hasMatchingTag("Action", "Authorise"),
+  function(msg)
+    print("Authorise")
+    if msg.From ~= WAITLIST_PROCESS then
+      return print("Authorise not from WaitlistProcessId")
+    end
+
+    local walletId = msg.Tags.WalletId
+
+    -- Check if already Authorized
+    local authorised = BankerDbAdmin:exec(
+      "SELECT * FROM Authorised WHERE WalletId = '" .. walletId .. "'"
+    )
+    if (#authorised > 0) then
+      return print("Already Authorised: " .. walletId)
+    end
+
+    print("Authorising: " .. walletId)
+    local stmt = BankerDb:prepare("INSERT INTO Authorised (WalletId, Timestamp) VALUES (?, ?)")
+    stmt:bind_values(walletId, msg.Timestamp)
+    stmt:step()
+    stmt:finalize()
+  end
+)
+
+function IsAuthorised(walletId)
+  local authorised = BankerDbAdmin:exec(
+    "SELECT * FROM Authorised WHERE WalletId = '" .. walletId .. "'"
+  )
+  return #authorised > 0
+end
 
 function ValidateWarQuantity(quantity)
   return quantity ~= nil
@@ -81,8 +125,13 @@ Handlers.add(
       return print("Credit Notice not from wrapped $AR")
     end
 
-    local messageId = msg.Id
+    -- Sender is from a trusted process
     local sender = msg.Tags.Sender
+    if IsAuthorised(sender) ~= true then
+      return print("Sender not authorised")
+    end
+
+    local messageId = msg.Id
     local quantity = tonumber(msg.Tags.Quantity)
     if not ValidateWarQuantity(quantity) then
       return print("Invalid quantity")
@@ -90,6 +139,8 @@ Handlers.add(
 
     local senderName = msg.Tags['X-Sender-Name']
     local petition = msg.Tags['X-Petition']
+
+    -- TODO: Validate Petition
 
     -- Check last day credits in Db
     -- Sender is generated from a trusted process
