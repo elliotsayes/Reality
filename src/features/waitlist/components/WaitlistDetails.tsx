@@ -150,7 +150,25 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
         canRegister ? (
           <p className="text-xl">You are not on the Waitlist yet!</p>
         ) : (
-          <p className="text-xl">The Waitlist is full! Check back later.</p>
+          <>
+            <p className="text-xl">
+              The Waitlist is full with{" "}
+              <span className="text-purple-300">
+                {waitlistState.data.Count}
+              </span>{" "}
+              Llamas!
+            </p>
+            <p>
+              Follow{" "}
+              <a
+                href="https://x.com/LlamaLandAO"
+                className="text-purple-300 underline"
+              >
+                @LlamaLandAO
+              </a>{" "}
+              on X for updates.
+            </p>
+          </>
         )
       ) : (
         <p className="text-xl leading-8">
