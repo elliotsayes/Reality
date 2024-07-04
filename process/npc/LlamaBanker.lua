@@ -65,6 +65,17 @@ end
 
 --#endregion
 
+function AuthoriseWallet(walletId, timestamp)
+  print("Authorising: " .. walletId)
+  if timestamp == nil then
+    timestamp = 0
+  end
+  local stmt = BankerDb:prepare("INSERT INTO Authorised (WalletId, Timestamp) VALUES (?, ?)")
+  stmt:bind_values(walletId, timestamp)
+  stmt:step()
+  stmt:finalize()
+end
+
 Handlers.add(
   "Authorise",
   Handlers.utils.hasMatchingTag("Action", "Authorise"),
@@ -84,11 +95,7 @@ Handlers.add(
       return print("Already Authorised: " .. walletId)
     end
 
-    print("Authorising: " .. walletId)
-    local stmt = BankerDb:prepare("INSERT INTO Authorised (WalletId, Timestamp) VALUES (?, ?)")
-    stmt:bind_values(walletId, msg.Timestamp)
-    stmt:step()
-    stmt:finalize()
+    AuthoriseWallet(walletId, msg.Timestamp)
   end
 )
 
