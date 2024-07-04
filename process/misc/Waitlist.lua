@@ -355,6 +355,7 @@ function AuthoriseWallet(walletId)
     Target = LLAMA_BANKER_PROCESS,
     Tags = {
       Action = "Authorise",
+      WalletId = walletId,
     },
   })
 end
