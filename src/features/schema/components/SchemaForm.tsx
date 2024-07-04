@@ -2,6 +2,7 @@ import Form from "@/features/rjsf";
 import validator from "@rjsf/validator-ajv8";
 import { useMemo } from "react";
 import { SchemaMethod } from "../contract/model";
+import Linkify from "linkify-react";
 
 interface SchemaFormProps {
   methodSchema: SchemaMethod;
@@ -85,7 +86,13 @@ export const SchemaForm = ({
     <div className={`${isSubmitting ? "animate-pulse" : ""}`}>
       <p className="text-primary font-Press-Start-2P">{methodSchema.Title}</p>
       <p className="text-22px text-secondary-foreground font-undead-pixel leading-none mt-2">
-        {methodSchema.Description}
+        <Linkify
+          options={{
+            className: "text-blue-800 hover:underline",
+          }}
+        >
+          {methodSchema.Description}
+        </Linkify>
       </p>
       <Form
         className="mt-4"
