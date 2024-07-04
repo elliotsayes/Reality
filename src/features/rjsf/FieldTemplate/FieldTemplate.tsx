@@ -72,7 +72,7 @@ export default function FieldTemplate<
         )}
         {children}
         {displayLabel && rawDescription && (
-          <small className="mt-1 block">
+          <small className="mt-1 block h-1">
             <div
               className={`${
                 rawErrors.length > 0 ? "text-red-500" : "text-muted-foreground"

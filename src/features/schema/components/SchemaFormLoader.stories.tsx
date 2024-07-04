@@ -5,6 +5,7 @@ import { queryClient } from "@/lib/query";
 import { createAoContractClient } from "@/features/ao/lib/aoContractClient";
 import { connect } from "@permaweb/aoconnect";
 import AnonymousLoader from "@/features/ao/test/components/AnonymousLoader";
+import { fn } from "@storybook/test";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
@@ -52,5 +53,6 @@ export const Default: Story = {
     schemaProcessId: import.meta.env.VITE_LLAMAKING_PROCESS_ID,
     methodName: "Petition",
     isExternal: true,
+    onComplete: fn,
   },
 };

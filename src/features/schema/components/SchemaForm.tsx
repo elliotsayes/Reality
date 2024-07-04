@@ -24,6 +24,7 @@ export const SchemaForm = ({
         title?: string;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const?: any;
+        maxLength?: number;
       }
     >;
     const tagPropertyKeys = Object.keys(tagProperties);
@@ -53,16 +54,17 @@ export const SchemaForm = ({
       (acc, property) => ({
         ...acc,
         [property]: {
-          ...(tagProperties[property].title !== undefined
-            ? {
-                "ui:title": tagProperties[property].title,
-              }
-            : {}),
-          ...(tagConstPropertyKeys.includes(property)
-            ? {
-                "ui:widget": "hidden",
-              }
-            : {}),
+          ...(tagProperties[property].title !== undefined && {
+            "ui:title": tagProperties[property].title,
+          }),
+          ...(tagConstPropertyKeys.includes(property) && {
+            "ui:widget": "hidden",
+          }),
+          ...(tagProperties[property].maxLength !== undefined &&
+            tagProperties[property].maxLength >= 100 && {
+              "ui:widget": "textarea",
+              "ui:rows": 2,
+            }),
         },
       }),
       {},
