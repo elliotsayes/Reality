@@ -23,7 +23,7 @@ export default function SubmitButton<
   }
 
   return (
-    <div>
+    <div className="pt-4">
       <Button type="submit" {...submitButtonProps}>
         {submitText}
       </Button>

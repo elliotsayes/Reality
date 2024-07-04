@@ -58,11 +58,11 @@ export default function FieldTemplate<
       uiSchema={uiSchema}
       registry={registry}
     >
-      <div className="mb-4 block">
+      <div className="block">
         {displayLabel && (
           <label
             htmlFor={id}
-            className={`mb-2 inline-block font-undead-pixel text-22px ${
+            className={`mb-1 inline-block font-undead-pixel text-22px ${
               rawErrors.length > 0 ? "text-red-500" : ""
             }`}
           >
@@ -72,7 +72,7 @@ export default function FieldTemplate<
         )}
         {children}
         {displayLabel && rawDescription && (
-          <small className="mt-1 block h-1">
+          <small className="mt-1 block">
             <div
               className={`${
                 rawErrors.length > 0 ? "text-red-500" : "text-muted-foreground"

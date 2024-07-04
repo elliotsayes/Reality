@@ -42,7 +42,7 @@ export default function TextareaWidget<
   return (
     <div className="flex">
       <textarea
-        className="w-full border bg-background px-3 py-2 resize-none font-undead-pixel text-[20px]"
+        className="w-full border bg-background px-3 py-2 resize-none font-undead-pixel text-[20px] leading-5"
         id={id}
         name={id}
         placeholder={placeholder}
