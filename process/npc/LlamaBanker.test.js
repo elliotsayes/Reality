@@ -9,6 +9,9 @@ const LlamaKing = "TODO: LlamaKingProcessId";
 
 const exampleSender = "SOME RANDOM GUY";
 
+const oneBillion = Math.pow(10, 9);
+const oneBillionStr = oneBillion.toString();
+
 test("load DbAdmin module", async () => {
   const dbAdminCode = fs.readFileSync("./blueprint/DbAdmin.lua", "utf-8");
   const result = await Send({
@@ -34,10 +37,10 @@ test("Credits from wrong source", async () => {
   const result = await Send({
     From: "Some hacker token",
     Action: "Credit-Notice",
-    Amount: 100,
+    Amount: oneBillionStr,
   });
 
-  assert.equal(result.Output.data, "Credit Notice not from $wAR");
+  assert.equal(result.Output.data, "Credit Notice not from wrapped $AR");
 });
 
 test("Credits from wAR", async () => {
@@ -46,7 +49,7 @@ test("Credits from wAR", async () => {
     Id: "MyMessageId",
     From: WarToken,
     Action: "Credit-Notice",
-    Quantity: 0.1,
+    Quantity: oneBillionStr,
     Sender: exampleSender,
     ["X-Petition"]: plea,
     ["X-Sender-Name"]: "Cool guy :)",
@@ -65,8 +68,9 @@ test("Saved History", async () => {
 
   assert.deepEqual(JSON.parse(result.Output.data.output), {
     MessageId: "MyMessageId",
-    Quantity: 0.1,
+    Quantity: oneBillion,
     Sender: "SOME RANDOM GUY",
+    Timestamp: 10003,
   });
 });
 
@@ -99,7 +103,7 @@ test("GradePetitionHandler happy", async () => {
       Action: "Grade-Petition",
       ["Original-Message"]: "MyMessageId",
       ["Original-Sender"]: exampleSender,
-      Grade: `10`,
+      Grade: `5`,
       Timestamp: 10000000 + i * 10,
     });
 
