@@ -135,7 +135,7 @@ Handlers.add(
     -- Sender is from a trusted process
     local sender = msg.Tags.Sender
     if IsAuthorised(sender) ~= true then
-      return print("Sender not authorised")
+      return print("Sender not Authorised: " .. sender)
     end
 
     local messageId = msg.Id
