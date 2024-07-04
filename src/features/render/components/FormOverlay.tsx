@@ -38,11 +38,15 @@ export function FormOverlay({
             schemaProcessId={schemaProcessId}
             isExternal={isExternal}
             methodName={methodName}
-            onComplete={() => {
+            onComplete={(isSuccess) => {
               // TODO: Show external process Id?
-              toast(
-                `'${methodName}' message sent to ${truncateAddress(schemaProcessId)}`,
-              );
+              if (isSuccess) {
+                toast(
+                  `'${methodName}' message sent to ${truncateAddress(schemaProcessId)}`,
+                );
+              } else {
+                toast.error(`Failed to send '${methodName}' message`);
+              }
               close();
             }}
           />

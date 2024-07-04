@@ -9,7 +9,7 @@ interface SchemaFormLoaderProps {
   schemaProcessId: string;
   isExternal: boolean;
   methodName: string;
-  onComplete?: () => void;
+  onComplete?: (isSuccess: boolean) => void;
 }
 
 export function SchemaFormLoader({
@@ -79,7 +79,10 @@ export function SchemaFormLoader({
 
       const targetContractClient = aoContractClientForProcess(messageTarget);
       await targetContractClient.message({ tags });
-      onComplete?.();
+    },
+    onSettled: (_, error) => {
+      const isSuccess = !error;
+      onComplete?.(isSuccess);
     },
   });
 
