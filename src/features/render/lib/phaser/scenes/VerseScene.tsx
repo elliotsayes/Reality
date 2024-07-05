@@ -861,10 +861,10 @@ export class VerseScene extends WarpableScene {
     this.schemaForm = this.add
       .dom(
         entity.Position[0] * this.tileSizeScaled[0] - 60,
-        entity.Position[1] * this.tileSizeScaled[1],
+        entity.Position[1] * this.tileSizeScaled[1] - 150,
         memElement,
       )
-      .setOrigin(1, 0.25);
+      .setOrigin(1, 0);
 
     this.camera.stopFollow();
     this.camera.pan(
