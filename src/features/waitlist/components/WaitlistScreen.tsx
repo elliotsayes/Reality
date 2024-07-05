@@ -67,7 +67,12 @@ export function WaitlistScreen({ wallet }: WaitlistScreenProps) {
         </Suspense>
         <div className="h-[10%]" />
       </div>
-      <audio ref={audioRef} className="hidden" src="assets/serenade.wav" loop />
+      <audio
+        ref={audioRef}
+        className="hidden"
+        src="assets/serenade.webm"
+        loop
+      />
     </>
   );
 }

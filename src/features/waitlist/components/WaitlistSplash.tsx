@@ -79,7 +79,7 @@ export function WaitlistSplash({
         <audio
           ref={audioRef}
           className="hidden"
-          src="assets/serenade.wav"
+          src="assets/serenade.webm"
           loop
         />
       </>
