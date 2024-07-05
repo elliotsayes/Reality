@@ -460,30 +460,32 @@ export class VerseScene extends WarpableScene {
         (entity.Interaction.Size[1] * this.tileSizeScaled[1]) / 2,
       );
     }
-    this.physics.add.overlap(
-      this.player,
-      sprite,
-      () => {
-        console.log(`Collided with warp ${entityId}`);
-        if (this.isWarping) return;
-        this.isWarping = true;
-        emitSceneEvent({
-          type: "Warp Immediate",
-          verseId: entityId,
-        });
-        this.camera.fadeOut(5_000);
-        this.tweens.addCounter({
-          duration: 2_000,
-          from: 60,
-          to: 0,
-          onUpdate: (tween) => {
-            this.slowMs = tween.getValue();
-          },
-        });
-      },
-      undefined,
-      this,
-    );
+    this.time.delayedCall(1000, () => {
+      this.physics.add.overlap(
+        this.player,
+        sprite,
+        () => {
+          console.log(`Collided with warp ${entityId}`);
+          if (this.isWarping) return;
+          this.isWarping = true;
+          emitSceneEvent({
+            type: "Warp Immediate",
+            verseId: entityId,
+          });
+          this.camera.fadeOut(5_000);
+          this.tweens.addCounter({
+            duration: 2_000,
+            from: 60,
+            to: 0,
+            onUpdate: (tween) => {
+              this.slowMs = tween.getValue();
+            },
+          });
+        },
+        undefined,
+        this,
+      );
+    });
 
     return sprite;
   }
