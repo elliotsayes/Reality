@@ -153,7 +153,7 @@ export class VerseScene extends WarpableScene {
     }
   }
 
-  topLeft() {
+  topLeftInitial() {
     const cameraCenter = {
       x: this.spawnPixel[0],
       y: this.spawnPixel[1],
@@ -168,6 +168,24 @@ export class VerseScene extends WarpableScene {
     return {
       x: cameraCenter.x - cameraSize.w / 2,
       y: cameraCenter.y - cameraSize.h / 2,
+    };
+  }
+
+  topLeftDynamic() {
+    const cameraCenter = {
+      x: this.camera.worldView.x,
+      y: this.camera.worldView.y,
+    };
+    const cameraSize = {
+      w: this.camera.width,
+      h: this.camera.height,
+    };
+    console.log(`Camera center: ${cameraCenter.x}, ${cameraCenter.y}`);
+    console.log(`Camera size: ${cameraSize.w}, ${cameraSize.h}`);
+
+    return {
+      x: cameraCenter.x,
+      y: cameraCenter.y,
     };
   }
 
@@ -318,7 +336,7 @@ export class VerseScene extends WarpableScene {
         })
         .setOrigin(0.5);
 
-      const topLeft = this.topLeft();
+      const topLeft = this.topLeftInitial();
       this.add.text(
         topLeft.x + 10,
         topLeft.y + 10,
@@ -732,6 +750,22 @@ export class VerseScene extends WarpableScene {
       }
       this.lastTickMoving = false;
     }
+
+    if (this.tutorial) {
+      const tl = this.topLeftDynamic();
+      const pos = {
+        x: tl.x + 20,
+        y: tl.y + 20,
+      };
+      // console.log(`Tutorial position: ${pos.x}, ${pos.y}`);
+      // Linear tween to move to position
+      this.tweens.add({
+        targets: this.tutorial,
+        x: pos.x,
+        y: pos.y,
+        duration: 500,
+      });
+    }
   }
 
   showTutorial() {
@@ -743,7 +777,7 @@ export class VerseScene extends WarpableScene {
       w: 300,
       h: 400,
     };
-    const tl = this.topLeft();
+    const tl = this.topLeftInitial();
     const tutorialPos = {
       x: tl.x + 20,
       y: tl.y + 20,
@@ -819,7 +853,7 @@ export class VerseScene extends WarpableScene {
 
   public onWarpBegin() {
     if (this.isWarping) {
-      const topLeft = this.topLeft();
+      const topLeft = this.topLeftInitial();
       this.loadText = this.add.text(
         topLeft.x + 10,
         topLeft.y + 70,
