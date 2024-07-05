@@ -95,14 +95,14 @@ VerseEntitiesStatic = {
     },
   },
   ['Bouncer2'] = {
-    Position = { -5.95, -0.25 },
+    Position = { -5.8, -0.5 },
     Type = 'Avatar',
     Metadata = {
       DisplayName = "Bouncer"
     },
   },
   ['Bouncer1'] = {
-    Position = { -5.95, 0.75 },
+    Position = { -5.8, 0.5 },
     Type = 'Avatar',
     Metadata = {
       DisplayName = "Bouncer"
