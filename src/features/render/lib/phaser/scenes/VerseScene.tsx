@@ -12,6 +12,7 @@ import { isDebug } from "../game";
 import { truncateAddress } from "@/features/arweave/lib/utils";
 import { ProfileInfo } from "@/features/profile/contract/model";
 import { MessageHistory } from "@/features/chat/contract/model";
+import TutorialOverlay from "@/features/render/components/TutorialOverlay";
 
 const SCALE_TILES = 3;
 const SCALE_ENTITIES = 2;
@@ -71,6 +72,7 @@ export class VerseScene extends WarpableScene {
 
   activeEntityEvent?: Phaser.GameObjects.GameObject;
 
+  tutorial?: Phaser.GameObjects.DOMElement;
   schemaForm?: Phaser.GameObjects.DOMElement;
 
   slowMs: number = 120;
@@ -330,6 +332,9 @@ export class VerseScene extends WarpableScene {
         { font: "20px Courier", color: "#ff0000" },
       );
     }
+
+    this.time.delayedCall(500, this.showTutorial, [], this);
+
     emitSceneReady(this);
   }
 
@@ -727,6 +732,34 @@ export class VerseScene extends WarpableScene {
       }
       this.lastTickMoving = false;
     }
+  }
+
+  showTutorial() {
+    if (this.tutorial) {
+      this.tutorial.destroy();
+    }
+
+    const tutorialSize: Size2D = {
+      w: 300,
+      h: 400,
+    };
+    const tl = this.topLeft();
+    const tutorialPos = {
+      x: tl.x + 20,
+      y: tl.y + 20,
+    };
+    const memElement = document.createElement("div");
+    memElement.setAttribute(
+      "style",
+      `width: ${tutorialSize.w}px; height: ${tutorialSize.h}px; display: flex; justify-content: center; align-items: center;`,
+    );
+    ReactDOM.createRoot(memElement).render(
+      <TutorialOverlay close={() => this.tutorial?.destroy()} />,
+    );
+
+    this.tutorial = this.add
+      .dom(tutorialPos.x, tutorialPos.y, memElement)
+      .setOrigin(0, 0);
   }
 
   public showSchemaForm(entityId: string, entity: VerseEntity) {
