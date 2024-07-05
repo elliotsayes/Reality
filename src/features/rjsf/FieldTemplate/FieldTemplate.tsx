@@ -62,7 +62,7 @@ export default function FieldTemplate<
         {displayLabel && (
           <label
             htmlFor={id}
-            className={`mb-1 inline-block font-undead-pixel text-22px ${
+            className={`mb-1 ml-1 inline-block font-undead-pixel text-22px leading-6 ${
               rawErrors.length > 0 ? "text-red-500" : ""
             }`}
           >
@@ -72,7 +72,7 @@ export default function FieldTemplate<
         )}
         {children}
         {displayLabel && rawDescription && (
-          <small className="mt-1 block">
+          <small className="mt-1 block text-[1.0rem]">
             <div
               className={`${
                 rawErrors.length > 0 ? "text-red-500" : "text-muted-foreground"
