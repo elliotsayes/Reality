@@ -749,25 +749,28 @@ export class VerseScene extends WarpableScene {
     } else {
       if (this.lastTickMoving) {
         playerSprite.play("llama_0_idle");
-        // Check if the player is overlapping with any warp entities
-        const isOverlappingWithWarp = this.physics.overlap(
-          this.player,
-          Object.values(this.warpSprites),
-        );
-        if (isOverlappingWithWarp) {
-          console.debug("Player is overlapping with warp, cancelling update");
-          return;
-        }
-
-        emitSceneEvent({
-          type: "Update Position",
-          position: [
-            this.player.x / DEFAULT_TILE_SIZE_SCALED,
-            this.player.y / DEFAULT_TILE_SIZE_SCALED,
-          ],
-        });
       }
       this.lastTickMoving = false;
+    }
+
+    if (this.lastTickMoving) {
+      // Check if the player is overlapping with any warp entities
+      const isOverlappingWithWarp = this.physics.overlap(
+        this.player,
+        Object.values(this.warpSprites),
+      );
+      if (isOverlappingWithWarp) {
+        console.debug("Player is overlapping with warp, cancelling update");
+        return;
+      }
+
+      emitSceneEvent({
+        type: "Update Position",
+        position: [
+          this.player.x / DEFAULT_TILE_SIZE_SCALED,
+          this.player.y / DEFAULT_TILE_SIZE_SCALED,
+        ],
+      });
     }
 
     if (this.tutorial) {
