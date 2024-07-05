@@ -351,10 +351,9 @@ export class VerseScene extends WarpableScene {
       );
     }
 
-    // Only show tutorial if it's the first time
-    if (localStorage.getItem("tutorialShown") === null) {
+    // Only show tutorial if it's not done
+    if (localStorage.getItem("tutorialDone") === null) {
       this.time.delayedCall(500, this.showTutorial, [], this);
-      localStorage.setItem("tutorialShown", "true");
     }
 
     emitSceneReady(this);
@@ -792,7 +791,12 @@ export class VerseScene extends WarpableScene {
       `width: ${tutorialSize.w}px; height: ${tutorialSize.h}px; display: flex; justify-content: center; align-items: center;`,
     );
     ReactDOM.createRoot(memElement).render(
-      <TutorialOverlay close={() => this.tutorial?.destroy()} />,
+      <TutorialOverlay
+        close={() => {
+          localStorage.setItem("tutorialDone", "true");
+          this.tutorial?.destroy();
+        }}
+      />,
     );
 
     this.tutorial = this.add
