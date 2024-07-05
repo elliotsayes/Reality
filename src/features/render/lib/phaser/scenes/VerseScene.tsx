@@ -351,7 +351,11 @@ export class VerseScene extends WarpableScene {
       );
     }
 
-    this.time.delayedCall(500, this.showTutorial, [], this);
+    // Only show tutorial if it's the first time
+    if (localStorage.getItem("tutorialShown") === null) {
+      this.time.delayedCall(500, this.showTutorial, [], this);
+      localStorage.setItem("tutorialShown", "true");
+    }
 
     emitSceneReady(this);
   }
