@@ -84,7 +84,9 @@ export const SchemaForm = ({
 
   return (
     <div className={`${isSubmitting ? "animate-pulse" : ""}`}>
-      <p className="text-primary font-Press-Start-2P">{methodSchema.Title}</p>
+      <p className="text-primary font-Press-Start-2P tracking-tighter text-[0.85rem]">
+        {methodSchema.Title}
+      </p>
       <p className="text-22px text-secondary-foreground font-undead-pixel leading-none mt-2">
         <Linkify
           options={{

@@ -281,7 +281,7 @@ function PetitionSchemaTags()
       "type": "string",
       "minLength": 2,
       "maxLength": 250,
-      "title": "Your written plea for $LLAMA",
+      "title": "Persuade the King well to earn the most possible $LLAMA Coin!",
       "description": "Max 250 characters"
     },
     "X-Sender-Name": {
@@ -299,9 +299,9 @@ function SchemaExternal()
     return {
         Petition = {
             Target = WRAPPED_ARWEAVE_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
-            Title = "Petition the Llama King",
+            Title = "Beg the King for $LLAMA",
             Description =
-            "Offer wrapped $AR tokens for a chance to earn $LLAMA coin. To wrap your $AR, go to aox.xyz",
+            "Offer wrapped $AR tokens for a chance to earn $LLAMA Coin. To wrap your $AR, go to aox.xyz",
             Schema = {
                 Tags = json.decode(PetitionSchemaTags()),
                 -- Data
