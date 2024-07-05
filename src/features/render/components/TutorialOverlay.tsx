@@ -18,13 +18,21 @@ interface FormOverlayProps {
 export default function TutorialOverlay({ close }: FormOverlayProps) {
   const [page, setPage] = useState(0);
   const [doneEnabled, setDoneEnabled] = useState(false);
+  const [doneTimeout, setDoneTimeout] = useState<NodeJS.Timeout | null>(null);
 
   return (
     <QueryClientProvider client={queryClient}>
       <Card>
         <CardHeader className="flex flex-row justify-between items-baseline">
           <CardTitle>Tutorial</CardTitle>
-          <Button onClick={close} variant={"destructive"} size={"sm"}>
+          <Button
+            onClick={() => {
+              toast("Tutorial skipped");
+              close();
+            }}
+            variant={"destructive"}
+            size={"sm"}
+          >
             <X />
           </Button>
         </CardHeader>
@@ -48,37 +56,63 @@ export default function TutorialOverlay({ close }: FormOverlayProps) {
                   </div>
                 </div>
               </div>
-            ) : (
+            ) : page === 1 ? (
               <div className="flex flex-row justify-evenly items-center gap-4 pt-4 pb-10 h-32">
                 <div>
                   Click on NPCs
                   <br />
                   to interact
                 </div>
+                <img src="assets/tutorial/click_npc.png" width={100} />
+              </div>
+            ) : (
+              <div className="flex flex-row justify-evenly items-center gap-4 pt-4 pb-10 h-32">
+                <div>Find the Llama King and beg him for $LLAMA!</div>
                 <img src="assets/tutorial/click_king.png" width={100} />
               </div>
             )}
           </div>
           <div className="flex flex-row justify-between gap-4">
             <Button
-              onClick={() => setPage((prev) => Math.max(0, prev - 1))}
+              onClick={() => {
+                if (doneTimeout) {
+                  clearTimeout(doneTimeout);
+                }
+                setDoneEnabled(false);
+                setPage((prev) => Math.max(0, prev - 1));
+              }}
               variant={"outline"}
               disabled={page === 0}
             >
               Prev
             </Button>
-            {page === 0 ? (
+            {page < 2 ? (
               <Button
+                key="next"
                 onClick={() => {
+                  setDoneEnabled(false);
+                  if (page === 1) {
+                    setDoneTimeout(
+                      setTimeout(() => {
+                        setDoneEnabled(true);
+                      }, 1000),
+                    );
+                  }
                   setPage((prev) => prev + 1);
-                  setTimeout(() => setDoneEnabled(true), 1000);
                 }}
                 variant={"outline"}
               >
                 Next
               </Button>
             ) : (
-              <Button onClick={close} disabled={!doneEnabled}>
+              <Button
+                key="done"
+                onClick={() => {
+                  toast("Tutorial completed!");
+                  close();
+                }}
+                disabled={!doneEnabled}
+              >
                 Done
               </Button>
             )}
