@@ -684,7 +684,7 @@ export const renderMachine = setup({
               states: {
                 Idle: {
                   after: {
-                    "1000": "Update Entities",
+                    "2500": "Update Entities",
                   },
                 },
                 "Update Entities": {
@@ -842,7 +842,7 @@ export const renderMachine = setup({
 
                 Idle: {
                   after: {
-                    "1000": "Check new messages",
+                    "2500": "Check new messages",
                   },
                 },
 
