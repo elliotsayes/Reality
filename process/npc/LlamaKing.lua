@@ -280,9 +280,9 @@ function PetitionSchemaTags()
     "X-Petition": {
       "type": "string",
       "minLength": 2,
-      "maxLength": 100,
+      "maxLength": 250,
       "title": "Your written plea for $LLAMA",
-      "description": "Max 100 characters"
+      "description": "Max 250 characters"
     },
     "X-Sender-Name": {
       "type": "string",
