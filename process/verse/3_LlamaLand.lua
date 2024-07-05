@@ -22,13 +22,13 @@ VerseParameters = {
     Tileset = {
       Type = 'Fixed',
       Format = 'PNG',
-      TxId = 'dPCX5xVVnVq9urytiRHlSR-fTQYQ3TIfEfl-qUtf3l4', -- TxId of the tileset in PNG format
+      TxId = 'Z4_AJJuhKmmz2JP96nD69_AzDpc5oxi7-fCAnria-ks', -- TxId of the tileset in PNG format
     },
     -- This is a tilemap of origin island & building exteriors
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = 'upUmwFRi7IX-S2M0zNGaXTpxFr_65M7e1UWignFIsc4', -- TxId of the tilemap in TMJ format
+      TxId = 'ql_zdPUA8U6JHmiGAXM58ZW57-QuJTrgxa8lFttVc7g', -- TxId of the tilemap in TMJ format
       Offset = { -52, -32 },                                -- Offset for the tilemap
     },
   },
@@ -94,14 +94,20 @@ VerseEntitiesStatic = {
       Size = { 3, 1 }
     },
   },
-  -- ['SomePlayerProcessId'] = {
-  --   Position = { 0, 0 },
-  --   Type = 'Avatar',
-  -- },
-  -- ['SomeBotProcessId'] = {
-  --   Position = { 0, 0 },
-  --   Type = 'Avatar',
-  -- },
+  ['Bouncer2'] = {
+    Position = { -5.95, -0.25 },
+    Type = 'Avatar',
+    Metadata = {
+      DisplayName = "Bouncer"
+    },
+  },
+  ['Bouncer1'] = {
+    Position = { -5.95, 0.75 },
+    Type = 'Avatar',
+    Metadata = {
+      DisplayName = "Bouncer"
+    },
+  },
 }
 
 -- TODO: Purchasing buildings

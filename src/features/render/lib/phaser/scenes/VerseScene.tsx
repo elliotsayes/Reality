@@ -33,6 +33,8 @@ const kingEntityIds = ["kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA"];
 
 const bankerEntityIds = ["ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk"];
 
+const bouncerEntityIds = ["Bouncer1", "Bouncer2"];
+
 export class VerseScene extends WarpableScene {
   playerAddress!: string;
   playerProfileInfo?: ProfileInfo;
@@ -492,7 +494,8 @@ export class VerseScene extends WarpableScene {
     profile?: ProfileInfo,
   ) {
     const isPlayer = entityId === this.playerAddress;
-    const llamaSpriteIndex = isPlayer ? 0 : 4;
+    const isBouncer = bouncerEntityIds.includes(entityId);
+    const llamaSpriteIndex = isPlayer ? 0 : isBouncer ? 9 : 4;
 
     const container = this.add
       .container(
@@ -535,13 +538,13 @@ export class VerseScene extends WarpableScene {
     } else if (isPlayer) {
       sprite.play(`llama_0_idle`);
     } else {
-      sprite.play(`llama_4_idle`);
+      sprite.play(`llama_${llamaSpriteIndex}_idle`);
       sprite.on(
         "pointerdown",
         () => {
-          sprite.play(`llama_4_emote`);
+          sprite.play(`llama_${llamaSpriteIndex}_emote`);
           setTimeout(() => {
-            sprite.play(`llama_4_idle`);
+            sprite.play(`llama_${llamaSpriteIndex}_idle`);
           }, 1000);
         },
         this,
@@ -581,7 +584,8 @@ export class VerseScene extends WarpableScene {
           fill: true,
         },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(DEPTH_TEXT_BASE);
 
     container.add(sprite);
     container.add(nameText);
