@@ -14,7 +14,7 @@ import { ProfileInfo } from "@/features/profile/contract/model";
 import { MessageHistory } from "@/features/chat/contract/model";
 import TutorialOverlay from "@/features/render/components/TutorialOverlay";
 
-const SCALE_TILES = 3;
+const SCALE_TILES = 4;
 const SCALE_ENTITIES = 2;
 
 const DEFAULT_TILE_SIZE_ORIGINAL = 16;
