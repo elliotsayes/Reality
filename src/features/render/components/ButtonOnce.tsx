@@ -6,7 +6,7 @@ import { useState } from "react";
 interface ButtonOnceProps {
   elementSize: Size2D;
   children: React.ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export function ButtonOnce({
@@ -14,7 +14,7 @@ export function ButtonOnce({
   children,
   onClick,
 }: ButtonOnceProps) {
-  const [isClicked, setIsClicked] = useState(false);
+  const [isClicked, setIsClicked] = useState(onClick === undefined);
 
   return (
     <div
@@ -25,7 +25,7 @@ export function ButtonOnce({
         className="flex text-xl font-bold"
         onClick={() => {
           setIsClicked(true);
-          onClick();
+          onClick?.();
         }}
       >
         {isClicked && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

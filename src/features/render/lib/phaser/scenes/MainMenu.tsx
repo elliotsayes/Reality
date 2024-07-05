@@ -47,12 +47,10 @@ export class MainMenu extends WarpableScene {
         type: "Warp Immediate",
         verseId: import.meta.env.VITE_LLAMA_LAND_PROCESS_ID,
       });
+    // dont pass in, just call it
+    setTimeout(cb, 100);
     ReactDOM.createRoot(memElement).render(
-      <ButtonOnce
-        elementSize={buttonSize}
-        onClick={cb}
-        children="Enter Llama Land!"
-      />,
+      <ButtonOnce elementSize={buttonSize} children="Entering Llama Land!" />,
     );
 
     this.warpButton = this.add
