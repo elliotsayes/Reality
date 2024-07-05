@@ -51,7 +51,7 @@ export class MainMenu extends WarpableScene {
       <ButtonOnce
         elementSize={buttonSize}
         onClick={cb}
-        children="Login to Llama Land"
+        children="Enter Llama Land!"
       />,
     );
 
