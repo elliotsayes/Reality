@@ -201,6 +201,9 @@ Handlers.add(
     local stmt = VerseDb:prepare([[
         INSERT INTO Entities (Id, LastUpdated, Position, Type, Metadata)
         VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(Id) DO UPDATE SET
+          LastUpdated = excluded.LastUpdated,
+          Metadata = excluded.Metadata
     ]])
     stmt:bind_values(
       entityId,
