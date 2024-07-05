@@ -545,6 +545,18 @@ export class VerseScene extends WarpableScene {
           sprite.play(`llama_${llamaSpriteIndex}_emote`);
           setTimeout(() => {
             sprite.play(`llama_${llamaSpriteIndex}_idle`);
+            if (isBouncer) {
+              this.showEntityChatMessages([
+                {
+                  Id: 0,
+                  Timestamp: 0,
+                  MessageId: "",
+                  AuthorId: entityId,
+                  AuthorName: "Bouncer",
+                  Content: "Go away!",
+                },
+              ]);
+            }
           }, 1000);
         },
         this,
