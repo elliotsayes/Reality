@@ -56,7 +56,9 @@ test("Credits from $wAR no Auth", async () => {
     ["X-Sender-Name"]: "Cool guy :)",
   });
 
-  assert.ok(result.Output.data.endsWith("Sender not authorised"));
+  assert.ok(
+    result.Output.data.endsWith("Sender not Authorised: SOME RANDOM GUY"),
+  );
 });
 
 test("Credits from wAR with auth", async () => {
