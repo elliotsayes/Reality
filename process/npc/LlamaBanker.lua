@@ -140,7 +140,17 @@ Handlers.add(
     -- Sender is from a trusted process
     local sender = msg.Tags.Sender
     if IsAuthorised(sender) ~= true then
-      return print("Sender not Authorised: " .. sender)
+      print("Sender not Authorised: " .. sender)
+      Send({
+        Target = LLAMA_FED_CHAT_PROCESS,
+        Tags = {
+          Action = 'ChatMessage',
+          ['Author-Name'] = 'Llama Banker',
+        },
+        Data = 'Who in Llama\'s name is ' .. sender .. '!? ' ..
+            ' Security! Seize this imposter!',
+      })
+      return
     end
 
     local messageId = msg.Id
