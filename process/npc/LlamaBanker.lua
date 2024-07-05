@@ -116,7 +116,12 @@ function ValidateSenderName(senderName)
   return senderName ~= nil
       and string.len(senderName) > 0
       and string.len(senderName) <= 20
-      and not string.match(senderName, "[^a-zA-Z0-9\\ _-]")
+end
+
+function ValidatePetition(petition)
+  return petition ~= nil
+      and string.len(petition) > 0
+      and string.len(petition) <= 250
 end
 
 function FormatWarTokenAmount(amount)
@@ -139,15 +144,21 @@ Handlers.add(
     end
 
     local messageId = msg.Id
+
     local quantity = tonumber(msg.Tags.Quantity)
     if not ValidateWarQuantity(quantity) then
       return print("Invalid quantity")
     end
 
     local senderName = msg.Tags['X-Sender-Name']
-    local petition = msg.Tags['X-Petition']
+    if not ValidateSenderName(senderName) then
+      return print("Invalid sender name")
+    end
 
-    -- TODO: Validate Petition
+    local petition = msg.Tags['X-Petition']
+    if not ValidatePetition(petition) then
+      return print("Invalid petition")
+    end
 
     -- Check last day credits in Db
     -- Sender is generated from a trusted process
