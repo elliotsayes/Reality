@@ -313,7 +313,7 @@ end
 
 Handlers.add(
     'SchemaExternal',
-    Handlers.utils.hasMatchingTag('Read', 'SchemaExternal'),
+    Handlers.utils.hasMatchingTag('Action', 'SchemaExternal'),
     function(msg)
         print('SchemaExternal')
         Send({ Target = msg.From, Tags = { Type = 'SchemaExternal' }, Data = json.encode(SchemaExternal()) })

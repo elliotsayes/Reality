@@ -418,7 +418,7 @@ Schema = {
 
 Handlers.add(
   'Schema',
-  Handlers.utils.hasMatchingTag('Read', 'Schema'),
+  Handlers.utils.hasMatchingTag('Action', 'Schema'),
   function(msg)
     print('Schema')
     Send({ Target = msg.From, Tags = { Type = 'Schema' }, Data = json.encode(Schema) })

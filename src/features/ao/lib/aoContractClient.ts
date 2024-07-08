@@ -44,6 +44,10 @@ export type AoContractClient = {
     sendArgs: SendArgs,
   ) => Promise<Message | undefined>;
   messageDelayReplyOne: (sendArgs: SendArgs) => Promise<Message>;
+  messageDelayReplyOneJson: <T>(
+    sendArgs: SendArgs,
+    schema?: z.Schema,
+  ) => Promise<T>;
 };
 
 export const createAoContractClient = (
@@ -204,6 +208,28 @@ export const createAoContractClient = (
     return reply;
   };
 
+  const messageDelayReplyOneJson = async (
+    readArgs: ReadArgs,
+    schema?: z.Schema,
+  ) => {
+    const reply = await messageDelayReplyOne(readArgs);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let json: any;
+    try {
+      json = JSON.parse(reply.Data);
+    } catch (error) {
+      throw new AoContractError("Invalid JSON", error);
+    }
+    if (schema) {
+      const result = schema.safeParse(json);
+      if (!result.success) {
+        throw new AoContractError("JSON does not match schema", result.error);
+      }
+    }
+    return json;
+  };
+
   return {
     processId,
     aoClient,
@@ -217,6 +243,7 @@ export const createAoContractClient = (
     messageResult,
     messageDelayReplyOptional,
     messageDelayReplyOne,
+    messageDelayReplyOneJson,
   };
 };
 

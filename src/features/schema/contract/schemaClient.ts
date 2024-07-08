@@ -23,15 +23,15 @@ export const createSchemaClient = (
 
   // Read
   readSchema: () =>
-    aoContractClient.dryrunReadReplyOneJson<Schema>(
+    aoContractClient.messageDelayReplyOneJson<Schema>(
       {
-        tags: [{ name: "Read", value: "Schema" }],
+        tags: [{ name: "Action", value: "Schema" }],
       } /* Schema */,
     ),
   readSchemaExternal: () =>
-    aoContractClient.dryrunReadReplyOneJson<SchemaExternal>(
+    aoContractClient.messageDelayReplyOneJson<SchemaExternal>(
       {
-        tags: [{ name: "Read", value: "SchemaExternal" }],
+        tags: [{ name: "Action", value: "SchemaExternal" }],
       } /* SchemaExternal */,
     ),
 });
