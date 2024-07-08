@@ -518,29 +518,28 @@ export class VerseScene extends WarpableScene {
     if (kingEntityIds.includes(entityId)) {
       // Llama Assistant
       sprite.play(`llama_6_idle`);
-      sprite.on(
-        "pointerdown",
-        () => {
-          console.log(`Clicked on SchemaFormExternal ${entityId}`);
-          this.showSchemaForm(entityId, entity);
-        },
-        this,
-      );
     } else if (bankerEntityIds.includes(entityId)) {
       // Banker
       sprite.play(`llama_8_idle`);
-      sprite.on(
-        "pointerdown",
-        () => {
-          console.log(`Clicked on Banker ${entityId}`);
-          this.showSchemaForm(entityId, entity);
-        },
-        this,
-      );
     } else if (isPlayer) {
       sprite.play(`llama_0_idle`);
     } else {
       sprite.play(`llama_${llamaSpriteIndex}_idle`);
+    }
+
+    if (
+      entity.Interaction?.Type === "SchemaForm" ||
+      entity.Interaction?.Type === "SchemaExternalForm"
+    ) {
+      sprite.on(
+        "pointerdown",
+        () => {
+          console.log(`Clicked on SchemaForm(External) ${entityId}`);
+          this.showSchemaForm(entityId, entity);
+        },
+        this,
+      );
+    } else {
       sprite.on(
         "pointerdown",
         () => {
