@@ -23,7 +23,7 @@ export const createTrackingClient = (
 
   // Writes
   login: async () => {
-    const result = await aoContractClient.messageResult({
+    const reply = await aoContractClient.messageDelayReplyOne({
       tags: [
         {
           name: "Action",
@@ -31,19 +31,11 @@ export const createTrackingClient = (
         },
       ],
     });
-    if (result.Messages.length === 0) {
-      throw new AoContractError("No messages returned");
-    }
 
-    const reply = result.Messages[0];
-    const replyTags: Array<{
-      name: string;
-      value: string;
-    }> = reply.Tags;
-    const actionTagValue = replyTags.find(
+    const actionTagValue = reply.Tags.find(
       (tag) => tag.name === "Action",
     )?.value;
-    const messageTagValue = replyTags.find(
+    const messageTagValue = reply.Tags.find(
       (tag) => tag.name === "Message",
     )?.value;
     if (actionTagValue === "Login-UnAuthorised") {
@@ -61,7 +53,7 @@ export const createTrackingClient = (
         Message: messageTagValue || "",
       };
     } else if (actionTagValue === "Login-Reward") {
-      const quantityTagValue = replyTags.find(
+      const quantityTagValue = reply.Tags.find(
         (tag) => tag.name === "Quantity",
       )?.value;
       return {

@@ -40,6 +40,10 @@ export type AoContractClient = {
   ) => Promise<T>;
   message: (sendArgs: SendArgs) => Promise<string>;
   messageResult: (sendArgs: SendArgs) => Promise<MessageResult>;
+  messageDelayReplyOptional: (
+    sendArgs: SendArgs,
+  ) => Promise<Message | undefined>;
+  messageDelayReplyOne: (sendArgs: SendArgs) => Promise<Message>;
 };
 
 export const createAoContractClient = (
@@ -140,6 +144,66 @@ export const createAoContractClient = (
     return result;
   };
 
+  const messageDelayReplyOptional = async (
+    sendArgs: SendArgs,
+    cooldownMs = 100,
+    attempts = 50,
+  ) => {
+    // Get the cursor for the most recent result
+    const latest = await aoClient.results({
+      process: processId,
+      limit: 1,
+      sort: "DESC",
+    });
+    if (latest.edges.length < 1) {
+      // What if there are no previous results? How can you get the cursor?
+      throw new AoContractError("Could not get cursor");
+    }
+    const latestCursor = latest.edges[0].cursor;
+
+    // Send the message
+    await aoClient.message({
+      ...sendArgs,
+      process: processId,
+      signer: aoWallet.signer,
+    });
+
+    // Iterate through results to find our reply
+    let lastCursor = latestCursor;
+    for (let i = 0; i < attempts; i++) {
+      const pollResult = await aoClient.results({
+        process: processId,
+        from: lastCursor,
+        sort: "ASC",
+      });
+      for (let j = 0; j < pollResult.edges.length; j++) {
+        const edge = pollResult.edges[j];
+        for (let k = 0; k < edge.node.Messages.length; k++) {
+          const msg = edge.node.Messages[k];
+          if (msg.Target === aoWallet.address) {
+            return msg;
+          }
+        }
+      }
+      // Update cursor so we don't get the same results again
+      if (pollResult.edges.length > 0)
+        lastCursor = pollResult.edges[pollResult.edges.length - 1].cursor;
+
+      // Try again...
+      return new Promise((resolve) => setTimeout(resolve, cooldownMs));
+    }
+
+    return undefined;
+  };
+
+  const messageDelayReplyOne = async (sendArgs: SendArgs) => {
+    const reply = await messageDelayReplyOptional(sendArgs);
+    if (reply === undefined) {
+      throw new AoContractError("No reply");
+    }
+    return reply;
+  };
+
   return {
     processId,
     aoClient,
@@ -151,6 +215,8 @@ export const createAoContractClient = (
     dryrunReadReplyOneJson,
     message,
     messageResult,
+    messageDelayReplyOptional,
+    messageDelayReplyOne,
   };
 };
 
