@@ -190,7 +190,7 @@ export const createAoContractClient = (
         lastCursor = pollResult.edges[pollResult.edges.length - 1].cursor;
 
       // Try again...
-      return new Promise((resolve) => setTimeout(resolve, cooldownMs));
+      await new Promise((resolve) => setTimeout(resolve, cooldownMs));
     }
 
     return undefined;
