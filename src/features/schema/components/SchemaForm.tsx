@@ -18,6 +18,8 @@ export const SchemaForm = ({
   isSubmitting,
 }: SchemaFormProps) => {
   const postProcessed = useMemo(() => {
+    if (methodSchema.Schema?.Tags === undefined) return;
+
     const tagSchema = methodSchema.Schema.Tags;
     const tagProperties = tagSchema.properties as Record<
       string,
@@ -80,7 +82,26 @@ export const SchemaForm = ({
       schema,
       uiSchema,
     };
-  }, [methodSchema.Schema.Tags]);
+  }, [methodSchema.Schema?.Tags]);
+
+  if (postProcessed === undefined) {
+    return (
+      <div>
+        <p className="text-primary font-Press-Start-2P tracking-tighter text-[0.85rem]">
+          {methodSchema.Title}
+        </p>
+        <p className="text-22px text-secondary-foreground font-undead-pixel leading-none mt-2">
+          <Linkify
+            options={{
+              className: "text-blue-800 hover:underline",
+            }}
+          >
+            {methodSchema.Description}
+          </Linkify>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className={`${isSubmitting ? "animate-pulse" : ""}`}>

@@ -7,9 +7,11 @@ import { z } from "zod";
 export const SchemaMethod = z.object({
   Title: z.string(),
   Description: z.string(),
-  Schema: z.object({
-    Tags: z.custom<RJSFSchema>(),
-  }),
+  Schema: z.optional(
+    z.object({
+      Tags: z.custom<RJSFSchema>(),
+    }),
+  ),
 });
 export type SchemaMethod = z.infer<typeof SchemaMethod>;
 
