@@ -2,6 +2,8 @@ local ao = require("ao")
 local json = require("json")
 
 WRAPPED_ARWEAVE_TOKEN_PROCESS = WRAPPED_ARWEAVE_TOKEN_PROCESS or "TODO: WrappedArweaveProcessId"
+WRAPPED_ARWEAVE_DENOMINATION = 12
+WRAPPED_ARWEAVE_MULTIPLIER = 10 ^ WRAPPED_ARWEAVE_DENOMINATION
 
 LLAMA_BANKER_PROCESS = LLAMA_BANKER_PROCESS or "TODO: BankerProcessId"
 
@@ -295,7 +297,7 @@ function PetitionSchemaTags()
 ]]
 end
 
-function SchemaExternal()
+function SchemaExternalHasWar()
     return {
         Petition = {
             Target = WRAPPED_ARWEAVE_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
@@ -312,11 +314,49 @@ function SchemaExternal()
 end
 
 Handlers.add(
+    'TokenBalanceResponse',
+    function(msg)
+        local fromToken = msg.From == WRAPPED_ARWEAVE_TOKEN_PROCESS
+        local hasBalance = msg.Tags.Balance ~= nil
+        return fromToken and hasBalance
+    end,
+    function(msg)
+        local account = msg.Tags.Account
+        local balance = tonumber(msg.Tags.Balance)
+        print('Account: ' .. account .. ', Balance: ' .. balance)
+
+        if (balance >= (WRAPPED_ARWEAVE_MULTIPLIER * 0.001)) then
+            Send({ Target = account, Tags = { Type = 'SchemaExternal' }, Data = json.encode(SchemaExternalHasWar()) })
+        else
+            Send({
+                Target = account,
+                Tags = { Type = 'SchemaExternal' },
+                Data = json.encode({
+                    Petition = {
+                        Target = WRAPPED_ARWEAVE_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
+                        Title = "Beg the King for $LLAMA",
+                        Description =
+                        "You don't have enough Wrapped $AR to offer the king! You need at least 0.001. Go to aox.xyz to buy some.",
+                        Schema = nil,
+                    },
+                })
+            })
+        end
+    end
+)
+
+Handlers.add(
     'SchemaExternal',
     Handlers.utils.hasMatchingTag('Action', 'SchemaExternal'),
     function(msg)
         print('SchemaExternal')
-        Send({ Target = msg.From, Tags = { Type = 'SchemaExternal' }, Data = json.encode(SchemaExternal()) })
+        Send({
+            Target = WRAPPED_ARWEAVE_TOKEN_PROCESS,
+            Tags = {
+                Action = 'Balance',
+                Recipient = msg.From,
+            },
+        })
     end
 )
 
