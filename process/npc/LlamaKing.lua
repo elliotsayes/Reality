@@ -302,8 +302,7 @@ function SchemaExternalHasWar()
         Petition = {
             Target = WRAPPED_ARWEAVE_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
             Title = "Beg the King for $LLAMA",
-            Description =
-            "Offer wrapped $AR tokens for a chance to earn $LLAMA Coin. To wrap your $AR, go to aox.xyz",
+            Description = "Offer wrapped $AR tokens for a chance to earn $LLAMA Coin.",
             Schema = {
                 Tags = json.decode(PetitionSchemaTags()),
                 -- Data
