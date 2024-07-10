@@ -89,9 +89,11 @@ VerseEntitiesStatic = {
   ['QIFgbqEmk5MyJy01wuINfcRP_erGNNbhqHRkAQjxKgg'] = {
     Position = { 0, -6 },
     Type = 'Hidden', -- understood by `2D-Tile-0` renderer
-    Interaction = {
-      Type = 'Warp',
-      Size = { 3, 1 }
+    Metadata = {
+      Interaction = {
+        Type = 'Warp',
+        Size = { 3, 1 }
+      },
     },
   },
   ['Bouncer2'] = {

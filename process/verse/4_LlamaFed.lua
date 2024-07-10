@@ -34,33 +34,35 @@ VerseEntitiesStatic = {
   ['9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss'] = {
     Position = { 16, 21 },
     Type = 'Hidden', -- 'Warp'/'Avatar' types are understood by `2D-Tile-0` renderer
-    Interaction = {
-      Type = 'Warp',
-      Size = { 3, 1 }
-    },
+    Metadata = {
+      Interaction = {
+        Type = 'Warp',
+        Size = { 3, 1 }
+      },
+    }
   },
   -- LlamaKingDummyProcess
   ['kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA'] = {
     Position = { 15.875, 2.5 },
     Type = 'Avatar',
-    Interaction = {
-      Type = 'SchemaExternalForm',
-      Id = 'Petition',
-    },
     Metadata = {
       DisplayName = 'Llama King',
+      Interaction = {
+        Type = 'SchemaExternalForm',
+        Id = 'Petition',
+      },
     },
   },
   -- LlamaBankerDummyProcess
   ['ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk'] = {
     Position = { 18.875, 2.5 },
     Type = 'Avatar',
-    Interaction = {
-      Type = 'SchemaForm',
-      Id = 'Balance',
-    },
     Metadata = {
       DisplayName = 'Llama Banker',
+      Interaction = {
+        Type = 'SchemaForm',
+        Id = 'Balance',
+      },
     },
   },
   -- ['SomePlayerProcessId'] = {

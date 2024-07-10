@@ -311,7 +311,8 @@ export class VerseScene extends WarpableScene {
     }
 
     const warpEntityIds = Object.keys(this.verse.entities).filter(
-      (entityId) => this.verse.entities[entityId].Interaction?.Type === "Warp",
+      (entityId) =>
+        this.verse.entities[entityId].Metadata?.Interaction?.Type === "Warp",
     );
     this.warpSprites = warpEntityIds
       .map((entityId) => {
@@ -438,7 +439,7 @@ export class VerseScene extends WarpableScene {
 
   createWarpEntity(entityId: string, entity: VerseEntity) {
     console.log(`Creating warp entity ${entityId}`);
-    if (entity.Interaction?.Type !== "Warp") {
+    if (entity.Metadata?.Interaction?.Type !== "Warp") {
       throw new Error(`Entity ${entityId} is not a warp entity`);
     }
     const sprite = this.physics.add
@@ -454,10 +455,10 @@ export class VerseScene extends WarpableScene {
       .setDepth(DEPTH_ENTITY_BASE + 1)
       .setInteractive();
 
-    if (entity.Interaction.Size) {
+    if (entity.Metadata?.Interaction.Size) {
       sprite.setSize(
-        (entity.Interaction.Size[0] * this.tileSizeScaled[0]) / 2,
-        (entity.Interaction.Size[1] * this.tileSizeScaled[1]) / 2,
+        (entity.Metadata?.Interaction.Size[0] * this.tileSizeScaled[0]) / 2,
+        (entity.Metadata?.Interaction.Size[1] * this.tileSizeScaled[1]) / 2,
       );
     }
     this.time.delayedCall(1000, () => {
@@ -528,8 +529,8 @@ export class VerseScene extends WarpableScene {
     }
 
     if (
-      entity.Interaction?.Type === "SchemaForm" ||
-      entity.Interaction?.Type === "SchemaExternalForm"
+      entity.Metadata?.Interaction?.Type === "SchemaForm" ||
+      entity.Metadata?.Interaction?.Type === "SchemaExternalForm"
     ) {
       sprite.on(
         "pointerdown",
@@ -830,11 +831,12 @@ export class VerseScene extends WarpableScene {
     }
 
     if (
-      entity.Interaction?.Type !== "SchemaExternalForm" &&
-      entity.Interaction?.Type !== "SchemaForm"
+      entity.Metadata?.Interaction?.Type !== "SchemaExternalForm" &&
+      entity.Metadata?.Interaction?.Type !== "SchemaForm"
     )
       return;
-    const isExternal = entity.Interaction?.Type === "SchemaExternalForm";
+    const isExternal =
+      entity.Metadata?.Interaction?.Type === "SchemaExternalForm";
 
     const formSize: Size2D = {
       w: 350,
@@ -850,7 +852,7 @@ export class VerseScene extends WarpableScene {
         aoContractClientForProcess={this.aoContractClientForProcess}
         schemaProcessId={entityId}
         isExternal={isExternal}
-        methodName={entity.Interaction.Id}
+        methodName={entity.Metadata?.Interaction.Id}
         close={() => {
           this.schemaForm?.destroy();
           this.camera.startFollow(this.player);

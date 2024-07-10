@@ -48,9 +48,11 @@ VerseEntitiesStatic = {
   ['--5ozI7qKmLyBxcZJr_T62iGltnKE2ei1jOoQrKKfRA'] = {
     Position = { 2, 2 },
     Type = 'Hidden', -- These types are understood by the `2D-Tile-0` renderer
-    Interaction = {
-      Type = 'Warp',
-    },
+    Metadata = {
+      Interaction = {
+        Type = 'Warp',
+      },
+    }
   },
   ['SomePlayerProcessId'] = {
     Position = { 0, 0 },

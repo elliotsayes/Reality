@@ -14,9 +14,11 @@ VerseEntitiesStatic = {
   ['w0UvMR1XlVEjjNSaBn9F1qSkDPoIaWHJXzp5G5jjdAo'] = {
     Position = { 0 },
     Type = 'Unknown',
-    Interaction = {
-      Type = 'Warp',
-    },
+    Metadata = {
+      Interaction = {
+        Type = 'Warp',
+      },
+    }
   },
 }
 

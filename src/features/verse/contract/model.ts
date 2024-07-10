@@ -48,15 +48,21 @@ export const SchemaExternalForm = z.object({
 });
 export type SchemaExternalForm = z.infer<typeof SchemaForm>;
 
-export const VerseEntityMetadata = z.record(z.string(), z.any());
+export const VerseEntityMetadata = z.intersection(
+  z.object({
+    Interaction: z.optional(
+      z.discriminatedUnion("Type", [Warp, SchemaForm, SchemaExternalForm]),
+    ),
+    ProfileId: z.optional(z.string()),
+    DisplayName: z.optional(z.string()),
+  }),
+  z.record(z.string(), z.any()),
+);
 export type VerseEntityMetadata = z.infer<typeof VerseEntityMetadata>;
 
 export const VerseEntity = z.object({
   Position: VerseEntityPosition,
   Type: VerseEntityType,
-  Interaction: z.optional(
-    z.discriminatedUnion("Type", [Warp, SchemaForm, SchemaExternalForm]),
-  ),
   Metadata: z.optional(VerseEntityMetadata),
 });
 export type VerseEntity = z.infer<typeof VerseEntity>;
