@@ -88,7 +88,13 @@ You'll need to download the [Tiled](https://www.mapeditor.org/) editor to create
 ![Prefix layers](./img/05layers.png)
 3. Draw your map layers using the tiled editor.
 ![Draw your map](./img/06drawmap.png)
-4. TODO: Collision
+4. To add collision to your map:
+   - Click the "Edit Tileset" button
+  ![Edit Tileset](./img/07edittileset.png)
+   - Select all the tiles, right click "Custom Properties", and add a property of type `bool` named `collides`
+  ![Add custom property](./img/08addproperty.png)
+   - Set the `collides` property to `true` for any tiles you decide
+  ![Set collides property](./img/09setcollides.png)
 
 ### Using your tilemap with your Verse
 1. Remember to save your map file in the Tiled editor.
