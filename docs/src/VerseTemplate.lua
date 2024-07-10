@@ -20,7 +20,7 @@ VerseParameters = {
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = 'owPCwVSlRzw0Q890cqsNGegSEzKi20K6f__C_ochAjE', -- TxId of the tilemap in TMJ format
+      TxId = 'koH7Xcao-lLr1aXKX4mrcovf37OWPlHW76rPQEwCMMA', -- TxId of the tilemap in TMJ format
       -- Since we are already setting the spawn in the middle, we don't need this
       -- Offset = { -10, -10 },
     },
