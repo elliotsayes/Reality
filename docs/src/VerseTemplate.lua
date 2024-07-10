@@ -27,15 +27,7 @@ VerseParameters = {
   },
 }
 
-VerseEntitiesStatic = {
-  ['MyNpc'] = {
-    Type = "Avatar",
-    Position = { 10, 10 },
-    Metadata = {
-      DisplayName = "My NPC"
-    },
-  }
-}
+VerseEntitiesStatic = {}
 
 --#endregion
 
