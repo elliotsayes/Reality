@@ -34,7 +34,7 @@ VerseInfo = VerseInfo or {
   Parent = nil,
   Name = 'UnknownVerse',
   Dimensions = 0,
-  -- TODO: Test this works
+  Spawn = {},
   ['Render-With'] = '0D-Null',
 }
 
@@ -170,7 +170,7 @@ Handlers.add(
 
     local data = json.decode(msg.Data)
 
-    local Position = ZeroesArray(VerseInfo.Dimensions)
+    local Position = VerseInfo.Spawn or ZeroesArray(VerseInfo.Dimensions)
     if (data.Position) then
       local valid, error = ValidatePosition(data.Position)
 
@@ -192,8 +192,8 @@ Handlers.add(
       Type = data.Type
     end
 
-    local Metadata = data.Metadata or {}
     -- Is it necessary to validate this?
+    local Metadata = data.Metadata or {}
 
     -- Ugly workaround for empty tables!
     Metadata['_'] = false;
@@ -203,6 +203,8 @@ Handlers.add(
         VALUES (?, ?, ?, ?, ?)
         ON CONFLICT(Id) DO UPDATE SET
           LastUpdated = excluded.LastUpdated,
+          Position = excluded.Position,
+          Type = excluded.Type,
           Metadata = excluded.Metadata
     ]])
     stmt:bind_values(
