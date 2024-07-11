@@ -373,6 +373,8 @@ export class VerseScene extends WarpableScene {
       const entityUpdate = entityUpdates[entityId];
       if (entityUpdate.Type !== "Avatar") return;
 
+      const skinNumber = entityUpdate.Metadata?.SkinNumber ?? 4;
+
       if (this.avatarEntityContainers[entityId]) {
         console.log(`Updating entity ${entityId}`);
         const entityContainer = this.avatarEntityContainers[entityId];
@@ -400,7 +402,7 @@ export class VerseScene extends WarpableScene {
             .setOrigin(0.5)
             .setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
 
-          entitySprite.play("llama_4_walk");
+          entitySprite.play(`llama_${skinNumber}_walk`);
           this.physics.moveToObject(
             entityContainer,
             this.entityTargets[entityId],
@@ -414,7 +416,7 @@ export class VerseScene extends WarpableScene {
               const containerBody =
                 entityContainer.body as Phaser.Physics.Arcade.Body;
               containerBody.setVelocity(0, 0);
-              entitySprite.play("llama_4_idle");
+              entitySprite.play(`llama_${skinNumber}_idle`);
               // entitySprite.setPosition(updatePosition.x, updatePosition.y);
 
               this.entityTargets[entityId]?.destroy();
@@ -498,7 +500,7 @@ export class VerseScene extends WarpableScene {
   ) {
     const isPlayer = entityId === this.playerAddress;
     const isBouncer = bouncerEntityIds.includes(entityId);
-    const llamaSpriteIndex = isPlayer ? 0 : isBouncer ? 9 : 4;
+    const llamaSpriteIndex = isPlayer ? 0 : entity.Metadata?.SkinNumber ?? 4;
 
     const container = this.add
       .container(
