@@ -9,12 +9,18 @@ VerseDbAdmin = VerseDbAdmin or require('DbAdmin').new(VerseDb)
 SQLITE_TABLE_VERSE_ENTITIES = [[
   CREATE TABLE IF NOT EXISTS Entities (
     Id TEXT PRIMARY KEY,
-    LastUpdated INTEGER,
-    Position TEXT,
-    Type TEXT,
-    Metadata TEXT
+    LastUpdated INTEGER NOT NULL,
+    Position TEXT NOT NULL,
+    Type TEXT NOT NULL,
+    Metadata TEXT NOT NULL,
+    StateCode INTEGER NOT NULL DEFAULT 2
   );
 ]]
+
+-- State Codes
+-- 0 - Hidden
+-- 1 - VisibleAlways
+-- 2 - VisibleRecent
 
 function VerseDbInit()
   VerseDb:exec(SQLITE_TABLE_VERSE_ENTITIES)
@@ -24,6 +30,17 @@ VerseInitialized = VerseInitialized or false
 if (not VerseInitialized) then
   VerseDbInit()
   VerseInitialized = true
+end
+
+function SetStateCode(entityId, stateCode)
+  VerseDbAdmin:exec(string.format([[
+      UPDATE Entities
+      SET StateCode = %d
+      WHERE Id = '%s'
+    ]],
+    stateCode or 2,
+    entityId
+  ))
 end
 
 --#endregion
@@ -69,7 +86,23 @@ Handlers.add(
   Handlers.utils.hasMatchingTag("Action", "VerseEntitiesStatic"),
   function(msg)
     print("VerseEntitiesStatic")
-    Handlers.utils.reply(json.encode(VerseEntitiesStatic))(msg)
+    local entitiesStaticAll = {}
+    -- Add in VerseEntitiesStatic
+    for k, v in pairs(VerseEntitiesStatic) do
+      entitiesStaticAll[k] = v
+    end
+    -- Add in from DB
+    local dbStatic = VerseDbAdmin:exec([[
+      SELECT * FROM Entities WHERE StateCode = 1
+    ]])
+    for k, v in pairs(dbStatic) do
+      entitiesStaticAll[v.Id] = {
+        Position = json.decode(v.Position),
+        Type = v.Type,
+        Metadata = json.decode(v.Metadata)
+      }
+    end
+    Handlers.utils.reply(json.encode(entitiesStaticAll))(msg)
   end
 )
 
@@ -164,10 +197,6 @@ Handlers.add(
     print("VerseEntityCreate")
     local entityId = msg.From
 
-    -- if (VerseEntities[entityId]) then
-    --   return replyError(msg, "Entity already exists")
-    -- end
-
     local data = json.decode(msg.Data)
 
     local Position = VerseInfo.Spawn or ZeroesArray(VerseInfo.Dimensions)
@@ -205,8 +234,10 @@ Handlers.add(
           LastUpdated = excluded.LastUpdated,
           Position = excluded.Position,
           Type = excluded.Type,
-          Metadata = excluded.Metadata
+          Metadata = excluded.Metadata,
+          StateCode = 2
     ]])
+    -- StateCode is reset to default, if it was hidden
     stmt:bind_values(
       entityId,
       msg.Timestamp,
@@ -285,6 +316,35 @@ Handlers.add(
         Result = "OK",
       },
       Data = json.encode(result),
+    })
+  end
+)
+
+Handlers.add(
+  "VerseEntityHide",
+  Handlers.utils.hasMatchingTag("Action", "VerseEntityHide"),
+  function(msg)
+    print("VerseEntityHide")
+    local entityId = msg.From
+
+    local dbEntry = VerseDbAdmin:exec(string.format([[
+        SELECT * FROM Entities WHERE Id = '%s'
+      ]],
+      entityId
+    ))[1]
+    if (not dbEntry) then
+      ReplyError(msg, "Entity not found")
+      return
+    end
+
+    SetStateCode(entityId, 0)
+
+    Send({
+      Target = msg.From,
+      Tags = {
+        MsgRef = msg.Id,
+        Result = "OK",
+      },
     })
   end
 )
