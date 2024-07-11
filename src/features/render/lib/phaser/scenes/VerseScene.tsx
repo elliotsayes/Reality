@@ -160,8 +160,6 @@ export class VerseScene extends WarpableScene {
       w: this.camera.width,
       h: this.camera.height,
     };
-    console.log(`Camera center: ${cameraCenter.x}, ${cameraCenter.y}`);
-    console.log(`Camera size: ${cameraSize.w}, ${cameraSize.h}`);
 
     return {
       x: cameraCenter.x - cameraSize.w / 2,
@@ -174,12 +172,6 @@ export class VerseScene extends WarpableScene {
       x: this.camera.worldView.x,
       y: this.camera.worldView.y,
     };
-    const cameraSize = {
-      w: this.camera.width,
-      h: this.camera.height,
-    };
-    console.log(`Camera center: ${cameraCenter.x}, ${cameraCenter.y}`);
-    console.log(`Camera size: ${cameraSize.w}, ${cameraSize.h}`);
 
     return {
       x: cameraCenter.x,
