@@ -445,7 +445,7 @@ export class VerseScene extends WarpableScene {
       } else {
         console.log(`Creating entity ${entityId}`);
         const profileMaybe = profiles?.find(
-          (profile) => profile.ProfileId === entityId,
+          (profile) => profile.ProfileId === entityUpdate.Metadata?.ProfileId,
         );
         const entitySprite = this.createAvatarEntityContainer(
           entityId,
