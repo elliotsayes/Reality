@@ -863,18 +863,19 @@ export class VerseScene extends WarpableScene {
       />,
     );
 
+    const currentEntityMaybe = this.avatarEntityContainers[entityId];
+    const basePosition = {
+      x: currentEntityMaybe.x ?? entity.Position[0] * this.tileSizeScaled[0],
+      y: currentEntityMaybe.y ?? entity.Position[1] * this.tileSizeScaled[1],
+    };
     this.schemaForm = this.add
-      .dom(
-        entity.Position[0] * this.tileSizeScaled[0] - 60,
-        entity.Position[1] * this.tileSizeScaled[1] - 150,
-        memElement,
-      )
+      .dom(basePosition.x - 60, basePosition.y - 150, memElement)
       .setOrigin(1, 0);
 
     this.camera.stopFollow();
     this.camera.pan(
-      entity.Position[0] * this.tileSizeScaled[0] + 100,
-      entity.Position[1] * this.tileSizeScaled[1] + 200,
+      basePosition.x + 100,
+      basePosition.y + 200,
       500,
       Phaser.Math.Easing.Linear,
       false,
