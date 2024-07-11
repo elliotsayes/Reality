@@ -61,7 +61,7 @@ Contains the configuration for the specified rendering method. Below is the conf
       Format: 'PNG',
       TxId: String,
     },
-    Tilemap = {
+    Tilemap: {
       Type: 'Fixed',
       Format: 'TMJ',
       TxId: String,
