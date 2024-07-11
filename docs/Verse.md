@@ -6,6 +6,8 @@ Verse Protocol allows representing `Entities` in space. Each `Verse` defines the
 
 The Protocol is comprised of Handlers for `Definitions` for the Verse itself, and `Entities`.
 
+Source code is available in [Verse.lua](../process/blueprint/Verse.lua)
+
 ## Definitions
 
 These components define base information about the verse and how to render it.
