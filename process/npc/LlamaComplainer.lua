@@ -19,7 +19,7 @@ if (not Initialized) then
     Data = json.encode({
       Type = "Avatar",
       Metadata = {
-        DisplayName = "Llama Wanderer",
+        DisplayName = "Llama Complainer",
       },
     }),
   })
@@ -97,7 +97,7 @@ Handlers.add(
       Target = LLAMA_LAND,
       Tags = {
         Action = 'ChatMessage',
-        ['Author-Name'] = 'Llama Wanderer',
+        ['Author-Name'] = 'Llama Complainer',
       },
       Data = 'Goodness, Llamas are so noisy these days.'
     })
