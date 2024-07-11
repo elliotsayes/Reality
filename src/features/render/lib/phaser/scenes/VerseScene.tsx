@@ -29,10 +29,6 @@ const DEPTH_TEXT_BASE = 500;
 
 const OBJECT_SIZE_ENTITY = 2;
 
-const kingEntityIds = ["kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA"];
-
-const bankerEntityIds = ["ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk"];
-
 const bouncerEntityIds = ["Bouncer1", "Bouncer2"];
 
 export class VerseScene extends WarpableScene {
@@ -517,14 +513,7 @@ export class VerseScene extends WarpableScene {
       .setOrigin(0.5)
       .setInteractive();
 
-    // TODO: SchemaForm
-    if (kingEntityIds.includes(entityId)) {
-      // Llama Assistant
-      sprite.play(`llama_6_idle`);
-    } else if (bankerEntityIds.includes(entityId)) {
-      // Banker
-      sprite.play(`llama_8_idle`);
-    } else if (isPlayer) {
+    if (isPlayer) {
       sprite.play(`llama_0_idle`);
     } else {
       sprite.play(`llama_${llamaSpriteIndex}_idle`);
