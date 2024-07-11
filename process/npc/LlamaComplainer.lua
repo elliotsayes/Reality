@@ -9,7 +9,7 @@ TICK_COUNT = TICK_COUNT or 0
 
 LAST_MESSAGE_ID = LAST_MESSAGE_ID or 0
 
-if (not Initialized) then
+function Register()
   print("Registering")
   Send({
     Target = LLAMA_LAND,
@@ -20,9 +20,14 @@ if (not Initialized) then
       Type = "Avatar",
       Metadata = {
         DisplayName = "Llama Complainer",
+        SkinNumber = 8,
       },
     }),
   })
+end
+
+if (not Initialized) then
+  Register()
   -- Get Chat Count
   Send({
     Target = LLAMA_LAND,
@@ -110,8 +115,8 @@ Handlers.add(
       },
       Data = json.encode({
         Position = {
-          math.random(-5, 0),
-          math.random(-5, 0),
+          math.random(-4, 4),
+          math.random(-3, 3),
         },
       }),
     })
