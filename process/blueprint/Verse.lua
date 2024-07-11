@@ -86,23 +86,7 @@ Handlers.add(
   Handlers.utils.hasMatchingTag("Action", "VerseEntitiesStatic"),
   function(msg)
     print("VerseEntitiesStatic")
-    local entitiesStaticAll = {}
-    -- Add in VerseEntitiesStatic
-    for k, v in pairs(VerseEntitiesStatic) do
-      entitiesStaticAll[k] = v
-    end
-    -- Add in from DB
-    local dbStatic = VerseDbAdmin:exec([[
-      SELECT * FROM Entities WHERE StateCode = 1
-    ]])
-    for k, v in pairs(dbStatic) do
-      entitiesStaticAll[v.Id] = {
-        Position = json.decode(v.Position),
-        Type = v.Type,
-        Metadata = json.decode(v.Metadata)
-      }
-    end
-    Handlers.utils.reply(json.encode(entitiesStaticAll))(msg)
+    Handlers.utils.reply(json.encode(VerseEntitiesStatic))(msg)
   end
 )
 
@@ -112,24 +96,38 @@ Handlers.add(
   function(msg)
     print("VerseEntitiesDynamic")
 
-    local queryTimestamp = json.decode(msg.Data).Timestamp
+    local data = json.decode(msg.Data)
+    if (not data) then
+      ReplyError(msg, "Invalid Data")
+      return
+    end
+    local queryTimestamp = data.Timestamp
     -- Validate timestamp
     if (type(queryTimestamp) ~= "number") then
       ReplyError(msg, "Invalid Timestamp")
       return
     end
 
+    local isInitial = data.Initial or false
+
+    local additionalQuery = "LastUpdated > ?"
+    if (isInitial) then
+      additionalQuery = "(LastUpdated > ? AND StateCode == 2) OR StateCode == 1"
+    end
     local query = VerseDb:prepare([[
-      SELECT * FROM Entities WHERE LastUpdated > ?
-    ]])
-    query:bind_values(queryTimestamp)
+      SELECT *
+      FROM Entities
+      WHERE Id == ? OR ]] .. additionalQuery
+    )
+    query:bind_values(msg.From, queryTimestamp)
 
     local entities = {}
     for row in query:nrows() do
       entities[row.Id] = {
         Position = json.decode(row.Position),
         Type = row.Type,
-        Metadata = json.decode(row.Metadata)
+        Metadata = json.decode(row.Metadata),
+        StateCode = row.StateCode,
       }
     end
 
@@ -232,7 +230,6 @@ Handlers.add(
         VALUES (?, ?, ?, ?, ?)
         ON CONFLICT(Id) DO UPDATE SET
           LastUpdated = excluded.LastUpdated,
-          Position = excluded.Position,
           Type = excluded.Type,
           Metadata = excluded.Metadata,
           StateCode = 2

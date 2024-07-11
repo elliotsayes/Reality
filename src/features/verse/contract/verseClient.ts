@@ -23,11 +23,15 @@ export type VerseClient = {
   readInfo(): Promise<VerseInfo>;
   readParameters(): Promise<VerseParameters>;
   readEntitiesStatic(): Promise<VerseEntities>;
-  readEntitiesDynamic(sinceTime: Date): Promise<VerseEntities>;
+  readEntitiesDynamic(
+    sinceTime: Date,
+    isInitial?: boolean,
+  ): Promise<VerseEntities>;
 
   // Writes
   createEntity(entity: VerseEntity): Promise<MessageId>;
   updateEntityPosition(position: VerseEntityPosition): Promise<MessageId>;
+  hideEntity(): Promise<MessageId>;
 };
 
 export const createVerseClient = (
@@ -56,12 +60,14 @@ export const createVerseClient = (
         tags: [{ name: "Action", value: "VerseEntitiesStatic" }],
       } /* VerseEntities */,
     ), // TODO: Define VerseEntities properly
-  readEntitiesDynamic: (sinceTime: Date) =>
+  readEntitiesDynamic: (sinceTime: Date, isInitial = false) =>
     aoContractClient.dryrunReadReplyOneJson<VerseEntities>(
       {
         tags: [{ name: "Action", value: "VerseEntitiesDynamic" }],
-        // TODO: Get timestamp working!!
-        data: JSON.stringify({ Timestamp: Math.floor(sinceTime.getTime()) }),
+        data: JSON.stringify({
+          Timestamp: Math.floor(sinceTime.getTime()),
+          Initial: isInitial,
+        }),
       } /* VerseEntities */,
     ), // TODO: Define VerseEntities properly
 
@@ -75,6 +81,10 @@ export const createVerseClient = (
     aoContractClient.message({
       tags: [{ name: "Action", value: "VerseEntityUpdatePosition" }],
       data: JSON.stringify({ Position: position }),
+    }),
+  hideEntity: () =>
+    aoContractClient.message({
+      tags: [{ name: "Action", value: "VerseEntityHide" }],
     }),
 });
 

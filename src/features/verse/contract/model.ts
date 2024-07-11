@@ -64,6 +64,7 @@ export const VerseEntity = z.object({
   Position: VerseEntityPosition,
   Type: VerseEntityType,
   Metadata: z.optional(VerseEntityMetadata),
+  StateCode: z.optional(z.number()),
 });
 export type VerseEntity = z.infer<typeof VerseEntity>;
 

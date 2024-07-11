@@ -69,8 +69,10 @@ export async function loadVersePhaser(
       queryKey: ["verseEntitiesDynamic", verseClient.verseId, nonce],
       queryFn: async () => {
         const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
-        const entitiesDynamic =
-          await verseClient.readEntitiesDynamic(fiveMinsAgo);
+        const entitiesDynamic = await verseClient.readEntitiesDynamic(
+          fiveMinsAgo,
+          true, // Initial call, to get always-visible entities
+        );
         return entitiesDynamic;
       },
     });

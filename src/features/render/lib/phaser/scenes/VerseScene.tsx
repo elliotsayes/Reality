@@ -282,6 +282,12 @@ export class VerseScene extends WarpableScene {
     this.avatarEntityContainers = avatarEntityIds
       .map((entityId) => {
         const entity = this.verse.entities[entityId];
+        if (entityId !== this.playerAddress && entity.StateCode === 0) {
+          // This entity is hidden, shouldn't be here
+          console.warn(`Entity ${entityId} is hidden, skipping`);
+          return {};
+        }
+
         const profileMaybe = this.verse.profiles.find(
           (profile) => profile.ProfileId === entity.Metadata?.ProfileId,
         );
@@ -375,6 +381,22 @@ export class VerseScene extends WarpableScene {
         console.log(`Updating entity ${entityId}`);
         const entityContainer = this.avatarEntityContainers[entityId];
         if (!entityContainer) return;
+
+        if (entityUpdate.StateCode === 0) {
+          console.log(`Hiding entity ${entityId}`);
+          // Dereference in the containers object
+          delete this.avatarEntityContainers[entityId];
+          // Fade out & destroy the container
+          this.tweens.add({
+            targets: entityContainer,
+            alpha: 0,
+            duration: 500,
+            onComplete: () => {
+              entityContainer.destroy();
+            },
+          });
+        }
+
         const entitySprite = entityContainer.getAt(
           0,
         ) as Phaser.GameObjects.Sprite;
