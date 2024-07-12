@@ -340,7 +340,7 @@ Handlers.add(
                         Target = WRAPPED_ARWEAVE_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
                         Title = "Beg the King for $LLAMA",
                         Description =
-                            "You don't have enough wrapped AR to offer the Lllama King! You need at least " ..
+                            "You don't have enough wrapped AR to offer the Llama King! You need at least " ..
                             WRAPPED_ARWEAVE_MINIMUM_QUANTITY_WHOLE ..
                             ". Go to wardepot.g8way.io to swap ETH or USDC for wAR, or go to aox.xyz to bridge AR for wAR.",
                         Schema = nil,
