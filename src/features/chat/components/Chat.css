@@ -407,14 +407,3 @@
 .chat-page-list-addr {
   color: var(--secondary-text);
 }
-
-@media (max-width: 650px) {
-  .chat-page {
-    padding: 10px;
-    padding-bottom: 100px;
-  }
-
-  .chat-page-messages-container {
-    height: 430px;
-  }
-}
