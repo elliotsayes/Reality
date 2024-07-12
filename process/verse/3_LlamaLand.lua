@@ -115,3 +115,12 @@ VerseEntitiesStatic = {
 }
 
 -- TODO: Purchasing buildings
+
+Handlers.add(
+  "Info",
+  Handlers.utils.hasMatchingTag("Action", "Info"),
+  function(msg)
+    return print("Welcome to LlamaLand! Go to LlamaLand.g8way.io to play.")
+    -- Handlers.utils.reply("Welcome to LlamaLand! Go to LlamaLand.g8way.io to play.")(msg)
+  end
+)
