@@ -35,13 +35,12 @@ Balances = Balances or { [ao.id] = utils.toBalanceValue(initialSupply * 10 ^ Den
 -- LlamaBankerDummy
 LlamaBanker = 'ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk'
 Waitlist = '2dFSGGlc5xJb0sWinAnEFHM-62tQEbhDzi1v5ldWX5k'
-Tracking = '7sniCE5rEM92PYgvIr0H9xK_yJf56FxSYN-eazRE__Y'
+-- Tracking = '7sniCE5rEM92PYgvIr0H9xK_yJf56FxSYN-eazRE__Y'
 
 GrantWhitelist = {
   [LlamaBanker] = true,
   [Waitlist] = true,
-  -- TODO: Tracking will be merged into waitlist process
-  [Tracking] = true,
+  -- [Tracking] = true,
 }
 
 -- "grant" handler - like "mint", but adds tokens to a certain address
