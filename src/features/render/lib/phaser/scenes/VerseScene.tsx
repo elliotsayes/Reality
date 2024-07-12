@@ -376,13 +376,14 @@ export class VerseScene extends WarpableScene {
 
         if (entityUpdate.StateCode === 0) {
           console.log(`Hiding entity ${entityId}`);
-          // Dereference in the containers object
+          // Dereference in the containers object,
+          // in case it needs to be replaced
           delete this.avatarEntityContainers[entityId];
           // Fade out & destroy the container
           this.tweens.add({
             targets: entityContainer,
             alpha: 0,
-            duration: 500,
+            duration: 900,
             onComplete: () => {
               entityContainer.destroy();
             },
