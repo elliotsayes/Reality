@@ -9,10 +9,11 @@ ChatDbAdmin = ChatDbAdmin or require('DbAdmin').new(ChatDb)
 SQLITE_TABLE_CHAT_MESSAGES = [[
   CREATE TABLE IF NOT EXISTS Messages (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    MessageId TEXT,
-    Timestamp INTEGER,
-    AuthorId TEXT,
-    AuthorName TEXT,
+    MessageId TEXT UNIQUE NOT NULL,
+    Timestamp INTEGER NOT NULL,
+    AuthorId TEXT NOT NULL,
+    AuthorName TEXT DEFAULT NULL,
+    Recipient TEXT DEFAULT NULL,
     Content TEXT
   );
 ]]
@@ -70,6 +71,7 @@ Handlers.add(
     local timestamp = msg.Timestamp
     local authorId = msg.From
     local authorName = msg.Tags['Author-Name']
+    local recipient = msg.Tags['Recipient']
     local content = msg.Data
 
     -- Validate AuthorName
@@ -84,10 +86,10 @@ Handlers.add(
 
     -- Save message
     local stmt = ChatDb:prepare([[
-      INSERT INTO Messages (MessageId, Timestamp, AuthorId, AuthorName, Content)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO Messages (MessageId, Timestamp, AuthorId, AuthorName, Recipient, Content)
+      VALUES (?, ?, ?, ?, ?, ?)
     ]])
-    stmt:bind_values(messageId, timestamp, authorId, authorName, content)
+    stmt:bind_values(messageId, timestamp, authorId, authorName, recipient, content)
     stmt:step()
     stmt:finalize()
 
@@ -228,6 +230,7 @@ Handlers.add(
         Timestamp = row.Timestamp,
         AuthorId = row.AuthorId,
         AuthorName = row.AuthorName,
+        Recipient = row.Recipient,
         Content = row.Content
       })
     end

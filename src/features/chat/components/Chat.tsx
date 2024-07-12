@@ -172,6 +172,7 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
         id: msg.MessageId,
         address: msg.AuthorId,
         authorName: msg.AuthorName,
+        recipient: msg.Recipient,
         message: msg.Content,
         time: msg.Timestamp,
       };
@@ -181,6 +182,15 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
   for (let i = 0; i < messageList.length; i++) {
     const data = messageList[i];
     const owner = data.address == userAddress;
+
+    const hasRecipient = typeof data.recipient === "string";
+    const isRecipient = data.recipient === userAddress;
+
+    if (hasRecipient && !isRecipient) {
+      console.warn("Skipping message with non-player recipient", data);
+      continue;
+    }
+
     const highlighted = highlightedAuthorIds.includes(data.address);
     const isKing =
       data.address === "kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA";
@@ -190,19 +200,18 @@ function renderMessages(userAddress: string, messages: Array<Message>) {
         key={data.id}
         className={`chat-msg-line ${owner ? "my-line" : "other-line"}`}
       >
-        {!owner && !isKing && (
-          <img
-            className="chat-msg-portrait"
-            src="llamaland_profilePic_8bit.png"
-          />
-        )}
-
-        {isKing && (
-          <img
-            className="chat-msg-portrait"
-            src="llamaland_profilePic_8bit_king.png"
-          />
-        )}
+        {!owner &&
+          (isKing ? (
+            <img
+              className="chat-msg-portrait"
+              src="llamaland_profilePic_8bit_king.png"
+            />
+          ) : (
+            <img
+              className="chat-msg-portrait"
+              src="llamaland_profilePic_8bit.png"
+            />
+          ))}
 
         <div>
           <div

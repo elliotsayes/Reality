@@ -254,12 +254,22 @@ export const renderMachine = setup({
       params: { messages: MessageHistory },
     ) => {
       const { messages } = params;
-      context.typedScenes.verseScene!.showEntityChatMessages(messages);
+      const filteredMessages = messages.filter(
+        (message) =>
+          typeof message.Recipient !== "string" ||
+          message.Recipient === context.playerAddress,
+      );
+      context.typedScenes.verseScene!.showEntityChatMessages(filteredMessages);
     },
     appendChatMessages: assign(
       ({ context }, params: { messages: MessageHistory }) => {
         const { messages } = params;
-        return { chatMessages: context.chatMessages.concat(messages) };
+        const filteredMessages = messages.filter(
+          (message) =>
+            typeof message.Recipient !== "string" ||
+            message.Recipient === context.playerAddress,
+        );
+        return { chatMessages: context.chatMessages.concat(filteredMessages) };
       },
     ),
     clearChat: assign(() => ({

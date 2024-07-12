@@ -193,6 +193,7 @@ Handlers.add(
         Target = LLAMA_FED_CHAT_PROCESS,
         Tags = {
           Action = 'ChatMessage',
+          Recipient = sender,
           ['Author-Name'] = 'Llama Banker',
         },
         Data = 'Sorry ' ..
@@ -372,6 +373,7 @@ Handlers.add(
       Tags = {
         Action = 'ChatMessage',
         ['Author-Name'] = 'Llama Banker',
+        Recipient = account,
       },
       Data = 'Address ' .. account .. ', you currently have ' .. FormatLlamaTokenAmount(balance) .. ' $LLAMA coins!',
     })

@@ -9,6 +9,7 @@ export const Message = z.object({
   Timestamp: z.number(),
   AuthorId: ArweaveId,
   AuthorName: z.string(),
+  Recipient: z.optional(z.union([ArweaveId, z.null()])),
   Content: z.string(),
 });
 export type Message = z.infer<typeof Message>;
