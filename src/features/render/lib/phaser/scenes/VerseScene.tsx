@@ -853,7 +853,8 @@ export class VerseScene extends WarpableScene {
       "style",
       `width: ${formSize.w}px; height: ${formSize.h}px; display: flex; justify-content: center; align-items: center;`,
     );
-    ReactDOM.createRoot(memElement).render(
+    const root = ReactDOM.createRoot(memElement);
+    root.render(
       <FormOverlay
         aoContractClientForProcess={this.aoContractClientForProcess}
         schemaProcessId={entityId}
@@ -861,6 +862,7 @@ export class VerseScene extends WarpableScene {
         methodName={entity.Metadata?.Interaction.Id}
         close={() => {
           this.schemaForm?.destroy();
+          root.unmount();
           this.camera.startFollow(this.player);
           this.inputEnable();
         }}
