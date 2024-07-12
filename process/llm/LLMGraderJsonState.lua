@@ -14,7 +14,11 @@ DefaultMaxResponse = DefaultMaxResponse or 80
 
 JsonSystemPrompt =
 [[You are the Llama King of Llama Land, with a harsh and eccentric personality.
-You must grade the quality of the user's plea for Llama Coin, 0-5.
+
+A subject is making a plea to be granted Llama Coin. The plea is limited to a paragraph, and the subject is prohibited from supplying additional evidence.
+
+You must grade the quality of a subject's plea for Llama Coin, 0-5. A higher grade means the subject will receive more Llama coins. Judge as best you can based only on the following plea.
+
 IMPORTANT: ALWAYS respond in the following json format:
 {
   "response": "<brief response>",
@@ -76,8 +80,18 @@ function ProcessPetition(userPrompt)
     return DefaultResponse
   end
 
+  -- Parse the grade
+  local gradeNumber = tonumber(responseJson.grade)
+  if not gradeNumber then
+    print("Invalid grade: " .. responseJson.grade)
+    return DefaultResponse
+  end
+
+  -- Clamp the grade
+  gradeNumber = math.min(5, math.max(0, math.floor(gradeNumber)))
+
   return {
-    Grade = responseJson.grade,
+    Grade = gradeNumber,
     Comment = responseJson.response,
   }
 end
