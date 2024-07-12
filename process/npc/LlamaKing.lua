@@ -5,6 +5,9 @@ WRAPPED_ARWEAVE_TOKEN_PROCESS = WRAPPED_ARWEAVE_TOKEN_PROCESS or "TODO: WrappedA
 WRAPPED_ARWEAVE_DENOMINATION = 12
 WRAPPED_ARWEAVE_MULTIPLIER = 10 ^ WRAPPED_ARWEAVE_DENOMINATION
 
+WRAPPED_ARWEAVE_MINIMUM_QUANTITY_WHOLE = 0.025
+WRAPPED_ARWEAVE_MAXIMUM_QUANTITY_WHOLE = 0.025
+
 LLAMA_BANKER_PROCESS = LLAMA_BANKER_PROCESS or "TODO: BankerProcessId"
 
 LLAMA_FED_CHAT_PROCESS = LLAMA_FED_CHAT_PROCESS or "TODO: ChatProcessId"
@@ -89,6 +92,7 @@ function dispatchHighestPriorityMessage(currentTime)
                 Tags = {
                     Action = 'ChatMessage',
                     ['Author-Name'] = 'Llama King',
+                    Recipient = highestPriorityMessage.originalSender,
                 },
                 Data = "Oh dear " .. useSender .. ", I'm terribly busy! I'll get to your petition in due time..."
             })
@@ -145,6 +149,7 @@ Handlers.add(
             Tags = {
                 Action = 'ChatMessage',
                 ['Author-Name'] = 'Llama King',
+                Recipient = messageToSend.originalSender,
             },
             Data = 'Ah, my loyal subject ' ..
                 useSender .. ', please allow me a few minutes to carefully ponder your petition...',
@@ -273,10 +278,10 @@ function PetitionSchemaTags()
     },
     "Quantity": {
       "type": "number",
-      "default": 0.001,
-      "minimum": 0.001,
-      "maximum": 0.001,
-      "title": "Wrapped $AR offering (0.001).",
+      "default": ]] .. WRAPPED_ARWEAVE_MINIMUM_QUANTITY_WHOLE .. [[,
+      "minimum": ]] .. WRAPPED_ARWEAVE_MINIMUM_QUANTITY_WHOLE .. [[,
+      "maximum": ]] .. WRAPPED_ARWEAVE_MAXIMUM_QUANTITY_WHOLE .. [[,
+      "title": "Wrapped $AR offering (0.025).",
       "$comment": "1000000000000"
     },
     "X-Petition": {
@@ -335,7 +340,8 @@ Handlers.add(
                         Target = WRAPPED_ARWEAVE_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
                         Title = "Beg the King for $LLAMA",
                         Description =
-                        "You don't have enough Wrapped $AR to offer the king! You need at least 0.001. Go to aox.xyz to buy some.",
+                            "You don't have enough Wrapped $AR to offer the king! You need at least " ..
+                            WRAPPED_ARWEAVE_MINIMUM_QUANTITY_WHOLE .. ". Go to aox.xyz to buy some.",
                         Schema = nil,
                     },
                 })
