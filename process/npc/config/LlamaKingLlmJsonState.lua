@@ -20,4 +20,19 @@ LLM_WORKERS = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
+  --LlmGraderJsonStateW3
+  ['FLMlfMYO0Ra72mmO6T5TRwa18gh0beIY3kuSTYDLQqM'] = {
+    busyWithMessage = nil,
+    submittedTimestamp = nil,
+  },
+  --LlmGraderJsonStateW4
+  ['vPY0_hNXiskmuD-hzbHkc-ptW-h5zCmZWY3hDbKz70A'] = {
+    busyWithMessage = nil,
+    submittedTimestamp = nil,
+  },
+  --LlmGraderJsonStateW5
+  ['Ayp4BrkmjYHdmrJVkOLEP2FOushdAab9B5yoRY0hvuo'] = {
+    busyWithMessage = nil,
+    submittedTimestamp = nil,
+  },
 }
