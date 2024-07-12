@@ -440,12 +440,12 @@ export class VerseScene extends WarpableScene {
         const profileMaybe = profiles?.find(
           (profile) => profile.ProfileId === entityUpdate.Metadata?.ProfileId,
         );
-        const entitySprite = this.createAvatarEntityContainer(
+        const entityContainer = this.createAvatarEntityContainer(
           entityId,
           entityUpdate,
           profileMaybe,
         );
-        this.avatarEntityContainers[entityId] = entitySprite;
+        this.avatarEntityContainers[entityId] = entityContainer;
       }
     });
   }
