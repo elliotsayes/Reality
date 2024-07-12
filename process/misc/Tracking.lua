@@ -12,7 +12,7 @@ TrackingDb = TrackingDb or sqlite3.open_memory()
 TrackingDbAdmin = TrackingDbAdmin or require('DbAdmin').new(TrackingDb)
 
 LLAMA_TOKEN_PROCESS = LLAMA_TOKEN_PROCESS or
-    "TODO: LlamaTokenProcessId" -- TODO: Test token Btm_9_fvwb7eXbQ2VswA4V19HxYWnFsYRB4gIl3Dahw
+    "TODO: LlamaTokenProcessId" -- Set to PROD
 LLAMA_TOKEN_DENOMINATION = LLAMA_TOKEN_DENOMINATION or 12
 LLAMA_TOKEN_MULTIPLIER = 10 ^ LLAMA_TOKEN_DENOMINATION
 
