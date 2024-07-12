@@ -298,10 +298,14 @@ Handlers.add(
 
     local gradeMultiplier = 0
     if (grade > 0) then
-      gradeMultiplier = 10 ^ (grade - 1)
+      local multiplierLookup = { 1, 5, 10, 20, 100 }
+      gradeMultiplier = multiplierLookup[grade]
     end
     local baseEmissions = 1 * LLAMA_TOKEN_MULTIPLIER
-    local weightedEmissions = math.floor(baseEmissions * quantityMultiplier * gradeMultiplier)
+    -- Ignoring quantityMultiplier for now
+    local weightedEmissions = math.floor(baseEmissions * gradeMultiplier)
+
+    print("Quantity: " .. originalQuantity .. ", Grade: " .. grade .. ", Weighted Emissions: " .. weightedEmissions)
 
     -- TODO: Message chat / DM
 
