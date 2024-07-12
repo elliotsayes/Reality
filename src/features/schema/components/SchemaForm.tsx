@@ -93,6 +93,7 @@ export const SchemaForm = ({
         <p className="text-22px text-secondary-foreground font-undead-pixel leading-none mt-2">
           <Linkify
             options={{
+              target: "_blank",
               className: "text-blue-800 hover:underline",
             }}
           >
@@ -111,6 +112,7 @@ export const SchemaForm = ({
       <p className="text-22px text-secondary-foreground font-undead-pixel leading-none mt-2">
         <Linkify
           options={{
+            target: "_blank",
             className: "text-blue-800 hover:underline",
           }}
         >
