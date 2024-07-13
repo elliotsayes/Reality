@@ -1,2 +1,3 @@
 *.json
 *.csv
+WhitelistData*.js
