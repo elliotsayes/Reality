@@ -20,6 +20,7 @@ WRAPPED_ARWEAVE_CAP_QUANTITY = 25000000000   -- 25 Billion
 WRAPPED_ARWEAVE_MAX_QUANTITY = 2500000000000 -- 2500 Billion
 
 MAXIMUM_PETITIONS_PER_DAY = MAXIMUM_PETITIONS_PER_DAY or 1
+PETITION_COOLDOWN_MS = 23 * 60 * 60 * 1000
 
 LLAMA_KING_PROCESS = LLAMA_KING_PROCESS or "TODO: LlamaKingProcessId"
 
@@ -174,7 +175,7 @@ Handlers.add(
     -- Sender is generated from a trusted process
     local lastDayCredits = BankerDbAdmin:exec(
       "SELECT * FROM WarCredit WHERE Sender = '" .. sender
-      .. "' AND Timestamp > " .. (msg.Timestamp - 23 * 60 * 60 * 1000)
+      .. "' AND Timestamp > " .. (msg.Timestamp - PETITION_COOLDOWN_MS)
       .. " ORDER BY Timestamp DESC"
     )
     print("Last day credits: " .. #lastDayCredits)
@@ -409,25 +410,70 @@ RequestBalanceMessageSchemaTags = [[
 }
 ]]
 
-Schema = {
-  Balance = {
-    Title = "Check your $LLAMA Balance",
-    Description =
-    "Llama Banker will check your $LLAMA account and write your balance in the chat.", -- TODO: nil Descriptions?
-    Schema = {
-      Tags = json.decode(RequestBalanceMessageSchemaTags),
-      -- Data
-      -- Result?
-    },
-  },
-}
+function SecondsToClock(seconds)
+  local seconds = tonumber(seconds)
+
+  if seconds <= 0 then
+    return "00:00:00";
+  else
+    hours = string.format("%02.f", math.floor(seconds / 3600));
+    mins = string.format("%02.f", math.floor(seconds / 60 - (hours * 60)));
+    secs = string.format("%02.f", math.floor(seconds - hours * 3600 - mins * 60));
+    return hours .. ":" .. mins .. ":" .. secs
+  end
+end
+
+function Schema(petitionCount, timeLeft)
+  local description = ""
+  if (petitionCount > 0) then
+    description = "You have used " .. petitionCount .. " out of "
+        .. MAXIMUM_PETITIONS_PER_DAY .. " petitions today. "
+  else
+    description = "You have not used any petitions today! "
+  end
+
+  if (petitionCount == MAXIMUM_PETITIONS_PER_DAY and timeLeft ~= nil) then
+    description = description .. "Your next petition will be available in " .. SecondsToClock(timeLeft) .. ". "
+  end
+
+  description = description ..
+      "\r\nClick Submit for Llama Banker to check your $LLAMA account and write the balance in chat."
+
+  return {
+    Balance = {
+      Title = "Check your Llama Land Status!",
+      Description = description
+      , -- TODO: nil Descriptions?
+      Schema = {
+        Tags = json.decode(RequestBalanceMessageSchemaTags),
+        -- Data
+        -- Result?
+      },
+    }
+  }
+end
 
 Handlers.add(
   'Schema',
   Handlers.utils.hasMatchingTag('Action', 'Schema'),
   function(msg)
     print('Schema')
-    Send({ Target = msg.From, Tags = { Type = 'Schema' }, Data = json.encode(Schema) })
+    local sender = msg.From
+    local lastDayCredits = BankerDbAdmin:exec(
+      "SELECT * FROM WarCredit WHERE Sender = '" .. sender
+      .. "' AND Timestamp > " .. (msg.Timestamp - PETITION_COOLDOWN_MS)
+      .. " ORDER BY Timestamp DESC"
+    )
+    local petitionCount = #lastDayCredits
+    local timeLeft = nil
+    if (petitionCount == MAXIMUM_PETITIONS_PER_DAY) then
+      local lastCredit = lastDayCredits[#lastDayCredits]
+      timeLeft = (lastCredit.Timestamp + PETITION_COOLDOWN_MS - msg.Timestamp) / 1000
+    end
+    print('Petition Count: ' .. petitionCount)
+    print('Time Left: ' .. (timeLeft or 'nil'))
+
+    Send({ Target = msg.From, Tags = { Type = 'Schema' }, Data = json.encode(Schema(petitionCount, timeLeft)) })
   end
 )
 
