@@ -1,5 +1,5 @@
 import { message, createDataItemSigner } from "@permaweb/aoconnect";
-import { whitelist } from "./WhitelistDataBatch1";
+import { whitelist } from "./WhitelistDataInternal.js";
 import fs from "fs";
 
 const key = JSON.parse(
@@ -16,7 +16,7 @@ async function main() {
       data: `AuthoriseWallet("${walletId}")`,
       signer,
     });
-    console.log(res);
+    console.log(`${walletId}: ${res}`);
   }
 }
 
