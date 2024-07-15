@@ -31,6 +31,9 @@ FROM
       "TimestampCreated",
       "TimestampLastBumped",
       "BumpCount",
+      "Authorised",
+      "Claimed",
+      "Flagged",
     ],
   });
   writeFileSync("./misc/WaitlistDump.csv", csv);

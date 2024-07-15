@@ -362,6 +362,15 @@ function AuthoriseWallet(walletId)
   })
 end
 
+function FlagWallet(walletId)
+  print("Flagging: " .. walletId)
+  WaitlistDbAdmin:exec(string.format([[
+    UPDATE Waitlist
+    SET Flagged = %d
+    WHERE WalletId = '%s'
+  ]], 1, walletId))
+end
+
 function ClaimWallet(walletId)
   WaitlistDbAdmin:exec(string.format([[
     UPDATE Waitlist

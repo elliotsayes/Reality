@@ -7,7 +7,8 @@
     "test": "node --test",
     "test:sqlite": "FORMAT=wasm32-unknown-emscripten2 WASM=./module/AOS-SQLITE.wasm node --test",
     "dump": "node misc/WaitlistDump.js",
-    "whitelist": "node misc/Whitelist.js"
+    "whitelist": "node misc/Whitelist.js",
+    "flag": "node misc/Flag.js"
   },
   "keywords": [],
   "author": "",
