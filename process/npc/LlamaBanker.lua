@@ -269,7 +269,7 @@ function RecordEmissionsAndSendLlamaToken(amount, recipient, currentTime)
 end
 
 function FormatLlamaTokenAmount(amount)
-  return string.format("%.2f", amount / LLAMA_TOKEN_MULTIPLIER)
+  return string.format("%.1f", amount / LLAMA_TOKEN_MULTIPLIER)
 end
 
 Handlers.add(
@@ -372,7 +372,9 @@ Handlers.add(
     local account = msg.Tags.Account
     local balance = tonumber(msg.Tags.Balance)
     print('Account: ' .. account .. ', Balance: ' .. balance)
-    -- TODO: DM ?
+
+    local message = 'Psst, you currently have ' .. FormatLlamaTokenAmount(balance) .. ' $LLAMA coins!'
+    message = message .. ' Go to ao-bazar.g8way.io to view and trade your ao tokens.'
     Send({
       Target = LLAMA_FED_CHAT_PROCESS,
       Tags = {
@@ -380,7 +382,7 @@ Handlers.add(
         ['Author-Name'] = 'Llama Banker',
         Recipient = account,
       },
-      Data = 'Address ' .. account .. ', you currently have ' .. FormatLlamaTokenAmount(balance) .. ' $LLAMA coins!',
+      Data = message,
     })
   end
 )
