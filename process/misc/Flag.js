@@ -1,5 +1,5 @@
 import { message, createDataItemSigner } from "@permaweb/aoconnect";
-import { flagged } from "./FlaggedDataBatch3.js";
+import { flagged } from "./FlaggedDataBatch4.js";
 import fs from "fs";
 
 const key = JSON.parse(
