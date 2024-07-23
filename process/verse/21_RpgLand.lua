@@ -54,6 +54,17 @@ VerseEntitiesStatic = {
   --     },
   --   }
   -- },
+  ['2sOKN_T04Eik4zm2B_fyfEvAJCJVJjoXZNIWUegSQtw'] = {
+    Position = { 39, 44 },
+    Type = 'Avatar',
+    Metadata = {
+      DisplayName = 'Fantasy Llama',
+      SkinNumber = 5,
+      Interaction = {
+        Type = 'Default',
+      },
+    },
+  },
   ['D5r-wBDfgo_Cx52uYoI8YiHp7QTqvpPbL8TtcbCoaXk'] = {
     Position = { 65.5, 51.5 },
     Type = 'Avatar',
