@@ -112,6 +112,17 @@ VerseEntitiesStatic = {
       SkinNumber = 9,
     },
   },
+  ['abyG0zg0RnguuedHwrjpxPkzc2qcXeX7Pfc2dyfypXw'] = {
+    Position = { -2, 15.5 },
+    Type = 'Avatar',
+    Metadata = {
+      DisplayName = 'Llama Sailor',
+      SkinNumber = 2,
+      Interaction = {
+        Type = 'Default',
+      },
+    },
+  },
 }
 
 -- TODO: Purchasing buildings
