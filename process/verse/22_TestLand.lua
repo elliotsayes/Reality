@@ -51,7 +51,7 @@ VerseEntitiesStatic = {
       SkinNumber = 9,
       Interaction = {
         Type = 'SchemaForm',
-        Id = 'WarpTarget',
+        Id = 'Sail',
       },
     },
   }

@@ -19,7 +19,7 @@ Handlers.add(
       Target = msg.From,
       Tags = { Type = 'Schema' },
       Data = json.encode({
-        WarpTarget = {
+        Sail = {
           Title = 'Ready to set sail?',
           Description = 'Last I heard, we were headed to ' ..
               WARP_CURRENT.Name .. '. Jump about and we\'ll be on our way!',
