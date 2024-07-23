@@ -22,7 +22,7 @@ Handlers.add(
         Sail = {
           Title = 'Ready to set sail?',
           Description = 'Last I heard, we were headed to ' ..
-              WARP_CURRENT.Name .. '. Jump about and we\'ll be on our way!',
+              WARP_CURRENT.Name .. '. Jump aboard and we\'ll be on our way!',
           Schema = nil,
         },
       })
