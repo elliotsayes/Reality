@@ -365,87 +365,100 @@ export class VerseScene extends WarpableScene {
       if (entityId === this.playerAddress) return;
 
       const entityUpdate = entityUpdates[entityId];
-      if (entityUpdate.Type !== "Avatar") return;
+      if (entityUpdate.Type === "Avatar") {
+        const skinNumber = entityUpdate.Metadata?.SkinNumber ?? 4;
 
-      const skinNumber = entityUpdate.Metadata?.SkinNumber ?? 4;
+        if (this.avatarEntityContainers[entityId]) {
+          console.log(`Updating entity ${entityId}`);
+          const entityContainer = this.avatarEntityContainers[entityId];
+          if (!entityContainer) return;
 
-      if (this.avatarEntityContainers[entityId]) {
-        console.log(`Updating entity ${entityId}`);
-        const entityContainer = this.avatarEntityContainers[entityId];
-        if (!entityContainer) return;
+          if (entityUpdate.StateCode === 0) {
+            console.log(`Hiding entity ${entityId}`);
+            // Dereference in the containers object,
+            // in case it needs to be replaced
+            delete this.avatarEntityContainers[entityId];
+            // Fade out & destroy the container
+            this.tweens.add({
+              targets: entityContainer,
+              alpha: 0,
+              duration: 900,
+              onComplete: () => {
+                entityContainer.destroy();
+              },
+            });
+          }
+
+          const entitySprite = entityContainer.getAt(
+            0,
+          ) as Phaser.GameObjects.Sprite;
+
+          const updatePosition: Point2D = {
+            x: entityUpdate.Position[0] * this.tileSizeScaled[0],
+            y: entityUpdate.Position[1] * this.tileSizeScaled[1],
+          };
+          if (
+            !this.withinBox(entityContainer, {
+              center: updatePosition,
+              edgeLength: SCALE_ENTITIES * OBJECT_SIZE_ENTITY * 2,
+            })
+          ) {
+            this.entityTargets[entityId]?.destroy();
+            delete this.entityTargets[entityId];
+
+            this.entityTargets[entityId] = this.physics.add
+              .sprite(updatePosition.x, updatePosition.y, "invis")
+              .setScale(SCALE_ENTITIES)
+              .setOrigin(0.5)
+              .setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
+
+            entitySprite.play(`llama_${skinNumber}_walk`);
+            this.physics.moveToObject(
+              entityContainer,
+              this.entityTargets[entityId],
+              120,
+            );
+            this.physics.add.overlap(
+              entityContainer,
+              this.entityTargets[entityId],
+              () => {
+                console.log(`Entity ${entityId} collided with target`);
+                const containerBody =
+                  entityContainer.body as Phaser.Physics.Arcade.Body;
+                containerBody.setVelocity(0, 0);
+                entitySprite.play(`llama_${skinNumber}_idle`);
+                // entitySprite.setPosition(updatePosition.x, updatePosition.y);
+
+                this.entityTargets[entityId]?.destroy();
+                delete this.entityTargets[entityId];
+              },
+            );
+          }
+        } else {
+          console.log(`Creating entity ${entityId}`);
+          const profileMaybe = profiles?.find(
+            (profile) => profile.ProfileId === entityUpdate.Metadata?.ProfileId,
+          );
+          const entityContainer = this.createAvatarEntityContainer(
+            entityId,
+            entityUpdate,
+            profileMaybe,
+          );
+          this.avatarEntityContainers[entityId] = entityContainer;
+        }
+      } else if (entityUpdate.Metadata?.Interaction?.Type === "Warp") {
+        console.log(`Regenerating warp entity ${entityId}`);
+        this.warpSprites[entityId]?.destroy();
+        delete this.warpSprites[entityId];
 
         if (entityUpdate.StateCode === 0) {
-          console.log(`Hiding entity ${entityId}`);
-          // Dereference in the containers object,
-          // in case it needs to be replaced
-          delete this.avatarEntityContainers[entityId];
-          // Fade out & destroy the container
-          this.tweens.add({
-            targets: entityContainer,
-            alpha: 0,
-            duration: 900,
-            onComplete: () => {
-              entityContainer.destroy();
-            },
-          });
+          console.log(`Skipping hidden warp ${entityId}`);
+          return;
         }
-
-        const entitySprite = entityContainer.getAt(
-          0,
-        ) as Phaser.GameObjects.Sprite;
-
-        const updatePosition: Point2D = {
-          x: entityUpdate.Position[0] * this.tileSizeScaled[0],
-          y: entityUpdate.Position[1] * this.tileSizeScaled[1],
-        };
-        if (
-          !this.withinBox(entityContainer, {
-            center: updatePosition,
-            edgeLength: SCALE_ENTITIES * OBJECT_SIZE_ENTITY * 2,
-          })
-        ) {
-          this.entityTargets[entityId]?.destroy();
-          delete this.entityTargets[entityId];
-
-          this.entityTargets[entityId] = this.physics.add
-            .sprite(updatePosition.x, updatePosition.y, "invis")
-            .setScale(SCALE_ENTITIES)
-            .setOrigin(0.5)
-            .setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
-
-          entitySprite.play(`llama_${skinNumber}_walk`);
-          this.physics.moveToObject(
-            entityContainer,
-            this.entityTargets[entityId],
-            120,
-          );
-          this.physics.add.overlap(
-            entityContainer,
-            this.entityTargets[entityId],
-            () => {
-              console.log(`Entity ${entityId} collided with target`);
-              const containerBody =
-                entityContainer.body as Phaser.Physics.Arcade.Body;
-              containerBody.setVelocity(0, 0);
-              entitySprite.play(`llama_${skinNumber}_idle`);
-              // entitySprite.setPosition(updatePosition.x, updatePosition.y);
-
-              this.entityTargets[entityId]?.destroy();
-              delete this.entityTargets[entityId];
-            },
-          );
-        }
-      } else {
-        console.log(`Creating entity ${entityId}`);
-        const profileMaybe = profiles?.find(
-          (profile) => profile.ProfileId === entityUpdate.Metadata?.ProfileId,
-        );
-        const entityContainer = this.createAvatarEntityContainer(
+        this.warpSprites[entityId] = this.createWarpEntity(
           entityId,
           entityUpdate,
-          profileMaybe,
         );
-        this.avatarEntityContainers[entityId] = entityContainer;
       }
     });
   }
@@ -474,6 +487,10 @@ export class VerseScene extends WarpableScene {
         (entity.Metadata?.Interaction.Size[1] * this.tileSizeScaled[1]) / 2,
       );
     }
+    if (entity.StateCode === 0) {
+      return sprite;
+    }
+
     this.time.delayedCall(1000, () => {
       this.physics.add.overlap(
         this.player,
