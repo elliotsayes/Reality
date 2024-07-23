@@ -32,13 +32,15 @@ if (not VerseInitialized) then
   VerseInitialized = true
 end
 
-function SetStateCode(entityId, stateCode)
+function SetStateCode(timestamp, entityId, stateCode)
   VerseDbAdmin:exec(string.format([[
       UPDATE Entities
-      SET StateCode = %d
+      SET StateCode = %d,
+          LastUpdated = %d
       WHERE Id = '%s'
     ]],
     stateCode or 2,
+    timestamp,
     entityId
   ))
 end
@@ -177,7 +179,7 @@ function ValidatePosition(Position)
   return true
 end
 
-ValidTypes = { "Unknown", "Avatar", "Warp" }
+ValidTypes = { "Unknown", "Avatar", "Hidden" }
 function ValidateType(Type)
   for i = 1, #ValidTypes do
     if (Type == ValidTypes[i]) then
@@ -322,7 +324,7 @@ Handlers.add(
   Handlers.utils.hasMatchingTag("Action", "VerseEntityHide"),
   function(msg)
     print("VerseEntityHide")
-    local entityId = msg.From
+    local entityId = msg.Tags['EntityId'] or msg.From
 
     local dbEntry = VerseDbAdmin:exec(string.format([[
         SELECT * FROM Entities WHERE Id = '%s'
@@ -334,7 +336,36 @@ Handlers.add(
       return
     end
 
-    SetStateCode(entityId, 0)
+    SetStateCode(msg.Timestamp, entityId, 0)
+
+    Send({
+      Target = msg.From,
+      Tags = {
+        MsgRef = msg.Id,
+        Result = "OK",
+      },
+    })
+  end
+)
+
+Handlers.add(
+  "VerseEntityFix",
+  Handlers.utils.hasMatchingTag("Action", "VerseEntityFix"),
+  function(msg)
+    print("VerseEntityFix")
+    local entityId = msg.Tags['EntityId'] or msg.From
+
+    local dbEntry = VerseDbAdmin:exec(string.format([[
+        SELECT * FROM Entities WHERE Id = '%s'
+      ]],
+      entityId
+    ))[1]
+    if (not dbEntry) then
+      ReplyError(msg, "Entity not found")
+      return
+    end
+
+    SetStateCode(msg.Timestamp, entityId, 1)
 
     Send({
       Target = msg.From,
