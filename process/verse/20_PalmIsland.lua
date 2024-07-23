@@ -30,7 +30,19 @@ VerseParameters = {
   },
 }
 
-VerseEntitiesStatic = {}
+VerseEntitiesStatic = {
+  ['RgIs2u58lV3032gWhytemDNF2NmwZGKWQ0ClB0mqaK0'] = {
+    Position = { 45, 49 },
+    Type = 'Avatar',
+    Metadata = {
+      DisplayName = 'Confused Llama',
+      SkinNumber = 2,
+      Interaction = {
+        Type = 'Default',
+      },
+    },
+  }
+}
 
 --#endregion
 

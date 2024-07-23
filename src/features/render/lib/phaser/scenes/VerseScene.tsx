@@ -568,6 +568,16 @@ export class VerseScene extends WarpableScene {
         "pointerdown",
         () => {
           sprite.play(`llama_${llamaSpriteIndex}_emote`);
+          if (entity.Metadata?.Interaction?.Type === "Default") {
+            this.aoContractClientForProcess(entityId).message({
+              tags: [
+                {
+                  name: "Action",
+                  value: "DefaultInteraction",
+                },
+              ],
+            });
+          }
           setTimeout(() => {
             sprite.play(`llama_${llamaSpriteIndex}_idle`);
             if (isBouncer) {

@@ -30,6 +30,11 @@ export type VerseEntityType = z.infer<typeof VerseEntityType>;
 export const VerseEntityPosition = VerseVector;
 export type VerseEntityPosition = z.infer<typeof VerseEntityPosition>;
 
+export const DefaultInteraction = z.object({
+  Type: z.literal("Default"),
+});
+export type DefaultInteraction = z.infer<typeof DefaultInteraction>;
+
 export const Warp = z.object({
   Type: z.literal("Warp"),
   Size: z.optional(z.array(z.number())),
@@ -51,7 +56,12 @@ export type SchemaExternalForm = z.infer<typeof SchemaForm>;
 export const VerseEntityMetadata = z.intersection(
   z.object({
     Interaction: z.optional(
-      z.discriminatedUnion("Type", [Warp, SchemaForm, SchemaExternalForm]),
+      z.discriminatedUnion("Type", [
+        DefaultInteraction,
+        Warp,
+        SchemaForm,
+        SchemaExternalForm,
+      ]),
     ),
     ProfileId: z.optional(z.string()),
     DisplayName: z.optional(z.string()),
