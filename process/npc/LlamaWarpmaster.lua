@@ -1,5 +1,5 @@
--- ProcessName: LlamaWarpmaster2
--- ProcessId: bv3UY40_zEg9gPnk1vVlzn01EFhVPvwAaKP7AfqHwpA
+-- ProcessName: LlamaWarpmaster4
+-- ProcessId: FdDJu16cgYE4KAT07jXtxvukntAE3JZaE3WrNnAjGis
 
 -- 64 Bit
 -- LlamaWarpmaster1: 10sfHicPvJcpiM3owbKjt8MOrJtea0nnIpZ1CTwI-RY
@@ -37,7 +37,8 @@ LLAMA_VOTE_WHOLE_MAX = 100
 LLAMA_VOTE_WHOLE_MIN_QUANTITY = LLAMA_VOTE_WHOLE_MIN * LLAMA_TOKEN_MULTIPLIER
 LLAMA_VOTE_WHOLE_MAX_QUANTITY = LLAMA_VOTE_WHOLE_MAX * LLAMA_TOKEN_MULTIPLIER
 
-VOTE_WINDOW_MS = 24 * 60 * 60 * 1000 -- 1 day
+REFUND_WINDOW_MS = 23 * 60 * 60 * 1000 -- 23 hours
+VOTE_WINDOW_MS = 24 * 60 * 60 * 1000   -- 1 day
 
 WarpmasterDb = WarpmasterDb or sqlite3.open_memory()
 WarpmasterDbAdmin = WarpmasterDbAdmin or require('DbAdmin').new(WarpmasterDb)
@@ -48,7 +49,8 @@ SQLITE_TABLE_LLAMA_CREDIT = [[
     Timestamp INTEGER,
     Sender TEXT,
     Quantity INTEGER,
-    Vote TEXT
+    Vote TEXT,
+    Refunded INTEGER DEFAULT 0
   );
 ]]
 
@@ -103,7 +105,7 @@ function DetectAndHandleHighestVotedWarp(timestamp)
       Target = CHAT_TARGET,
       Tags = {
         Action = 'ChatMessage',
-        ['Author-Name'] = 'Warpmaster',
+        ['Author-Name'] = 'Boatmaster',
       },
       Data = "The warp target has been updated to " .. WARP_CURRENT.Name .. "!",
     })
@@ -127,6 +129,40 @@ function DetectAndHandleHighestVotedWarp(timestamp)
         EntityId = WARP_CURRENT.PID,
       },
     })
+  end
+end
+
+function RefundExpiredVotes(timestamp)
+  local query = string.format([[
+SELECT
+  MessageId,
+  Sender,
+  Quantity
+FROM
+  LlamaCredit
+WHERE
+  Timestamp < %d AND Refunded = 0
+]], timestamp - REFUND_WINDOW_MS)
+  for row in WarpmasterDb:nrows(query) do
+    -- Refund the sender
+    Send({
+      Target = LLAMA_TOKEN_PROCESS,
+      Tags = {
+        Action = 'Transfer',
+        Recipient = row.Sender,
+        Quantity = tostring(math.floor(row.Quantity)),
+      },
+    })
+
+    -- Mark as refunded
+    local stmt = WarpmasterDb:prepare [[
+      UPDATE LlamaCredit
+      SET Refunded = 1
+      WHERE MessageId = ?
+    ]]
+    stmt:bind_values(row.MessageId)
+    stmt:step()
+    stmt:finalize()
   end
 end
 
@@ -182,7 +218,7 @@ Handlers.add(
       Target = CHAT_TARGET,
       Tags = {
         Action = 'ChatMessage',
-        ['Author-Name'] = 'Warpmaster',
+        ['Author-Name'] = 'Boatmaster',
       },
       Data = "Hear ye, hear ye! An offering of " ..
           FormatLlamaTokenAmount(quantity) .. " $LLAMA to vote for " .. vote .. ".",
@@ -219,7 +255,8 @@ function PetitionSchemaTags()
     "default": ]] .. LLAMA_VOTE_WHOLE_MIN .. [[,
     "minimum": ]] .. LLAMA_VOTE_WHOLE_MIN .. [[,
     "maximum": ]] .. LLAMA_VOTE_WHOLE_MAX .. [[,
-    "title": "$LLAMA offering (]] .. LLAMA_VOTE_WHOLE_MIN .. [[-]] .. LLAMA_VOTE_WHOLE_MAX .. [[).",
+    "title": "$LLAMA amount (refunded in 24h) (]] ..
+      LLAMA_VOTE_WHOLE_MIN .. [[-]] .. LLAMA_VOTE_WHOLE_MAX .. [[).",
     "$comment": "]] .. LLAMA_TOKEN_MULTIPLIER .. [["
   },
   "X-Vote": {
@@ -262,16 +299,16 @@ GROUP BY
       voteQuantitesStr = voteQuantitesStr .. row.Vote .. ': ' .. FormatLlamaTokenAmount(row.Total) .. ' $LLAMA, '
     end
 
-    if (balance >= (LLAMA_VOTE_WHOLE_MIN * LLAMA_TOKEN_MULTIPLIER)) then
+    if (balance >= (LLAMA_VOTE_WHOLE_MIN_QUANTITY)) then
       Send({
         Target = account,
         Tags = { Type = 'SchemaExternal' },
         Data = json.encode({
           WarpVote = {
             Target = LLAMA_TOKEN_PROCESS,
-            Title = "Vote for the warp location",
+            Title = "Vote for the desination",
             Description =
-                "You can vote for the warp location by offering $LLAMA. The location with the most votes in the last day will be chosen as the warp target." ..
+                "Stake some $LLAMA to vote for today's desination—you'll get it back within 24 hours." ..
                 voteQuantitesStr,
             Schema = {
               Tags = json.decode(PetitionSchemaTags()),
@@ -288,8 +325,8 @@ GROUP BY
         Data = json.encode({
           WarpVote = {
             Target = LLAMA_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
-            Title = "Vote for the warp location",
-            Description = "You don't have enough $LLAMA to vote, try begging the King for some." ..
+            Title = "Vote for the desination",
+            Description = "You don't have enough $LLAMA to vote, try begging the King for some?" ..
                 voteQuantitesStr,
             Schema = nil,
           },
@@ -311,5 +348,15 @@ Handlers.add(
         Recipient = msg.From,
       },
     })
+  end
+)
+
+Handlers.add(
+  'CronTick',
+  Handlers.utils.hasMatchingTag('Action', 'Cron'),
+  function(msg)
+    print('CronTick')
+    DetectAndHandleHighestVotedWarp(msg.Timestamp)
+    RefundExpiredVotes(msg.Timestamp)
   end
 )
