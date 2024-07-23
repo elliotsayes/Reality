@@ -40,9 +40,6 @@ function ValidateAuthorName(authorName)
   if (string.len(authorName) > 20) then
     return false
   end
-  if (string.match(authorName, "[^a-zA-Z0-9\\ _-]")) then
-    return false
-  end
 
   return true
 end
