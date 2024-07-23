@@ -123,6 +123,30 @@ VerseEntitiesStatic = {
       },
     },
   },
+  ['FdDJu16cgYE4KAT07jXtxvukntAE3JZaE3WrNnAjGis'] = {
+    Type = "Avatar",
+    Position = { 0, 12 },
+    Metadata = {
+      DisplayName = "Boatmaster",
+      SkinNumber = 3,
+      Interaction = {
+        Type = 'SchemaExternalForm',
+        Id = 'WarpVote',
+      },
+    },
+  },
+  ['CJcM_n0-s3gtt_Xqcffu5-AseTFARioG7iK4B3myeU4'] = {
+    Type = "Avatar",
+    Position = { 6, 14 },
+    Metadata = {
+      DisplayName = "Captain",
+      SkinNumber = 9,
+      Interaction = {
+        Type = 'SchemaForm',
+        Id = 'Sail',
+      },
+    },
+  }
 }
 
 -- TODO: Purchasing buildings

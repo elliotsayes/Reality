@@ -41,6 +41,16 @@ VerseEntitiesStatic = {
         Type = 'Default',
       },
     },
+  },
+  ['9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss'] = {
+    Position = { 55.5, 48 },
+    Type = 'Hidden',
+    Metadata = {
+      Interaction = {
+        Type = 'Warp',
+        Size = { 0.5, 1 }
+      },
+    }
   }
 }
 

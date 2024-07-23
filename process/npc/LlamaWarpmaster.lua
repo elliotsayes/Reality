@@ -24,10 +24,8 @@ WARP_CANDIDATE_NAMES_JSON = json.encode(WARP_CANDIDATE_NAMES)
 
 WARP_CURRENT = WARP_CURRENT or WARP_CANDIDATES[1]
 
-CHAT_TARGET =
-'Kh-PHmaRt0bykGUgyK4euVSknML6yHIwQPyR5xPvXxg' -- CHAT_TARGET or 'ZeDtHnbKThvHxN5NIudNRqtIlTle7KyGLQeiQTP1f_E'
-VERSE_TARGET =
-'Kh-PHmaRt0bykGUgyK4euVSknML6yHIwQPyR5xPvXxg' -- VERSE_TARGET or 'ZeDtHnbKThvHxN5NIudNRqtIlTle7KyGLQeiQTP1f_E'
+CHAT_TARGET = '9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss'
+VERSE_TARGET = '9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss'
 
 LLAMA_TOKEN_PROCESS = 'pazXumQI-HPH7iFGfTC-4_7biSnqz_U67oFAGry5zUY'
 LLAMA_TOKEN_DENOMINATION = 12
@@ -37,8 +35,8 @@ LLAMA_VOTE_WHOLE_MAX = 100
 LLAMA_VOTE_WHOLE_MIN_QUANTITY = LLAMA_VOTE_WHOLE_MIN * LLAMA_TOKEN_MULTIPLIER
 LLAMA_VOTE_WHOLE_MAX_QUANTITY = LLAMA_VOTE_WHOLE_MAX * LLAMA_TOKEN_MULTIPLIER
 
-REFUND_WINDOW_MS = 23 * 60 * 60 * 1000 -- 23 hours
-VOTE_WINDOW_MS = 24 * 60 * 60 * 1000   -- 1 day
+REFUND_WINDOW_MS = (7 * 24 - 1) * 60 * 60 * 1000 -- 1 week less 1h
+VOTE_WINDOW_MS = (7 * 24) * 60 * 60 * 1000       -- 1 week
 
 WarpmasterDb = WarpmasterDb or sqlite3.open_memory()
 WarpmasterDbAdmin = WarpmasterDbAdmin or require('DbAdmin').new(WarpmasterDb)
@@ -255,7 +253,7 @@ function PetitionSchemaTags()
     "default": ]] .. LLAMA_VOTE_WHOLE_MIN .. [[,
     "minimum": ]] .. LLAMA_VOTE_WHOLE_MIN .. [[,
     "maximum": ]] .. LLAMA_VOTE_WHOLE_MAX .. [[,
-    "title": "$LLAMA amount (refunded in 24h) (]] ..
+    "title": "$LLAMA amount (refunded in a week) (]] ..
       LLAMA_VOTE_WHOLE_MIN .. [[-]] .. LLAMA_VOTE_WHOLE_MAX .. [[).",
     "$comment": "]] .. LLAMA_TOKEN_MULTIPLIER .. [["
   },
@@ -282,7 +280,7 @@ Handlers.add(
     local balance = tonumber(msg.Tags.Balance)
     print('Account: ' .. account .. ', Balance: ' .. balance)
 
-    -- Query the database for total LlamaCredit quantities for each in last day
+    -- Query the database for total LlamaCredit quantities for each in last week
     local query = string.format([[
 SELECT
   Vote,
@@ -308,7 +306,7 @@ GROUP BY
             Target = LLAMA_TOKEN_PROCESS,
             Title = "Vote for the desination",
             Description =
-                "Stake some $LLAMA to vote for today's desination—you'll get it back within 24 hours." ..
+                "Stake some $LLAMA to vote for this week's desination—you'll get it back in a week." ..
                 voteQuantitesStr,
             Schema = {
               Tags = json.decode(PetitionSchemaTags()),
