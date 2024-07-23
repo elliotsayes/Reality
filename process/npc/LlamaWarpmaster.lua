@@ -366,6 +366,7 @@ Handlers.add(
   Handlers.utils.hasMatchingTag('Action', 'WarpCurrent'),
   function(msg)
     print('WarpCurrent')
+    DetectAndHandleHighestVotedWarp(msg.Timestamp)
     Send({
       Target = msg.From,
       Tags = {
