@@ -146,7 +146,11 @@ Metadata is optional, and can contain additional information about the Entity.
 
 #### `Interaction` Model
 
-Interaction is optional, and can be defined as one of the following models: `Warp`, `SchemaForm`, `SchemaExternalForm`.
+Interaction is optional, and can be defined as one of the following models: `Default`, `Warp`, `SchemaForm`, `SchemaExternalForm`.
+
+##### Default
+
+This indicates that the client should send an ao message to the entity upon being click. The message is sent with the `Action` tag set to `DefaultInteraction`. You should set up your agent to have a handler for this message.
 
 ##### Warp
 
