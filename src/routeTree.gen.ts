@@ -16,38 +16,20 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
+const SplatLazyImport = createFileRoute('/$')()
 const IndexLazyImport = createFileRoute('/')()
-const AppIndexLazyImport = createFileRoute('/app/')()
-const DemoPhaserLazyImport = createFileRoute('/demo/phaser')()
-const DemoChatLazyImport = createFileRoute('/demo/chat')()
-const AppSplatLazyImport = createFileRoute('/app/$')()
 
 // Create/Update Routes
+
+const SplatLazyRoute = SplatLazyImport.update({
+  path: '/$',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/$.lazy').then((d) => d.Route))
 
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
-
-const AppIndexLazyRoute = AppIndexLazyImport.update({
-  path: '/app/',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/app.index.lazy').then((d) => d.Route))
-
-const DemoPhaserLazyRoute = DemoPhaserLazyImport.update({
-  path: '/demo/phaser',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/demo/phaser.lazy').then((d) => d.Route))
-
-const DemoChatLazyRoute = DemoChatLazyImport.update({
-  path: '/demo/chat',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/demo/chat.lazy').then((d) => d.Route))
-
-const AppSplatLazyRoute = AppSplatLazyImport.update({
-  path: '/app/$',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/app.$.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -60,32 +42,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/app/$': {
-      id: '/app/$'
-      path: '/app/$'
-      fullPath: '/app/$'
-      preLoaderRoute: typeof AppSplatLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/demo/chat': {
-      id: '/demo/chat'
-      path: '/demo/chat'
-      fullPath: '/demo/chat'
-      preLoaderRoute: typeof DemoChatLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/demo/phaser': {
-      id: '/demo/phaser'
-      path: '/demo/phaser'
-      fullPath: '/demo/phaser'
-      preLoaderRoute: typeof DemoPhaserLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/app/': {
-      id: '/app/'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppIndexLazyImport
+    '/$': {
+      id: '/$'
+      path: '/$'
+      fullPath: '/$'
+      preLoaderRoute: typeof SplatLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -95,10 +56,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
-  AppSplatLazyRoute,
-  DemoChatLazyRoute,
-  DemoPhaserLazyRoute,
-  AppIndexLazyRoute,
+  SplatLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -110,26 +68,14 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/app/$",
-        "/demo/chat",
-        "/demo/phaser",
-        "/app/"
+        "/$"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
-    "/app/$": {
-      "filePath": "app.$.lazy.tsx"
-    },
-    "/demo/chat": {
-      "filePath": "demo/chat.lazy.tsx"
-    },
-    "/demo/phaser": {
-      "filePath": "demo/phaser.lazy.tsx"
-    },
-    "/app/": {
-      "filePath": "app.index.lazy.tsx"
+    "/$": {
+      "filePath": "$.lazy.tsx"
     }
   }
 }
