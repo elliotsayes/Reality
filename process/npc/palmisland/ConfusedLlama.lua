@@ -23,7 +23,7 @@ Handlers.add(
         Action = 'ChatMessage',
         ['Author-Name'] = 'Confused Llama',
       },
-      Data = "You call those Palm trees? What a disappointment",
+      Data = "You call these Palm trees? RpgLand would have been a much better choice.",
     })
 
     TIMESTAMP_LAST_MESSAGE_MS = msg.Timestamp
