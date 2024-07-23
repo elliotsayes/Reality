@@ -26,7 +26,7 @@ Loaded Verse Template
 ```
 > Optional: If you want chat enabled for your verse, load the [`Chat.lua`](../process/blueprint/Chat.lua) protocol source as well 
 
-4. Enter your verse at `https://weaveworld.vercel.app/#/app/verse/<your_process_id>`
+1. Enter your verse ID in [verseviewer.arweave.net](https://verseviewer.arweave.net/)
 
 ## Customizing your Verse
 

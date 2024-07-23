@@ -30,15 +30,28 @@ VerseParameters = {
 }
 
 VerseEntitiesStatic = {
-  ['bv3UY40_zEg9gPnk1vVlzn01EFhVPvwAaKP7AfqHwpA'] = {
+  -- Warper
+  ['FdDJu16cgYE4KAT07jXtxvukntAE3JZaE3WrNnAjGis'] = {
     Type = "Avatar",
     Position = { 8, 8 },
     Metadata = {
-      DisplayName = "Warpmaster",
+      DisplayName = "Boatmaster",
       SkinNumber = 3,
       Interaction = {
         Type = 'SchemaExternalForm',
         Id = 'WarpVote',
+      },
+    },
+  },
+  ['CJcM_n0-s3gtt_Xqcffu5-AseTFARioG7iK4B3myeU4'] = {
+    Type = "Avatar",
+    Position = { 9, 9 },
+    Metadata = {
+      DisplayName = "Captain",
+      SkinNumber = 9,
+      Interaction = {
+        Type = 'SchemaForm',
+        Id = 'Sail',
       },
     },
   }
