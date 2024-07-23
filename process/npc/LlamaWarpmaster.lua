@@ -360,3 +360,19 @@ Handlers.add(
     RefundExpiredVotes(msg.Timestamp)
   end
 )
+
+Handlers.add(
+  'WarpCurrent',
+  Handlers.utils.hasMatchingTag('Action', 'WarpCurrent'),
+  function(msg)
+    print('WarpCurrent')
+    Send({
+      Target = msg.From,
+      Tags = {
+        Action = 'WarpCurrent',
+        WarpName = WARP_CURRENT.Name,
+        WarpPID = WARP_CURRENT.PID,
+      },
+    })
+  end
+)

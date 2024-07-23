@@ -42,6 +42,18 @@ VerseEntitiesStatic = {
         Id = 'WarpVote',
       },
     },
+  },
+  ['CJcM_n0-s3gtt_Xqcffu5-AseTFARioG7iK4B3myeU4'] = {
+    Type = "Avatar",
+    Position = { 9, 9 },
+    Metadata = {
+      DisplayName = "Captain",
+      SkinNumber = 9,
+      Interaction = {
+        Type = 'SchemaForm',
+        Id = 'WarpTarget',
+      },
+    },
   }
 }
 
