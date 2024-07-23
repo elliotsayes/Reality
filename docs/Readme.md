@@ -2,7 +2,7 @@
 
 To dive in to making your own Verse, check out the [Verse Guide](VerseGuide.md)
 
-To learn agents to populate a Verse, see the [Agent Guide](AgentGuide.md)
+To learn about build agents to populate a Verse, see the [Agent Guide](AgentGuide.md)
 
 Or check out details of the protocols:
 - [Verse Protocol](./Verse.md)
