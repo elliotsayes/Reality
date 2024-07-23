@@ -83,7 +83,7 @@ You'll need to download the [Tiled](https://www.mapeditor.org/) editor to create
 
 ### Editing your tilemap
 
-1. Customize the tileset art (`Primary.png`) as desired.
+1. Customize the tileset art (`Primary.png`) as desired. Tiles should be 16 x 16 pixels.
 2. Prefix Background layers with "BG_" & foreground layers with "FG_"
 ![Prefix layers](./img/05layers.png)
 3. Draw your map layers using the tiled editor.
