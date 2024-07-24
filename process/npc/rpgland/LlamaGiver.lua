@@ -84,7 +84,11 @@ Handlers.add(
       return
     end
 
-    local sender = msg.From
+    print("Recieved " .. msg.Tags.Quantity .. " $LLAMA")
+
+    if (not OUT_OF_LLAMA) then
+      return
+    end
 
     -- Write in chat
     Send({

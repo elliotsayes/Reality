@@ -20,6 +20,8 @@ LLAMA_TOKEN_MULTIPLIER = 10 ^ LLAMA_TOKEN_DENOMINATION
 LLAMA_JOKE_PRICE_WHOLE_MIN = 5
 LLAMA_JOKE_PRICE_WHOLE_MIN_QUANTITY = LLAMA_JOKE_PRICE_WHOLE_MIN * LLAMA_TOKEN_MULTIPLIER
 
+LLAMA_GIVER_PROCESS = 'D5r-wBDfgo_Cx52uYoI8YiHp7QTqvpPbL8TtcbCoaXk'
+
 JokerDb = JokerDb or sqlite3.open_memory()
 JokerDbAdmin = JokerDbAdmin or require('DbAdmin').new(JokerDb)
 
@@ -141,6 +143,16 @@ Handlers.add(
     stmt:step()
     stmt:finalize()
 
+    -- Send the $LLAMA on to the Llama Giver
+    Send({
+      Target = LLAMA_TOKEN_PROCESS,
+      Tags = {
+        Action = 'Transfer',
+        Recipient = LLAMA_GIVER_PROCESS,
+        Quantity = msg.Tags.Quantity,
+      },
+    })
+
     -- Write in Chat
     Send({
       Target = CHAT_TARGET,
@@ -232,7 +244,7 @@ Handlers.add(
         Target = account,
         Tags = { Type = 'SchemaExternal' },
         Data = json.encode({
-          WarpVote = {
+          MakeJoke = {
             Target = LLAMA_TOKEN_PROCESS,
             Title = "Wanna hear a joke?",
             Description = "Your $LLAMA account is already a joke! Come back if you get some serious $LLAMA.",
