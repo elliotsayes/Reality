@@ -69,18 +69,21 @@ Example JsonSchema for Tags:
       "type": "string",
       "maxLength": 140
     },
-    "Duration": {
+    "DurationMs": {
       "title": "Duration",
       "description": "The duration of the status change in seconds.",
       "type": "integer",
       "minimum": 0,
-      "maximum": 86400
+      "maximum": 86400,
+      "comment": "1000"
     },
   }
 }
 ```
 
-This example schema defines a JSONSchema with four properties: `Action`, `StatusType`, `StatusMessage`, and `Duration`. The `Action` property is required and must be the string "UpdateStatus". The `StatusType` property is required and must be one of the strings "online", "away", or "offline". The `StatusMessage` property is optional and must be a string with a maximum length of 140 characters. The `Duration` property is optional and must be an integer between 0 and 86400.
+This example schema defines a JSONSchema with four properties: `Action`, `StatusType`, `StatusMessage`, and `DurationMs`. The `Action` property is required and must be the string "UpdateStatus". The `StatusType` property is required and must be one of the strings "online", "away", or "offline". The `StatusMessage` property is optional and must be a string with a maximum length of 140 characters. The `DurationMs` property is optional and must be an integer between 0 and 86400, which is input as seconds and converted into milliseconds.
+
+> Note: when an integer field has a `comment` property, it is used to multiply the value before sending it. This is useful for for converting from whole token amounts to the base unit quantity (e.g. wrapped Winston to wrapped Arweave).
 
 ## SchemaExternal Handler
 
