@@ -29,7 +29,7 @@ end
 
 if (not Initialized) then
   Register()
-  -- Get Chat Count
+  -- Query the number of chat messages so far
   Send({
     Target = TARGET_VERSE_PID,
     Tags = {
@@ -45,6 +45,8 @@ Handlers.add(
     print("ChatCountResponse")
     local count = tonumber(msg.Data)
     print("Chat Count: " .. (count or "nil"))
+
+    -- Set `LAST_MESSAGE_ID` to the count of messages
     if (count) then
       LAST_MESSAGE_ID = count
     end
@@ -82,21 +84,39 @@ Handlers.add(
       return print("ChatHistoryResponse not from LlamaLand")
     end
 
-    local messages = json.decode(msg.Data)
+    local chatMessages = json.decode(msg.Data)
     -- If empty, return
-    if (not messages or #messages == 0) then
-      return print("No new messages")
+    if (not chatMessages or #chatMessages == 0) then
+      return print("No new chat messages")
     end
 
-    -- Update the last message id so we don't get the same messages again
-    LAST_MESSAGE_ID = messages[1].Id
+    -- Update the last message id to the latest message,
+    -- so we don't get the same messages again
+    LAST_MESSAGE_ID = chatMessages[1].Id
 
-    if (#messages < 3) then
-      return print("Not enough messages")
+    if (#chatMessages < 3) then
+      return print("Not enough chat messages")
     end
 
-    -- We could do something with messages, but right now we aren't
-    print("Got " .. #messages .. " new messages")
+    print("Got " .. #chatMessages .. " new chat messages")
+
+    -- Each chat message is structured as follows:
+    -- {
+    --   Id = "Sequence of chat message"
+    --   MessageId = "Id of the Message",
+    --   Timestamp = "Timestamp the message was sent",
+    --   AuthorId = "Address of the chat message's author",
+    --   AuthorName = "Display name of that author",
+    --   Recipient = "If it was intended for a specific recipient, their address",
+    --   Content = "Content of the chat message",
+    -- }
+    -- Note: Chat messages are always ordered from newest to oldest
+
+    for i, chatM in ipairs(chatMessages) do
+      -- We could do something interesting here,
+      -- but let's just print some info in the console
+      print("Message from " .. (chatM.AuthorName or chatM.AuthorId) .. ": " .. chatM.Content)
+    end
 
     -- Complain about the state of affairs
     Send({
@@ -115,6 +135,7 @@ Handlers.add(
         Action = "VerseEntityUpdatePosition",
       },
       Data = json.encode({
+        -- You'll probably want to adjust these values to fit with your verse
         Position = {
           math.random(-4, 4),
           math.random(-3, 3),
