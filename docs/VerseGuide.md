@@ -12,25 +12,25 @@ For more details on the Verse protocol, please see the [Verse Docs](./Verse.md) 
 
 ### Setup
 
-1. Download the [`Verse.lua`](../process/blueprint/Verse.lua) protocol source and the [`VerseTemplate.lua`](./src/VerseTemplate.lua) config
-2. Start a new process with aos, using a module with sqlite3 built in, e.g.:
+1. Download the [`DbAdmin`](../process/blueprint/dbAdmin.lua) package source, [`Verse.lua`](../process/blueprint/Verse.lua) protocol source and the [`VerseTemplate.lua`](./src/VerseTemplate.lua) config into the same folder.
+2. In that folder, launch a new aos process with a module that has sqlite3 built in, e.g.:
 
 `aos MyVerseProcessName --module="GYrbbe0VbHim_7Hi6zrOpHQXrSQz07XNtwCnfbFo2I0"`
 
-3. Load the two lua files in aos
+1. Load the `Verse.lua` and `VerseTemplate.lua` files in aos
 ```
 aos> .load Verse.lua
 Loaded Verse Protocol
 aos> .load VerseTemplate.lua
 Loaded Verse Template
 ```
-> Optional: If you want chat enabled for your verse, load the [`Chat.lua`](../process/blueprint/Chat.lua) protocol source as well 
+> Optional: If you want chat enabled for your verse, download the [`Chat.lua`](../process/blueprint/Chat.lua) protocol source and load it as well: `aos> .load Chat.lua`
 
-1. Enter your verse ID in [verseviewer.arweave.net](https://verseviewer.arweave.net/)
+1. Enter your process id in [verseviewer.arweave.net](https://verseviewer.arweave.net/)
 
 ## Customizing your Verse
 
-Edit your `VerseTemplate.lua` file to customize your verse. After editing the file, you'll have to load it in `aos` again & refresh the page for changes to take effect
+Edit your `VerseTemplate.lua` file to customize your verse. After editing the file, you'll have to load it in `aos` again & refresh the viewer page for changes to take effect
 
 For example you can move your spawn location to the opposite corner of of the Island:
 ```lua

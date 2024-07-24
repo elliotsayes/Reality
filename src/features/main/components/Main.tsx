@@ -59,7 +59,7 @@ export default function Main({ wallet, disconnect, verseId }: MainProps) {
     <div>
       <div className="flex flex-row gap-4 items-center fixed top-0 right-0 py-2 px-2">
         <p>
-          Wallet{" "}
+          <span className=" font-Press-Start-2P text-[10px]">Wallet </span>
           <a
             href={`https://www.ao.link/#/entity/${wallet.address}?tab=balances`}
             target="_blank"
