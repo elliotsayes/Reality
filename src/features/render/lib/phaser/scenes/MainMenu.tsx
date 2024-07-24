@@ -134,7 +134,7 @@ export class MainMenu extends WarpableScene {
     }
 
     const messageText = loginResult.Message;
-    const llamaQuantityText = `Recieved ${numberOfCoins} $LLAMA coin!`;
+    const llamaQuantityText = `Received ${numberOfCoins} $LLAMA coin!`;
     // After delay, animate in the message & quantity above the Llama sprite
     this.time.delayedCall(4000, () => {
       // allow for two lines

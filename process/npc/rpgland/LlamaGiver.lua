@@ -203,7 +203,7 @@ Handlers.add(
         Tags = { Type = 'Schema' },
         Data = json.encode({
           GetDonation = {
-            Title = "You have already recieved your donation!",
+            Title = "You have already received your donation!",
             Description = "I'm not made of $LLAMA you know...",
             Schema = nil,
           },
