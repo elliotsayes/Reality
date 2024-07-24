@@ -1,10 +1,21 @@
 -- Name: FantasyLlama
--- PID: 2sOKN_T04Eik4zm2B_fyfEvAJCJVJjoXZNIWUegSQtw
 
--- PALM_ISLAND_PID = "OqvzTvpHYrfswvVZdsSldVTNBnyBOk7kZf-oqDdvUjg"
-RPG_LAND_PID = "ZeDtHnbKThvHxN5NIudNRqtIlTle7KyGLQeiQTP1f_E"
+CHAT_TARGET = CHAT_TARGET or 'TODO: Put your verse ID here'
 
-CHAT_TARGET = RPG_LAND_PID
+-- To add this agent to your verse, configure your Static Entities table, e.g.:
+-- VerseEntitiesStatic = {
+--   ['<your agent process Id>'] = {
+--     Position = { 10, 10 },
+--     Type = 'Avatar',
+--     Metadata = {
+--       DisplayName = 'Fantasy Llama',
+--       SkinNumber = 5,
+--       Interaction = {
+--         Type = 'Default',
+--       },
+--     },
+--   },
+-- }
 
 TIMESTAMP_LAST_MESSAGE_MS = TIMESTAMP_LAST_MESSAGE_MS or 0
 COOLDOWN_MS = 5000

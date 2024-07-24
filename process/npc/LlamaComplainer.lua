@@ -3,17 +3,17 @@
 
 local json = require("json")
 
-Initialized = Initialized or nil
-LLAMA_LAND = LLAMA_LAND or "9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss"
+TARGET_VERSE_PID = TARGET_VERSE_PID or "TODO: Put my Target Verse PID here"
 
 TICK_COUNT = TICK_COUNT or 0
-
 LAST_MESSAGE_ID = LAST_MESSAGE_ID or 0
 
+Initialized = Initialized or nil
+
 function Register()
-  print("Registering")
+  print("Registering as Verse Entity")
   Send({
-    Target = LLAMA_LAND,
+    Target = TARGET_VERSE_PID,
     Tags = {
       Action = "VerseEntityCreate",
     },
@@ -31,7 +31,7 @@ if (not Initialized) then
   Register()
   -- Get Chat Count
   Send({
-    Target = LLAMA_LAND,
+    Target = TARGET_VERSE_PID,
     Tags = {
       Action = "ChatCount",
     },
@@ -64,7 +64,7 @@ Handlers.add(
     TICK_COUNT = TICK_COUNT + 1
 
     Send({
-      Target = LLAMA_LAND,
+      Target = TARGET_VERSE_PID,
       Tags = {
         Action = "ChatHistory",
         ["Id-After"] = tostring(LAST_MESSAGE_ID),
@@ -78,7 +78,7 @@ Handlers.add(
   "ChatHistoryResponseHandler",
   Handlers.utils.hasMatchingTag("Action", "ChatHistoryResponse"),
   function(msg)
-    if (msg.From ~= LLAMA_LAND) then
+    if (msg.From ~= TARGET_VERSE_PID) then
       return print("ChatHistoryResponse not from LlamaLand")
     end
 
@@ -100,7 +100,7 @@ Handlers.add(
 
     -- Complain about the state of affairs
     Send({
-      Target = LLAMA_LAND,
+      Target = TARGET_VERSE_PID,
       Tags = {
         Action = 'ChatMessage',
         ['Author-Name'] = 'Llama Complainer',
@@ -110,7 +110,7 @@ Handlers.add(
 
     -- Move to random position in the center
     Send({
-      Target = LLAMA_LAND,
+      Target = TARGET_VERSE_PID,
       Tags = {
         Action = "VerseEntityUpdatePosition",
       },

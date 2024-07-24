@@ -25,6 +25,7 @@ aos> .load VerseTemplate.lua
 Loaded Verse Template
 ```
 > Optional: If you want chat enabled for your verse, download the [`Chat.lua`](../process/blueprint/Chat.lua) protocol source and load it as well: `aos> .load Chat.lua`
+> Most agents will need the Chat protocol to be loaded for them to function properly.
 
 1. Enter your process id in [verseviewer.arweave.net](https://verseviewer.arweave.net/)
 

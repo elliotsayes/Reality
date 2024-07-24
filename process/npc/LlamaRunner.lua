@@ -4,7 +4,7 @@
 local json = require("json")
 
 Initialized = Initialized or nil
-LLAMA_LAND = LLAMA_LAND or "9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss"
+TARGET_VERSE_PID = TARGET_VERSE_PID or "TODO: Put my Target Verse PID here"
 
 TICK_COUNT = TICK_COUNT or 0
 
@@ -19,7 +19,7 @@ HomePosition = HomePosition or { 5, -5 }
 function Register()
   print("Registering")
   Send({
-    Target = LLAMA_LAND,
+    Target = TARGET_VERSE_PID,
     Tags = {
       Action = "VerseEntityCreate",
     },
@@ -50,7 +50,7 @@ Handlers.add(
     if not IsRunning then
       IsRunning = true
       Send({
-        Target = LLAMA_LAND,
+        Target = TARGET_VERSE_PID,
         Tags = {
           Action = "ChatMessage",
           ['Author-Name'] = 'Llama Runner',
@@ -89,7 +89,7 @@ Handlers.add(
     if targetPosition ~= nil then
       -- Move to the next position
       Send({
-        Target = LLAMA_LAND,
+        Target = TARGET_VERSE_PID,
         Tags = {
           Action = "VerseEntityUpdatePosition",
         },
@@ -101,7 +101,7 @@ Handlers.add(
 
     if RunStage == 5 then
       Send({
-        Target = LLAMA_LAND,
+        Target = TARGET_VERSE_PID,
         Tags = {
           Action = "ChatMessage",
           ['Author-Name'] = 'Llama Runner',

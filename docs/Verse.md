@@ -34,7 +34,7 @@ Response Data: `VerseInfo` Model
 ```
 
 - `Dimensions` is the number of dimensions in the space, for example `2` or `3`. All `Vector<Number>` types in a Verse process should have their length equal to `Dimensions`, unless otherwise stated.
-- Currently '2D-Tile-0' is the only supported rendering method. This method render a world based on 2D Tileset/Tilemap assets.
+- Currently '2D-Tile-0' is the only supported rendering method. This method renders a world based on 2D Tileset/Tilemap assets.
 
 ### `VerseParameters` Handler
 
@@ -76,7 +76,7 @@ Contains the configuration for the specified rendering method. Below is the conf
   - Currently only `PNG` format is supported.
 - `Tilemap` refers to a TMJ file that contains the tilemap Asset.
   - Currently only the `TMJ` format is supported. `TMJ` refers to the standard [Tiled TMX Map Format](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/), exported in the [JSON variant](https://doc.mapeditor.org/en/stable/reference/json-map-format/).
-    - Please see **TODO** for how to set up a tilemap that will work with the `2D-Tilemap-0` Renderer
+    - Please see the [Verse Guide](VerseGuide.md) for how to set up a tilemap that will work with the `2D-Tilemap-0` Renderer
   - `Offset` is a vector (with length of 2) that represents the offset of the tilemap relative to the Origin.
 
 ## Entities
