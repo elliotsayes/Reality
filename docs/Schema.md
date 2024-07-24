@@ -75,7 +75,7 @@ Example JsonSchema for Tags:
       "type": "integer",
       "minimum": 0,
       "maximum": 86400,
-      "comment": "1000"
+      "$comment": "1000"
     },
   }
 }
