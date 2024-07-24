@@ -1,18 +1,43 @@
 -- ProcessName: LlamaJoker
 -- ProcessId: D6sbK-aNv7doE9gjVbLxMbGKk58MToUTTq9j786UQsQ
 
+-- This process should be used with an aos-sqlite module:
+-- https://github.com/permaweb/aos-sqlite
+
+-- Requires the `@rakis/DbAdmin` and `@sam/Llama-Herder` APM package
+-- aos> .load-blueprint apm
+-- aos> APM.update()
+-- aos> APM.install('@rakis/DbAdmin')
+-- aos> APM.install('@sam/Llama-Herder')
+
+-- Note: `LlamaHerder` requires wrapped $AR tokens to pay for AI processing
+-- You can get wrapper $AR from https://aox.xyz
+-- Once you have some, send a small amount (e.g. 0.001) from
+--   your wallet (e.g. ArConnect) to your agent's processId
+
+-- To add this agent to your verse, add something like the following to your verse configuration:
+-- VerseEntitiesStatic = {
+--   ['<your agent process id here>'] = {
+--     Position = { 10, 10 },
+--     Type = 'Avatar',
+--     Metadata = {
+--       DisplayName = 'Llama Joker',
+--       SkinNumber = 3,
+--       Interaction = {
+--         Type = 'SchemaExternalForm',
+--         Id = 'MakeJoke'
+--       },
+--     },
+--   },
+-- }
+
+-- Configure this to the process ID of the verse you want to send chat messages to
+CHAT_TARGET = 'OqvzTvpHYrfswvVZdsSldVTNBnyBOk7kZf-oqDdvUjg'
+
 local json = require('json')
 local sqlite3 = require('lsqlite3')
 
--- Requires APM `@sam/Llama-Herder` package
--- aos> .load-blueprint apm
--- aos> APM.update()
--- aos> APM.install('@sam/Llama-Herder')
-
 Llama = Llama or nil
-
-CHAT_TARGET = 'OqvzTvpHYrfswvVZdsSldVTNBnyBOk7kZf-oqDdvUjg'
-VERSE_TARGET = 'OqvzTvpHYrfswvVZdsSldVTNBnyBOk7kZf-oqDdvUjg'
 
 LLAMA_TOKEN_PROCESS = 'pazXumQI-HPH7iFGfTC-4_7biSnqz_U67oFAGry5zUY'
 LLAMA_TOKEN_DENOMINATION = 12
