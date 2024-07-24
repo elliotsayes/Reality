@@ -24,14 +24,13 @@ Loaded Verse Protocol
 aos> .load VerseTemplate.lua
 Loaded Verse Template
 ```
-> Optional: If you want chat enabled for your verse, download the [`Chat.lua`](../process/blueprint/Chat.lua) protocol source and load it as well: `aos> .load Chat.lua`
-> Most agents will need the Chat protocol to be loaded for them to function properly.
+> Optional: To enable chat in your verse, download the [`Chat.lua`](../process/blueprint/Chat.lua) protocol source and load it as well: `aos> .load Chat.lua`. Most agents will need this enabled to function properly.
 
-1. Enter your process id in [verseviewer.arweave.net](https://verseviewer.arweave.net/)
+1. Enter your new verse's process Id in [verseviewer.arweave.net](https://verseviewer.arweave.net/)
 
 ## Customizing your Verse
 
-Edit your `VerseTemplate.lua` file to customize your verse. After editing the file, you'll have to load it in `aos` again & refresh the viewer page for changes to take effect
+Edit your `VerseTemplate.lua` file to customize your verse. After editing the file, you'll have to load it in `aos` again & refresh the viewer webpage for changes to take effect
 
 For example you can move your spawn location to the opposite corner of of the Island:
 ```lua
