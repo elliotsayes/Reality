@@ -7,7 +7,7 @@ local sqlite3 = require('lsqlite3')
 LLAMA_TOKEN_PROCESS = 'pazXumQI-HPH7iFGfTC-4_7biSnqz_U67oFAGry5zUY'
 LLAMA_TOKEN_DENOMINATION = 12
 LLAMA_TOKEN_MULTIPLIER = 10 ^ LLAMA_TOKEN_DENOMINATION
-LLAMA_DONATION_SIZE_WHOLE = 1
+LLAMA_DONATION_SIZE_WHOLE = 5
 LLAMA_DONATION_SIZE_QUANTITY = math.floor(LLAMA_DONATION_SIZE_WHOLE * LLAMA_TOKEN_MULTIPLIER)
 
 -- RPG Land
@@ -61,6 +61,12 @@ Handlers.add(
     end
 
     local sender = msg.From
+
+    -- Remove the sender from the donation list
+    GiverDbAdmin:exec(string.format([[
+      DELETE FROM Donation
+      WHERE WalletId = '%s'
+    ]], sender))
 
     -- Write in chat
     Send({
