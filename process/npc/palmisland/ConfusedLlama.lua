@@ -6,7 +6,9 @@ PALM_ISLAND_PID = "OqvzTvpHYrfswvVZdsSldVTNBnyBOk7kZf-oqDdvUjg"
 CHAT_TARGET = PALM_ISLAND_PID
 
 TIMESTAMP_LAST_MESSAGE_MS = TIMESTAMP_LAST_MESSAGE_MS or 0
-COOLDOWN_MS = 5000
+
+-- Limit sending a message to every so often
+COOLDOWN_MS = 30000 -- 30 seconds
 
 Handlers.add(
   'DefaultInteraction',
@@ -14,7 +16,7 @@ Handlers.add(
   function(msg)
     print('DefaultInteraction')
     if ((msg.Timestamp - TIMESTAMP_LAST_MESSAGE_MS) < COOLDOWN_MS) then
-      return
+      return print("Message on cooldown")
     end
 
     Send({

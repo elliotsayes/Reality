@@ -18,7 +18,9 @@ CHAT_TARGET = CHAT_TARGET or 'TODO: Put your verse ID here'
 -- }
 
 TIMESTAMP_LAST_MESSAGE_MS = TIMESTAMP_LAST_MESSAGE_MS or 0
-COOLDOWN_MS = 5000
+
+-- Limit sending a message to every so often
+COOLDOWN_MS = 10000 -- 10 seconds
 
 Handlers.add(
   'DefaultInteraction',
@@ -26,7 +28,7 @@ Handlers.add(
   function(msg)
     print('DefaultInteraction')
     if ((msg.Timestamp - TIMESTAMP_LAST_MESSAGE_MS) < COOLDOWN_MS) then
-      return
+      return print("Message on cooldown")
     end
 
     Send({
