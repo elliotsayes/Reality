@@ -369,3 +369,12 @@ Handlers.add(
 
 -- PROFILE = "SNy4m-DrqxWl01YqGM4sxI8qCni-58re8uuJLvZPypY"
 -- Send({ Target = PROFILE, Action = "Create-Profile", Data = '{"UserName":"Llama King","DateCreated":1718652121082,"DateUpdated":1718652121083,"ProfileImage":"","CoverImage":"","Description":"","DisplayName":"Llama King"}' })
+
+Handlers.add(
+    "Poke",
+    Handlers.utils.hasMatchingTag("Action", "Poke"),
+    function(msg)
+        print("Poke")
+        dispatchHighestPriorityMessage(msg.Timestamp)
+    end
+)
