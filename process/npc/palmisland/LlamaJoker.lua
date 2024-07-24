@@ -5,6 +5,10 @@ local json = require('json')
 local sqlite3 = require('lsqlite3')
 
 -- Requires APM `@sam/Llama-Herder` package
+-- aos> .load-blueprint apm
+-- aos> APM.update()
+-- aos> APM.install('@sam/Llama-Herder')
+
 Llama = Llama or nil
 
 CHAT_TARGET = 'OqvzTvpHYrfswvVZdsSldVTNBnyBOk7kZf-oqDdvUjg'
