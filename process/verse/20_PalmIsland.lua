@@ -42,6 +42,18 @@ VerseEntitiesStatic = {
       },
     },
   },
+  ['D6sbK-aNv7doE9gjVbLxMbGKk58MToUTTq9j786UQsQ'] = {
+    Position = { 48, 45.5 },
+    Type = 'Avatar',
+    Metadata = {
+      DisplayName = 'Llama Joker',
+      SkinNumber = 4,
+      Interaction = {
+        Type = 'SchemaExternalForm',
+        Id = 'MakeJoke'
+      },
+    },
+  },
   ['9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss'] = {
     Position = { 55.5, 48 },
     Type = 'Hidden',
