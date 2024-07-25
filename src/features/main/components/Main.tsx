@@ -6,7 +6,7 @@ import { createChatClientForProcess } from "@/features/chat/contract/chatClient"
 import { ProfileInfo } from "@/features/profile/contract/model";
 import { createProfileRegistryClientForProcess } from "@/features/profile/contract/profileRegistryClient";
 import { Renderer } from "@/features/render/components/Renderer";
-import { createVerseClientForProcess } from "@/features/verse/contract/verseClient";
+import { createRealityClientForProcess } from "@/features/reality/contract/realityClient";
 import { mainMachine } from "../machines/mainMachine";
 import { useMachine } from "@xstate/react";
 import ProfileButton from "@/features/profile/components/ProfileButton";
@@ -18,10 +18,10 @@ const profileRegistryProcessId = import.meta.env
 interface MainProps {
   wallet: AoWallet;
   disconnect: () => void;
-  verseId?: string;
+  worldId?: string;
 }
 
-export default function Main({ wallet, disconnect, verseId }: MainProps) {
+export default function Main({ wallet, disconnect, worldId }: MainProps) {
   const profileRegistryClient = createProfileRegistryClientForProcess(wallet)(
     profileRegistryProcessId,
   );
@@ -48,9 +48,9 @@ export default function Main({ wallet, disconnect, verseId }: MainProps) {
       aoContractClientForProcess={createAoContractClientForProcess(wallet)}
       profileRegistryClient={profileRegistryClient}
       trackingClient={trackingClient}
-      verseClientForProcess={createVerseClientForProcess(wallet)}
+      realityClientForProcess={createRealityClientForProcess(wallet)}
       chatClientForProcess={createChatClientForProcess(wallet)}
-      initialVerseId={verseId}
+      initialRealityId={worldId}
       profileInfo={profile?.profileInfo}
     />
   );

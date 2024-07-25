@@ -2,10 +2,10 @@ import { Login } from "@/features/login/components/Login";
 import Main from "@/features/main/components/Main";
 import { createLazyFileRoute, useParams } from "@tanstack/react-router";
 
-const versePathRegex = /^verse\/([a-zA-Z0-9_-]{43})$/;
+const worldPathRegex = /^world\/([a-zA-Z0-9_-]{43})$/;
 
 export const Route = createLazyFileRoute("/app/$")({
-  component: VerseId,
+  component: WorldId,
 });
 
 // const addressWhitelist = [
@@ -29,7 +29,7 @@ export const Route = createLazyFileRoute("/app/$")({
 //   "sM9nBtAlqIfxTLOXv4aYm9u3JsOyvKqG8XLb5UirT_I",
 // ];
 
-function VerseId() {
+function WorldId() {
   const { _splat } = useParams({
     // Not sure why I have to do this but whatever
     select: (params) => ({
@@ -40,13 +40,13 @@ function VerseId() {
     strict: false,
   });
 
-  let verseId = undefined;
-  if (_splat.startsWith("verse/")) {
-    const match = versePathRegex.exec(_splat);
+  let worldId = undefined;
+  if (_splat.startsWith("world/")) {
+    const match = worldPathRegex.exec(_splat);
     if (match) {
-      verseId = match[1];
+      worldId = match[1];
     } else {
-      return <div>Invalid verse ID</div>;
+      return <div>Invalid world ID</div>;
     }
   }
 
@@ -56,7 +56,7 @@ function VerseId() {
       {(wallet, disconnect) => {
         // if (import.meta.env.DEV || addressWhitelist.includes(wallet.address))
         return (
-          <Main wallet={wallet} disconnect={disconnect} verseId={verseId} />
+          <Main wallet={wallet} disconnect={disconnect} worldId={worldId} />
         );
         // return <div>Unauthorized</div>;
       }}

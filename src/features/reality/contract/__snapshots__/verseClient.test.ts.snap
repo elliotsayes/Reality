@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`createVerseClient > Universe readAllEntities 1`] = `
+exports[`createRealityClient > Universe readAllEntities 1`] = `
 {
   "w0UvMR1XlVEjjNSaBn9F1qSkDPoIaWHJXzp5G5jjdAo": {
     "Interaction": {
@@ -14,7 +14,7 @@ exports[`createVerseClient > Universe readAllEntities 1`] = `
 }
 `;
 
-exports[`createVerseClient > Universe readInfo 1`] = `
+exports[`createRealityClient > Universe readInfo 1`] = `
 {
   "Dimensions": 1,
   "Name": "Universe",
@@ -23,9 +23,9 @@ exports[`createVerseClient > Universe readInfo 1`] = `
 }
 `;
 
-exports[`createVerseClient > Universe readParameters 1`] = `[]`;
+exports[`createRealityClient > Universe readParameters 1`] = `[]`;
 
-exports[`createVerseClient > creates client 1`] = `
+exports[`createRealityClient > creates client 1`] = `
 {
   "aoContractClient": {
     "aoClient": {
@@ -56,6 +56,6 @@ exports[`createVerseClient > creates client 1`] = `
   "readInfo": [Function],
   "readParameters": [Function],
   "updateEntityPosition": [Function],
-  "verseId": "PHHOfjFPSbn7TQT1Z-dB4ndyIyppHV5haMPCg8dIccs",
+  "worldId": "PHHOfjFPSbn7TQT1Z-dB4ndyIyppHV5haMPCg8dIccs",
 }
 `;

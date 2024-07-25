@@ -1,12 +1,12 @@
 --#region Model
 
-VerseInfo = {
+RealityInfo = {
   Dimensions = 2,
-  Name = 'ExampleVerse',
+  Name = 'ExampleReality',
   ['Render-With'] = '2D-Tile-0',
 }
 
-VerseParameters = {
+RealityParameters = {
   ['2D-Tile-0'] = {
     Version = 0,
     Spawn = { 5, 7 },
@@ -27,8 +27,8 @@ VerseParameters = {
   },
 }
 
-VerseEntitiesStatic = {}
+RealityEntitiesStatic = {}
 
 --#endregion
 
-return print("Loaded Verse Template")
+return print("Loaded Reality Template")

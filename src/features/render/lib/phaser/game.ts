@@ -2,7 +2,7 @@ import { AUTO, Game } from "phaser";
 import { Boot } from "./scenes/Boot";
 import { MainMenu } from "./scenes/MainMenu";
 import { Preloader } from "./scenes/Preloader";
-import { VerseScene } from "./scenes/VerseScene";
+import { WorldScene } from "./scenes/WorldScene";
 
 export const isDebug = import.meta.env.DEV;
 
@@ -14,7 +14,7 @@ const config = (parent: string): Phaser.Types.Core.GameConfig => ({
   height: 768,
   parent,
   backgroundColor: "#028af8",
-  scene: [Boot, Preloader, MainMenu, VerseScene],
+  scene: [Boot, Preloader, MainMenu, WorldScene],
   physics: {
     default: "arcade",
     arcade: { debug: isDebug },

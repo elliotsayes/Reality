@@ -3,13 +3,13 @@
 
 --#region Model
 
-VerseInfo = {
+RealityInfo = {
   Dimensions = 2,
   Name = 'PalmIsland',
   ['Render-With'] = '2D-Tile-0',
 }
 
-VerseParameters = {
+RealityParameters = {
   ['2D-Tile-0'] = {
     Version = 0,
     Spawn = { 45, 47 },
@@ -30,7 +30,7 @@ VerseParameters = {
   },
 }
 
-VerseEntitiesStatic = {
+RealityEntitiesStatic = {
   ['RgIs2u58lV3032gWhytemDNF2NmwZGKWQ0ClB0mqaK0'] = {
     Position = { 45, 49 },
     Type = 'Avatar',
@@ -68,4 +68,4 @@ VerseEntitiesStatic = {
 
 --#endregion
 
-return print("Loaded Verse Template")
+return print("Loaded Reality Template")

@@ -2,39 +2,39 @@ import { AoWallet } from "@/features/ao/lib/aoWallet";
 import AnonymousLoader from "@/features/ao/test/components/AnonymousLoader";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense, useState } from "react";
-import { createVerseClientForProcess } from "../contract/verseClient";
-import VerseLink from "./VerseLink";
+import { createRealityClientForProcess } from "../contract/realityClient";
+import RealityLink from "./RealityLink";
 
-interface VerseNavProps {
+interface RealityNavProps {
   wallet: AoWallet;
 }
 
-function VerseNav({ wallet }: VerseNavProps) {
+function RealityNav({ wallet }: RealityNavProps) {
   const [processId, setProcessId] = useState<string>(
     import.meta.env.VITE_UNIVERSE_PROCESS_ID,
   );
 
-  const verseClientBuilder = createVerseClientForProcess(wallet);
-  const verseClient = verseClientBuilder(processId);
+  const realityClientBuilder = createRealityClientForProcess(wallet);
+  const realityClient = realityClientBuilder(processId);
 
   const info = useSuspenseQuery({
-    queryKey: [processId, "verseInfo"],
-    queryFn: async () => verseClient.readInfo(),
+    queryKey: [processId, "realityInfo"],
+    queryFn: async () => realityClient.readInfo(),
   });
 
   const params = useSuspenseQuery({
-    queryKey: [processId, "verseParameters"],
-    queryFn: async () => verseClient.readParameters(),
+    queryKey: [processId, "realityParameters"],
+    queryFn: async () => realityClient.readParameters(),
   });
 
   const entities = useSuspenseQuery({
-    queryKey: [processId, "verseEntities"],
-    queryFn: async () => verseClient.readEntitiesStatic(),
+    queryKey: [processId, "realityEntities"],
+    queryFn: async () => realityClient.readEntitiesStatic(),
   });
 
   return (
     <div>
-      <h1>Verse: {processId}</h1>
+      <h1>Reality: {processId}</h1>
       <h2>Info</h2>
       <pre className="text-sm">{JSON.stringify(info.data, null, 2)}</pre>
       <h2>Parameters</h2>
@@ -50,12 +50,12 @@ function VerseNav({ wallet }: VerseNavProps) {
           .filter(
             (entityId) => entities.data[entityId].Interaction?.Type === "Warp",
           )
-          .map((verseId) => (
-            <VerseLink
-              key={`${processId}-${verseId}`}
-              verseId={verseId}
-              verseClient={verseClientBuilder(verseId)}
-              onClick={() => setProcessId(verseId)}
+          .map((worldId) => (
+            <RealityLink
+              key={`${processId}-${worldId}`}
+              worldId={worldId}
+              realityClient={realityClientBuilder(worldId)}
+              onClick={() => setProcessId(worldId)}
             />
           ))}
       </div>
@@ -63,12 +63,12 @@ function VerseNav({ wallet }: VerseNavProps) {
   );
 }
 
-export default function VerseNavAnonymous() {
+export default function RealityNavAnonymous() {
   return (
     <AnonymousLoader>
       {(wallet) => (
         <Suspense fallback={<div>Loading...</div>}>
-          <VerseNav wallet={wallet} />
+          <RealityNav wallet={wallet} />
         </Suspense>
       )}
     </AnonymousLoader>

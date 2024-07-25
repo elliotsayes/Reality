@@ -1,15 +1,15 @@
 -- ProcessId: lNgVEhChWcW4OMoISEcTI06eWbNuzRypB3KAK_8f7NU
 
 -- Fixed
-VerseInfo = {
+RealityInfo = {
   Parent = '-wNWBTJSU9c8RqID5J3GZy074Rt9PEZbVmv383Mz6nQ',
   Name = 'WeaveWorld',
   Dimensions = 2,
   ['Render-With'] = '2D-Tile-0',
 }
 
--- Manually defined by the verse owner
-VerseParameters = {
+-- Manually defined by the world owner
+RealityParameters = {
   ['2D-Tile-0'] = {
     Version = 0,
     -- This will be a tileset themed with a sea & islands
@@ -43,7 +43,7 @@ VerseParameters = {
 }
 
 -- Player entities can be updated by player actions, i.e. movement
-VerseEntitiesStatic = {
+RealityEntitiesStatic = {
   -- OriginIslandProcess
   ['--5ozI7qKmLyBxcZJr_T62iGltnKE2ei1jOoQrKKfRA'] = {
     Position = { 2, 2 },

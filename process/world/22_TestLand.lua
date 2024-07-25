@@ -2,13 +2,13 @@
 
 --#region Model
 
-VerseInfo = {
+RealityInfo = {
   Dimensions = 2,
-  Name = 'ExampleVerse',
+  Name = 'ExampleReality',
   ['Render-With'] = '2D-Tile-0',
 }
 
-VerseParameters = {
+RealityParameters = {
   ['2D-Tile-0'] = {
     Version = 0,
     Spawn = { 5, 7 },
@@ -29,7 +29,7 @@ VerseParameters = {
   },
 }
 
-VerseEntitiesStatic = {
+RealityEntitiesStatic = {
   -- Warper
   ['FdDJu16cgYE4KAT07jXtxvukntAE3JZaE3WrNnAjGis'] = {
     Type = "Avatar",
@@ -59,4 +59,4 @@ VerseEntitiesStatic = {
 
 --#endregion
 
-return print("Loaded Verse Template")
+return print("Loaded Reality Template")

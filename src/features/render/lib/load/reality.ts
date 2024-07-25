@@ -1,8 +1,8 @@
 import { queryClient } from "@/lib/query";
-import { VerseClient } from "@/features/verse/contract/verseClient";
+import { RealityClient } from "@/features/reality/contract/realityClient";
 import PQueue from "p-queue";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
-import { VerseState } from "./model";
+import { WorldState } from "./model";
 import { ProfileRegistryClient } from "@/features/profile/contract/profileRegistryClient";
 
 export function phaserTilesetKey(txId: string) {
@@ -13,8 +13,8 @@ export function phaserTilemapKey(txId: string) {
   return `Tilemap-${txId}`;
 }
 
-export async function loadVersePhaser(
-  verseClient: VerseClient,
+export async function loadRealityPhaser(
+  realityClient: RealityClient,
   profileClient: ProfileRegistryClient,
   phaserLoader: Phaser.Loader.LoaderPlugin,
 ) {
@@ -23,16 +23,16 @@ export async function loadVersePhaser(
 
   processQueue.add(() =>
     queryClient.ensureQueryData({
-      queryKey: ["verseInfo", verseClient.verseId],
-      queryFn: async () => verseClient.readInfo(),
+      queryKey: ["realityInfo", realityClient.worldId],
+      queryFn: async () => realityClient.readInfo(),
     }),
   );
 
   processQueue.add(async () => {
     // Return the data so we can use it in the next query
     const data = await queryClient.ensureQueryData({
-      queryKey: ["verseParameters", verseClient.verseId],
-      queryFn: async () => verseClient.readParameters(),
+      queryKey: ["realityParameters", realityClient.worldId],
+      queryFn: async () => realityClient.readParameters(),
     });
 
     const _2dParams = data["2D-Tile-0"];
@@ -59,17 +59,17 @@ export async function loadVersePhaser(
   let profileIds: Array<string> | undefined;
   processQueue.add(async () => {
     const entitiesStatic = await queryClient.ensureQueryData({
-      queryKey: ["verseEntitiesStatic", verseClient.verseId],
+      queryKey: ["realityEntitiesStatic", realityClient.worldId],
       queryFn: async () => {
-        const entitiesStatic = await verseClient.readEntitiesStatic();
+        const entitiesStatic = await realityClient.readEntitiesStatic();
         return entitiesStatic;
       },
     });
     const entitiesDynamic = await queryClient.ensureQueryData({
-      queryKey: ["verseEntitiesDynamic", verseClient.verseId, nonce],
+      queryKey: ["realityEntitiesDynamic", realityClient.worldId, nonce],
       queryFn: async () => {
         const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
-        const entitiesDynamic = await verseClient.readEntitiesDynamic(
+        const entitiesDynamic = await realityClient.readEntitiesDynamic(
           fiveMinsAgo,
           true, // Initial call, to get always-visible entities
         );
@@ -80,7 +80,7 @@ export async function loadVersePhaser(
     console.log("entitiesAll", entitiesAll);
 
     queryClient.setQueryData(
-      ["verseEntities", verseClient.verseId],
+      ["realityEntities", realityClient.worldId],
       entitiesAll,
     );
 
@@ -100,7 +100,7 @@ export async function loadVersePhaser(
 
     const profiles = await queryClient.ensureQueryData({
       queryKey: [
-        "verseEntityProfiles",
+        "realityEntityProfiles",
         profileClient.aoContractClient.processId,
         profileIds,
       ],
@@ -115,19 +115,22 @@ export async function loadVersePhaser(
     phaserLoader.start();
   });
 
-  const verseState = {
-    info: queryClient.getQueryData(["verseInfo", verseClient.verseId]),
+  const WorldState = {
+    info: queryClient.getQueryData(["realityInfo", realityClient.worldId]),
     parameters: queryClient.getQueryData([
-      "verseParameters",
-      verseClient.verseId,
+      "realityParameters",
+      realityClient.worldId,
     ]),
-    entities: queryClient.getQueryData(["verseEntities", verseClient.verseId]),
+    entities: queryClient.getQueryData([
+      "realityEntities",
+      realityClient.worldId,
+    ]),
     profiles: queryClient.getQueryData([
-      "verseEntityProfiles",
+      "realityEntityProfiles",
       profileClient.aoContractClient.processId,
       profileIds,
     ]),
-  } as VerseState;
+  } as WorldState;
 
-  return verseState;
+  return WorldState;
 }

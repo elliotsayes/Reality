@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeAll } from "vitest";
-import { createVerseClient } from "./verseClient";
+import { createRealityClient } from "./realityClient";
 import {
   AoContractClient,
   createAoContractClient,
@@ -11,7 +11,7 @@ import { ArweaveId } from "@/features/arweave/lib/model";
 import { createGeneratedWallet } from "@/features/ao/lib/wallets/generated";
 import { dummyConnectConfig } from "@/features/login/lib/config";
 
-describe("createVerseClient", () => {
+describe("createRealityClient", () => {
   let testWallet: AoWallet;
   let testAoContractClient: AoContractClient;
   let universeAoContractClient: AoContractClient;
@@ -40,24 +40,24 @@ describe("createVerseClient", () => {
   });
 
   test("creates client", async () => {
-    const client = createVerseClient(testAoContractClient);
+    const client = createRealityClient(testAoContractClient);
     expect(client).toMatchSnapshot();
   });
 
   test("Universe readInfo", async () => {
-    const client = createVerseClient(universeAoContractClient);
+    const client = createRealityClient(universeAoContractClient);
     const info = await client.readInfo();
     expect(info).toMatchSnapshot();
   });
 
   test("Universe readParameters", async () => {
-    const client = createVerseClient(universeAoContractClient);
+    const client = createRealityClient(universeAoContractClient);
     const info = await client.readParameters();
     expect(info).toMatchSnapshot();
   });
 
   test("Universe readAllEntities", async () => {
-    const client = createVerseClient(universeAoContractClient);
+    const client = createRealityClient(universeAoContractClient);
     const info = await client.readEntitiesStatic();
     expect(info).toMatchSnapshot();
   });
@@ -65,7 +65,7 @@ describe("createVerseClient", () => {
   test(
     "WeaveWorld createEntity & update",
     async () => {
-      const client = createVerseClient(weaveWorldAoContractClient);
+      const client = createRealityClient(weaveWorldAoContractClient);
 
       const initialPosition = [2, 2];
       const createMsgId = await client.createEntity({

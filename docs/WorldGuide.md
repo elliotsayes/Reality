@@ -1,10 +1,10 @@
-# Verse Guide
+# World Guide
 
-The goal of this guide is to get you started developing your own Verse. We will start by creating our own Verse process based on a template, and then modifying it.
+The goal of this guide is to get you started developing your own World on the Reality protocol. We will start by creating our own World process based on a template, and then modifying it.
 
-For more details on the Verse protocol, please see the [Verse Docs](./Verse.md) or [Verse.lua](../process/blueprint/Verse.lua) source code.
+For more details on the Reality protocol, please see the [Reality Docs](./Reality.md) or [Reality.lua](../process/blueprint/Reality.lua) source code.
 
-## Creating your own Verse Process
+## Creating your own World Process
 
 ### Prerequisites
 
@@ -12,29 +12,29 @@ For more details on the Verse protocol, please see the [Verse Docs](./Verse.md) 
 
 ### Setup
 
-1. Download the [`DbAdmin`](../process/blueprint/dbAdmin.lua) package source, [`Verse.lua`](../process/blueprint/Verse.lua) protocol source and the [`VerseTemplate.lua`](./src/VerseTemplate.lua) config into the same folder.
+1. Download the [`DbAdmin`](../process/blueprint/dbAdmin.lua) package source, [`World.lua`](../process/blueprint/World.lua) protocol source and the [`WorldTemplate.lua`](./src/WorldTemplate.lua) config into the same folder.
 2. In that folder, launch a new aos process with a module that has sqlite3 built in, e.g.:
 
-`aos MyVerseProcessName --module="GYrbbe0VbHim_7Hi6zrOpHQXrSQz07XNtwCnfbFo2I0"`
+`aos MyWorldProcessName --module="GYrbbe0VbHim_7Hi6zrOpHQXrSQz07XNtwCnfbFo2I0"`
 
-1. Load the `Verse.lua` and `VerseTemplate.lua` files in aos
+1. Load the `World.lua` and `WorldTemplate.lua` files in aos
 ```
-aos> .load Verse.lua
-Loaded Verse Protocol
-aos> .load VerseTemplate.lua
-Loaded Verse Template
+aos> .load World.lua
+Loaded Reality Protocol
+aos> .load WorldTemplate.lua
+Loaded World Template
 ```
-> Optional: To enable chat in your verse, download the [`Chat.lua`](../process/blueprint/Chat.lua) protocol source and load it as well: `aos> .load Chat.lua`. Most agents will need this enabled to function properly.
+> Optional: To enable chat in your world, download the [`Chat.lua`](../process/blueprint/Chat.lua) protocol source and load it as well: `aos> .load Chat.lua`. Most agents will need this enabled to function properly.
 
-1. Enter your new verse's process Id in [verseviewer.arweave.net](https://verseviewer.arweave.net/)
+1. Enter your new world's process Id in [worldviewer.arweave.net](https://worldviewer.arweave.net/)
 
-## Customizing your Verse
+## Customizing your World
 
-Edit your `VerseTemplate.lua` file to customize your verse. After editing the file, you'll have to load it in `aos` again & refresh the viewer webpage for changes to take effect
+Edit your `WorldTemplate.lua` file to customize your world. After editing the file, you'll have to load it in `aos` again & refresh the viewer webpage for changes to take effect
 
 For example you can move your spawn location to the opposite corner of of the Island:
 ```lua
-VerseParameters = {
+WorldParameters = {
   ['2D-Tile-0'] = {
     ...
     Spawn = { 15, 12 },
@@ -45,7 +45,7 @@ VerseParameters = {
 
 Or add a dumb NPC:
 ```lua
-VerseEntitiesStatic = {
+RealityEntitiesStatic = {
   ['MyNpc'] = {
     Type = "Avatar",
     Position = { 10, 10 },
@@ -96,9 +96,9 @@ You'll need to download the [Tiled](https://www.mapeditor.org/) editor to create
    - Set the `collides` property to `true` for any tiles you decide
   ![Set collides property](./img/09setcollides.png)
 
-### Using your tilemap with your Verse
+### Using your tilemap with your World
 1. Remember to save your map file in the Tiled editor.
 2. Upload the `Primary.png` & `Tilemap.json` files to Arweave and note the TxIds.
-3. Reference these TxIds in your process's VerseParameters global.
+3. Reference these TxIds in your process's WorldParameters global.
    - Update `Tileset.TxId` to `Primary.png`'s TxId
    - Update `Tilemap.TxId` to `Tilemap.json`'s TxId

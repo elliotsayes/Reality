@@ -1,6 +1,6 @@
 -- ProcessId: 96CutVBhNwtNzdT_zY_Fxdj6S_AjDJre3AA1gJgidro
 
-VerseInfo = {
+RealityInfo = {
   Parent = nil,
   Name = 'Singularity',
   Dimensions = 0,
@@ -8,9 +8,9 @@ VerseInfo = {
   ['Render-With'] = '0D-Null',
 }
 
-VerseParameters = {}
+RealityParameters = {}
 
-VerseEntitiesStatic = {
+RealityEntitiesStatic = {
   -- UniverseProcess
   ['-wNWBTJSU9c8RqID5J3GZy074Rt9PEZbVmv383Mz6nQ'] = {
     Position = {},

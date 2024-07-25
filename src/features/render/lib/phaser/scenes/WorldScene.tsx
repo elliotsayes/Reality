@@ -1,9 +1,12 @@
 import { WarpableScene } from "./WarpableScene";
-import { VerseState } from "../../load/model";
-import { phaserTilemapKey, phaserTilesetKey } from "../../load/verse";
-import { _2dTileParams } from "@/features/verse/contract/_2dTile";
+import { WorldState } from "../../load/model";
+import { phaserTilemapKey, phaserTilesetKey } from "../../load/reality";
+import { _2dTileParams } from "@/features/reality/contract/_2dTile";
 import { emitSceneReady, emitSceneEvent } from "../../EventBus";
-import { VerseEntity, VerseEntityKeyed } from "@/features/verse/contract/model";
+import {
+  RealityEntity,
+  RealityEntityKeyed,
+} from "@/features/reality/contract/model";
 import ReactDOM from "react-dom/client";
 import { BoxCentered, Point2D, Size2D } from "../../model";
 import { FormOverlay } from "@/features/render/components/FormOverlay";
@@ -31,11 +34,11 @@ const OBJECT_SIZE_ENTITY = 2;
 
 const bouncerEntityIds = ["Bouncer1", "Bouncer2"];
 
-export class VerseScene extends WarpableScene {
+export class WorldScene extends WarpableScene {
   playerAddress!: string;
   playerProfileInfo?: ProfileInfo;
-  verseId!: string;
-  verse!: VerseState;
+  worldId!: string;
+  worldState!: WorldState;
   aoContractClientForProcess!: AoContractClientForProcess;
 
   _2dTileParams?: _2dTileParams;
@@ -76,20 +79,20 @@ export class VerseScene extends WarpableScene {
   slowMs: number = 120;
 
   constructor() {
-    super("VerseScene");
+    super("WorldScene");
   }
 
   init({
     playerAddress,
     playerProfileInfo,
-    verseId,
-    verse,
+    worldId,
+    reality,
     aoContractClientForProcess,
   }: {
     playerAddress: string;
     playerProfileInfo?: ProfileInfo;
-    verseId: string;
-    verse: VerseState;
+    worldId: string;
+    reality: WorldState;
     aoContractClientForProcess: AoContractClientForProcess;
   }) {
     // reset some vars
@@ -100,11 +103,11 @@ export class VerseScene extends WarpableScene {
 
     this.playerAddress = playerAddress;
     this.playerProfileInfo = playerProfileInfo;
-    this.verseId = verseId;
-    this.verse = verse;
+    this.worldId = worldId;
+    this.worldState = reality;
     this.aoContractClientForProcess = aoContractClientForProcess;
 
-    this._2dTileParams = this.verse.parameters["2D-Tile-0"];
+    this._2dTileParams = this.worldState.parameters["2D-Tile-0"];
 
     this.tilesetTxId = this._2dTileParams?.Tileset.TxId;
     this.tilemapTxId = this._2dTileParams?.Tilemap.TxId;
@@ -187,7 +190,7 @@ export class VerseScene extends WarpableScene {
 
     if (this.tilesetTxId && this.tilemapTxId) {
       console.log(
-        `[${this.verse.info.Name}] Loading tilemap ${this.tilemapTxId} and tileset ${this.tilesetTxId}`,
+        `[${this.worldState.info.Name}] Loading tilemap ${this.tilemapTxId} and tileset ${this.tilesetTxId}`,
       );
 
       this.tilemap = this.make.tilemap({
@@ -203,7 +206,7 @@ export class VerseScene extends WarpableScene {
         this.tilemap.tileHeight * SCALE_TILES,
       ];
 
-      const mapOffsetTiles = this.verse.parameters["2D-Tile-0"]?.Tilemap
+      const mapOffsetTiles = this.worldState.parameters["2D-Tile-0"]?.Tilemap
         .Offset ?? [0, 0];
       // Center the tiles around the origins
       const mapOffsetPixels = [
@@ -254,11 +257,11 @@ export class VerseScene extends WarpableScene {
 
     this.camera.centerOn(this.spawnPixel[0], this.spawnPixel[1]);
 
-    if (!this.verse.entities[this.playerAddress]) {
+    if (!this.worldState.entities[this.playerAddress]) {
       console.warn(
         `Player entity ${this.playerAddress} not found in entities list`,
       );
-      this.verse.entities[this.playerAddress] = {
+      this.worldState.entities[this.playerAddress] = {
         Type: "Avatar",
         Position: spawnTile,
         ...(this.playerProfileInfo && {
@@ -268,19 +271,19 @@ export class VerseScene extends WarpableScene {
         }),
       };
     }
-    const avatarEntityIds = Object.keys(this.verse.entities).filter(
-      (entityId) => this.verse.entities[entityId].Type === "Avatar",
+    const avatarEntityIds = Object.keys(this.worldState.entities).filter(
+      (entityId) => this.worldState.entities[entityId].Type === "Avatar",
     );
     this.avatarEntityContainers = avatarEntityIds
       .map((entityId) => {
-        const entity = this.verse.entities[entityId];
+        const entity = this.worldState.entities[entityId];
         if (entityId !== this.playerAddress && entity.StateCode === 0) {
           // This entity is hidden, shouldn't be here
           console.warn(`Entity ${entityId} is hidden, skipping`);
           return {};
         }
 
-        const profileMaybe = this.verse.profiles.find(
+        const profileMaybe = this.worldState.profiles.find(
           (profile) => profile.ProfileId === entity.Metadata?.ProfileId,
         );
         const entityContainer = this.createAvatarEntityContainer(
@@ -304,13 +307,14 @@ export class VerseScene extends WarpableScene {
       this.physics.add.collider(this.player, this.layers);
     }
 
-    const warpEntityIds = Object.keys(this.verse.entities).filter(
+    const warpEntityIds = Object.keys(this.worldState.entities).filter(
       (entityId) =>
-        this.verse.entities[entityId].Metadata?.Interaction?.Type === "Warp",
+        this.worldState.entities[entityId].Metadata?.Interaction?.Type ===
+        "Warp",
     );
     this.warpSprites = warpEntityIds
       .map((entityId) => {
-        const entity = this.verse.entities[entityId];
+        const entity = this.worldState.entities[entityId];
         const warpSprite = this.createWarpEntity(entityId, entity);
 
         return {
@@ -337,13 +341,13 @@ export class VerseScene extends WarpableScene {
       this.add.text(
         topLeft.x + 10,
         topLeft.y + 10,
-        `Verse ID: ${this.verseId}`,
+        `Reality ID: ${this.worldId}`,
         { font: "20px Courier", color: "#ff0000" },
       );
       this.add.text(
         topLeft.x + 10,
         topLeft.y + 40,
-        `Verse Name: ${this.verse.info.Name}`,
+        `Reality Name: ${this.worldState.info.Name}`,
         { font: "20px Courier", color: "#ff0000" },
       );
     }
@@ -357,7 +361,7 @@ export class VerseScene extends WarpableScene {
   }
 
   public mergeEntities(
-    entityUpdates: VerseEntityKeyed,
+    entityUpdates: RealityEntityKeyed,
     profiles: Array<ProfileInfo>,
   ) {
     Object.keys(entityUpdates).forEach((entityId) => {
@@ -463,7 +467,7 @@ export class VerseScene extends WarpableScene {
     });
   }
 
-  createWarpEntity(entityId: string, entity: VerseEntity) {
+  createWarpEntity(entityId: string, entity: RealityEntity) {
     console.log(`Creating warp entity ${entityId}`);
     if (entity.Metadata?.Interaction?.Type !== "Warp") {
       throw new Error(`Entity ${entityId} is not a warp entity`);
@@ -501,7 +505,7 @@ export class VerseScene extends WarpableScene {
           this.isWarping = true;
           emitSceneEvent({
             type: "Warp Immediate",
-            verseId: entityId,
+            worldId: entityId,
           });
           this.camera.fadeOut(5_000);
           this.tweens.addCounter({
@@ -523,7 +527,7 @@ export class VerseScene extends WarpableScene {
 
   createAvatarEntityContainer(
     entityId: string,
-    entity: VerseEntity,
+    entity: RealityEntity,
     profile?: ProfileInfo,
   ) {
     const isPlayer = entityId === this.playerAddress;
@@ -858,7 +862,7 @@ export class VerseScene extends WarpableScene {
       .setOrigin(0, 0);
   }
 
-  public showSchemaForm(entityId: string, entity: VerseEntity) {
+  public showSchemaForm(entityId: string, entity: RealityEntity) {
     if (this.schemaForm) {
       this.schemaForm.destroy();
     }

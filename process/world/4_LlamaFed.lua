@@ -1,19 +1,19 @@
 -- ProcessId: QIFgbqEmk5MyJy01wuINfcRP_erGNNbhqHRkAQjxKgg
 
 -- Fixed
-VerseInfo = {
+RealityInfo = {
   Parent = '9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss', -- OriginIslandProcessId
   Name = 'Llama Fed',
   Dimensions = 2,
   ['Render-With'] = '2D-Tile-0',
 }
 
--- Manually defined by the verse owner
-VerseParameters = {
+-- Manually defined by the world owner
+RealityParameters = {
   ['2D-Tile-0'] = {
     Version = 0,
     Spawn = { 16, 19 },
-    -- This is the interior tileset enforced by origin island verse
+    -- This is the interior tileset enforced by origin island world
     Tileset = {
       Type = 'Fixed',
       Format = 'PNG',
@@ -29,7 +29,7 @@ VerseParameters = {
 }
 
 -- Updated by player actions
-VerseEntitiesStatic = {
+RealityEntitiesStatic = {
   -- OriginIslandProcess
   ['9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss'] = {
     Position = { 16, 21 },

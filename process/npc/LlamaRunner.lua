@@ -4,7 +4,7 @@
 local json = require("json")
 
 Initialized = Initialized or nil
-TARGET_VERSE_PID = TARGET_VERSE_PID or "TODO: Put my Target Verse PID here"
+TARGET_WORLD_PID = TARGET_WORLD_PID or "TODO: Put my Target Reality PID here"
 
 TICK_COUNT = TICK_COUNT or 0
 
@@ -19,9 +19,9 @@ HomePosition = HomePosition or { 5, -5 }
 function Register()
   print("Registering")
   Send({
-    Target = TARGET_VERSE_PID,
+    Target = TARGET_WORLD_PID,
     Tags = {
-      Action = "VerseEntityCreate",
+      Action = "Reality.EntityCreate",
     },
     Data = json.encode({
       Type = "Avatar",
@@ -50,7 +50,7 @@ Handlers.add(
     if not IsRunning then
       IsRunning = true
       Send({
-        Target = TARGET_VERSE_PID,
+        Target = TARGET_WORLD_PID,
         Tags = {
           Action = "ChatMessage",
           ['Author-Name'] = 'Llama Runner',
@@ -89,9 +89,9 @@ Handlers.add(
     if targetPosition ~= nil then
       -- Move to the next position
       Send({
-        Target = TARGET_VERSE_PID,
+        Target = TARGET_WORLD_PID,
         Tags = {
-          Action = "VerseEntityUpdatePosition",
+          Action = "Reality.EntityUpdatePosition",
         },
         Data = json.encode({
           Position = targetPosition,
@@ -101,7 +101,7 @@ Handlers.add(
 
     if RunStage == 5 then
       Send({
-        Target = TARGET_VERSE_PID,
+        Target = TARGET_WORLD_PID,
         Tags = {
           Action = "ChatMessage",
           ['Author-Name'] = 'Llama Runner',

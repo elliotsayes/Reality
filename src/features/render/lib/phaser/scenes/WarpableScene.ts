@@ -1,7 +1,7 @@
 import { Scene } from "phaser";
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import { ProfileInfo } from "@/features/profile/contract/model";
-import { VerseState } from "../../load/model";
+import { WorldState } from "../../load/model";
 
 export class WarpableScene extends Scene {
   public isWarping: boolean = false;
@@ -28,11 +28,11 @@ export class WarpableScene extends Scene {
     // Override this method to clean up the scene
   }
 
-  public warpToVerse(
+  public warpToWorld(
     playerAddress: string,
     playerProfileInfo: ProfileInfo | undefined,
-    verseId: string,
-    verse: VerseState,
+    worldId: string,
+    worldState: WorldState,
     aoContractClientForProcess: AoContractClientForProcess,
   ) {
     this.onWarpBegin();
@@ -45,11 +45,11 @@ export class WarpableScene extends Scene {
       amount: 20,
       onComplete: () => {
         this.onWarpSuccess();
-        this.scene.start("VerseScene", {
+        this.scene.start("WorldScene", {
           playerAddress,
           playerProfileInfo,
-          verseId,
-          verse,
+          worldId,
+          reality: worldState,
           aoContractClientForProcess,
         });
       },

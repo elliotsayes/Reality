@@ -1,18 +1,18 @@
 -- ProcessId: 9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss
 
 -- Fixed
-VerseInfo = {
+RealityInfo = {
   Parent = 'w0UvMR1XlVEjjNSaBn9F1qSkDPoIaWHJXzp5G5jjdAo', -- WeaveWorldProcessId
   Name = 'Llama Land',
   Dimensions = 2,
   ['Render-With'] = '2D-Tile-0',
 }
 
--- Manually defined by the verse owner
-VerseParameters = {
+-- Manually defined by the world owner
+RealityParameters = {
   ['2D-Tile-0'] = {
     Version = 0,
-    -- Icon for verse that shows up on parents
+    -- Icon for world that shows up on parents
     Icon = {
       Type = 'Fixed',
       Format = 'PNG',
@@ -34,25 +34,25 @@ VerseParameters = {
   },
 }
 
--- Registered Child verses
+-- Registered Child worlds
 -- These can be warped to without any additional confirmation from the User
--- Warps to verses not in this list will require confirmation from the User
--- (The exception being the parent verse, which also can be freely warped to)
-VerseRegistry = {
+-- Warps to worlds not in this list will require confirmation from the User
+-- (The exception being the parent world, which also can be freely warped to)
+RealityRegistry = {
   -- LlamaFedProcessId
   ['_ghCCK1S0B2_vwO6yHBMwcCDTl6Hj6uXA0oyXwFOza4'] = {
-    BypassParameters = true, -- Does not inherit `VerseParametersInherit`
+    BypassParameters = true, -- Does not inherit `RealityParametersInherit`
   },
   ['SomeOtherProcessId'] = {
-    -- BypassParameters = false, -- By default inherit `VerseParametersInherit`?
+    -- BypassParameters = false, -- By default inherit `RealityParametersInherit`?
   },
 }
 
--- These are the parameters that child verses inherits by default
--- This is in addition to any passed down from parent verses
-VerseInherit = {
+-- These are the parameters that child worlds inherits by default
+-- This is in addition to any passed down from parent worlds
+RealityInherit = {
   Info = {
-    -- This will limit the dimensions for children verse to 2
+    -- This will limit the dimensions for children world to 2
     Dimensions = 2,
     -- This will restrict the renderer to the same as Origin Island
     ['Render-With'] = '2D-Tile-0',
@@ -76,7 +76,7 @@ VerseInherit = {
 }
 
 -- Updated by player actions
-VerseEntitiesStatic = {
+RealityEntitiesStatic = {
   -- -- WeaveWorldProcess
   -- ['w0UvMR1XlVEjjNSaBn9F1qSkDPoIaWHJXzp5G5jjdAo'] = {
   --   Position = { -2, -2 },
