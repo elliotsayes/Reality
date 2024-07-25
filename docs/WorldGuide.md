@@ -26,7 +26,7 @@ Loaded World Template
 ```
 > Optional: To enable chat in your world, download the [`Chat.lua`](../process/blueprint/Chat.lua) protocol source and load it as well: `aos> .load Chat.lua`. Most agents will need this enabled to function properly.
 
-1. Enter your new world's process Id in [worldviewer.arweave.net](https://worldviewer.arweave.net/)
+1. Enter your new world's process Id in [reality-viewer.arweave.net](https://reality-viewer.arweave.net/)
 
 ## Customizing your World
 
