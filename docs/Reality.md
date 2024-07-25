@@ -1,29 +1,29 @@
-# Verse Protocol v0.1
+# Reality Protocol v0.1
 
 > Note: This document is a work in progress and subject to change. Newer versions of the protocol may break backward-compatibility.
 
-Verse Protocol allows representing `Entities` in space. Each `Verse` defines the dimensionality of that space (e.g. 2 or 3), and each `Entity` has a position within that space represented by a vector of numbers.
+Reality Protocol allows representing `Entities` in space. Each `Reality` defines the dimensionality of that space (e.g. 2 or 3), and each `Entity` has a position within that space represented by a vector of numbers.
 
-The Protocol is comprised of Handlers for `Definitions` for the Verse itself, and `Entities`.
+The Protocol is comprised of Handlers for `Definitions` for the World itself, and `Entities`.
 
-Source code is available in [Verse.lua](../process/blueprint/Verse.lua)
+Source code is available in [Reality.lua](../process/blueprint/Reality.lua)
 
 ## Definitions
 
-These components define base information about the verse and how to render it.
+These components define base information about the world and how to render it.
 
-### `VerseInfo` Handler
+### `RealityInfo` Handler
 
 Handler Tags:
 ```json
 {
-  "Action": "VerseInfo",
+  "Action": "Reality.Info",
 }
 ```
 
-Response Data: `VerseInfo` Model
+Response Data: `RealityInfo` Model
 
-#### `VerseInfo` Model
+#### `RealityInfo` Model
 
 ```
 {
@@ -33,21 +33,21 @@ Response Data: `VerseInfo` Model
 }
 ```
 
-- `Dimensions` is the number of dimensions in the space, for example `2` or `3`. All `Vector<Number>` types in a Verse process should have their length equal to `Dimensions`, unless otherwise stated.
+- `Dimensions` is the number of dimensions in the space, for example `2` or `3`. All `Vector<Number>` types in a World process should have their length equal to `Dimensions`, unless otherwise stated.
 - Currently '2D-Tile-0' is the only supported rendering method. This method renders a world based on 2D Tileset/Tilemap assets.
 
-### `VerseParameters` Handler
+### `RealityParameters` Handler
 
 Handler Tags:
 ```json
 {
-  "Action": "VerseParameters",
+  "Action": "Reality.Parameters",
 }
 ```
 
-Response Data: `VerseParameters` Model
+Response Data: `RealityParameters` Model
 
-#### `VerseParameters` Model
+#### `RealityParameters` Model
 
 Contains the configuration for the specified rendering method. Below is the configuration for the '2D-Tile-0' rendering method.
 
@@ -76,21 +76,21 @@ Contains the configuration for the specified rendering method. Below is the conf
   - Currently only `PNG` format is supported.
 - `Tilemap` refers to a TMJ file that contains the tilemap Asset.
   - Currently only the `TMJ` format is supported. `TMJ` refers to the standard [Tiled TMX Map Format](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/), exported in the [JSON variant](https://doc.mapeditor.org/en/stable/reference/json-map-format/).
-    - Please see the [Verse Guide](VerseGuide.md) for how to set up a tilemap that will work with the `2D-Tilemap-0` Renderer
+    - Please see the [World Guide](WorldGuide.md) for how to set up a tilemap that will work with the `2D-Tilemap-0` Renderer
   - `Offset` is a vector (with length of 2) that represents the offset of the tilemap relative to the Origin.
 
 ## Entities
 
 ### Read Entities Handlers
 
-Entities are split into two categories, Static and dynamic. Static entities are defined by the Verse and do not change, while dynamic entities are updated by the Process, and should be periodically refreshed by the client.
+Entities are split into two categories, Static and dynamic. Static entities are defined by the World and do not change, while dynamic entities are updated by the Process, and should be periodically refreshed by the client.
 
 #### EntitiesStatic
 
 Handler Tags:
 ```json
 {
-  "Action": "EntitiesStatic",
+  "Action": "Reality.EntitiesStatic",
 }
 ```
 
@@ -103,7 +103,7 @@ Returns: `Entities` Model
 Handler Tags:
 ```json
 {
-  "Action": "EntitiesDynamic",
+  "Action": "Reality.EntitiesDynamic",
 }
 ```
 Handler Data:
@@ -134,7 +134,7 @@ Response Data: `Entities` Model
 ```
 
 - EntityId: A unique identifier for the Entity, usually an `ao` ProcessId.
-- The length of the `Position` Vector should be equal to the `Dimensions` of the `Verse`.
+- The length of the `Position` Vector should be equal to the `Dimensions` of the `Reality`.
 - `Type` indicates how the Entity should be represented:
   - `Avatar`: Represents a user or process.
   - `Hidden`: Represents an entity that is invisible.
@@ -154,7 +154,7 @@ This indicates that the client should send an ao message to the entity upon bein
 
 ##### Warp
 
-Indicates that the entity is a warp area. When a player overlaps with a warp area, they teleport to that Verse. The `EntityId` (i.e. the key of the Entity object) should be the Id of a another Process implementing the Verse Protocol.
+Indicates that the entity is a warp area. When a player overlaps with a warp area, they teleport to that World. The `EntityId` (i.e. the key of the Entity object) should be the Id of a another Process implementing the Reality Protocol.
 
 ```
 {
@@ -165,7 +165,7 @@ Indicates that the entity is a warp area. When a player overlaps with a warp are
 ```
 
 - `Size` is a vector (with length of 2) that represents the size of the warp area.
-- `Spawn` is an optional vector that override the spawn position of the target Verse. This Vector should have the same dimensions of the target Verse, rather than the current Verse. 
+- `Spawn` is an optional vector that override the spawn position of the target World. This Vector should have the same dimensions of the target World, rather than the current World. 
 
 >> TODO: Some kind of direct Schema Action on Click?
 
@@ -184,14 +184,14 @@ Indicates that interactions with this Entity (i.e. by click) should show a form 
 
 ### Write Entities Handlers
 
-#### `VerseEntityCreate` Handler
+#### `RealityEntityCreate` Handler
 
-Creates a dynamic entity in the Verse, identified by the Process or Wallet that sent the message. If the entity already exists, it will be updated.
+Creates a dynamic entity in the World, identified by the Process or Wallet that sent the message. If the entity already exists, it will be updated.
 
 Handler Tags:
 ```json
 {
-  "Action": "VerseEntityCreate",
+  "Action": "Reality.EntityCreate",
 }
 ```
 Handler Data:
@@ -206,18 +206,18 @@ Handler Data:
 }
 ```
 
-- Position is the initial position of the Entity. If not provided, the Entity will be placed at the `Spawn` position of the Verse, or at the origin if no `Spawn` is defined.
+- Position is the initial position of the Entity. If not provided, the Entity will be placed at the `Spawn` position of the World, or at the origin if no `Spawn` is defined.
 - See Read Entities Handlers for more information on `Type`, `Metadata` and `Interaction` models.
 
 
-#### `VerseEntityUpdatePosition` Handler
+#### `RealityEntityUpdatePosition` Handler
 
-Updates the position of a dynamic entity in the Verse. The entity must already have been created for this to work.
+Updates the position of a dynamic entity in the World. The entity must already have been created for this to work.
 
 Handler Tags:
 ```json
 {
-  "Action": "VerseEntityUpdatePosition",
+  "Action": "Reality.EntityUpdatePosition",
 }
 ```
 

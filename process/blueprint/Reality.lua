@@ -1,12 +1,12 @@
 local json = require('json')
 local sqlite3 = require('lsqlite3')
 
-VerseDb = VerseDb or sqlite3.open_memory()
-VerseDbAdmin = VerseDbAdmin or require('DbAdmin').new(VerseDb)
+RealityDb = RealityDb or sqlite3.open_memory()
+RealityDbAdmin = RealityDbAdmin or require('DbAdmin').new(RealityDb)
 
 --#region Initialization
 
-SQLITE_TABLE_VERSE_ENTITIES = [[
+SQLITE_TABLE_REALITY_ENTITIES = [[
   CREATE TABLE IF NOT EXISTS Entities (
     Id TEXT PRIMARY KEY,
     LastUpdated INTEGER NOT NULL,
@@ -22,18 +22,18 @@ SQLITE_TABLE_VERSE_ENTITIES = [[
 -- 1 - VisibleAlways
 -- 2 - VisibleRecent
 
-function VerseDbInit()
-  VerseDb:exec(SQLITE_TABLE_VERSE_ENTITIES)
+function RealityDbInit()
+  RealityDb:exec(SQLITE_TABLE_REALITY_ENTITIES)
 end
 
-VerseInitialized = VerseInitialized or false
-if (not VerseInitialized) then
-  VerseDbInit()
-  VerseInitialized = true
+RealityInitialized = RealityInitialized or false
+if (not RealityInitialized) then
+  RealityDbInit()
+  RealityInitialized = true
 end
 
 function SetStateCode(timestamp, entityId, stateCode)
-  VerseDbAdmin:exec(string.format([[
+  RealityDbAdmin:exec(string.format([[
       UPDATE Entities
       SET StateCode = %d,
           LastUpdated = %d
@@ -49,54 +49,54 @@ end
 
 --#region Model
 
-VerseInfo = VerseInfo or {
+RealityInfo = RealityInfo or {
   Parent = nil,
-  Name = 'UnknownVerse',
+  Name = 'UnknownReality',
   Dimensions = 0,
   Spawn = {},
   ['Render-With'] = '0D-Null',
 }
 
-VerseParameters = VerseParameters or {}
+RealityParameters = RealityParameters or {}
 
-VerseEntitiesStatic = VerseEntitiesStatic or {}
+RealityEntitiesStatic = RealityEntitiesStatic or {}
 
 --#endregion
 
 --#region ReadHandlers
 
 Handlers.add(
-  "VerseInfo",
-  Handlers.utils.hasMatchingTag("Action", "VerseInfo"),
+  "Reality.Info",
+  Handlers.utils.hasMatchingTag("Action", "Reality.Info"),
   function(msg)
-    print("VerseInfo")
-    Handlers.utils.reply(json.encode(VerseInfo))(msg)
+    print("Reality.Info")
+    Handlers.utils.reply(json.encode(RealityInfo))(msg)
   end
 )
 
 Handlers.add(
-  "VerseParameters",
-  Handlers.utils.hasMatchingTag("Action", "VerseParameters"),
+  "Reality.Parameters",
+  Handlers.utils.hasMatchingTag("Action", "Reality.Parameters"),
   function(msg)
-    print("VerseParameters")
-    Handlers.utils.reply(json.encode(VerseParameters))(msg)
+    print("Reality.Parameters")
+    Handlers.utils.reply(json.encode(RealityParameters))(msg)
   end
 )
 
 Handlers.add(
-  "VerseEntitiesStatic",
-  Handlers.utils.hasMatchingTag("Action", "VerseEntitiesStatic"),
+  "Reality.EntitiesStatic",
+  Handlers.utils.hasMatchingTag("Action", "Reality.EntitiesStatic"),
   function(msg)
-    print("VerseEntitiesStatic")
-    Handlers.utils.reply(json.encode(VerseEntitiesStatic))(msg)
+    print("Reality.EntitiesStatic")
+    Handlers.utils.reply(json.encode(RealityEntitiesStatic))(msg)
   end
 )
 
 Handlers.add(
-  "VerseEntitiesDynamic",
-  Handlers.utils.hasMatchingTag("Action", "VerseEntitiesDynamic"),
+  "Reality.EntitiesDynamic",
+  Handlers.utils.hasMatchingTag("Action", "Reality.EntitiesDynamic"),
   function(msg)
-    print("VerseEntitiesDynamic")
+    print("Reality.EntitiesDynamic")
 
     local data = json.decode(msg.Data)
     if (not data) then
@@ -116,7 +116,7 @@ Handlers.add(
     if (isInitial) then
       additionalQuery = "(LastUpdated > ? AND StateCode == 2) OR StateCode == 1"
     end
-    local query = VerseDb:prepare([[
+    local query = RealityDb:prepare([[
       SELECT *
       FROM Entities
       WHERE Id == ? OR ]] .. additionalQuery
@@ -166,7 +166,7 @@ function ValidatePosition(Position)
     return false, "Position not found"
   end
 
-  if (#Position ~= VerseInfo.Dimensions) then
+  if (#Position ~= RealityInfo.Dimensions) then
     return false, "Invalid Position length"
   end
 
@@ -191,15 +191,15 @@ function ValidateType(Type)
 end
 
 Handlers.add(
-  "VerseEntityCreate",
-  Handlers.utils.hasMatchingTag("Action", "VerseEntityCreate"),
+  "Reality.EntityCreate",
+  Handlers.utils.hasMatchingTag("Action", "Reality.EntityCreate"),
   function(msg)
-    print("VerseEntityCreate")
+    print("Reality.EntityCreate")
     local entityId = msg.From
 
     local data = json.decode(msg.Data)
 
-    local Position = VerseInfo.Spawn or ZeroesArray(VerseInfo.Dimensions)
+    local Position = RealityInfo.Spawn or ZeroesArray(RealityInfo.Dimensions)
     if (data.Position) then
       local valid, error = ValidatePosition(data.Position)
 
@@ -227,7 +227,7 @@ Handlers.add(
     -- Ugly workaround for empty tables!
     Metadata['_'] = false;
 
-    local stmt = VerseDb:prepare([[
+    local stmt = RealityDb:prepare([[
         INSERT INTO Entities (Id, LastUpdated, Position, Type, Metadata)
         VALUES (?, ?, ?, ?, ?)
         ON CONFLICT(Id) DO UPDATE SET
@@ -267,13 +267,13 @@ Handlers.add(
 )
 
 Handlers.add(
-  "VerseEntityUpdatePosition",
-  Handlers.utils.hasMatchingTag("Action", "VerseEntityUpdatePosition"),
+  "Reality.EntityUpdatePosition",
+  Handlers.utils.hasMatchingTag("Action", "Reality.EntityUpdatePosition"),
   function(msg)
-    print("VerseEntityUpdatePosition")
+    print("Reality.EntityUpdatePosition")
     local entityId = msg.From
 
-    local dbEntry = VerseDbAdmin:exec(string.format([[
+    local dbEntry = RealityDbAdmin:exec(string.format([[
         SELECT * FROM Entities WHERE Id = '%s'
       ]],
       entityId
@@ -292,7 +292,7 @@ Handlers.add(
       return
     end
 
-    VerseDbAdmin:exec(string.format([[
+    RealityDbAdmin:exec(string.format([[
         UPDATE Entities
         SET LastUpdated = %d, Position = '%s'
         WHERE Id = '%s'
@@ -320,13 +320,13 @@ Handlers.add(
 )
 
 Handlers.add(
-  "VerseEntityHide",
-  Handlers.utils.hasMatchingTag("Action", "VerseEntityHide"),
+  "Reality.EntityHide",
+  Handlers.utils.hasMatchingTag("Action", "Reality.EntityHide"),
   function(msg)
-    print("VerseEntityHide")
+    print("Reality.EntityHide")
     local entityId = msg.Tags['EntityId'] or msg.From
 
-    local dbEntry = VerseDbAdmin:exec(string.format([[
+    local dbEntry = RealityDbAdmin:exec(string.format([[
         SELECT * FROM Entities WHERE Id = '%s'
       ]],
       entityId
@@ -349,13 +349,13 @@ Handlers.add(
 )
 
 Handlers.add(
-  "VerseEntityFix",
-  Handlers.utils.hasMatchingTag("Action", "VerseEntityFix"),
+  "Reality.EntityFix",
+  Handlers.utils.hasMatchingTag("Action", "Reality.EntityFix"),
   function(msg)
-    print("VerseEntityFix")
+    print("Reality.EntityFix")
     local entityId = msg.Tags['EntityId'] or msg.From
 
-    local dbEntry = VerseDbAdmin:exec(string.format([[
+    local dbEntry = RealityDbAdmin:exec(string.format([[
         SELECT * FROM Entities WHERE Id = '%s'
       ]],
       entityId
@@ -379,4 +379,4 @@ Handlers.add(
 
 --#endregion
 
-return "Loaded Verse Protocol"
+return "Loaded Reality Protocol"

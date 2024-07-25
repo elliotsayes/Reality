@@ -1,9 +1,9 @@
 -- Name: FantasyLlama
 
-CHAT_TARGET = CHAT_TARGET or 'TODO: Put your verse ID here'
+CHAT_TARGET = CHAT_TARGET or 'TODO: Put your world ID here'
 
--- To add this agent to your verse, configure your Static Entities table, e.g.:
--- VerseEntitiesStatic = {
+-- To add this agent to your world, configure your Static Entities table, e.g.:
+-- RealityEntitiesStatic = {
 --   ['<your agent process Id>'] = {
 --     Position = { 10, 10 },
 --     Type = 'Avatar',

@@ -14,7 +14,7 @@ if (not HasRegistered) then
   Send({
     Target = LLAMA_LAND,
     Tags = {
-      Action = "VerseEntityCreate",
+      Action = "Reality.EntityCreate",
     },
     Data = json.encode({
       Type = "Avatar",
@@ -34,7 +34,7 @@ Handlers.add(
     Send({
       Target = LLAMA_LAND,
       Tags = {
-        Action = "VerseEntityUpdatePosition",
+        Action = "Reality.EntityUpdatePosition",
       },
       Data = json.encode({
         Position = {

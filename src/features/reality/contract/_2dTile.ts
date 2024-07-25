@@ -1,10 +1,13 @@
 import { ArweaveTxId } from "@/features/arweave/lib/model";
 import { z } from "zod";
-import { VerseVector } from "./model";
+import { RealityVector } from "./model";
 
-export const Vector2 = VerseVector.refine((position) => position.length === 2, {
-  message: "Expected an array of length 2",
-});
+export const Vector2 = RealityVector.refine(
+  (position) => position.length === 2,
+  {
+    message: "Expected an array of length 2",
+  },
+);
 export type Vector2 = z.infer<typeof Vector2>;
 
 export const Vector2Int = Vector2.refine(

@@ -4,13 +4,13 @@
 
 --#region Model
 
-VerseInfo = {
+RealityInfo = {
   Dimensions = 2,
   Name = 'RpgLand',
   ['Render-With'] = '2D-Tile-0',
 }
 
-VerseParameters = {
+RealityParameters = {
   ['2D-Tile-0'] = {
     Version = 0,
     Spawn = { 36, 47 },
@@ -31,7 +31,7 @@ VerseParameters = {
   },
 }
 
-VerseEntitiesStatic = {
+RealityEntitiesStatic = {
   -- Blue potion: Warp back to Llama land
   ['9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss'] = {
     Position = { 51, 57 },
@@ -81,4 +81,4 @@ VerseEntitiesStatic = {
 
 --#endregion
 
-return print("Loaded Verse Template")
+return print("Loaded Reality Template")

@@ -1,6 +1,6 @@
 import { PhaserGame } from "./../components/PhaserGame";
 import { ArweaveId } from "@/features/arweave/lib/model";
-import { createVerseClientForProcess } from "@/features/verse/contract/verseClient";
+import { createRealityClientForProcess } from "@/features/reality/contract/realityClient";
 import { createChatClientForProcess } from "@/features/chat/contract/chatClient";
 import { useNavigate } from "@tanstack/react-router";
 import { ProfileRegistryClient } from "@/features/profile/contract/profileRegistryClient";
@@ -17,9 +17,9 @@ interface RendererProps {
   aoContractClientForProcess: AoContractClientForProcess;
   profileRegistryClient: ProfileRegistryClient;
   trackingClient: ReturnType<typeof createTrackingClient>;
-  verseClientForProcess: ReturnType<typeof createVerseClientForProcess>;
+  realityClientForProcess: ReturnType<typeof createRealityClientForProcess>;
   chatClientForProcess: ReturnType<typeof createChatClientForProcess>;
-  initialVerseId?: string;
+  initialRealityId?: string;
   profileInfo?: ProfileInfo;
 }
 
@@ -28,9 +28,9 @@ export function Renderer({
   aoContractClientForProcess,
   profileRegistryClient,
   trackingClient,
-  verseClientForProcess,
+  realityClientForProcess,
   chatClientForProcess,
-  initialVerseId,
+  initialRealityId,
   profileInfo,
 }: RendererProps) {
   const navigate = useNavigate();
@@ -39,17 +39,17 @@ export function Renderer({
     input: {
       playerAddress: userAddress,
       playerProfile: profileInfo,
-      initialVerseId,
+      initialRealityId,
       clients: {
         aoContractClientForProcess,
         profileRegistryClient,
         trackingClient,
-        verseClientForProcess,
+        realityClientForProcess,
         chatClientForProcess,
       },
-      setVerseIdUrl: (verseId: string) => {
+      setRealityIdUrl: (worldId: string) => {
         // navigate({
-        //   to: `/app/verse/${verseId}`,
+        //   to: `/app/world/${worldId}`,
         // });
       },
       onUnauthorised: () => {
@@ -65,11 +65,11 @@ export function Renderer({
   return (
     <div className="relative">
       <div className="absolute right-0 top-0 bottom-0">
-        {current.context.currentVerseId && (
+        {current.context.currentRealityId && (
           <Chat
             userAddress={userAddress}
             userProfile={profileInfo}
-            chatClient={chatClientForProcess(current.context.currentVerseId!)}
+            chatClient={chatClientForProcess(current.context.currentRealityId!)}
             historyIndex={current.context.initialChatMessageOffset}
             newMessages={current.context.chatMessages}
           />

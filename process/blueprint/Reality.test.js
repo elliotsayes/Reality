@@ -18,14 +18,14 @@ return "ok"`,
 });
 
 test("load source", async () => {
-  const code = fs.readFileSync("./blueprint/Verse.lua", "utf-8");
+  const code = fs.readFileSync("./blueprint/Reality.lua", "utf-8");
   const result = await Send({ Action: "Eval", Data: code });
 
-  assert.equal(result.Output.data.output, "Loaded Verse Protocol");
+  assert.equal(result.Output.data.output, "Loaded Reality Protocol");
 });
 
 test("load llama land", async () => {
-  const code = fs.readFileSync("./verse/3_LlamaLand.lua", "utf-8");
+  const code = fs.readFileSync("./world/3_LlamaLand.lua", "utf-8");
   const result = await Send({ Action: "Eval", Data: code });
 
   assert.equal(result.Output.data.output, undefined);
@@ -34,7 +34,7 @@ test("load llama land", async () => {
 test("check table exists", async () => {
   const result = await Send({
     Action: "Eval",
-    Data: `require('json').encode(VerseDbAdmin:tables())`,
+    Data: `require('json').encode(RealityDbAdmin:tables())`,
   });
 
   assert.deepEqual(JSON.parse(result.Output.data.output), ["Entities"]);
@@ -43,27 +43,27 @@ test("check table exists", async () => {
 test("check Entities table empty", async () => {
   const result = await Send({
     Action: "Eval",
-    Data: `VerseDbAdmin:count('Entities')`,
+    Data: `RealityDbAdmin:count('Entities')`,
   });
 
   assert.deepEqual(result.Output.data.output, "0");
 });
 
-test("check VerseEntityCreate handler", async () => {
+test("check RealityEntityCreate handler", async () => {
   const result = await Send({
     From: "TestOwner",
-    Action: "VerseEntityCreate",
+    Action: "Reality.EntityCreate",
     Data: JSON.stringify({
       Type: "Avatar",
       Position: [1, 2],
     }),
   });
 
-  assert.equal(result.Output.data, "VerseEntityCreate");
+  assert.equal(result.Output.data, "Reality.EntityCreate");
 
   const result2 = await Send({
     Action: "Eval",
-    Data: `require('json').encode(VerseDbAdmin:exec('SELECT * FROM Entities')[1])`,
+    Data: `require('json').encode(RealityDbAdmin:exec('SELECT * FROM Entities')[1])`,
   });
 
   assert.deepEqual(JSON.parse(result2.Output.data.output), {
@@ -75,21 +75,21 @@ test("check VerseEntityCreate handler", async () => {
   });
 });
 
-test("check VerseEntityUpdatePosition handler", async () => {
+test("check RealityEntityUpdatePosition handler", async () => {
   const result = await Send({
     From: "TestOwner",
-    Action: "VerseEntityUpdatePosition",
+    Action: "Reality.EntityUpdatePosition",
     Data: JSON.stringify({
       Position: [3, 4],
     }),
     Timestamp: 10006,
   });
 
-  assert.equal(result.Output.data, "VerseEntityUpdatePosition");
+  assert.equal(result.Output.data, "Reality.EntityUpdatePosition");
 
   const result2 = await Send({
     Action: "Eval",
-    Data: `require('json').encode(VerseDbAdmin:exec('SELECT * FROM Entities')[1])`,
+    Data: `require('json').encode(RealityDbAdmin:exec('SELECT * FROM Entities')[1])`,
   });
 
   assert.deepEqual(JSON.parse(result2.Output.data.output), {
@@ -101,26 +101,26 @@ test("check VerseEntityUpdatePosition handler", async () => {
   });
 });
 
-test("check VerseEntitiesDynamic handler", async () => {
+test("check RealityEntitiesDynamic handler", async () => {
   const result = await Send({
     From: "TestOwner",
-    Action: "VerseEntitiesDynamic",
+    Action: "Reality.EntitiesDynamic",
     Data: JSON.stringify({ Timestamp: 0 }),
   });
 
-  assert.equal(result.Output.data, "VerseEntitiesDynamic");
+  assert.equal(result.Output.data, "Reality.EntitiesDynamic");
   assert.deepEqual(JSON.parse(result.Messages[0].Data), {
     TestOwner: { Type: "Avatar", Position: [3, 4], Metadata: { _: false } },
   });
 });
 
-test("check VerseEntitiesDynamic handler future timestamp", async () => {
+test("check RealityEntitiesDynamic handler future timestamp", async () => {
   const result = await Send({
     From: "TestOwner",
-    Action: "VerseEntitiesDynamic",
+    Action: "Reality.EntitiesDynamic",
     Data: JSON.stringify({ Timestamp: 99999 }),
   });
 
-  assert.equal(result.Output.data, "VerseEntitiesDynamic");
+  assert.equal(result.Output.data, "Reality.EntitiesDynamic");
   assert.deepEqual(JSON.parse(result.Messages[0].Data), []);
 });

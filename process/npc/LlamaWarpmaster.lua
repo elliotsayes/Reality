@@ -25,7 +25,7 @@ WARP_CANDIDATE_NAMES_JSON = json.encode(WARP_CANDIDATE_NAMES)
 WARP_CURRENT = WARP_CURRENT or WARP_CANDIDATES[1]
 
 CHAT_TARGET = '9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss'
-VERSE_TARGET = '9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss'
+WORLD_TARGET = '9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss'
 
 LLAMA_TOKEN_PROCESS = 'pazXumQI-HPH7iFGfTC-4_7biSnqz_U67oFAGry5zUY'
 LLAMA_TOKEN_DENOMINATION = 12
@@ -112,18 +112,18 @@ function DetectAndHandleHighestVotedWarp(timestamp)
 
     -- Hide old entity
     Send({
-      Target = VERSE_TARGET,
+      Target = WORLD_TARGET,
       Tags = {
-        Action = 'VerseEntityHide',
+        Action = 'Reality.EntityHide',
         EntityId = savedWarp.PID,
       },
     })
 
     -- Show new entity
     Send({
-      Target = VERSE_TARGET,
+      Target = WORLD_TARGET,
       Tags = {
-        Action = 'VerseEntityFix',
+        Action = 'Reality.EntityFix',
         EntityId = WARP_CURRENT.PID,
       },
     })

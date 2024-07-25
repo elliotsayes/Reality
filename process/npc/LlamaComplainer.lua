@@ -3,7 +3,7 @@
 
 local json = require("json")
 
-TARGET_VERSE_PID = TARGET_VERSE_PID or "TODO: Put my Target Verse PID here"
+TARGET_WORLD_PID = TARGET_WORLD_PID or "TODO: Put my Target World PID here"
 
 TICK_COUNT = TICK_COUNT or 0
 LAST_MESSAGE_ID = LAST_MESSAGE_ID or 0
@@ -11,11 +11,11 @@ LAST_MESSAGE_ID = LAST_MESSAGE_ID or 0
 Initialized = Initialized or nil
 
 function Register()
-  print("Registering as Verse Entity")
+  print("Registering as Reality Entity")
   Send({
-    Target = TARGET_VERSE_PID,
+    Target = TARGET_WORLD_PID,
     Tags = {
-      Action = "VerseEntityCreate",
+      Action = "Reality.EntityCreate",
     },
     Data = json.encode({
       Type = "Avatar",
@@ -31,7 +31,7 @@ if (not Initialized) then
   Register()
   -- Query the number of chat messages so far
   Send({
-    Target = TARGET_VERSE_PID,
+    Target = TARGET_WORLD_PID,
     Tags = {
       Action = "ChatCount",
     },
@@ -66,7 +66,7 @@ Handlers.add(
     TICK_COUNT = TICK_COUNT + 1
 
     Send({
-      Target = TARGET_VERSE_PID,
+      Target = TARGET_WORLD_PID,
       Tags = {
         Action = "ChatHistory",
         ["Id-After"] = tostring(LAST_MESSAGE_ID),
@@ -80,7 +80,7 @@ Handlers.add(
   "ChatHistoryResponseHandler",
   Handlers.utils.hasMatchingTag("Action", "ChatHistoryResponse"),
   function(msg)
-    if (msg.From ~= TARGET_VERSE_PID) then
+    if (msg.From ~= TARGET_WORLD_PID) then
       return print("ChatHistoryResponse not from LlamaLand")
     end
 
@@ -120,7 +120,7 @@ Handlers.add(
 
     -- Complain about the state of affairs
     Send({
-      Target = TARGET_VERSE_PID,
+      Target = TARGET_WORLD_PID,
       Tags = {
         Action = 'ChatMessage',
         ['Author-Name'] = 'Llama Complainer',
@@ -130,12 +130,12 @@ Handlers.add(
 
     -- Move to random position in the center
     Send({
-      Target = TARGET_VERSE_PID,
+      Target = TARGET_WORLD_PID,
       Tags = {
-        Action = "VerseEntityUpdatePosition",
+        Action = "Reality.EntityUpdatePosition",
       },
       Data = json.encode({
-        -- You'll probably want to adjust these values to fit with your verse
+        -- You'll probably want to adjust these values to fit with your world
         Position = {
           math.random(-4, 4),
           math.random(-3, 3),

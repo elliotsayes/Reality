@@ -1,9 +1,9 @@
 import { ProfileRegistryClient } from "@/features/profile/contract/profileRegistryClient";
-import { VerseClient } from "@/features/verse/contract/verseClient";
+import { RealityClient } from "@/features/reality/contract/realityClient";
 
-export type VerseState = {
-  info: Awaited<ReturnType<VerseClient["readInfo"]>>;
-  parameters: Awaited<ReturnType<VerseClient["readParameters"]>>;
-  entities: Awaited<ReturnType<VerseClient["readEntitiesStatic"]>>;
+export type WorldState = {
+  info: Awaited<ReturnType<RealityClient["readInfo"]>>;
+  parameters: Awaited<ReturnType<RealityClient["readParameters"]>>;
+  entities: Awaited<ReturnType<RealityClient["readEntitiesStatic"]>>;
   profiles: Awaited<ReturnType<ProfileRegistryClient["readProfiles"]>>;
 };

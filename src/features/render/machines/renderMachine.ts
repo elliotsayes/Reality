@@ -1,21 +1,21 @@
 import { ProfileRegistryClient } from "@/features/profile/contract/profileRegistryClient";
 import {
-  VerseClient,
-  VerseClientForProcess,
-} from "@/features/verse/contract/verseClient";
+  RealityClient,
+  RealityClientForProcess,
+} from "@/features/reality/contract/realityClient";
 import { setup, assign, assertEvent, fromPromise } from "xstate";
 import { Preloader } from "../lib/phaser/scenes/Preloader";
 import { MainMenu } from "../lib/phaser/scenes/MainMenu";
-import { VerseScene } from "../lib/phaser/scenes/VerseScene";
+import { WorldScene } from "../lib/phaser/scenes/WorldScene";
 import { listenScene, listenSceneEvent } from "../lib/EventBus";
-import { loadVersePhaser } from "../lib/load/verse";
+import { loadRealityPhaser } from "../lib/load/reality";
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import {
   ChatClient,
   ChatClientForProcess,
 } from "@/features/chat/contract/chatClient";
 import { MessageHistory } from "@/features/chat/contract/model";
-import { VerseState } from "../lib/load/model";
+import { WorldState } from "../lib/load/model";
 import { ProfileInfo } from "@/features/profile/contract/model";
 import { TrackingClient } from "@/features/tracking/contract/trackingClient";
 import { LoginResult } from "@/features/tracking/contract/model";
@@ -25,30 +25,30 @@ export const renderMachine = setup({
     input: {} as {
       playerAddress: string;
       playerProfile?: ProfileInfo;
-      initialVerseId?: string;
+      initialRealityId?: string;
       clients: {
         aoContractClientForProcess: AoContractClientForProcess;
         profileRegistryClient: ProfileRegistryClient;
-        verseClientForProcess: VerseClientForProcess;
+        realityClientForProcess: RealityClientForProcess;
         chatClientForProcess: ChatClientForProcess;
         trackingClient: TrackingClient;
       };
-      setVerseIdUrl: (verseId: string) => void;
+      setRealityIdUrl: (worldId: string) => void;
       onUnauthorised?: () => void;
     },
     context: {} as {
       playerAddress: string;
       playerProfile?: ProfileInfo;
 
-      initialVerseId?: string;
+      initialRealityId?: string;
       clients: {
         aoContractClientForProcess: AoContractClientForProcess;
         profileRegistryClient: ProfileRegistryClient;
-        verseClientForProcess: VerseClientForProcess;
+        realityClientForProcess: RealityClientForProcess;
         chatClientForProcess: ChatClientForProcess;
         trackingClient: TrackingClient;
       };
-      setVerseIdUrl: (verseId: string) => void;
+      setRealityIdUrl: (worldId: string) => void;
       onUnauthorised?: () => void;
 
       cleanupGameEventListeners?: () => void;
@@ -57,14 +57,14 @@ export const renderMachine = setup({
       typedScenes: {
         preloader?: Preloader;
         mainMenu?: MainMenu;
-        verseScene?: VerseScene;
+        realityScene?: WorldScene;
       };
       loginResult?: LoginResult;
 
-      targetVerseId?: string;
-      initialVerseState?: VerseState;
+      targetRealityId?: string;
+      initialWorldState?: WorldState;
 
-      currentVerseId?: string;
+      currentRealityId?: string;
       lastEntityUpdate?: Date;
 
       nextPosition?: Array<number>;
@@ -76,9 +76,9 @@ export const renderMachine = setup({
     },
     events: {} as
       | { type: "Scene Ready"; scene: Phaser.Scene }
-      | { type: "Warp Immediate"; verseId: string }
-      | { type: "Login"; verseId: string }
-      // | { type: 'Warp Overlap Start', verseId: string }
+      | { type: "Warp Immediate"; worldId: string }
+      | { type: "Login"; worldId: string }
+      // | { type: 'Warp Overlap Start', worldId: string }
       | { type: "Update Position"; position: Array<number> }
       | { type: "Registration Confirmed" },
   },
@@ -114,11 +114,11 @@ export const renderMachine = setup({
         typedScenes: { mainMenu: event.scene as MainMenu },
       };
     }),
-    assignVerseScene: assign(({ event }) => {
+    assignWorldScene: assign(({ event }) => {
       assertEvent(event, "Scene Ready");
       return {
         currentScene: event.scene,
-        typedScenes: { verseScene: event.scene as VerseScene },
+        typedScenes: { realityScene: event.scene as WorldScene },
       };
     }),
     assignOtherScene: assign(({ event }) => {
@@ -138,63 +138,63 @@ export const renderMachine = setup({
     showLoginResult: ({ context }) => {
       context.typedScenes.mainMenu!.showLoginResult(context.loginResult!);
     },
-    startVerseScene: (
+    startWorldScene: (
       { context },
       params: {
-        verseId: string;
-        verse: VerseState;
+        worldId: string;
+        reality: WorldState;
       },
     ) => {
-      const { verseId, verse } = params;
-      context.currentScene?.scene.start("VerseScene", {
+      const { worldId, reality } = params;
+      context.currentScene?.scene.start("WorldScene", {
         playerAddress: context.playerAddress,
         playerProfileInfo: context.playerProfile,
-        verseId,
-        verse,
+        worldId,
+        reality,
         aoContractClientForProcess: context.clients.aoContractClientForProcess,
       });
     },
-    warpVerseScene: (
+    warpWorldScene: (
       { context },
       params: {
-        verseId: string;
-        verse: VerseState;
+        worldId: string;
+        reality: WorldState;
       },
     ) => {
-      const { verseId, verse } = params;
-      context.typedScenes.verseScene!.warpToVerse(
+      const { worldId, reality } = params;
+      context.typedScenes.realityScene!.warpToWorld(
         context.playerAddress,
         context.playerProfile,
-        verseId,
-        verse,
+        worldId,
+        reality,
         context.clients.aoContractClientForProcess,
       );
     },
-    assignTargetVerseId: assign(({ event }) => {
+    assignTargetRealityId: assign(({ event }) => {
       assertEvent(event, "Warp Immediate");
-      return { targetVerseId: event.verseId };
+      return { targetRealityId: event.worldId };
     }),
-    assignInitialVerseState: assign(
+    assignInitialWorldState: assign(
       (
         _,
         params: {
-          verse: VerseState;
+          reality: WorldState;
         },
       ) => {
-        return { initialVerseState: params.verse };
+        return { initialWorldState: params.reality };
       },
     ),
-    assignTargetVerseIdFromInitialVerseId: assign(({ context }) => ({
-      targetVerseId: context.initialVerseId,
+    assignTargetRealityIdFromInitialRealityId: assign(({ context }) => ({
+      targetRealityId: context.initialRealityId,
     })),
-    assignCurrentVerseIdFromTargetVerseId: assign(({ context }) => ({
-      currentVerseId: context.targetVerseId,
+    assignCurrentRealityIdFromTargetRealityId: assign(({ context }) => ({
+      currentRealityId: context.targetRealityId,
     })),
-    clearCurrentVerseId: assign(() => ({
-      currentVerseId: undefined,
+    clearCurrentRealityId: assign(() => ({
+      currentRealityId: undefined,
     })),
     updateUrl: ({ context }) => {
-      context.setVerseIdUrl(context.currentVerseId!);
+      context.setRealityIdUrl(context.currentRealityId!);
     },
     onUnauthorised: ({ context }) => {
       context.onUnauthorised?.();
@@ -215,16 +215,16 @@ export const renderMachine = setup({
     clearProcesssingPosition: assign(() => ({
       processingPosition: undefined,
     })),
-    updateVerseSceneEntities: (
+    updateWorldSceneEntities: (
       { context, event },
       params: {
-        entities: Awaited<ReturnType<VerseClient["readEntitiesDynamic"]>>;
+        entities: Awaited<ReturnType<RealityClient["readEntitiesDynamic"]>>;
         profiles: Awaited<ReturnType<ProfileRegistryClient["readProfiles"]>>;
       },
     ) => {
-      console.log("updateVerseSceneEntities", event);
+      console.log("updateWorldSceneEntities", event);
       const { entities, profiles } = params;
-      context.typedScenes.verseScene!.mergeEntities(entities, profiles);
+      context.typedScenes.realityScene!.mergeEntities(entities, profiles);
     },
     saveLastEntityUpdate: assign((_, params: { beforeTimestamp: Date }) => ({
       lastEntityUpdate: params.beforeTimestamp,
@@ -259,7 +259,9 @@ export const renderMachine = setup({
           typeof message.Recipient !== "string" ||
           message.Recipient === context.playerAddress,
       );
-      context.typedScenes.verseScene!.showEntityChatMessages(filteredMessages);
+      context.typedScenes.realityScene!.showEntityChatMessages(
+        filteredMessages,
+      );
     },
     appendChatMessages: assign(
       ({ context }, params: { messages: MessageHistory }) => {
@@ -278,18 +280,18 @@ export const renderMachine = setup({
       currentChatMessageOffset: undefined,
     })),
     hideEntity: ({ context }) => {
-      if (context.currentVerseId === undefined) return;
-      console.log("hideEntity", context.currentVerseId);
+      if (context.currentRealityId === undefined) return;
+      console.log("hideEntity", context.currentRealityId);
       // Don't need to await this
       context.clients
-        .verseClientForProcess(context.currentVerseId!)
+        .realityClientForProcess(context.currentRealityId!)
         .hideEntity();
     },
   },
   guards: {
-    hasIntialVerseId: ({ context }) => {
-      console.log("hasIntialVerseId", context.initialVerseId);
-      return context.initialVerseId !== undefined;
+    hasIntialRealityId: ({ context }) => {
+      console.log("hasIntialRealityId", context.initialRealityId);
+      return context.initialRealityId !== undefined;
     },
     sceneKeyIsPreloader: ({ event }) => {
       assertEvent(event, "Scene Ready");
@@ -299,9 +301,9 @@ export const renderMachine = setup({
       assertEvent(event, "Scene Ready");
       return event.scene.scene.key === "MainMenu";
     },
-    sceneKeyIsVerseScene: ({ event }) => {
+    sceneKeyIsWorldScene: ({ event }) => {
       assertEvent(event, "Scene Ready");
-      return event.scene.scene.key === "VerseScene";
+      return event.scene.scene.key === "WorldScene";
     },
     hasNextPosition: ({ context }) => {
       return context.nextPosition !== undefined;
@@ -320,26 +322,26 @@ export const renderMachine = setup({
     },
   },
   actors: {
-    loadVerse: fromPromise(
+    loadReality: fromPromise(
       async ({
         input,
       }: {
         input: {
-          verseClient: VerseClient;
+          realityClient: RealityClient;
           profileRegistryClient: ProfileRegistryClient;
           phaserLoader: Phaser.Loader.LoaderPlugin;
           profileInfo?: ProfileInfo;
         };
       }) => {
-        console.log("loadVerse");
-        const verse = await loadVersePhaser(
-          input.verseClient,
+        console.log("loadReality");
+        const reality = await loadRealityPhaser(
+          input.realityClient,
           input.profileRegistryClient,
           input.phaserLoader,
         );
         return {
-          verseId: input.verseClient.verseId,
-          verse: verse,
+          worldId: input.realityClient.worldId,
+          reality: reality,
         };
       },
     ),
@@ -348,14 +350,14 @@ export const renderMachine = setup({
         input,
       }: {
         input: {
-          verseClient: VerseClient;
+          realityClient: RealityClient;
           profileRegistryClient: ProfileRegistryClient;
           lastEntityUpdate?: Date;
         };
       }) => {
         const beforeTimestamp = new Date();
         const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
-        const entities = await input.verseClient.readEntitiesDynamic(
+        const entities = await input.realityClient.readEntitiesDynamic(
           input.lastEntityUpdate ?? tenSecondsAgo,
         );
         console.log("updateEntities", entities);
@@ -387,12 +389,12 @@ export const renderMachine = setup({
         input,
       }: {
         input: {
-          verseClient: VerseClient;
+          realityClient: RealityClient;
           position: Array<number>;
         };
       }) => {
         console.log("updatePosition", input.position);
-        return await input.verseClient.updateEntityPosition(input.position);
+        return await input.realityClient.updateEntityPosition(input.position);
       },
     ),
     registerEntity: fromPromise(
@@ -400,14 +402,14 @@ export const renderMachine = setup({
         input,
       }: {
         input: {
-          verseClient: VerseClient;
+          realityClient: RealityClient;
           profileInfo?: ProfileInfo;
         };
       }) => {
-        const verseParams = await input.verseClient.readParameters();
-        const msgId = await input.verseClient.createEntity({
+        const realityParams = await input.realityClient.readParameters();
+        const msgId = await input.realityClient.createEntity({
           Type: "Avatar",
-          Position: verseParams["2D-Tile-0"]?.Spawn || [0, 0],
+          Position: realityParams["2D-Tile-0"]?.Spawn || [0, 0],
           ...(input.profileInfo?.ProfileId
             ? {
                 Metadata: {
@@ -488,21 +490,21 @@ export const renderMachine = setup({
                 "Warp Immediate": {
                   target: "Tracking Login",
                   reenter: true,
-                  actions: "assignTargetVerseId",
+                  actions: "assignTargetRealityId",
                 },
               },
             },
 
             "Showing Login Result": {
-              initial: "Load Verse",
+              initial: "Load Reality",
 
               states: {
-                "Load Verse": {
+                "Load Reality": {
                   invoke: {
-                    src: "loadVerse",
+                    src: "loadReality",
                     input: ({ context }) => ({
-                      verseClient: context.clients.verseClientForProcess(
-                        context.targetVerseId!,
+                      realityClient: context.clients.realityClientForProcess(
+                        context.targetRealityId!,
                       ),
                       profileRegistryClient:
                         context.clients.profileRegistryClient,
@@ -511,29 +513,29 @@ export const renderMachine = setup({
                     }),
 
                     onDone: {
-                      target: "Verse Ready",
+                      target: "Reality Ready",
                       actions: {
-                        type: "assignInitialVerseState",
+                        type: "assignInitialWorldState",
                         params: ({ event }) => ({
-                          verse: event.output.verse,
+                          reality: event.output.reality,
                         }),
                       },
                     },
                   },
                 },
 
-                "Verse Ready": {
+                "Reality Ready": {
                   on: {
                     "Warp Immediate": {
                       target:
-                        "#renderMachine.In Game.In Main Menu.Start Verse Scene",
-                      actions: "assignTargetVerseId",
+                        "#renderMachine.In Game.In Main Menu.Start Reality Scene",
+                      actions: "assignTargetRealityId",
                     },
                   },
 
                   always: {
                     target:
-                      "#renderMachine.In Game.In Main Menu.Start Verse Scene",
+                      "#renderMachine.In Game.In Main Menu.Start Reality Scene",
                     guard: "noLoginReward",
                   },
                 },
@@ -578,12 +580,12 @@ export const renderMachine = setup({
               entry: "onUnauthorised",
             },
 
-            "Start Verse Scene": {
+            "Start Reality Scene": {
               entry: {
-                type: "startVerseScene",
+                type: "startWorldScene",
                 params: ({ context }) => ({
-                  verseId: context.targetVerseId!,
-                  verse: context.initialVerseState!,
+                  worldId: context.targetRealityId!,
+                  reality: context.initialWorldState!,
                 }),
               },
             },
@@ -603,10 +605,10 @@ export const renderMachine = setup({
             Initial: {
               always: [
                 {
-                  target: "Load Verse",
+                  target: "Load Reality",
                   reenter: true,
-                  guard: "hasIntialVerseId",
-                  actions: "assignTargetVerseIdFromInitialVerseId",
+                  guard: "hasIntialRealityId",
+                  actions: "assignTargetRealityIdFromInitialRealityId",
                 },
                 {
                   target: "Start Main Menu",
@@ -617,32 +619,32 @@ export const renderMachine = setup({
             },
 
             "Start Main Menu": {},
-            "Start Verse Scene": {
+            "Start Reality Scene": {
               entry: {
-                type: "startVerseScene",
+                type: "startWorldScene",
                 params: ({ context }) => ({
-                  verseId: context.targetVerseId!,
-                  verse: context.initialVerseState!,
+                  worldId: context.targetRealityId!,
+                  reality: context.initialWorldState!,
                 }),
               },
             },
-            "Load Verse": {
+            "Load Reality": {
               invoke: {
                 input: ({ context }) => ({
-                  verseClient: context.clients.verseClientForProcess(
-                    context.targetVerseId!,
+                  realityClient: context.clients.realityClientForProcess(
+                    context.targetRealityId!,
                   ),
                   profileRegistryClient: context.clients.profileRegistryClient,
                   phaserLoader: context.currentScene!.load,
                 }),
 
-                src: "loadVerse",
+                src: "loadReality",
                 onDone: {
-                  target: "Start Verse Scene",
+                  target: "Start Reality Scene",
                   actions: {
-                    type: "assignInitialVerseState",
+                    type: "assignInitialWorldState",
                     params: ({ event }) => ({
-                      verse: event.output.verse,
+                      reality: event.output.reality,
                     }),
                   },
                 },
@@ -655,9 +657,9 @@ export const renderMachine = setup({
 
         Idle: {},
 
-        "In Verse Scene": {
-          exit: ["clearCurrentVerseId", "clearScenes"],
-          entry: ["assignCurrentVerseIdFromTargetVerseId", "updateUrl"],
+        "In Reality Scene": {
+          exit: ["clearCurrentRealityId", "clearScenes"],
+          entry: ["assignCurrentRealityIdFromTargetRealityId", "updateUrl"],
 
           states: {
             Warping: {
@@ -665,18 +667,18 @@ export const renderMachine = setup({
                 Initial: {
                   on: {
                     "Warp Immediate": {
-                      target: "Load Verse",
-                      actions: "assignTargetVerseId",
+                      target: "Load Reality",
+                      actions: "assignTargetRealityId",
                     },
                   },
                 },
 
-                "Load Verse": {
+                "Load Reality": {
                   invoke: {
-                    src: "loadVerse",
+                    src: "loadReality",
                     input: ({ context }) => ({
-                      verseClient: context.clients.verseClientForProcess(
-                        context.targetVerseId!,
+                      realityClient: context.clients.realityClientForProcess(
+                        context.targetRealityId!,
                       ),
                       profileRegistryClient:
                         context.clients.profileRegistryClient,
@@ -684,15 +686,15 @@ export const renderMachine = setup({
                       profileInfo: context.playerProfile,
                     }),
                     onDone: {
-                      target: "Warp Verse Scene",
+                      target: "Warp Reality Scene",
                       actions: {
-                        type: "warpVerseScene",
+                        type: "warpWorldScene",
                         params: ({ event }) => event.output,
                       },
                     },
                   },
                 },
-                "Warp Verse Scene": {},
+                "Warp Reality Scene": {},
               },
 
               initial: "Initial",
@@ -709,8 +711,8 @@ export const renderMachine = setup({
                   invoke: {
                     src: "updateEntities",
                     input: ({ context }) => ({
-                      verseClient: context.clients.verseClientForProcess(
-                        context.currentVerseId!,
+                      realityClient: context.clients.realityClientForProcess(
+                        context.currentRealityId!,
                       ),
                       profileRegistryClient:
                         context.clients.profileRegistryClient,
@@ -720,7 +722,7 @@ export const renderMachine = setup({
                       target: "Idle",
                       actions: [
                         {
-                          type: "updateVerseSceneEntities",
+                          type: "updateWorldSceneEntities",
                           params: ({ event }) => event.output,
                         },
                         {
@@ -766,9 +768,10 @@ export const renderMachine = setup({
                       invoke: {
                         src: "updatePosition",
                         input: ({ context }) => ({
-                          verseClient: context.clients.verseClientForProcess(
-                            context.currentVerseId!,
-                          ),
+                          realityClient:
+                            context.clients.realityClientForProcess(
+                              context.currentRealityId!,
+                            ),
                           position: context.processingPosition!,
                         }),
                         onDone: {
@@ -814,8 +817,8 @@ export const renderMachine = setup({
                   invoke: {
                     src: "registerEntity",
                     input: ({ context }) => ({
-                      verseClient: context.clients.verseClientForProcess(
-                        context.currentVerseId!,
+                      realityClient: context.clients.realityClientForProcess(
+                        context.currentRealityId!,
                       ),
                       profileInfo: context.playerProfile,
                     }),
@@ -852,7 +855,7 @@ export const renderMachine = setup({
 
                     input: ({ context }) => ({
                       chatClient: context.clients.chatClientForProcess(
-                        context.currentVerseId!,
+                        context.currentRealityId!,
                       ),
                     }),
 
@@ -881,7 +884,7 @@ export const renderMachine = setup({
                     src: "loadChatMessagesSinceOffset",
                     input: ({ context }) => ({
                       chatClient: context.clients.chatClientForProcess(
-                        context.currentVerseId!,
+                        context.currentRealityId!,
                       ),
                       offset: context.currentChatMessageOffset!,
                     }),
@@ -944,9 +947,9 @@ export const renderMachine = setup({
         actions: "assignMainMenu",
       },
       {
-        target: ".In Game.In Verse Scene",
-        guard: "sceneKeyIsVerseScene",
-        actions: "assignVerseScene",
+        target: ".In Game.In Reality Scene",
+        guard: "sceneKeyIsWorldScene",
+        actions: "assignWorldScene",
       },
       ".In Game.In Other Scene",
     ],

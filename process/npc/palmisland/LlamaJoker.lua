@@ -15,8 +15,8 @@
 -- Once you have some, send a small amount (e.g. 0.001) from
 --   your wallet (e.g. ArConnect) to your agent's processId
 
--- To add this agent to your verse, add something like the following to your verse configuration:
--- VerseEntitiesStatic = {
+-- To add this agent to your world, add something like the following to your world configuration:
+-- RealityEntitiesStatic = {
 --   ['<your agent process id here>'] = {
 --     Position = { 10, 10 },
 --     Type = 'Avatar',
@@ -31,7 +31,7 @@
 --   },
 -- }
 
--- Configure this to the process ID of the verse you want to send chat messages to
+-- Configure this to the process ID of the world you want to send chat messages to
 CHAT_TARGET = 'OqvzTvpHYrfswvVZdsSldVTNBnyBOk7kZf-oqDdvUjg'
 
 local json = require('json')
