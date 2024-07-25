@@ -43,7 +43,7 @@ VerseParameters = {
 }
 ```
 
-Or add an NPC:
+Or add a dumb NPC:
 ```lua
 VerseEntitiesStatic = {
   ['MyNpc'] = {
@@ -56,7 +56,7 @@ VerseEntitiesStatic = {
 }
 ```
 
-To change the art and layout for the map itself, you'll have to update the assets. See the next section for details.
+To change the art and layout for the map itself, you'll have to update the assets. Let's get creative!
 
 ## Customizing your Tilemap
 
