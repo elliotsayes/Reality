@@ -12,7 +12,7 @@ For more details on the Reality protocol, please see the [Reality Docs](./Realit
 
 ### Setup
 
-1. Download the [`DbAdmin`](../process/blueprint/dbAdmin.lua) package source, [`World.lua`](../process/blueprint/World.lua) protocol source and the [`WorldTemplate.lua`](./src/WorldTemplate.lua) config into the same folder.
+1. Download the [`DbAdmin`](../process/blueprint/dbAdmin.lua) package source, [`Reality.lua`](../process/blueprint/Reality.lua) protocol source and the [`WorldTemplate.lua`](./src/WorldTemplate.lua) config into the same folder.
 2. In that folder, launch a new aos process with a module that has sqlite3 built in, e.g.:
 
 `aos MyWorldProcessName --module="GYrbbe0VbHim_7Hi6zrOpHQXrSQz07XNtwCnfbFo2I0"`
