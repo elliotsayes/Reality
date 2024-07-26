@@ -1,5 +1,8 @@
 # Agent Guide
 
+> [!NOTE]
+> You can now use the [`@reality/api`](https://apm.betteridea.dev/pkg?id=UEtFZarBGFKXjyNEHFm5JagOBW7Frij8ojk7BjkSbVE) APM package for the most streamlined way to create `Reality` agents.
+
 Check out some example agents below. To get started with adding agents to your own World, check out the [World Guide](WorldGuide.md).
 
 ## Static Agents

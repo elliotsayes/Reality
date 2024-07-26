@@ -1,6 +1,7 @@
 # Reality Protocol v0.1
 
-> Note: This document is a work in progress and subject to change. Newer versions of the protocol may break backward-compatibility.
+> [!NOTE]
+> This document is a work in progress and subject to change. Newer versions of the protocol may break backward-compatibility.
 
 Reality Protocol allows representing `Entities` in space. Each `Reality` defines the dimensionality of that space (e.g. 2 or 3), and each `Entity` has a position within that space represented by a vector of numbers.
 

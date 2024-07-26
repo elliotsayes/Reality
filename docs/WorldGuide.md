@@ -1,6 +1,9 @@
 # World Guide
 
-The goal of this guide is to get you started developing your own World on the Reality protocol. We will start by creating our own World process based on a template, and then modifying it.
+> [!NOTE]
+> You can now use the [`@reality/api`](https://apm.betteridea.dev/pkg?id=UEtFZarBGFKXjyNEHFm5JagOBW7Frij8ojk7BjkSbVE) APM package for the most streamlined way to dive into `Reality`.
+
+The goal of this guide is to get you started developing your own World on the Reality protocol. We will begin by creating our own World process based on a template, and then customizing it.
 
 For more details on the Reality protocol, please see the [Reality Docs](./Reality.md) or [Reality.lua](../process/blueprint/Reality.lua) source code.
 
@@ -12,7 +15,7 @@ For more details on the Reality protocol, please see the [Reality Docs](./Realit
 
 ### Setup
 
-1. Download the [`DbAdmin`](../process/blueprint/dbAdmin.lua) package source, [`Reality.lua`](../process/blueprint/Reality.lua) protocol source and the [`WorldTemplate.lua`](./src/WorldTemplate.lua) config into the same folder.
+1. Download the [`DbAdmin`](../process/blueprint/dbAdmin.lua) package source, [`World.lua`](../process/blueprint/World.lua) protocol source and the [`WorldTemplate.lua`](./src/WorldTemplate.lua) config into the same folder.
 2. In that folder, launch a new aos process with a module that has sqlite3 built in, e.g.:
 
 `aos MyWorldProcessName --module="GYrbbe0VbHim_7Hi6zrOpHQXrSQz07XNtwCnfbFo2I0"`
