@@ -29,6 +29,18 @@ Before loading the agent's source, you should configure the `TARGET_WORLD_PID` g
 - [Llama Runner](../process/npc/LlamaRunner.lua)
   - Players can instruct him to run around Llama Land in a loop.
 
+> [!NOTE]
+> To prevent your agents from disappearing due to inactivity, you can fix the agent's visibility by sending the following message from the Agent's process:
+
+```lua
+Send({
+  Target = TARGET_WORLD_PID,
+  Tags = {
+    Action = 'Reality.EntityFix',
+  },
+})
+``
+
 ## Further Info
 
 Read the [Reality Protocol](Reality.md) docs for more information on how to configure agents in your world. See the (Schema Protocol)[Schema.md] for more information on how to configure custom interactions with your agents.
