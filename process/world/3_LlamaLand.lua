@@ -32,13 +32,14 @@ RealityParameters = {
       Offset = { -52, -32 },                                -- Offset for the tilemap
     },
   },
-  ['Audio-0'] = {
-    Bgm = {
-      Type = 'Fixed',
-      Format = 'WEBM',
-      TxId = 'k-p6enw-P81m-cwikH3HXFtYB762tnx2aiSSrW137d8', -- TxId of BGM
-    },
-  }
+  -- Disable for now
+  -- ['Audio-0'] = {
+  --   Bgm = {
+  --     Type = 'Fixed',
+  --     Format = 'WEBM',
+  --     TxId = 'k-p6enw-P81m-cwikH3HXFtYB762tnx2aiSSrW137d8', -- TxId of BGM
+  --   },
+  -- }
 }
 
 -- Registered Child worlds
