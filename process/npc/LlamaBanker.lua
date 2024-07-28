@@ -374,7 +374,7 @@ Handlers.add(
     print('Account: ' .. account .. ', Balance: ' .. balance)
 
     local message = 'Psst, you currently have ' .. FormatLlamaTokenAmount(balance) .. ' $LLAMA coins!'
-    message = message .. ' Go to ao-bazar.g8way.io to view and trade your ao tokens.'
+    message = message .. ' Go to ao-bazar.g8way.io or permaswap.network to view and trade your ao tokens.'
     Send({
       Target = LLAMA_FED_CHAT_PROCESS,
       Tags = {
