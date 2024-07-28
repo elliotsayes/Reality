@@ -20,9 +20,9 @@ For more details on the Reality protocol, please see the [Reality Docs](./Realit
 
 `aos MyWorldProcessName --module="GYrbbe0VbHim_7Hi6zrOpHQXrSQz07XNtwCnfbFo2I0"`
 
-1. Load the `World.lua` and `WorldTemplate.lua` files in aos
+1. Load the `Reality.lua` and `WorldTemplate.lua` files in aos
 ```
-aos> .load World.lua
+aos> .load Reality.lua
 Loaded Reality Protocol
 aos> .load WorldTemplate.lua
 Loaded World Template
