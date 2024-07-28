@@ -45,7 +45,9 @@ export class WorldScene extends WarpableScene {
   _2dTileParams?: _2dTileParams;
   tilesetTxId?: string;
   tilemapTxId?: string;
+
   audioParams?: AudioParams;
+  bgm?: Phaser.Sound.BaseSound;
 
   tileSizeScaled: [number, number] = [
     DEFAULT_TILE_SIZE_SCALED,
@@ -253,10 +255,10 @@ export class WorldScene extends WarpableScene {
     }
 
     if (this.audioParams?.Bgm?.TxId) {
-      this.sound.add(`audio_${this.audioParams.Bgm.TxId}`);
-      this.sound.play(`audio_${this.audioParams.Bgm.TxId}`, {
-        loop: true,
+      this.bgm = this.sound.add(`audio_${this.audioParams.Bgm.TxId}`);
+      this.bgm.play({
         volume: 0.2,
+        loop: true,
       });
     }
 
@@ -955,5 +957,9 @@ export class WorldScene extends WarpableScene {
     if (!this.isWarping) {
       this.loadText.destroy();
     }
+  }
+
+  public onWarpSuccess() {
+    this.bgm?.stop();
   }
 }
