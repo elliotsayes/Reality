@@ -16,6 +16,7 @@ import { truncateAddress } from "@/features/arweave/lib/utils";
 import { ProfileInfo } from "@/features/profile/contract/model";
 import { MessageHistory } from "@/features/chat/contract/model";
 import TutorialOverlay from "@/features/render/components/TutorialOverlay";
+import { AudioParams } from "@/features/reality/contract/audio";
 
 const SCALE_TILES = 3;
 const SCALE_ENTITIES = 2;
@@ -44,6 +45,7 @@ export class WorldScene extends WarpableScene {
   _2dTileParams?: _2dTileParams;
   tilesetTxId?: string;
   tilemapTxId?: string;
+  audioParams?: AudioParams;
 
   tileSizeScaled: [number, number] = [
     DEFAULT_TILE_SIZE_SCALED,
@@ -108,6 +110,7 @@ export class WorldScene extends WarpableScene {
     this.aoContractClientForProcess = aoContractClientForProcess;
 
     this._2dTileParams = this.worldState.parameters["2D-Tile-0"];
+    this.audioParams = this.worldState.parameters["Audio-0"];
 
     this.tilesetTxId = this._2dTileParams?.Tileset.TxId;
     this.tilemapTxId = this._2dTileParams?.Tilemap.TxId;
@@ -247,6 +250,14 @@ export class WorldScene extends WarpableScene {
         .filter(
           (layer) => layer !== undefined,
         ) as Phaser.Tilemaps.TilemapLayer[];
+    }
+
+    if (this.audioParams?.Bgm?.TxId) {
+      this.sound.add(`audio_${this.audioParams.Bgm.TxId}`);
+      this.sound.play(`audio_${this.audioParams.Bgm.TxId}`, {
+        loop: true,
+        volume: 0.2,
+      });
     }
 
     const spawnTile = this._2dTileParams?.Spawn ?? [0, 0];

@@ -53,6 +53,15 @@ export async function loadRealityPhaser(
       }
     }
 
+    const audioParams = data["Audio-0"];
+    console.log("audioParams", audioParams);
+    if (audioParams?.Bgm?.TxId) {
+      phaserLoader.audio(`audio_${audioParams.Bgm.TxId}`, {
+        type: audioParams.Bgm.Format.toLowerCase(),
+        url: fetchUrl(audioParams.Bgm.TxId),
+      });
+    }
+
     return data;
   });
 

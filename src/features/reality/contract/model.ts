@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { _2dTileParams } from "./_2dTile";
 import { ArweaveAddress } from "@/features/arweave/lib/model";
+import { AudioParams } from "./audio";
 
 export const RealityVector = z.array(z.number());
 export type RealityVector = z.infer<typeof RealityVector>;
@@ -21,6 +22,7 @@ export const RealityParameterBounds = z.object({
 export const RealityParameters = z.object({
   Bounds: z.optional(RealityParameterBounds),
   "2D-Tile-0": z.optional(_2dTileParams),
+  "Audio-0": z.optional(AudioParams),
 });
 export type RealityParameters = z.infer<typeof RealityParameters>;
 
