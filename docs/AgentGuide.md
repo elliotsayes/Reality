@@ -1,5 +1,8 @@
 # Agent Guide
 
+> [!NOTE]
+> You can now use the [`@reality/api`](https://apm.betteridea.dev/pkg?id=UEtFZarBGFKXjyNEHFm5JagOBW7Frij8ojk7BjkSbVE) APM package for the most streamlined way to create `Reality` agents.
+
 Check out some example agents below. To get started with adding agents to your own World, check out the [World Guide](WorldGuide.md).
 
 ## Static Agents
@@ -25,6 +28,18 @@ Before loading the agent's source, you should configure the `TARGET_WORLD_PID` g
   - Listens to the chat, if there are more than a couple messages he will complain about it.
 - [Llama Runner](../process/npc/LlamaRunner.lua)
   - Players can instruct him to run around Llama Land in a loop.
+
+> [!NOTE]
+> To prevent your agents from disappearing due to inactivity, you can fix the agent's visibility by sending the following message from the Agent's process:
+
+```lua
+Send({
+  Target = TARGET_WORLD_PID,
+  Tags = {
+    Action = 'Reality.EntityFix',
+  },
+})
+```
 
 ## Further Info
 

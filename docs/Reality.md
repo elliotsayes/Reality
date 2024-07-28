@@ -1,6 +1,7 @@
 # Reality Protocol v0.1
 
-> Note: This document is a work in progress and subject to change. Newer versions of the protocol may break backward-compatibility.
+> [!NOTE]
+> This document is a work in progress and subject to change. Newer versions of the protocol may break backward-compatibility.
 
 Reality Protocol allows representing `Entities` in space. Each `Reality` defines the dimensionality of that space (e.g. 2 or 3), and each `Entity` has a position within that space represented by a vector of numbers.
 
@@ -51,7 +52,7 @@ Response Data: `RealityParameters` Model
 
 Contains the configuration for the specified rendering method. Below is the configuration for the '2D-Tile-0' rendering method.
 
-```js
+```
 {
   ['2D-Tile-0']: {
     Version: '0',
@@ -78,6 +79,26 @@ Contains the configuration for the specified rendering method. Below is the conf
   - Currently only the `TMJ` format is supported. `TMJ` refers to the standard [Tiled TMX Map Format](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/), exported in the [JSON variant](https://doc.mapeditor.org/en/stable/reference/json-map-format/).
     - Please see the [World Guide](WorldGuide.md) for how to set up a tilemap that will work with the `2D-Tilemap-0` Renderer
   - `Offset` is a vector (with length of 2) that represents the offset of the tilemap relative to the Origin.
+
+This rendering method can be combined with extensions in `RealityParameters`. Currently the only extension is `Audio-0`.
+
+```
+{
+  ...
+  ['Audio-0']?: {
+    Bgm?: {
+      Type: 'Fixed',
+      Format: 'MP3' | 'OGG' | 'OPUS' | 'WEBM' | 'WAV' | 'FLAC',
+      TxId: String,
+    },
+  },
+}
+```
+
+- `Bgm` is the background music for the World.
+  - `Type` is the type of the audio file.
+  - `Format` is the format of the audio file.
+  - `TxId` refers to Arweave Transaction Ids.
 
 ## Entities
 

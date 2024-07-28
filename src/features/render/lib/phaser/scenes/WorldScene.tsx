@@ -16,6 +16,7 @@ import { truncateAddress } from "@/features/arweave/lib/utils";
 import { ProfileInfo } from "@/features/profile/contract/model";
 import { MessageHistory } from "@/features/chat/contract/model";
 import TutorialOverlay from "@/features/render/components/TutorialOverlay";
+import { AudioParams } from "@/features/reality/contract/audio";
 
 const SCALE_TILES = 3;
 const SCALE_ENTITIES = 2;
@@ -44,6 +45,9 @@ export class WorldScene extends WarpableScene {
   _2dTileParams?: _2dTileParams;
   tilesetTxId?: string;
   tilemapTxId?: string;
+
+  audioParams?: AudioParams;
+  bgm?: Phaser.Sound.BaseSound;
 
   tileSizeScaled: [number, number] = [
     DEFAULT_TILE_SIZE_SCALED,
@@ -108,6 +112,7 @@ export class WorldScene extends WarpableScene {
     this.aoContractClientForProcess = aoContractClientForProcess;
 
     this._2dTileParams = this.worldState.parameters["2D-Tile-0"];
+    this.audioParams = this.worldState.parameters["Audio-0"];
 
     this.tilesetTxId = this._2dTileParams?.Tileset.TxId;
     this.tilemapTxId = this._2dTileParams?.Tilemap.TxId;
@@ -249,6 +254,14 @@ export class WorldScene extends WarpableScene {
         ) as Phaser.Tilemaps.TilemapLayer[];
     }
 
+    if (this.audioParams?.Bgm?.TxId) {
+      this.bgm = this.sound.add(`audio_${this.audioParams.Bgm.TxId}`);
+      this.bgm.play({
+        volume: 0.2,
+        loop: true,
+      });
+    }
+
     const spawnTile = this._2dTileParams?.Spawn ?? [0, 0];
     this.spawnPixel = [
       spawnTile[0] * this.tileSizeScaled[0],
@@ -360,6 +373,13 @@ export class WorldScene extends WarpableScene {
     emitSceneReady(this);
   }
 
+  public spriteKeyBase(entityId: string, entity: RealityEntity) {
+    const isPlayer = entityId === this.playerAddress;
+    return entity.Metadata?.SpriteTxId === undefined
+      ? `llama_${entity.Metadata?.SkinNumber ?? (isPlayer ? 0 : 4)}`
+      : `sprite_${entity.Metadata?.SpriteTxId}`;
+  }
+
   public mergeEntities(
     entityUpdates: RealityEntityKeyed,
     profiles: Array<ProfileInfo>,
@@ -370,8 +390,7 @@ export class WorldScene extends WarpableScene {
 
       const entityUpdate = entityUpdates[entityId];
       if (entityUpdate.Type === "Avatar") {
-        const skinNumber = entityUpdate.Metadata?.SkinNumber ?? 4;
-
+        const spriteKeyBase = this.spriteKeyBase(entityId, entityUpdate);
         if (this.avatarEntityContainers[entityId]) {
           console.log(`Updating entity ${entityId}`);
           const entityContainer = this.avatarEntityContainers[entityId];
@@ -416,7 +435,7 @@ export class WorldScene extends WarpableScene {
               .setOrigin(0.5)
               .setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
 
-            entitySprite.play(`llama_${skinNumber}_walk`);
+            entitySprite.play(`${spriteKeyBase}_walk`);
             this.physics.moveToObject(
               entityContainer,
               this.entityTargets[entityId],
@@ -430,7 +449,7 @@ export class WorldScene extends WarpableScene {
                 const containerBody =
                   entityContainer.body as Phaser.Physics.Arcade.Body;
                 containerBody.setVelocity(0, 0);
-                entitySprite.play(`llama_${skinNumber}_idle`);
+                entitySprite.play(`${spriteKeyBase}_idle`);
                 // entitySprite.setPosition(updatePosition.x, updatePosition.y);
 
                 this.entityTargets[entityId]?.destroy();
@@ -532,7 +551,6 @@ export class WorldScene extends WarpableScene {
   ) {
     const isPlayer = entityId === this.playerAddress;
     const isBouncer = bouncerEntityIds.includes(entityId);
-    const llamaSpriteIndex = isPlayer ? 0 : entity.Metadata?.SkinNumber ?? 4;
 
     const container = this.add
       .container(
@@ -543,16 +561,18 @@ export class WorldScene extends WarpableScene {
       )
       .setDepth(isPlayer ? DEPTH_PLAYER_BASE + 1 : DEPTH_ENTITY_BASE + 1);
 
+    const spriteKeyBase = this.spriteKeyBase(entityId, entity);
+
     const sprite = this.add
-      .sprite(0, 0, `llama_${llamaSpriteIndex}`)
+      .sprite(0, 0, `${spriteKeyBase}_idle`)
       .setScale(SCALE_ENTITIES)
       .setOrigin(0.5)
       .setInteractive();
 
     if (isPlayer) {
-      sprite.play(`llama_0_idle`);
+      sprite.play(`${spriteKeyBase}_idle`);
     } else {
-      sprite.play(`llama_${llamaSpriteIndex}_idle`);
+      sprite.play(`${spriteKeyBase}_idle`);
     }
 
     if (
@@ -571,7 +591,7 @@ export class WorldScene extends WarpableScene {
       sprite.on(
         "pointerdown",
         () => {
-          sprite.play(`llama_${llamaSpriteIndex}_emote`);
+          sprite.play(`${spriteKeyBase}_emote`);
           if (entity.Metadata?.Interaction?.Type === "Default") {
             this.aoContractClientForProcess(entityId).message({
               tags: [
@@ -583,7 +603,7 @@ export class WorldScene extends WarpableScene {
             });
           }
           setTimeout(() => {
-            sprite.play(`llama_${llamaSpriteIndex}_idle`);
+            sprite.play(`${spriteKeyBase}_idle`);
             if (isBouncer) {
               this.showEntityChatMessages([
                 {
@@ -937,5 +957,9 @@ export class WorldScene extends WarpableScene {
     if (!this.isWarping) {
       this.loadText.destroy();
     }
+  }
+
+  public onWarpSuccess() {
+    this.bgm?.stop();
   }
 }

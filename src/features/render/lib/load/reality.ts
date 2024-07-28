@@ -53,6 +53,15 @@ export async function loadRealityPhaser(
       }
     }
 
+    const audioParams = data["Audio-0"];
+    console.log("audioParams", audioParams);
+    if (audioParams?.Bgm?.TxId) {
+      phaserLoader.audio(`audio_${audioParams.Bgm.TxId}`, {
+        type: audioParams.Bgm.Format.toLowerCase(),
+        url: fetchUrl(audioParams.Bgm.TxId),
+      });
+    }
+
     return data;
   });
 
@@ -133,4 +142,64 @@ export async function loadRealityPhaser(
   } as WorldState;
 
   return WorldState;
+}
+
+export async function loadSpritePhaser(
+  phaserLoader: Phaser.Loader.LoaderPlugin,
+  key: string,
+  url: string,
+) {
+  return new Promise<void>((resolve) => {
+    phaserLoader.spritesheet(key, url, {
+      frameWidth: 24,
+      frameHeight: 38,
+    });
+    phaserLoader.on("complete", resolve);
+    phaserLoader.start();
+  });
+}
+
+export function createSpriteAnimsPhaser(
+  phaserAnims: Phaser.Animations.AnimationManager,
+  keyBase: string,
+) {
+  phaserAnims.create({
+    key: `${keyBase}_idle`,
+    frameRate: 6,
+    frames: phaserAnims.generateFrameNumbers(keyBase, {
+      start: 7,
+      end: 10,
+    }),
+    repeat: -1,
+  });
+
+  phaserAnims.create({
+    key: `${keyBase}_emote`,
+    frameRate: 24,
+    frames: phaserAnims.generateFrameNumbers(keyBase, {
+      start: 7,
+      end: 10,
+    }),
+    repeat: -1,
+  });
+
+  phaserAnims.create({
+    key: `${keyBase}_walk`,
+    frameRate: 12,
+    frames: phaserAnims.generateFrameNumbers(keyBase, {
+      start: 14,
+      end: 17,
+    }),
+    repeat: -1,
+  });
+
+  phaserAnims.create({
+    key: `${keyBase}_dance`,
+    frameRate: 24,
+    frames: phaserAnims.generateFrameNumbers(keyBase, {
+      start: 14,
+      end: 17,
+    }),
+    repeat: 3,
+  });
 }

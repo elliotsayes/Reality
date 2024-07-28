@@ -1,6 +1,9 @@
 # World Guide
 
-The goal of this guide is to get you started developing your own World on the Reality protocol. We will start by creating our own World process based on a template, and then modifying it.
+> [!NOTE]
+> You can now use the [`@reality/api`](https://apm.betteridea.dev/pkg?id=UEtFZarBGFKXjyNEHFm5JagOBW7Frij8ojk7BjkSbVE) APM package for the most streamlined way to dive into `Reality`.
+
+The goal of this guide is to get you started developing your own World on the Reality protocol. We will begin by creating our own World process based on a template, and then customizing it.
 
 For more details on the Reality protocol, please see the [Reality Docs](./Reality.md) or [Reality.lua](../process/blueprint/Reality.lua) source code.
 
@@ -12,21 +15,21 @@ For more details on the Reality protocol, please see the [Reality Docs](./Realit
 
 ### Setup
 
-1. Download the [`DbAdmin`](../process/blueprint/dbAdmin.lua) package source, [`World.lua`](../process/blueprint/World.lua) protocol source and the [`WorldTemplate.lua`](./src/WorldTemplate.lua) config into the same folder.
-2. In that folder, launch a new aos process with a module that has sqlite3 built in, e.g.:
+1. Download the [`DbAdmin`](../process/blueprint/dbAdmin.lua) package source, [`Reality.lua`](../process/blueprint/Reality.lua) protocol source and the [`WorldTemplate.lua`](./src/WorldTemplate.lua) config into the same folder.
+2. In that folder, launch a new aos process with sqlite, e.g.:
 
-`aos MyWorldProcessName --module="GYrbbe0VbHim_7Hi6zrOpHQXrSQz07XNtwCnfbFo2I0"`
+`aos MyWorldProcessName --sqlite`
 
-1. Load the `World.lua` and `WorldTemplate.lua` files in aos
+1. Load the `Reality.lua` and `WorldTemplate.lua` files in aos
 ```
-aos> .load World.lua
+aos> .load Reality.lua
 Loaded Reality Protocol
 aos> .load WorldTemplate.lua
 Loaded World Template
 ```
 > Optional: To enable chat in your world, download the [`Chat.lua`](../process/blueprint/Chat.lua) protocol source and load it as well: `aos> .load Chat.lua`. Most agents will need this enabled to function properly.
 
-1. Enter your new world's process Id in [worldviewer.arweave.net](https://worldviewer.arweave.net/)
+1. Enter your new world's process Id in [reality-viewer.arweave.net](https://reality-viewer.arweave.net/)
 
 ## Customizing your World
 
@@ -43,14 +46,29 @@ WorldParameters = {
 }
 ```
 
+Add in custom background music:
+```lua
+WorldParameters = {
+  ...
+  ['Audio-0'] = {
+    Bgm = {
+      Type = 'Fixed',
+      Format = 'WEBM',
+      TxId = 'k-p6enw-P81m-cwikH3HXFtYB762tnx2aiSSrW137d8',
+    }
+  }
+}
+```
+
 Or add a dumb NPC:
 ```lua
 RealityEntitiesStatic = {
   ['MyNpc'] = {
-    Type = "Avatar",
+    Type = 'Avatar,
     Position = { 10, 10 },
     Metadata = {
-      DisplayName = "My NPC"
+      DisplayName = 'My NPC',
+      SpriteTxId = '0WFjH89wzK8XAA1aLPzBBEUQ1uKpQe9Oz_pj8x1Wxpc',
     },
   }
 }

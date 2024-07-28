@@ -8,7 +8,11 @@ import { Preloader } from "../lib/phaser/scenes/Preloader";
 import { MainMenu } from "../lib/phaser/scenes/MainMenu";
 import { WorldScene } from "../lib/phaser/scenes/WorldScene";
 import { listenScene, listenSceneEvent } from "../lib/EventBus";
-import { loadRealityPhaser } from "../lib/load/reality";
+import {
+  createSpriteAnimsPhaser,
+  loadRealityPhaser,
+  loadSpritePhaser,
+} from "../lib/load/reality";
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import {
   ChatClient,
@@ -19,6 +23,7 @@ import { WorldState } from "../lib/load/model";
 import { ProfileInfo } from "@/features/profile/contract/model";
 import { TrackingClient } from "@/features/tracking/contract/trackingClient";
 import { LoginResult } from "@/features/tracking/contract/model";
+import { fetchUrl } from "@/features/arweave/lib/arweave";
 
 export const renderMachine = setup({
   types: {
@@ -327,6 +332,7 @@ export const renderMachine = setup({
         input,
       }: {
         input: {
+          currentScene: Phaser.Scene;
           realityClient: RealityClient;
           profileRegistryClient: ProfileRegistryClient;
           phaserLoader: Phaser.Loader.LoaderPlugin;
@@ -339,6 +345,21 @@ export const renderMachine = setup({
           input.profileRegistryClient,
           input.phaserLoader,
         );
+
+        const customSpriteEntities = Object.entries(reality.entities).filter(
+          ([_, e]) => e.Metadata?.SpriteTxId !== undefined,
+        );
+        for (const [_, entity] of customSpriteEntities) {
+          const spriteTxId = entity.Metadata!.SpriteTxId!;
+          const spriteKey = `sprite_${entity.Metadata?.SpriteTxId}`;
+          await loadSpritePhaser(
+            input.currentScene.load,
+            spriteKey,
+            fetchUrl(spriteTxId),
+          );
+          createSpriteAnimsPhaser(input.currentScene.anims, spriteKey);
+        }
+
         return {
           worldId: input.realityClient.worldId,
           reality: reality,
@@ -350,6 +371,7 @@ export const renderMachine = setup({
         input,
       }: {
         input: {
+          currentScene: Phaser.Scene;
           realityClient: RealityClient;
           profileRegistryClient: ProfileRegistryClient;
           lastEntityUpdate?: Date;
@@ -361,6 +383,20 @@ export const renderMachine = setup({
           input.lastEntityUpdate ?? tenSecondsAgo,
         );
         console.log("updateEntities", entities);
+
+        const customSpriteEntities = Object.entries(entities).filter(
+          ([_, e]) => e.Metadata?.SpriteTxId !== undefined,
+        );
+        for (const [_, entity] of customSpriteEntities) {
+          const spriteTxId = entity.Metadata!.SpriteTxId!;
+          const spriteKey = `sprite_${spriteTxId}`;
+          await loadSpritePhaser(
+            input.currentScene.load,
+            spriteKey,
+            fetchUrl(spriteTxId),
+          );
+          createSpriteAnimsPhaser(input.currentScene.anims, spriteKey);
+        }
 
         const profileIds = Object.values(entities)
           .filter((entity) => {
@@ -503,6 +539,7 @@ export const renderMachine = setup({
                   invoke: {
                     src: "loadReality",
                     input: ({ context }) => ({
+                      currentScene: context.currentScene!,
                       realityClient: context.clients.realityClientForProcess(
                         context.targetRealityId!,
                       ),
@@ -631,6 +668,7 @@ export const renderMachine = setup({
             "Load Reality": {
               invoke: {
                 input: ({ context }) => ({
+                  currentScene: context.currentScene!,
                   realityClient: context.clients.realityClientForProcess(
                     context.targetRealityId!,
                   ),
@@ -677,6 +715,7 @@ export const renderMachine = setup({
                   invoke: {
                     src: "loadReality",
                     input: ({ context }) => ({
+                      currentScene: context.currentScene!,
                       realityClient: context.clients.realityClientForProcess(
                         context.targetRealityId!,
                       ),
@@ -711,6 +750,7 @@ export const renderMachine = setup({
                   invoke: {
                     src: "updateEntities",
                     input: ({ context }) => ({
+                      currentScene: context.currentScene!,
                       realityClient: context.clients.realityClientForProcess(
                         context.currentRealityId!,
                       ),

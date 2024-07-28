@@ -2,6 +2,7 @@ import { GameObjects } from "phaser";
 import { emitSceneReady } from "../../EventBus";
 import { WarpableScene } from "./WarpableScene";
 import FontFaceObserver from "fontfaceobserver";
+import { createSpriteAnimsPhaser } from "../../load/reality";
 
 export class Preloader extends WarpableScene {
   background!: GameObjects.Image;
@@ -75,46 +76,7 @@ export class Preloader extends WarpableScene {
     // this.scene.start('MainMenu');
     for (let i = 0; i < 10; i++) {
       const llama_name = `llama_${i}`;
-
-      this.anims.create({
-        key: `llama_${i}_idle`,
-        frameRate: 6,
-        frames: this.anims.generateFrameNumbers(llama_name, {
-          start: 7,
-          end: 10,
-        }),
-        repeat: -1,
-      });
-
-      this.anims.create({
-        key: `llama_${i}_emote`,
-        frameRate: 24,
-        frames: this.anims.generateFrameNumbers(llama_name, {
-          start: 7,
-          end: 10,
-        }),
-        repeat: -1,
-      });
-
-      this.anims.create({
-        key: `${llama_name}_walk`,
-        frameRate: 12,
-        frames: this.anims.generateFrameNumbers(llama_name, {
-          start: 14,
-          end: 17,
-        }),
-        repeat: -1,
-      });
-
-      this.anims.create({
-        key: `${llama_name}_dance`,
-        frameRate: 24,
-        frames: this.anims.generateFrameNumbers(llama_name, {
-          start: 14,
-          end: 17,
-        }),
-        repeat: 3,
-      });
+      createSpriteAnimsPhaser(this.anims, llama_name);
     }
 
     const font = new FontFaceObserver("Press Start 2P");
