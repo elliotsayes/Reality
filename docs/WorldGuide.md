@@ -46,14 +46,29 @@ WorldParameters = {
 }
 ```
 
+Add in custom background music:
+```lua
+WorldParameters = {
+  ...
+  ['Audio-0'] = {
+    Bgm = {
+      Type = 'Fixed',
+      Format = 'WEBM',
+      TxId = 'k-p6enw-P81m-cwikH3HXFtYB762tnx2aiSSrW137d8',
+    }
+  }
+}
+```
+
 Or add a dumb NPC:
 ```lua
 RealityEntitiesStatic = {
   ['MyNpc'] = {
-    Type = "Avatar",
+    Type = 'Avatar,
     Position = { 10, 10 },
     Metadata = {
-      DisplayName = "My NPC"
+      DisplayName = 'My NPC',
+      SpriteTxId = '0WFjH89wzK8XAA1aLPzBBEUQ1uKpQe9Oz_pj8x1Wxpc',
     },
   }
 }
