@@ -47,7 +47,8 @@ RealityEntitiesStatic = {
     Type = 'Avatar',
     Metadata = {
       DisplayName = 'Llama Joker',
-      SkinNumber = 4,
+      -- Llama wif hat
+      SpriteTxId = '0WFjH89wzK8XAA1aLPzBBEUQ1uKpQe9Oz_pj8x1Wxpc',
       Interaction = {
         Type = 'SchemaExternalForm',
         Id = 'MakeJoke'
