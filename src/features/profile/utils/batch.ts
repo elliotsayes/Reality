@@ -62,6 +62,7 @@ export const profileInfoBatcherWallet = create({
       allProfileIds.map((x) => x.ProfileId),
     );
 
+    // Match the walletIds back up with the profileInfos
     const walletsWithProfiles = walletIds.map((walletId) => {
       const profileId = allProfileIds.find(
         (x) => x.CallerAddress === walletId,
