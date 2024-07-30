@@ -17,15 +17,18 @@ type ChatBubbleProps = {
 
 export const ChatBubble = ({ chatMessage, userAddress }: ChatBubbleProps) => {
   const walletId = chatMessage.AuthorId;
-  const { data: profile } = useProfileInfo({
+  const profile = useProfileInfo({
     walletId,
   });
 
-  const resolvedDisplayName = profile?.DisplayName ?? chatMessage.AuthorName;
+  const resolvedDisplayName =
+    profile.data?.DisplayName ?? chatMessage.AuthorName;
 
-  const hasProfileImage = ArweaveTxId.safeParse(profile?.ProfileImage).success;
+  const hasProfileImage = ArweaveTxId.safeParse(
+    profile.data?.ProfileImage,
+  ).success;
   const resolvedProfileImage = hasProfileImage
-    ? fetchUrl(profile!.ProfileImage)
+    ? fetchUrl(profile.data!.ProfileImage)
     : "llamaland_profilePic_8bit_user.png";
 
   const isUser = chatMessage.AuthorId === userAddress;
@@ -43,7 +46,7 @@ export const ChatBubble = ({ chatMessage, userAddress }: ChatBubbleProps) => {
       {!isUser &&
         (isKing ? (
           <img
-            className="chat-msg-portrait"
+            className={`chat-msg-portrait ${profile.isLoading ? "animate-pulse" : ""}`}
             src="llamaland_profilePic_8bit_king.png"
           />
         ) : (
@@ -73,7 +76,10 @@ export const ChatBubble = ({ chatMessage, userAddress }: ChatBubbleProps) => {
       </div>
 
       {isUser && (
-        <img className="chat-msg-portrait" src={resolvedProfileImage} />
+        <img
+          className={`chat-msg-portrait ${profile.isLoading ? "animate-pulse" : ""}`}
+          src={resolvedProfileImage}
+        />
       )}
     </div>
   );
