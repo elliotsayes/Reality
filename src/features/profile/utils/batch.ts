@@ -30,7 +30,7 @@ export const profileInfoBatcher = create({
   fetcher: async (ids: ArweaveId[]) => {
     console.log("profileInfoBatcher", ids);
 
-    const profiles = registryClient.readProfiles(ids);
+    const profiles = await registryClient.readProfiles(ids);
 
     console.log({ profiles });
     return profiles;

@@ -16,18 +16,15 @@ type ChatBubbleProps = {
 
 export const ChatBubble = ({ chatMessage, userAddress }: ChatBubbleProps) => {
   const walletId = chatMessage.AuthorId;
-  const { data } = useProfileInfo({
+  const { data: profile } = useProfileInfo({
     walletId,
   });
 
-  const maybeProfile = data?.profile;
+  const resolveDisplayName = profile?.DisplayName ?? chatMessage.AuthorName;
 
-  const resolveDisplayName =
-    data?.profile?.DisplayName ?? chatMessage.AuthorName;
-
-  const hasProfileImage = maybeProfile?.ProfileImage !== undefined;
+  const hasProfileImage = profile?.ProfileImage !== undefined;
   const resolvedProfileImage = hasProfileImage
-    ? fetchUrl(maybeProfile?.ProfileImage)
+    ? fetchUrl(profile?.ProfileImage)
     : "llamaland_profilePic_8bit_user.png";
 
   const isUser = chatMessage.AuthorId === userAddress;
