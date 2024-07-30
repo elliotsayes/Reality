@@ -45,22 +45,20 @@ function WorldId() {
     const match = worldPathRegex.exec(_splat);
     if (match) {
       worldId = match[1];
-    } else {
-      return <div>Invalid world ID</div>;
     }
   }
 
+  if (!worldId) {
+    return <div>Invalid world ID</div>;
+  }
+
   return (
-    // <div className="bg-gray-100 h-dvh overflow-clip">
     <Login>
       {(wallet, disconnect) => {
-        // if (import.meta.env.DEV || addressWhitelist.includes(wallet.address))
         return (
           <Main wallet={wallet} disconnect={disconnect} worldId={worldId} />
         );
-        // return <div>Unauthorized</div>;
       }}
     </Login>
-    // </div>
   );
 }

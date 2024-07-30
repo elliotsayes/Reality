@@ -3,7 +3,6 @@ import { createWaitlistClientForProcess } from "../contract/waitlistClient";
 import { AoWallet } from "@/features/ao/lib/aoWallet";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import humanizeDuration from "humanize-duration";
 import prettyMilliseconds from "pretty-ms";
 import { Tooltip } from "@/components/ui/tooltip";
 import {
@@ -13,19 +12,17 @@ import {
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
 import JSConfetti from "js-confetti";
-import { useNavigate } from "@tanstack/react-router";
 
 const waitlistProcessId = import.meta.env.VITE_WAITLIST_PROCESS_ID! as string;
 const bumpCooldown = 12 * 60 * 60 * 1000;
 
 interface WaitlistDetailsProps {
   wallet: AoWallet;
+  onEnter: () => void;
 }
 
-export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
+export function WaitlistDetails({ wallet, onEnter }: WaitlistDetailsProps) {
   const resolvedWallet = wallet;
-
-  const navigate = useNavigate();
 
   const waitlistState = useSuspenseQuery({
     queryKey: ["waitlist", waitlistProcessId, resolvedWallet.address, "state"],
@@ -257,14 +254,7 @@ export function WaitlistDetails({ wallet }: WaitlistDetailsProps) {
           <Tooltip open={true}>
             <TooltipTrigger className="cursor-wait">
               <Button
-                onClick={() =>
-                  navigate({
-                    to: "/app/$",
-                    params: {
-                      _splat: "main",
-                    },
-                  })
-                }
+                onClick={onEnter}
                 disabled={!canEnter}
                 size={"lg"}
                 className={`px-8 py-6 z-20 ${canEnter ? "bg-gradient-to-r from-[#d47deb] via-[#e570ac] to-[#cb559e] hover:via-[#EBAEC6] hover:to-[#cb559e]" : "bg-indigo-950/80"} ${canEnter && !isClaimed ? "animate-bounce" : ""}`}

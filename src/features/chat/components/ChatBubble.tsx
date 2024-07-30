@@ -3,6 +3,7 @@ import { ChatMessage } from "../contract/model";
 import { truncateAddress } from "@/features/arweave/lib/utils";
 import { formatTimestamp } from "../utils/formatting";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
+import { ArweaveTxId } from "@/features/arweave/lib/model";
 
 const kingAddress = "kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA";
 const bankerAddress = "ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk";
@@ -20,11 +21,11 @@ export const ChatBubble = ({ chatMessage, userAddress }: ChatBubbleProps) => {
     walletId,
   });
 
-  const resolveDisplayName = profile?.DisplayName ?? chatMessage.AuthorName;
+  const resolvedDisplayName = profile?.DisplayName ?? chatMessage.AuthorName;
 
-  const hasProfileImage = profile?.ProfileImage !== undefined;
+  const hasProfileImage = ArweaveTxId.safeParse(profile?.ProfileImage).success;
   const resolvedProfileImage = hasProfileImage
-    ? fetchUrl(profile?.ProfileImage)
+    ? fetchUrl(profile!.ProfileImage)
     : "llamaland_profilePic_8bit_user.png";
 
   const isUser = chatMessage.AuthorId === userAddress;
@@ -51,7 +52,7 @@ export const ChatBubble = ({ chatMessage, userAddress }: ChatBubbleProps) => {
 
       <div>
         <div className={`chat-msg-header ${isUser ? "my-line" : "other-line"}`}>
-          <div className="chat-msg-nickname">{resolveDisplayName}</div>
+          <div className="chat-msg-nickname">{resolvedDisplayName}</div>
 
           <div className="chat-msg-address">
             {truncateAddress(chatMessage.AuthorId)}

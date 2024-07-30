@@ -17,7 +17,6 @@ import { Route as rootRoute } from './routes/__root'
 // Create Virtual Routes
 
 const IndexLazyImport = createFileRoute('/')()
-const AppIndexLazyImport = createFileRoute('/app/')()
 const DemoPhaserLazyImport = createFileRoute('/demo/phaser')()
 const DemoChatLazyImport = createFileRoute('/demo/chat')()
 const AppSplatLazyImport = createFileRoute('/app/$')()
@@ -28,11 +27,6 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
-
-const AppIndexLazyRoute = AppIndexLazyImport.update({
-  path: '/app/',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/app.index.lazy').then((d) => d.Route))
 
 const DemoPhaserLazyRoute = DemoPhaserLazyImport.update({
   path: '/demo/phaser',
@@ -81,13 +75,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoPhaserLazyImport
       parentRoute: typeof rootRoute
     }
-    '/app/': {
-      id: '/app/'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
   }
 }
 
@@ -98,7 +85,6 @@ export const routeTree = rootRoute.addChildren({
   AppSplatLazyRoute,
   DemoChatLazyRoute,
   DemoPhaserLazyRoute,
-  AppIndexLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -112,8 +98,7 @@ export const routeTree = rootRoute.addChildren({
         "/",
         "/app/$",
         "/demo/chat",
-        "/demo/phaser",
-        "/app/"
+        "/demo/phaser"
       ]
     },
     "/": {
@@ -127,9 +112,6 @@ export const routeTree = rootRoute.addChildren({
     },
     "/demo/phaser": {
       "filePath": "demo/phaser.lazy.tsx"
-    },
-    "/app/": {
-      "filePath": "app.index.lazy.tsx"
     }
   }
 }

@@ -6,9 +6,10 @@ import { VolumeX, Volume2 } from "lucide-react";
 
 interface WaitlistScreenProps {
   wallet: AoWallet;
+  onEnter: () => void;
 }
 
-export function WaitlistScreen({ wallet }: WaitlistScreenProps) {
+export function WaitlistScreen({ wallet, onEnter }: WaitlistScreenProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [musicPlaying, setMusicPlaying] = useState(true);
   useEffect(() => {
@@ -63,7 +64,7 @@ export function WaitlistScreen({ wallet }: WaitlistScreenProps) {
             </div>
           }
         >
-          <WaitlistDetails wallet={wallet} />
+          <WaitlistDetails wallet={wallet} onEnter={onEnter} />
         </Suspense>
         <div className="h-[10%]" />
       </div>
