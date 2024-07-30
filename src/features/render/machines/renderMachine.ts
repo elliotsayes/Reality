@@ -18,7 +18,7 @@ import {
   ChatClient,
   ChatClientForProcess,
 } from "@/features/chat/contract/chatClient";
-import { MessageHistory } from "@/features/chat/contract/model";
+import { ChatMessageHistory } from "@/features/chat/contract/model";
 import { WorldState } from "../lib/load/model";
 import { ProfileInfo } from "@/features/profile/contract/model";
 import { TrackingClient } from "@/features/tracking/contract/trackingClient";
@@ -77,7 +77,7 @@ export const renderMachine = setup({
 
       initialChatMessageOffset?: number;
       currentChatMessageOffset?: number;
-      chatMessages: MessageHistory;
+      chatMessages: ChatMessageHistory;
     },
     events: {} as
       | { type: "Scene Ready"; scene: Phaser.Scene }
@@ -246,7 +246,7 @@ export const renderMachine = setup({
       };
     }),
     updateChatMessageOffset: assign(
-      (_, params: { messages: MessageHistory }) => {
+      (_, params: { messages: ChatMessageHistory }) => {
         const { messages } = params;
         if (messages.length === 0) return {};
         return {
@@ -256,7 +256,7 @@ export const renderMachine = setup({
     ),
     notifyRendererOfNewMessages: (
       { context },
-      params: { messages: MessageHistory },
+      params: { messages: ChatMessageHistory },
     ) => {
       const { messages } = params;
       const filteredMessages = messages.filter(
@@ -269,7 +269,7 @@ export const renderMachine = setup({
       );
     },
     appendChatMessages: assign(
-      ({ context }, params: { messages: MessageHistory }) => {
+      ({ context }, params: { messages: ChatMessageHistory }) => {
         const { messages } = params;
         const filteredMessages = messages.filter(
           (message) =>

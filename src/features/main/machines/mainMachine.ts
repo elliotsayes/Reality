@@ -58,7 +58,7 @@ export const mainMachine = setup({
         };
 
         const profiles =
-          await profileRegistryClient.getProfilesByDelegate(address);
+          await profileRegistryClient.getProfilesByAddress(address);
         if (profiles.length === 0) return noProfile;
 
         const primaryProfileId = profiles[0].ProfileId;

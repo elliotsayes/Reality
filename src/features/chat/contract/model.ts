@@ -3,7 +3,7 @@ import { z } from "zod";
 
 // Placeholder
 // TODO: Define this properly
-export const Message = z.object({
+export const ChatMessage = z.object({
   Id: z.number(),
   MessageId: ArweaveId,
   Timestamp: z.number(),
@@ -12,15 +12,15 @@ export const Message = z.object({
   Recipient: z.optional(z.union([ArweaveId, z.null()])),
   Content: z.string(),
 });
-export type Message = z.infer<typeof Message>;
+export type ChatMessage = z.infer<typeof ChatMessage>;
 
-export const MessageHistory = z.array(Message);
-export type MessageHistory = z.infer<typeof MessageHistory>;
+export const ChatMessageHistory = z.array(ChatMessage);
+export type ChatMessageHistory = z.infer<typeof ChatMessageHistory>;
 
-export const MessageCreate = Message.omit({
+export const ChatMessageCreate = ChatMessage.omit({
   Id: true,
   MessageId: true,
   Timestamp: true,
   AuthorId: true,
 });
-export type MessageCreate = z.infer<typeof MessageCreate>;
+export type ChatMessageCreate = z.infer<typeof ChatMessageCreate>;

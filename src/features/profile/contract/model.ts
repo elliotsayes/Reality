@@ -4,7 +4,6 @@ import { z } from "zod";
 export const ProfileEntry = z.object({
   CallerAddress: ArweaveId,
   ProfileId: ArweaveId,
-  Role: z.string(),
 });
 export type ProfileEntry = z.infer<typeof ProfileEntry>;
 

@@ -14,7 +14,7 @@ import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import { isDebug } from "../game";
 import { truncateAddress } from "@/features/arweave/lib/utils";
 import { ProfileInfo } from "@/features/profile/contract/model";
-import { MessageHistory } from "@/features/chat/contract/model";
+import { ChatMessageHistory } from "@/features/chat/contract/model";
 import TutorialOverlay from "@/features/render/components/TutorialOverlay";
 import { AudioParams } from "@/features/reality/contract/audio";
 
@@ -687,7 +687,7 @@ export class WorldScene extends WarpableScene {
     return withinX && withinY;
   }
 
-  public showEntityChatMessages(messages: MessageHistory) {
+  public showEntityChatMessages(messages: ChatMessageHistory) {
     messages.forEach((message) => {
       const entityId = message.AuthorId;
       const entityContainer = this.avatarEntityContainers[entityId];
