@@ -1,6 +1,10 @@
 import { Login } from "@/features/login/components/Login";
 import Main from "@/features/main/components/Main";
-import { createLazyFileRoute, useParams } from "@tanstack/react-router";
+import {
+  createLazyFileRoute,
+  useNavigate,
+  useParams,
+} from "@tanstack/react-router";
 
 const worldPathRegex = /^world\/([a-zA-Z0-9_-]{43})$/;
 
@@ -39,6 +43,13 @@ function WorldId() {
     }),
     strict: false,
   });
+
+  const navigate = useNavigate();
+  if (_splat.startsWith("main")) {
+    navigate({
+      to: "/",
+    });
+  }
 
   let worldId = undefined;
   if (_splat.startsWith("world/")) {
