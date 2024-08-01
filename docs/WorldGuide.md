@@ -64,7 +64,7 @@ Or add a dumb NPC:
 ```lua
 RealityEntitiesStatic = {
   ['MyNpc'] = {
-    Type = 'Avatar,
+    Type = 'Avatar',
     Position = { 10, 10 },
     Metadata = {
       DisplayName = 'My NPC',
