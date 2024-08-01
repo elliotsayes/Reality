@@ -2,7 +2,7 @@ import { create, keyResolver, windowScheduler } from "@yornaath/batshit";
 import { createProfileRegistryClientForProcess } from "../contract/profileRegistryClient";
 import { dummyWallet } from "@/features/ao/lib/wallets/dummy";
 import { ArweaveAddress, ArweaveId } from "@/features/arweave/lib/model";
-import { ProfileEntry } from "../contract/model";
+import { ProfileEntry, ProfileInfo } from "../contract/model";
 
 const registryClient = createProfileRegistryClientForProcess(dummyWallet)(
   import.meta.env.VITE_PROFILE_PROCESS_ID,
@@ -25,15 +25,15 @@ export const profileInfoBatcherWallet = create({
   fetcher: async (walletIds: ArweaveAddress[]) => {
     console.log("profileInfoBatcherWallet", walletIds);
 
-    const previousWallets = new Set<ArweaveAddress>();
     const walletProfiles =
       await registryClient.getProfilesByAddresses(walletIds);
 
+    const foundWallets = new Set<ArweaveAddress>();
     const firstWalletProfiles: Array<ProfileEntry> = [];
     for (const profile of walletProfiles) {
-      if (!previousWallets.has(profile.CallerAddress)) {
+      if (!foundWallets.has(profile.CallerAddress)) {
+        foundWallets.add(profile.CallerAddress);
         firstWalletProfiles.push(profile);
-        previousWallets.add(profile.CallerAddress);
       }
     }
 
@@ -42,13 +42,18 @@ export const profileInfoBatcherWallet = create({
     );
 
     // Match the walletIds back up with the profileInfos
-    const walletsWithProfiles = walletIds.map((walletId) => {
-      const profileId = firstWalletProfiles.find(
-        (x) => x.CallerAddress === walletId,
-      )?.ProfileId;
-      const profile = profileInfos.find((x) => x.ProfileId === profileId);
-      return { walletId, profile };
-    });
+    const walletsWithProfiles = walletIds
+      .map((walletId) => {
+        const profileId = firstWalletProfiles.find(
+          (x) => x.CallerAddress === walletId,
+        )?.ProfileId;
+        const profile = profileInfos.find((x) => x.ProfileId === profileId);
+        return { walletId, profile };
+      })
+      .filter((x) => x.profile !== undefined) as Array<{
+      walletId: ArweaveAddress;
+      profile: ProfileInfo;
+    }>;
 
     return walletsWithProfiles;
   },
