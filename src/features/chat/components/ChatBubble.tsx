@@ -1,9 +1,9 @@
 import { useProfileInfo } from "@/features/profile/hooks/useProfileInfo";
 import { ChatMessage } from "../contract/model";
-import { truncateAddress } from "@/features/arweave/lib/utils";
 import { formatTimestamp } from "../utils/formatting";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
 import { ArweaveTxId } from "@/features/arweave/lib/model";
+import { MiniAddress } from "./MiniAddress";
 
 const kingAddress = "kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA";
 const bankerAddress = "ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk";
@@ -57,8 +57,8 @@ export const ChatBubble = ({ chatMessage, userAddress }: ChatBubbleProps) => {
         <div className={`chat-msg-header ${isUser ? "my-line" : "other-line"}`}>
           <div className="chat-msg-nickname">{resolvedDisplayName}</div>
 
-          <div className="chat-msg-address">
-            {truncateAddress(chatMessage.AuthorId)}
+          <div className="chat-msg-address items-baseline content-baseline">
+            <MiniAddress address={chatMessage.AuthorId} />
           </div>
         </div>
 
