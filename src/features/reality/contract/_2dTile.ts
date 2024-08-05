@@ -56,5 +56,6 @@ export const _2dTileParams = z.object({
   Spawn: z.optional(Spawn),
   Tileset,
   Tilemap,
+  PlayerSpriteTxId: ArweaveTxId,
 });
 export type _2dTileParams = z.infer<typeof _2dTileParams>;

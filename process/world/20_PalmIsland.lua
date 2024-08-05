@@ -27,6 +27,7 @@ RealityParameters = {
       -- Since we are already setting the spawn in the middle, we don't need this
       -- Offset = { -10, -10 },
     },
+    PlayerSpriteTxId = '0WFjH89wzK8XAA1aLPzBBEUQ1uKpQe9Oz_pj8x1Wxpc',
   },
 }
 
