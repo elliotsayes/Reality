@@ -18,19 +18,20 @@ import {
   ChatClient,
   ChatClientForProcess,
 } from "@/features/chat/contract/chatClient";
-import { MessageHistory } from "@/features/chat/contract/model";
+import { ChatMessageHistory } from "@/features/chat/contract/model";
 import { WorldState } from "../lib/load/model";
 import { ProfileInfo } from "@/features/profile/contract/model";
 import { TrackingClient } from "@/features/tracking/contract/trackingClient";
 import { LoginResult } from "@/features/tracking/contract/model";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
+import { WarpTarget } from "../lib/model";
 
 export const renderMachine = setup({
   types: {
     input: {} as {
       playerAddress: string;
       playerProfile?: ProfileInfo;
-      initialRealityId?: string;
+      initialWorldId?: string;
       clients: {
         aoContractClientForProcess: AoContractClientForProcess;
         profileRegistryClient: ProfileRegistryClient;
@@ -38,14 +39,14 @@ export const renderMachine = setup({
         chatClientForProcess: ChatClientForProcess;
         trackingClient: TrackingClient;
       };
-      setRealityIdUrl: (worldId: string) => void;
+      setWorldIdUrl: (worldId: string) => void;
       onUnauthorised?: () => void;
     },
     context: {} as {
       playerAddress: string;
       playerProfile?: ProfileInfo;
 
-      initialRealityId?: string;
+      initialWorldId?: string;
       clients: {
         aoContractClientForProcess: AoContractClientForProcess;
         profileRegistryClient: ProfileRegistryClient;
@@ -53,7 +54,7 @@ export const renderMachine = setup({
         chatClientForProcess: ChatClientForProcess;
         trackingClient: TrackingClient;
       };
-      setRealityIdUrl: (worldId: string) => void;
+      setWorldIdUrl: (worldId: string) => void;
       onUnauthorised?: () => void;
 
       cleanupGameEventListeners?: () => void;
@@ -66,10 +67,10 @@ export const renderMachine = setup({
       };
       loginResult?: LoginResult;
 
-      targetRealityId?: string;
+      warpTarget?: WarpTarget;
       initialWorldState?: WorldState;
 
-      currentRealityId?: string;
+      currentWorldId?: string;
       lastEntityUpdate?: Date;
 
       nextPosition?: Array<number>;
@@ -77,12 +78,12 @@ export const renderMachine = setup({
 
       initialChatMessageOffset?: number;
       currentChatMessageOffset?: number;
-      chatMessages: MessageHistory;
+      chatMessages: ChatMessageHistory;
     },
     events: {} as
       | { type: "Scene Ready"; scene: Phaser.Scene }
-      | { type: "Warp Immediate"; worldId: string }
-      | { type: "Login"; worldId: string }
+      | { type: "Warp Immediate"; warpTarget: WarpTarget }
+      | { type: "Login"; warpTarget: WarpTarget }
       // | { type: 'Warp Overlap Start', worldId: string }
       | { type: "Update Position"; position: Array<number> }
       | { type: "Registration Confirmed" },
@@ -146,15 +147,15 @@ export const renderMachine = setup({
     startWorldScene: (
       { context },
       params: {
-        worldId: string;
+        warpTarget: WarpTarget;
         reality: WorldState;
       },
     ) => {
-      const { worldId, reality } = params;
+      const { warpTarget, reality } = params;
       context.currentScene?.scene.start("WorldScene", {
         playerAddress: context.playerAddress,
         playerProfileInfo: context.playerProfile,
-        worldId,
+        warpTarget,
         reality,
         aoContractClientForProcess: context.clients.aoContractClientForProcess,
       });
@@ -162,22 +163,22 @@ export const renderMachine = setup({
     warpWorldScene: (
       { context },
       params: {
-        worldId: string;
+        warpTarget: WarpTarget;
         reality: WorldState;
       },
     ) => {
-      const { worldId, reality } = params;
+      const { warpTarget, reality } = params;
       context.typedScenes.realityScene!.warpToWorld(
         context.playerAddress,
         context.playerProfile,
-        worldId,
+        warpTarget,
         reality,
         context.clients.aoContractClientForProcess,
       );
     },
     assignTargetRealityId: assign(({ event }) => {
       assertEvent(event, "Warp Immediate");
-      return { targetRealityId: event.worldId };
+      return { warpTarget: event.warpTarget };
     }),
     assignInitialWorldState: assign(
       (
@@ -190,16 +191,18 @@ export const renderMachine = setup({
       },
     ),
     assignTargetRealityIdFromInitialRealityId: assign(({ context }) => ({
-      targetRealityId: context.initialRealityId,
+      warpTarget: {
+        worldId: context.initialWorldId!,
+      },
     })),
-    assignCurrentRealityIdFromTargetRealityId: assign(({ context }) => ({
-      currentRealityId: context.targetRealityId,
+    assignCurrentWorldIdFromWarpTarget: assign(({ context }) => ({
+      currentWorldId: context.warpTarget?.worldId,
     })),
-    clearCurrentRealityId: assign(() => ({
-      currentRealityId: undefined,
+    clearCurrentWorldId: assign(() => ({
+      currentWorldId: undefined,
     })),
     updateUrl: ({ context }) => {
-      context.setRealityIdUrl(context.currentRealityId!);
+      context.setWorldIdUrl(context.currentWorldId!);
     },
     onUnauthorised: ({ context }) => {
       context.onUnauthorised?.();
@@ -246,7 +249,7 @@ export const renderMachine = setup({
       };
     }),
     updateChatMessageOffset: assign(
-      (_, params: { messages: MessageHistory }) => {
+      (_, params: { messages: ChatMessageHistory }) => {
         const { messages } = params;
         if (messages.length === 0) return {};
         return {
@@ -256,7 +259,7 @@ export const renderMachine = setup({
     ),
     notifyRendererOfNewMessages: (
       { context },
-      params: { messages: MessageHistory },
+      params: { messages: ChatMessageHistory },
     ) => {
       const { messages } = params;
       const filteredMessages = messages.filter(
@@ -269,7 +272,7 @@ export const renderMachine = setup({
       );
     },
     appendChatMessages: assign(
-      ({ context }, params: { messages: MessageHistory }) => {
+      ({ context }, params: { messages: ChatMessageHistory }) => {
         const { messages } = params;
         const filteredMessages = messages.filter(
           (message) =>
@@ -285,18 +288,18 @@ export const renderMachine = setup({
       currentChatMessageOffset: undefined,
     })),
     hideEntity: ({ context }) => {
-      if (context.currentRealityId === undefined) return;
-      console.log("hideEntity", context.currentRealityId);
+      if (context.currentWorldId === undefined) return;
+      console.log("hideEntity", context.currentWorldId);
       // Don't need to await this
       context.clients
-        .realityClientForProcess(context.currentRealityId!)
+        .realityClientForProcess(context.currentWorldId!)
         .hideEntity();
     },
   },
   guards: {
     hasIntialRealityId: ({ context }) => {
-      console.log("hasIntialRealityId", context.initialRealityId);
-      return context.initialRealityId !== undefined;
+      console.log("hasIntialRealityId", context.initialWorldId);
+      return context.initialWorldId !== undefined;
     },
     sceneKeyIsPreloader: ({ event }) => {
       assertEvent(event, "Scene Ready");
@@ -541,7 +544,7 @@ export const renderMachine = setup({
                     input: ({ context }) => ({
                       currentScene: context.currentScene!,
                       realityClient: context.clients.realityClientForProcess(
-                        context.targetRealityId!,
+                        context.warpTarget!.worldId,
                       ),
                       profileRegistryClient:
                         context.clients.profileRegistryClient,
@@ -621,7 +624,7 @@ export const renderMachine = setup({
               entry: {
                 type: "startWorldScene",
                 params: ({ context }) => ({
-                  worldId: context.targetRealityId!,
+                  warpTarget: context.warpTarget!,
                   reality: context.initialWorldState!,
                 }),
               },
@@ -660,7 +663,7 @@ export const renderMachine = setup({
               entry: {
                 type: "startWorldScene",
                 params: ({ context }) => ({
-                  worldId: context.targetRealityId!,
+                  warpTarget: context.warpTarget!,
                   reality: context.initialWorldState!,
                 }),
               },
@@ -670,7 +673,7 @@ export const renderMachine = setup({
                 input: ({ context }) => ({
                   currentScene: context.currentScene!,
                   realityClient: context.clients.realityClientForProcess(
-                    context.targetRealityId!,
+                    context.warpTarget!.worldId,
                   ),
                   profileRegistryClient: context.clients.profileRegistryClient,
                   phaserLoader: context.currentScene!.load,
@@ -696,8 +699,8 @@ export const renderMachine = setup({
         Idle: {},
 
         "In Reality Scene": {
-          exit: ["clearCurrentRealityId", "clearScenes"],
-          entry: ["assignCurrentRealityIdFromTargetRealityId", "updateUrl"],
+          exit: ["clearCurrentWorldId", "clearScenes"],
+          entry: ["assignCurrentWorldIdFromWarpTarget", "updateUrl"],
 
           states: {
             Warping: {
@@ -717,7 +720,7 @@ export const renderMachine = setup({
                     input: ({ context }) => ({
                       currentScene: context.currentScene!,
                       realityClient: context.clients.realityClientForProcess(
-                        context.targetRealityId!,
+                        context.warpTarget!.worldId,
                       ),
                       profileRegistryClient:
                         context.clients.profileRegistryClient,
@@ -728,7 +731,10 @@ export const renderMachine = setup({
                       target: "Warp Reality Scene",
                       actions: {
                         type: "warpWorldScene",
-                        params: ({ event }) => event.output,
+                        params: ({ context, event }) => ({
+                          warpTarget: context.warpTarget!,
+                          ...event.output,
+                        }),
                       },
                     },
                   },
@@ -752,7 +758,7 @@ export const renderMachine = setup({
                     input: ({ context }) => ({
                       currentScene: context.currentScene!,
                       realityClient: context.clients.realityClientForProcess(
-                        context.currentRealityId!,
+                        context.currentWorldId!,
                       ),
                       profileRegistryClient:
                         context.clients.profileRegistryClient,
@@ -810,7 +816,7 @@ export const renderMachine = setup({
                         input: ({ context }) => ({
                           realityClient:
                             context.clients.realityClientForProcess(
-                              context.currentRealityId!,
+                              context.currentWorldId!,
                             ),
                           position: context.processingPosition!,
                         }),
@@ -858,7 +864,7 @@ export const renderMachine = setup({
                     src: "registerEntity",
                     input: ({ context }) => ({
                       realityClient: context.clients.realityClientForProcess(
-                        context.currentRealityId!,
+                        context.currentWorldId!,
                       ),
                       profileInfo: context.playerProfile,
                     }),
@@ -895,7 +901,7 @@ export const renderMachine = setup({
 
                     input: ({ context }) => ({
                       chatClient: context.clients.chatClientForProcess(
-                        context.currentRealityId!,
+                        context.currentWorldId!,
                       ),
                     }),
 
@@ -924,7 +930,7 @@ export const renderMachine = setup({
                     src: "loadChatMessagesSinceOffset",
                     input: ({ context }) => ({
                       chatClient: context.clients.chatClientForProcess(
-                        context.currentRealityId!,
+                        context.currentWorldId!,
                       ),
                       offset: context.currentChatMessageOffset!,
                     }),

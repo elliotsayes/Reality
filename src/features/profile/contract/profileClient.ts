@@ -7,6 +7,7 @@ import { connect } from "@permaweb/aoconnect";
 import { profileAOS } from "./config";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
 import { ProfileInfoCreate } from "./model";
+import { MessageResult } from "@/features/ao/lib/aoClient";
 
 export type ProfileClient = {
   aoContractClient: AoContractClient;
@@ -14,7 +15,7 @@ export type ProfileClient = {
   // Reads
 
   // Writes
-  initializeProcess(): Promise<string>;
+  initializeProcess(): Promise<MessageResult>;
   updateProfile(profile: ProfileInfoCreate): Promise<string>;
 };
 
@@ -30,15 +31,15 @@ export const createProfileClient = (
     const profileSrc = await fetch(fetchUrl(profileAOS.profileSrc)).then(
       (res) => res.text(),
     );
-    const messageWithResult = await aoContractClient.messageWithResult({
+    const messageResult = await aoContractClient.messageResult({
       tags: [{ name: "Action", value: "Eval" }],
       data: profileSrc,
     });
-    const error = messageWithResult.result.Error;
+    const error = messageResult.Error;
     if (error !== undefined) {
       throw new Error(error);
     }
-    return messageWithResult.messageId;
+    return messageResult;
   },
   updateProfile: async (profile: ProfileInfoCreate) =>
     aoContractClient.message({

@@ -1,6 +1,10 @@
 import { Login } from "@/features/login/components/Login";
 import Main from "@/features/main/components/Main";
-import { createLazyFileRoute, useParams } from "@tanstack/react-router";
+import {
+  createLazyFileRoute,
+  useNavigate,
+  useParams,
+} from "@tanstack/react-router";
 
 const worldPathRegex = /^world\/([a-zA-Z0-9_-]{43})$/;
 
@@ -40,27 +44,32 @@ function WorldId() {
     strict: false,
   });
 
+  const navigate = useNavigate();
+  if (_splat.startsWith("main")) {
+    navigate({
+      to: "/",
+    });
+  }
+
   let worldId = undefined;
   if (_splat.startsWith("world/")) {
     const match = worldPathRegex.exec(_splat);
     if (match) {
       worldId = match[1];
-    } else {
-      return <div>Invalid world ID</div>;
     }
   }
 
+  if (!worldId) {
+    return <div>Invalid world ID</div>;
+  }
+
   return (
-    // <div className="bg-gray-100 h-dvh overflow-clip">
     <Login>
       {(wallet, disconnect) => {
-        // if (import.meta.env.DEV || addressWhitelist.includes(wallet.address))
         return (
           <Main wallet={wallet} disconnect={disconnect} worldId={worldId} />
         );
-        // return <div>Unauthorized</div>;
       }}
     </Login>
-    // </div>
   );
 }

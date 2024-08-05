@@ -61,7 +61,8 @@ RealityEntitiesStatic = {
     Metadata = {
       Interaction = {
         Type = 'Warp',
-        Size = { 0.5, 1 }
+        Size = { 0.5, 1 },
+        Position = { -7, 15 },
       },
     }
   }

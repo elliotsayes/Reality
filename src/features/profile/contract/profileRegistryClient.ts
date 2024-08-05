@@ -11,7 +11,10 @@ export type ProfileRegistryClient = {
   aoContractClient: AoContractClient;
 
   // Reads
-  getProfilesByDelegate(address: ArweaveId): Promise<Array<ProfileEntry>>;
+  getProfilesByAddress(address: ArweaveId): Promise<Array<ProfileEntry>>;
+  getProfilesByAddresses(
+    addresses: Array<ArweaveId>,
+  ): Promise<Array<ProfileEntry>>;
   readProfiles(profileIds: Array<ArweaveId>): Promise<Array<ProfileInfo>>;
 };
 
@@ -23,7 +26,7 @@ export const createProfileRegistryClient = (
   aoContractClient: aoContractClient,
 
   // Read
-  getProfilesByDelegate: async (address: ArweaveId) => {
+  getProfilesByAddress: async (address: ArweaveId) => {
     const maybeEntries = await aoContractClient.dryrunReadReplyOptionalJson<
       Array<ProfileEntry>
     >(
@@ -31,6 +34,25 @@ export const createProfileRegistryClient = (
         tags: [{ name: "Action", value: "Get-Profiles-By-Delegate" }],
         data: JSON.stringify({
           Address: address,
+        }),
+      } /* Array<ArweaveId> */,
+    );
+    if (maybeEntries === undefined) {
+      return [];
+    }
+    return maybeEntries;
+  },
+  getProfilesByAddresses: async (addresses: Array<ArweaveId>) => {
+    if (addresses.length === 0) {
+      return [];
+    }
+    const maybeEntries = await aoContractClient.dryrunReadReplyOptionalJson<
+      Array<ProfileEntry>
+    >(
+      {
+        tags: [{ name: "Action", value: "Read-Profiles" }],
+        data: JSON.stringify({
+          Addresses: addresses,
         }),
       } /* Array<ArweaveId> */,
     );

@@ -246,7 +246,7 @@ Handlers.add(
     local nowMs = msg.Timestamp
 
     local waitlistCount = WaitlistDbAdmin:count('Waitlist')
-    if (waitlistCount >= 10000) then
+    if (waitlistCount >= 22000) then
       return print("Waitlist is full")
     end
 
