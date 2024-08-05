@@ -348,6 +348,17 @@ export const renderMachine = setup({
           input.profileRegistryClient,
           input.phaserLoader,
         );
+        const playerSpriteTxId =
+          reality.parameters["2D-Tile-0"]?.PlayerSpriteTxId;
+        if (playerSpriteTxId !== undefined) {
+          const spriteKey = `sprite_${playerSpriteTxId}`;
+          await loadSpritePhaser(
+            input.currentScene.load,
+            spriteKey,
+            fetchUrl(playerSpriteTxId),
+          );
+          createSpriteAnimsPhaser(input.currentScene.anims, spriteKey);
+        }
 
         const customSpriteEntities = Object.entries(reality.entities).filter(
           ([_, e]) => e.Metadata?.SpriteTxId !== undefined,
