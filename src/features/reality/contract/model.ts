@@ -15,8 +15,8 @@ export const RealityInfo = z.object({
 export type RealityInfo = z.infer<typeof RealityInfo>;
 
 export const RealityParameterBounds = z.object({
-  Lower: z.array(z.number()),
-  Upper: z.array(z.number()),
+  Lower: RealityVector,
+  Upper: RealityVector,
 });
 
 export const RealityParameters = z.object({
@@ -39,8 +39,8 @@ export type DefaultInteraction = z.infer<typeof DefaultInteraction>;
 
 export const Warp = z.object({
   Type: z.literal("Warp"),
-  Size: z.optional(z.array(z.number())),
-  Position: z.optional(z.array(z.number())),
+  Size: z.optional(RealityVector),
+  Position: z.optional(RealityVector),
   Target: z.optional(ArweaveId),
 });
 export type Warp = z.infer<typeof Warp>;

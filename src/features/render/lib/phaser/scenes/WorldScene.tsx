@@ -64,6 +64,7 @@ export class WorldScene extends WarpableScene {
   tilemap?: Phaser.Tilemaps.Tilemap;
   layers?: Phaser.Tilemaps.TilemapLayer[];
 
+  playerSpriteKeyBase!: string;
   player!: Phaser.GameObjects.Container;
 
   arrows?: object;
@@ -321,6 +322,10 @@ export class WorldScene extends WarpableScene {
       `Created ${this.avatarEntityContainers.length} avatar entities`,
     );
 
+    this.playerSpriteKeyBase = this.spriteKeyBase(
+      this.playerAddress,
+      this.worldState.entities[this.playerAddress],
+    );
     this.player = this.avatarEntityContainers[this.playerAddress];
     this.camera.startFollow(this.player);
     if (this.layers) {
@@ -382,9 +387,13 @@ export class WorldScene extends WarpableScene {
 
   public spriteKeyBase(entityId: string, entity: RealityEntity) {
     const isPlayer = entityId === this.playerAddress;
-    return entity.Metadata?.SpriteTxId === undefined
-      ? `llama_${entity.Metadata?.SkinNumber ?? (isPlayer ? 0 : 4)}`
-      : `sprite_${entity.Metadata?.SpriteTxId}`;
+    const spriteTxId = isPlayer
+      ? this.worldState.parameters["2D-Tile-0"]?.PlayerSpriteTxId
+      : entity.Metadata?.SpriteTxId;
+
+    return spriteTxId !== undefined
+      ? `sprite_${spriteTxId}`
+      : `llama_${entity.Metadata?.SkinNumber ?? (isPlayer ? 0 : 4)}`;
   }
 
   public mergeEntities(
@@ -814,11 +823,12 @@ export class WorldScene extends WarpableScene {
 
     const isMoving = isLeft || isRight || isUp || isDown;
     if (isMoving) {
-      if (!this.lastTickMoving) playerSprite.play("llama_0_walk");
+      if (!this.lastTickMoving)
+        playerSprite.play(`${this.playerSpriteKeyBase}_walk`);
       this.lastTickMoving = true;
     } else {
       if (this.lastTickMoving) {
-        playerSprite.play("llama_0_idle");
+        playerSprite.play(`${this.playerSpriteKeyBase}_idle`);
       }
       this.lastTickMoving = false;
     }
