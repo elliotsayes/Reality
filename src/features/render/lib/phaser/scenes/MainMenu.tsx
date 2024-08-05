@@ -45,7 +45,9 @@ export class MainMenu extends WarpableScene {
     const cb = () =>
       emitSceneEvent({
         type: "Warp Immediate",
-        worldId: import.meta.env.VITE_LLAMA_LAND_PROCESS_ID,
+        warpTarget: {
+          worldId: import.meta.env.VITE_LLAMA_LAND_PROCESS_ID,
+        },
       });
     // dont pass in, just call it
     setTimeout(cb, 100);
@@ -181,7 +183,9 @@ export class MainMenu extends WarpableScene {
       const cb = () =>
         emitSceneEvent({
           type: "Warp Immediate",
-          worldId: import.meta.env.VITE_LLAMA_LAND_PROCESS_ID,
+          warpTarget: {
+            worldId: import.meta.env.VITE_LLAMA_LAND_PROCESS_ID,
+          },
         });
       ReactDOM.createRoot(memElement).render(
         <ButtonOnce

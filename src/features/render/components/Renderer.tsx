@@ -39,7 +39,7 @@ export function Renderer({
     input: {
       playerAddress: userAddress,
       playerProfile: profileInfo,
-      initialRealityId,
+      initialWorldId: initialRealityId,
       clients: {
         aoContractClientForProcess,
         profileRegistryClient,
@@ -47,7 +47,7 @@ export function Renderer({
         realityClientForProcess,
         chatClientForProcess,
       },
-      setRealityIdUrl: (worldId: string) => {
+      setWorldIdUrl: (worldId: string) => {
         // navigate({
         //   to: `/app/world/${worldId}`,
         // });
@@ -65,11 +65,11 @@ export function Renderer({
   return (
     <div className="relative">
       <div className="absolute right-0 top-0 bottom-0">
-        {current.context.currentRealityId && (
+        {current.context.currentWorldId && (
           <Chat
             userAddress={userAddress}
             userProfile={profileInfo}
-            chatClient={chatClientForProcess(current.context.currentRealityId!)}
+            chatClient={chatClientForProcess(current.context.currentWorldId!)}
             historyIndex={current.context.initialChatMessageOffset}
             newMessages={current.context.chatMessages}
           />

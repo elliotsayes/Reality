@@ -12,3 +12,8 @@ export type BoxCentered = {
   center: Point2D;
   edgeLength: number;
 };
+
+export type WarpTarget = {
+  worldId: string;
+  position?: Array<number>;
+};

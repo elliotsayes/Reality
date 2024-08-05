@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { _2dTileParams } from "./_2dTile";
-import { ArweaveAddress } from "@/features/arweave/lib/model";
+import { ArweaveAddress, ArweaveId } from "@/features/arweave/lib/model";
 import { AudioParams } from "./audio";
 
 export const RealityVector = z.array(z.number());
@@ -40,6 +40,8 @@ export type DefaultInteraction = z.infer<typeof DefaultInteraction>;
 export const Warp = z.object({
   Type: z.literal("Warp"),
   Size: z.optional(z.array(z.number())),
+  Position: z.optional(z.array(z.number())),
+  Target: z.optional(ArweaveId),
 });
 export type Warp = z.infer<typeof Warp>;
 

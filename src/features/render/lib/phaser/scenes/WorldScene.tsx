@@ -8,7 +8,7 @@ import {
   RealityEntityKeyed,
 } from "@/features/reality/contract/model";
 import ReactDOM from "react-dom/client";
-import { BoxCentered, Point2D, Size2D } from "../../model";
+import { BoxCentered, Point2D, Size2D, WarpTarget } from "../../model";
 import { FormOverlay } from "@/features/render/components/FormOverlay";
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import { isDebug } from "../game";
@@ -38,6 +38,8 @@ const bouncerEntityIds = ["Bouncer1", "Bouncer2"];
 export class WorldScene extends WarpableScene {
   playerAddress!: string;
   playerProfileInfo?: ProfileInfo;
+
+  warpTarget!: WarpTarget;
   worldId!: string;
   worldState!: WorldState;
   aoContractClientForProcess!: AoContractClientForProcess;
@@ -89,13 +91,13 @@ export class WorldScene extends WarpableScene {
   init({
     playerAddress,
     playerProfileInfo,
-    worldId,
+    warpTarget,
     reality,
     aoContractClientForProcess,
   }: {
     playerAddress: string;
     playerProfileInfo?: ProfileInfo;
-    worldId: string;
+    warpTarget: WarpTarget;
     reality: WorldState;
     aoContractClientForProcess: AoContractClientForProcess;
   }) {
@@ -107,7 +109,9 @@ export class WorldScene extends WarpableScene {
 
     this.playerAddress = playerAddress;
     this.playerProfileInfo = playerProfileInfo;
-    this.worldId = worldId;
+
+    this.warpTarget = warpTarget;
+    this.worldId = warpTarget.worldId;
     this.worldState = reality;
     this.aoContractClientForProcess = aoContractClientForProcess;
 
@@ -270,13 +274,16 @@ export class WorldScene extends WarpableScene {
 
     this.camera.centerOn(this.spawnPixel[0], this.spawnPixel[1]);
 
-    if (!this.worldState.entities[this.playerAddress]) {
+    if (
+      !this.worldState.entities[this.playerAddress] ||
+      this.warpTarget.position !== undefined
+    ) {
       console.warn(
         `Player entity ${this.playerAddress} not found in entities list`,
       );
       this.worldState.entities[this.playerAddress] = {
         Type: "Avatar",
-        Position: spawnTile,
+        Position: this.warpTarget.position ?? spawnTile,
         ...(this.playerProfileInfo && {
           Metadata: {
             ProfileId: this.playerProfileInfo.ProfileId,
@@ -519,12 +526,16 @@ export class WorldScene extends WarpableScene {
         this.player,
         sprite,
         () => {
+          if (entity.Metadata?.Interaction?.Type !== "Warp") return;
           console.log(`Collided with warp ${entityId}`);
           if (this.isWarping) return;
           this.isWarping = true;
           emitSceneEvent({
             type: "Warp Immediate",
-            worldId: entityId,
+            warpTarget: {
+              worldId: entity.Metadata?.Interaction?.Target ?? entityId,
+              position: entity.Metadata?.Interaction?.Position,
+            },
           });
           this.camera.fadeOut(5_000);
           this.tweens.addCounter({

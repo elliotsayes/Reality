@@ -2,6 +2,7 @@ import { Scene } from "phaser";
 import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import { ProfileInfo } from "@/features/profile/contract/model";
 import { WorldState } from "../../load/model";
+import { WarpTarget } from "../../model";
 
 export class WarpableScene extends Scene {
   public isWarping: boolean = false;
@@ -31,10 +32,12 @@ export class WarpableScene extends Scene {
   public warpToWorld(
     playerAddress: string,
     playerProfileInfo: ProfileInfo | undefined,
-    worldId: string,
+    warpTarget: WarpTarget,
     worldState: WorldState,
     aoContractClientForProcess: AoContractClientForProcess,
   ) {
+    console.log({ warpTarget });
+
     this.onWarpBegin();
     const pixelated = this.cameras.main.postFX.addPixelate(-1);
 
@@ -48,7 +51,7 @@ export class WarpableScene extends Scene {
         this.scene.start("WorldScene", {
           playerAddress,
           playerProfileInfo,
-          worldId,
+          warpTarget,
           reality: worldState,
           aoContractClientForProcess,
         });
