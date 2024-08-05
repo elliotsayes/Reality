@@ -81,7 +81,7 @@ export function WaitlistDetails({ wallet, onEnter }: WaitlistDetailsProps) {
   const [timeLeft, setTimeLeft] = useState(
     calculateTimeLeft(lastBumpMaybe ?? 0),
   );
-  const canRegister = waitlistState.data.Count < 20_000;
+  const canRegister = waitlistState.data.Count < 22_000;
   const canBump = timeLeft <= 0;
   const canEnter = waitlistState.data.User?.Authorised === 1;
   const isClaimed = waitlistState.data.User?.Claimed === 1;
