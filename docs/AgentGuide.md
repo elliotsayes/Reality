@@ -43,4 +43,4 @@ Send({
 
 ## Further Info
 
-Read the [Reality Protocol](Reality.md) docs for more information on how to configure agents in your world. See the (Schema Protocol)[Schema.md] for more information on how to configure custom interactions with your agents.
+Read the [Reality Protocol](Reality.md) docs for more information on how to configure agents in your world. See the [Schema Protocol](Schema.md) for more information on how to configure custom interactions with your agents.
