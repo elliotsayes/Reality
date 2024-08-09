@@ -1,4 +1,4 @@
--- Module: 1PdCJiXhNafpJbvC-sjxWTeNzbf9Q_RfUNs84GYoPm0
+-- Module: XcWULRSWWv_bmaEyx4PEOFf4vgRSVCP9vM5AucRvI40
 
 local json = require("json")
 
@@ -11,6 +11,7 @@ InferenceAllowList = {
 }
 
 DefaultMaxResponse = DefaultMaxResponse or 80
+DefaultTemperature = 1.0
 
 JsonSystemPrompt =
 [[You are the Llama King of Llama Land, with a harsh and eccentric personality.
@@ -42,6 +43,7 @@ function Init()
   local initialPrompt = PrimePromptText(JsonSystemPrompt)
   print("Initial Prompt: " .. initialPrompt)
   Llama.setPrompt(initialPrompt)
+  Llama.setTemp(DefaultTemperature)
 
   print("Save state")
   Llama.saveState()
@@ -70,6 +72,7 @@ function ProcessPetition(userPrompt)
 
     local responseJsonMatch = string.match(responseBuilder, ".*({.*}).*")
     if responseJsonMatch then
+      print("responseJsonMatch: " .. responseJsonMatch)
       responseJson = json.decode(responseJsonMatch)
       break
     end
@@ -121,6 +124,10 @@ Handlers.add(
       print("Inference not allowed: " .. msg.From)
       return
     end
+
+    -- Timestamp is random enough for now
+    local seed = msg.Timestamp
+    Llama.setSeed(seed)
 
     local userPrompt = msg.Data
     local response = ProcessPetition(userPrompt)
