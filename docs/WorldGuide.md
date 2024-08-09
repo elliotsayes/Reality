@@ -37,7 +37,7 @@ Edit your `WorldTemplate.lua` file to customize your world. After editing the fi
 
 For example you can move your spawn location to the opposite corner of of the Island:
 ```lua
-WorldParameters = {
+RealityParameters = {
   ['2D-Tile-0'] = {
     ...
     Spawn = { 15, 12 },
@@ -48,7 +48,7 @@ WorldParameters = {
 
 Add in custom background music:
 ```lua
-WorldParameters = {
+RealityParameters = {
   ...
   ['Audio-0'] = {
     Bgm = {
