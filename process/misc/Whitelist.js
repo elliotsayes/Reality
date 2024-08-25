@@ -1,5 +1,5 @@
 import { message, createDataItemSigner } from "@permaweb/aoconnect";
-import { whitelist } from "./WhitelistDataBatch5.js";
+import { whitelist } from "./WhitelistDataDiscord.js";
 import fs from "fs";
 
 const key = JSON.parse(
@@ -9,7 +9,7 @@ const key = JSON.parse(
 async function main() {
   const signer = createDataItemSigner(key);
 
-  const batchSize = 10;
+  const batchSize = 50;
   const whitelistBatches = [];
   for (let i = 0; i < whitelist.length; i += batchSize) {
     whitelistBatches.push(whitelist.slice(i, i + batchSize));
@@ -27,7 +27,7 @@ async function main() {
       signer,
     });
     console.log(`${whitelistBatch.length}: ${res}`);
-    await new Promise((resolve) => setTimeout(resolve, 5_000));
+    await new Promise((resolve) => setTimeout(resolve, 2_000));
   }
 }
 

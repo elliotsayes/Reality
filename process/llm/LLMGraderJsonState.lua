@@ -33,13 +33,7 @@ function PrimePromptText(systemPrompt)
 ]]
 end
 
-function Init()
-  Llama = require("llama")
-  Llama.logLevel = 4
-
-  print("Loading model: " .. ModelID)
-  Llama.load("/data/" .. ModelID)
-
+function Configure()
   local initialPrompt = PrimePromptText(JsonSystemPrompt)
   print("Initial Prompt: " .. initialPrompt)
   Llama.setPrompt(initialPrompt)
@@ -47,6 +41,16 @@ function Init()
 
   print("Save state")
   Llama.saveState()
+end
+
+function Init()
+  Llama = require("llama")
+  Llama.logLevel = 4
+
+  print("Loading model: " .. ModelID)
+  Llama.load("/data/" .. ModelID)
+
+  Configure()
 end
 
 function CompletePromptText(userPrompt)

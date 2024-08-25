@@ -234,7 +234,7 @@ Handlers.add(
           LastUpdated = excluded.LastUpdated,
           Type = excluded.Type,
           Metadata = excluded.Metadata,
-          StateCode = 2
+          StateCode = CASE WHEN StateCode == 0 THEN 2 ELSE StateCode END
     ]])
     -- StateCode is reset to default, if it was hidden
     stmt:bind_values(

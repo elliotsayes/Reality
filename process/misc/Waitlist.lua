@@ -349,9 +349,10 @@ function AuthoriseWallet(walletId)
   print("Authorising: " .. walletId)
   WaitlistDbAdmin:exec(string.format([[
     UPDATE Waitlist
-    SET Authorised = %d
+    SET Flagged = %d,
+        Authorised = %d
     WHERE WalletId = '%s'
-  ]], 1, walletId))
+  ]], 0, 1, walletId))
   -- Propagate authorisation to Llama Banker
   Send({
     Target = LLAMA_BANKER_PROCESS,

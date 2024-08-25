@@ -10,28 +10,28 @@ LLAMA_FED_CHAT_PROCESS = "QIFgbqEmk5MyJy01wuINfcRP_erGNNbhqHRkAQjxKgg"
 
 -- LLMGraderJsonState workers
 LLM_WORKERS = {
-  --LlmGraderJsonTempT1
-  ['di_pqI5XTYwHuGFJ68ZT8G-84MQ8yfl8_jD3h24Z6g0'] = {
+  --LlmGraderJsonTempT1_2
+  ['rHqBkxywalxuZAItKKtSrsmdZAM_SO4_CTBEpz82Txg'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
-  --LlmGraderJsonTempT2
-  ['rPG1-ZVLPDUdVyp3BbinSAI_wZ4iltJVZlyUaqu7Z2M'] = {
+  -- --LlmGraderJsonTempT2_2
+  -- ['vPvv8UFfN715pY9JWL2D_ujS8x37pLGFX4XoiG7HA5g'] = {
+  --   busyWithMessage = nil,
+  --   submittedTimestamp = nil,
+  -- },
+  --LlmGraderJsonTempT3_2
+  ['xLRNeMktSV5nYAGF6NJb5x5mt0gavMMmxMrLqXH3BBA'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
-  --LlmGraderJsonTempT3
-  ['N6xGyKq1yV7ohXRj8sI3cQj06OCtKZLPpQFNmDJ3AS4'] = {
+  --LlmGraderJsonTempT4_2
+  ['9TW7hizNkhOjnPVMQBcO5SkjvpewE_niwfdl9ymH02M'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
-  --LlmGraderJsonTempT4
-  ['35A4PFts_OIueisYy3i99a2nZE3-DPFrNLtL1buSu-4'] = {
-    busyWithMessage = nil,
-    submittedTimestamp = nil,
-  },
-  --LlmGraderJsonTempT5
-  ['SMyqCpN72u-TrhOmUS_IbMr5yEAvHPD2CkTdRRLm7Nk'] = {
+  --LlmGraderJsonTempT5_2
+  ['G-LeldcbunFC_T9c6lO4jx2AQFoZr5iCc_DZBDlsLnA'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },

@@ -94,7 +94,7 @@ export const SchemaForm = ({
           <Linkify
             options={{
               target: "_blank",
-              className: "text-blue-800 hover:underline",
+              className: "text-blue-800 hover:underline break-words",
             }}
           >
             {methodSchema.Description}
@@ -113,7 +113,7 @@ export const SchemaForm = ({
         <Linkify
           options={{
             target: "_blank",
-            className: "text-blue-800 hover:underline",
+            className: "text-blue-800 hover:underline break-words",
           }}
         >
           {methodSchema.Description}

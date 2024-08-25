@@ -30,9 +30,10 @@ export async function loadRealityPhaser(
 
   processQueue.add(async () => {
     // Return the data so we can use it in the next query
-    const data = await queryClient.ensureQueryData({
+    const data = await queryClient.fetchQuery({
       queryKey: ["realityParameters", realityClient.worldId],
       queryFn: async () => realityClient.readParameters(),
+      staleTime: 1,
     });
 
     const _2dParams = data["2D-Tile-0"];
