@@ -18,8 +18,15 @@ export const RealityParameterBounds = z.object({
   Lower: RealityVector,
   Upper: RealityVector,
 });
+export type RealityParameterBounds = z.infer<typeof RealityParameterBounds>;
+
+export const RealityToken = z.object({
+  Primary: z.optional(ArweaveId),
+});
+export type RealityToken = z.infer<typeof RealityToken>;
 
 export const RealityParameters = z.object({
+  Token: z.optional(RealityToken),
   Bounds: z.optional(RealityParameterBounds),
   "2D-Tile-0": z.optional(_2dTileParams),
   "Audio-0": z.optional(AudioParams),

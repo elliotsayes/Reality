@@ -10,6 +10,9 @@ RealityInfo = {
 
 -- Manually defined by the world owner
 RealityParameters = {
+  Token = {
+    Primary = 'pazXumQI-HPH7iFGfTC-4_7biSnqz_U67oFAGry5zUY',
+  },
   ['2D-Tile-0'] = {
     Version = 0,
     -- Icon for world that shows up on parents

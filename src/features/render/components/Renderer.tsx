@@ -11,6 +11,7 @@ import { AoContractClientForProcess } from "@/features/ao/lib/aoContractClient";
 import { ProfileInfo } from "@/features/profile/contract/model";
 import { createTrackingClient } from "@/features/tracking/contract/trackingClient";
 import { toast } from "sonner";
+import { TokenBalanceOverlay } from "../../token/components/TokenBalanceOverlay";
 
 interface RendererProps {
   userAddress: ArweaveId;
@@ -64,6 +65,18 @@ export function Renderer({
 
   return (
     <div className="relative">
+      <div className="absolute left-0 top-0">
+        {current.matches({ "In Game": "In Reality Scene" }) &&
+          current.context.initialWorldState?.parameters.Token?.Primary && (
+            <TokenBalanceOverlay
+              userAddress={userAddress}
+              aoContractClientForProcess={aoContractClientForProcess}
+              tokenId={
+                current.context.initialWorldState!.parameters.Token!.Primary!
+              }
+            />
+          )}
+      </div>
       <div className="absolute right-0 top-0 bottom-0">
         {current.context.currentWorldId && (
           <Chat
