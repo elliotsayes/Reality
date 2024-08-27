@@ -81,8 +81,8 @@ export function WaitlistDetails({ wallet, onEnter }: WaitlistDetailsProps) {
   const [timeLeft, setTimeLeft] = useState(
     calculateTimeLeft(lastBumpMaybe ?? 0),
   );
-  const canRegister = waitlistState.data.Count < 22_000;
-  const canBump = timeLeft <= 0;
+  const canRegister = false; // waitlistState.data.Count < 22_000;
+  const canBump = false; // timeLeft <= 0;
   const canEnter = waitlistState.data.User?.Authorised === 1;
   const isClaimed = waitlistState.data.User?.Claimed === 1;
 
@@ -191,7 +191,7 @@ export function WaitlistDetails({ wallet, onEnter }: WaitlistDetailsProps) {
               <br />
             </>
           )}
-          {!isClaimed && (
+          {!isClaimed && canEnter && (
             <div className="flex flex-row justify-center flex-wrap">
               Waitlist earnings:
               <p>
@@ -211,22 +211,17 @@ export function WaitlistDetails({ wallet, onEnter }: WaitlistDetailsProps) {
           )}
         </p>
       )}
-      {waitlistState.data.User !== undefined &&
-        !canEnter &&
-        (timeLeft > 0 ? (
-          <p className="text-sm max-w-2xl">
-            Come back in{" "}
-            <span className="italic text-purple-300">
-              {prettyMilliseconds(timeLeft, {
-                verbose: true,
-                secondsDecimalDigits: 0,
-              })}
-            </span>{" "}
-            to <br /> fight for your spot in line & earn more $LLAMA!
-          </p>
-        ) : (
-          <p className="text-sm hidden">.</p>
-        ))}
+      {waitlistState.data.User !== undefined && !canEnter && (
+        <p className="text-sm max-w-2xl">
+          Your account has been flagged!
+          <br />
+          Please visit the{" "}
+          <a href="https://discord.gg/Zu2aP9qghc" className=" text-purple-300">
+            Llama Land Channel
+          </a>{" "}
+          in the AO Discord for help.
+        </p>
+      )}
       {waitlistState.data.User === undefined ? (
         <Button
           onClick={() => waitlistRegister.mutate()}

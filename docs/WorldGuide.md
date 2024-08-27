@@ -15,7 +15,7 @@ For more details on the Reality protocol, please see the [Reality Docs](./Realit
 
 ### Setup
 
-1. Download the [`DbAdmin`](../process/blueprint/dbAdmin.lua) package source, [`Reality.lua`](../process/blueprint/Reality.lua) protocol source and the [`WorldTemplate.lua`](./src/WorldTemplate.lua) config into the same folder.
+1. Download the [`DbAdmin`](../process/blueprint/DbAdmin.lua) package source, [`Reality.lua`](../process/blueprint/Reality.lua) protocol source and the [`WorldTemplate.lua`](./src/WorldTemplate.lua) config into the same folder.
 2. In that folder, launch a new aos process with sqlite, e.g.:
 
 `aos MyWorldProcessName --module=ghSkge2sIUD_F00ym5sEimC63BDBuBrq4b5OcwxOjiw`
@@ -37,7 +37,7 @@ Edit your `WorldTemplate.lua` file to customize your world. After editing the fi
 
 For example you can move your spawn location to the opposite corner of of the Island:
 ```lua
-WorldParameters = {
+RealityParameters = {
   ['2D-Tile-0'] = {
     ...
     Spawn = { 15, 12 },
@@ -48,7 +48,7 @@ WorldParameters = {
 
 Add in custom background music:
 ```lua
-WorldParameters = {
+RealityParameters = {
   ...
   ['Audio-0'] = {
     Bgm = {

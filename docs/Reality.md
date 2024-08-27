@@ -68,6 +68,7 @@ Contains the configuration for the specified rendering method. Below is the conf
       TxId: String,
       Offset?: Vector<Number>,
     },
+    PlayerSpriteTxId?: String,
   },
 }
 ```
@@ -79,6 +80,7 @@ Contains the configuration for the specified rendering method. Below is the conf
   - Currently only the `TMJ` format is supported. `TMJ` refers to the standard [Tiled TMX Map Format](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/), exported in the [JSON variant](https://doc.mapeditor.org/en/stable/reference/json-map-format/).
     - Please see the [World Guide](WorldGuide.md) for how to set up a tilemap that will work with the `2D-Tilemap-0` Renderer
   - `Offset` is a vector (with length of 2) that represents the offset of the tilemap relative to the Origin.
+- `PlayerSpriteTxId` is the transaction ID of the spritesheet image used for the player.
 
 This rendering method can be combined with extensions in `RealityParameters`. Currently the only extension is `Audio-0`.
 
@@ -146,6 +148,8 @@ Response Data: `Entities` Model
     Position: Vector<Number>,
     Type: 'Avatar' | 'Hidden' | 'Unknown',
     Metadata?: {
+      SkinNumber?: Number,
+      SpriteTxId?: String,
       Interaction?: ...,
       ...,
     },
@@ -165,6 +169,14 @@ Response Data: `Entities` Model
 
 Metadata is optional, and can contain additional information about the Entity.
 
+##### `SkinNumber`
+
+Indicates the skin to use, 0-9. These are currently mapped to fixed [Llama-themed skins](../public/assets/sprites/llama).
+
+##### `SpriteTxId`
+
+Refers to the transaction ID of a custom spritesheet image. This overrides the default skin or `SkinNumber`.
+
 #### `Interaction` Model
 
 Interaction is optional, and can be defined as one of the following models: `Default`, `Warp`, `SchemaForm`, `SchemaExternalForm`.
@@ -175,20 +187,20 @@ This indicates that the client should send an ao message to the entity upon bein
 
 ##### Warp
 
-Indicates that the entity is a warp area. When a player overlaps with a warp area, they teleport to that World. The `EntityId` (i.e. the key of the Entity object) should be the Id of a another Process implementing the Reality Protocol.
+Indicates that the entity is a warp area. When a player overlaps with a warp area, they teleport to that World. The `EntityId` (i.e. the key of the Entity object) should usually be the Id of a another process implementing the Reality Protocol.
 
 ```
 {
   Type: 'Warp',
   Size: Vector<Number>,
-  Spawn?: Vector<Number>,
+  Position?: Vector<Number>,
+  Target?: String,
 }
 ```
 
 - `Size` is a vector (with length of 2) that represents the size of the warp area.
-- `Spawn` is an optional vector that override the spawn position of the target World. This Vector should have the same dimensions of the target World, rather than the current World. 
-
->> TODO: Some kind of direct Schema Action on Click?
+- `Position` is an optional vector that override the spawn position of the target World. This Vector should have the same dimensions of the target World, rather than the current World. 
+- `Target` can be used to override `EntityId` to indicate the target world. This is useful if you have multiple warps to the same world. In this case, you may put any unique string as the `EntityId`. 
 
 ##### SchemaForm / SchemaExternalForm
 

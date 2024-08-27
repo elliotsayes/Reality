@@ -83,7 +83,9 @@ export class WorldScene extends WarpableScene {
   tutorial?: Phaser.GameObjects.DOMElement;
   schemaForm?: Phaser.GameObjects.DOMElement;
 
-  slowMs: number = 120;
+  slowMs: number = 144;
+  fastMs: number = 144;
+  // fastMs: number = 192;
 
   constructor() {
     super("WorldScene");
@@ -507,14 +509,12 @@ export class WorldScene extends WarpableScene {
     if (entity.Metadata?.Interaction?.Type !== "Warp") {
       throw new Error(`Entity ${entityId} is not a warp entity`);
     }
+    const position = [
+      entity.Position[0] * this.tileSizeScaled[0],
+      entity.Position[1] * this.tileSizeScaled[1],
+    ];
     const sprite = this.physics.add
-      .sprite(
-        entity.Position[0] *
-          (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
-        entity.Position[1] *
-          (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
-        "invis",
-      )
+      .sprite(position[0], position[1], "invis")
       .setScale(SCALE_ENTITIES)
       .setOrigin(0.5)
       .setDepth(DEPTH_ENTITY_BASE + 1)
@@ -561,6 +561,28 @@ export class WorldScene extends WarpableScene {
       );
     });
 
+    const displayText = entity.Metadata?.DisplayName;
+    if (displayText)
+      this.add
+        .text(position[0], position[1] - 40, displayText, {
+          fontSize: "10px",
+          fontFamily: '"Press Start 2P"',
+          color: "#eeeeee",
+          strokeThickness: 2,
+          stroke: "#111111",
+          // resolution: 8,
+          shadow: {
+            offsetX: 1,
+            offsetY: 1,
+            color: "#111111",
+            blur: 1,
+            stroke: true,
+            fill: true,
+          },
+        })
+        .setOrigin(0.5)
+        .setDepth(DEPTH_TEXT_BASE);
+
     return sprite;
   }
 
@@ -574,10 +596,8 @@ export class WorldScene extends WarpableScene {
 
     const container = this.add
       .container(
-        entity.Position[0] *
-          (this.tileSizeScaled[0] ?? DEFAULT_TILE_SIZE_SCALED),
-        entity.Position[1] *
-          (this.tileSizeScaled[1] ?? DEFAULT_TILE_SIZE_SCALED),
+        entity.Position[0] * this.tileSizeScaled[0],
+        entity.Position[1] * this.tileSizeScaled[1],
       )
       .setDepth(isPlayer ? DEPTH_PLAYER_BASE + 1 : DEPTH_ENTITY_BASE + 1);
 
@@ -787,7 +807,7 @@ export class WorldScene extends WarpableScene {
     if (!this.player) return;
     if (!this.arrows) return;
 
-    const speed = this.isWarping ? this.slowMs : 120;
+    const speed = this.isWarping ? this.slowMs : this.fastMs;
 
     const isLeft =
       //@ts-expect-error - Phaser types are wrong
@@ -847,8 +867,8 @@ export class WorldScene extends WarpableScene {
       emitSceneEvent({
         type: "Update Position",
         position: [
-          this.player.x / DEFAULT_TILE_SIZE_SCALED,
-          this.player.y / DEFAULT_TILE_SIZE_SCALED,
+          this.player.x / this.tileSizeScaled[0],
+          this.player.y / this.tileSizeScaled[1],
         ],
       });
     }
