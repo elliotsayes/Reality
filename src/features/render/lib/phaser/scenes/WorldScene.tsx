@@ -76,6 +76,7 @@ export class WorldScene extends WarpableScene {
 
   avatarEntityContainers: Record<string, Phaser.GameObjects.Container> = {};
   warpSprites: Record<string, Phaser.Physics.Arcade.Sprite> = {};
+  warpLabels: Record<string, Phaser.GameObjects.Text> = {};
   entityTargets: Record<string, Phaser.Physics.Arcade.Sprite> = {};
 
   activeEntityEvent?: Phaser.GameObjects.GameObject;
@@ -491,6 +492,8 @@ export class WorldScene extends WarpableScene {
         console.log(`Regenerating warp entity ${entityId}`);
         this.warpSprites[entityId]?.destroy();
         delete this.warpSprites[entityId];
+        this.warpLabels[entityId]?.destroy();
+        delete this.warpLabels[entityId];
 
         if (entityUpdate.StateCode === 0) {
           console.log(`Skipping hidden warp ${entityId}`);
@@ -562,8 +565,8 @@ export class WorldScene extends WarpableScene {
     });
 
     const displayText = entity.Metadata?.DisplayName;
-    if (displayText)
-      this.add
+    if (displayText) {
+      const warpLabel = this.add
         .text(position[0], position[1] - 40, displayText, {
           fontSize: "10px",
           fontFamily: '"Press Start 2P"',
@@ -582,6 +585,8 @@ export class WorldScene extends WarpableScene {
         })
         .setOrigin(0.5)
         .setDepth(DEPTH_TEXT_BASE);
+      this.warpLabels[entityId] = warpLabel;
+    }
 
     return sprite;
   }
