@@ -157,6 +157,18 @@ RealityEntitiesStatic = {
         Id = 'Sail',
       },
     },
+  },
+  ['KY0KVzY4scBfs04gj_cVOrnl0CBc0SNA_pzO9kGwYPc'] = {
+    Type = "Avatar",
+    Position = { -6, -6 },
+    Metadata = {
+      DisplayName = "Oracle Llama",
+      SpriteTxId = "DI69VXAV5an_lsP3p8IpjYjhIw6ca0UpFG6OkoE7p1c",
+      Interaction = {
+        Type = 'SchemaExternalForm',
+        Id = 'AskOracleLlama',
+      },
+    },
   }
 }
 
