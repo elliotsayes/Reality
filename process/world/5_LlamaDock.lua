@@ -23,13 +23,13 @@ RealityParameters = {
     Tileset = {
       Type = 'Fixed',
       Format = 'PNG',
-      TxId = '64IfxK46lTnCg0bW8Rp3HkYPQkaiVfGialiPc1BkMe4', -- TxId of the tileset in PNG format
+      TxId = 'MQlyI3y9b_uewhAtPX0H-DyVM7AVKobz_t6Mp5XWd9g', -- TxId of the tileset in PNG format
     },
     -- This is a tilemap of origin island & building exteriors
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = 'GgKcKdY3xg5sXwO0917oeUkkGGa3hkmrV6cJwDFkq8A', -- TxId of the tilemap in TMJ format
+      TxId = 'TsIs1sgyboSx21DT0cOb8RT_LuPeesK-UQv0q9zHGrk', -- TxId of the tilemap in TMJ format
       Offset = { -52, -32 },                                -- Offset for the tilemap
     },
   },
