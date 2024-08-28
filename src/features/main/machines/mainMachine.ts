@@ -1,10 +1,14 @@
-import { ProfileInfo } from "@/features/profile/contract/model";
+import { AoContractClientForProcess, ReadArgs } from "@/features/ao/lib/aoContractClient";
+import { Asset, DetailedAsset, ProfileAssets, ProfileInfo } from "@/features/profile/contract/model";
+import { ProfileClientForProcess } from "@/features/profile/contract/profileClient";
 import { ProfileRegistryClient } from "@/features/profile/contract/profileRegistryClient";
 import { fromPromise, setup, assign } from "xstate";
 
 type InitialContext = {
   address: string;
   profileRegistryClient: ProfileRegistryClient;
+  profileClientForProcess: ProfileClientForProcess;
+  aoContractClientForProcess: AoContractClientForProcess;
 };
 
 export const mainMachine = setup({
@@ -15,6 +19,7 @@ export const mainMachine = setup({
     context: {} as InitialContext & {
       profileId?: string;
       profileInfo?: ProfileInfo;
+      assets?: ProfileAssets;
     },
   },
   guards: {
@@ -23,8 +28,9 @@ export const mainMachine = setup({
       params: {
         profileId?: string;
         profileInfo?: ProfileInfo;
+        assets?: ProfileAssets;
       },
-    ) => params.profileId !== undefined && params.profileInfo !== undefined,
+    ) => params.profileId !== undefined && params.profileInfo !== undefined && params.assets !== undefined,
   },
   actions: {
     assignProfileIdAndInfo: assign(
@@ -33,10 +39,12 @@ export const mainMachine = setup({
         params: {
           profileId: string;
           profileInfo: ProfileInfo;
+          assets: ProfileAssets;
         },
       ) => ({
         profileId: params.profileId,
         profileInfo: params.profileInfo,
+        assets: params.assets
       }),
     ),
   },
@@ -48,13 +56,16 @@ export const mainMachine = setup({
         input: {
           address: string;
           profileRegistryClient: ProfileRegistryClient;
+          client: ProfileClientForProcess;
+          aoContractClientForProcess: AoContractClientForProcess;
         };
       }) => {
-        const { address, profileRegistryClient } = input;
+        const { address, profileRegistryClient, client, aoContractClientForProcess } = input;
 
         const noProfile = {
           profileId: undefined,
           profileInfo: undefined,
+          assets: undefined,
         };
 
         const profiles =
@@ -68,9 +79,60 @@ export const mainMachine = setup({
         ]);
         if (profileInfos.length === 0) return noProfile;
 
+        let profileClient = client(primaryProfileId)
+
+
+        let responseData = await profileClient.grabProfileAssets()
+        // Assuming responseData.Data is a string, we first need to parse it
+        const dataObject = JSON.parse(responseData.Data);
+
+        // Now we can extract the Assets array from the parsed JSON
+        const assetsData = dataObject.Assets;
+
+        // Info Arguments
+        const args: ReadArgs = {
+          tags: [{ name: "Action", value: "Info" }],
+        }
+
+        let detailedAssets: DetailedAsset[] = [];
+
+        for (const asset of assetsData) {
+          let assetFormal: Asset = Asset.parse(asset);
+
+          let assetClient = aoContractClientForProcess(asset.Id);
+          let message = await assetClient.dryrunReadReplyOne(args);
+
+          let logoTag = message.Tags.find(tag => tag.name === "Logo");
+          let denominationTag = message.Tags.find(tag => tag.name === "Denomination")
+
+          if (denominationTag !== undefined) {
+            let denominator = 10 ** Number(denominationTag.value);
+            let quantityValue = Number(assetFormal.Quantity);
+            assetFormal.Quantity = (quantityValue / denominator).toString()
+          }
+
+
+          let detailedAsset;
+
+          if (logoTag === undefined) {
+            detailedAsset = DetailedAsset.parse({ asset: assetFormal, icon: assetFormal.Id });
+          } else {
+            detailedAsset = DetailedAsset.parse({ asset: assetFormal, icon: logoTag.value });
+          }
+
+          detailedAssets.push(detailedAsset);
+        }
+
+
+
+        // Parsing and validating the data with the ProfileAssets schema
+        const profileAssets = ProfileAssets.parse(detailedAssets);
+
+        console.log("Validated Profile Assets:", profileAssets);
         return {
           profileId: primaryProfileId,
           profileInfo: profileInfos[0],
+          assets: profileAssets,
         };
       },
     ),
@@ -96,6 +158,8 @@ export const mainMachine = setup({
         input: ({ context }) => ({
           address: context.address,
           profileRegistryClient: context.profileRegistryClient,
+          client: context.profileClientForProcess,
+          aoContractClientForProcess: context.aoContractClientForProcess
         }),
 
         onDone: [
@@ -110,6 +174,7 @@ export const mainMachine = setup({
               params: ({ event }) => ({
                 profileId: event.output.profileId!,
                 profileInfo: event.output.profileInfo!,
+                assets: event.output.assets!,
               }),
             },
           },

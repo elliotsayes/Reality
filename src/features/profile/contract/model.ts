@@ -39,3 +39,21 @@ export const ProfileInfoUpdate = ProfileInfoCreate.omit({
   DateCreated: true,
 }).partial();
 export type ProfileInfoUpdate = z.infer<typeof ProfileInfoUpdate>;
+
+// Define the Asset schema
+export const Asset = z.object({
+  Quantity: z.string(),
+  Id: z.string(),
+});
+export type Asset = z.infer<typeof Asset>;
+
+// Define the DetailedAsset schema with an optional icon
+export const DetailedAsset = z.object({
+  asset: Asset,
+  icon: z.string(), // Making icon optional
+});
+export type DetailedAsset = z.infer<typeof DetailedAsset>;
+
+// Define the ProfileAssets schema as an array of DetailedAssets
+export const ProfileAssets = z.array(DetailedAsset);
+export type ProfileAssets = z.infer<typeof ProfileAssets>;

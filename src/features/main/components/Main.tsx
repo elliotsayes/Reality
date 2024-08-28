@@ -3,7 +3,7 @@ import { createAoContractClientForProcess } from "@/features/ao/lib/aoContractCl
 import { AoWallet } from "@/features/ao/lib/aoWallet";
 import { truncateAddress } from "@/features/arweave/lib/utils";
 import { createChatClientForProcess } from "@/features/chat/contract/chatClient";
-import { ProfileInfo } from "@/features/profile/contract/model";
+import { ProfileAssets, ProfileInfo } from "@/features/profile/contract/model";
 import { createProfileRegistryClientForProcess } from "@/features/profile/contract/profileRegistryClient";
 import { Renderer } from "@/features/render/components/Renderer";
 import { createRealityClientForProcess } from "@/features/reality/contract/realityClient";
@@ -11,6 +11,7 @@ import { mainMachine } from "../machines/mainMachine";
 import { useMachine } from "@xstate/react";
 import ProfileButton from "@/features/profile/components/ProfileButton";
 import { createTrackingClientForProcess } from "@/features/tracking/contract/trackingClient";
+import { createProfileClientForProcess } from "@/features/profile/contract/profileClient";
 
 const profileRegistryProcessId = import.meta.env
   .VITE_PROFILE_PROCESS_ID as string;
@@ -29,12 +30,18 @@ export default function Main({ wallet, disconnect, worldId }: MainProps) {
     import.meta.env.VITE_TRACKING_TEST_PROCESS_ID,
   );
 
+  const aoContractClientForProcess = createAoContractClientForProcess(wallet);
+
+  const profileClientForProcess = createProfileClientForProcess(wallet);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [current, send] = useMachine(mainMachine, {
     input: {
       initialContext: {
         address: wallet.address,
         profileRegistryClient,
+        profileClientForProcess,
+        aoContractClientForProcess
       },
     },
   });
@@ -42,10 +49,11 @@ export default function Main({ wallet, disconnect, worldId }: MainProps) {
   const renderer = (profile?: {
     profileId: string;
     profileInfo: ProfileInfo;
+    assets: ProfileAssets;
   }) => (
     <Renderer
       userAddress={wallet.address}
-      aoContractClientForProcess={createAoContractClientForProcess(wallet)}
+      aoContractClientForProcess={aoContractClientForProcess}
       profileRegistryClient={profileRegistryClient}
       trackingClient={trackingClient}
       realityClientForProcess={createRealityClientForProcess(wallet)}
@@ -68,7 +76,7 @@ export default function Main({ wallet, disconnect, worldId }: MainProps) {
             {truncateAddress(wallet.address)}
           </a>
         </p>
-        <ProfileButton profileInfo={current.context.profileInfo} />
+        <ProfileButton profileInfo={current.context.profileInfo} assets={current.context.assets} />
         <Button onClick={disconnect} size={"sm"} variant={"secondary"}>
           Log out
         </Button>
@@ -79,6 +87,7 @@ export default function Main({ wallet, disconnect, worldId }: MainProps) {
             renderer({
               profileId: current.context.profileId!,
               profileInfo: current.context.profileInfo!,
+              assets: current.context.assets!,
             })
           ) : (
             renderer()
