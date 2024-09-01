@@ -33,14 +33,14 @@ RealityParameters = {
       Offset = { -52, -32 },                                -- Offset for the tilemap
     },
   },
-  -- Disable for now
-  -- ['Audio-0'] = {
-  --   Bgm = {
-  --     Type = 'Fixed',
-  --     Format = 'WEBM',
-  --     TxId = 'k-p6enw-P81m-cwikH3HXFtYB762tnx2aiSSrW137d8', -- TxId of BGM
-  --   },
-  -- }
+  ['Audio-0'] = {
+    Bgm = {
+      Type = 'Fixed',
+      Format = 'OPUS',
+      -- Source: https://pixabay.com/sound-effects/waves-hitting-the-rocks-16680/
+      TxId = 'hk_OYr42B5pnbVUOLMVSXmBDXxfo38g802nLJhS2On4', -- TxId of BGM
+    },
+  }
 }
 
 RealityEntitiesStatic = {
