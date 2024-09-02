@@ -94,7 +94,7 @@ export const SchemaForm = ({
         <p className="text-primary font-Press-Start-2P tracking-tighter text-[0.85rem]">
           {methodSchema.Title}
         </p>
-        <p className="text-22px text-secondary-foreground font-undead-pixel leading-none mt-2">
+        <p className="text-22px text-secondary-foreground font-undead-pixel leading-none mt-2 whitespace-pre-wrap">
           <Linkify
             options={{
               target: "_blank",
