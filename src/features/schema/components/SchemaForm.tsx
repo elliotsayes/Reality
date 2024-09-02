@@ -70,7 +70,11 @@ export const SchemaForm = ({
             }),
         },
       }),
-      {},
+      methodSchema.NoSubmit
+        ? {
+            "ui:submitButtonOptions": { norender: true },
+          }
+        : {},
     );
 
     const schema = {
@@ -82,7 +86,7 @@ export const SchemaForm = ({
       schema,
       uiSchema,
     };
-  }, [methodSchema.Schema?.Tags]);
+  }, [methodSchema.Schema?.Tags, methodSchema.NoSubmit]);
 
   if (postProcessed === undefined) {
     return (
@@ -126,7 +130,7 @@ export const SchemaForm = ({
         onSubmit={onSubmitted}
         onError={console.error}
         showErrorList={false}
-        disabled={isDisabled}
+        disabled={isDisabled || methodSchema.NoSubmit}
       />
     </div>
   );
