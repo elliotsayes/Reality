@@ -12,6 +12,7 @@ export const SchemaMethod = z.object({
       Tags: z.custom<RJSFSchema>(),
     }),
   ),
+  NoSubmit: z.optional(z.boolean()),
 });
 export type SchemaMethod = z.infer<typeof SchemaMethod>;
 
