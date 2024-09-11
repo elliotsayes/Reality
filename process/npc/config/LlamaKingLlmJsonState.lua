@@ -10,33 +10,33 @@ LLAMA_FED_CHAT_PROCESS = "QIFgbqEmk5MyJy01wuINfcRP_erGNNbhqHRkAQjxKgg"
 
 -- LLMGraderJsonState workers
 LLM_WORKERS = {
-  --LlmGraderJsonTempT1_4
-  ['K5-1bbxFBe1nSl9PCO5xuQcQaC9HJqncyVdvuOJfP4Y'] = {
+  --LlmGraderJsonTempT1_8
+  ['lDsh3prNxCAYu7740rCuJCgazrY2gpc7Ve82FDCaKHg'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
-  --LlmGraderJsonTempT2_6
-  ['Icxc95YI3pbji_fypwj0GGnZqHqVo_f9U8cxtTnZxTY'] = {
+  --LlmGraderJsonTempT2_8
+  ['DkYT7KKQgmN8qILP4B8X5FMPuun2KCcigrtbcd7JOvI'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
-  --LlmGraderJsonTempT3_6
-  ['kVtNHk3hMZVG8ubum3AOmGQBNUa2dDmLbOfBFOBRkvk'] = {
+  --LlmGraderJsonTempT3_8
+  ['-phltQ7RmG0yzRAEQM-Gw3PvME86Jgx2R3qwDbjHxrc'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
-  --LlmGraderJsonTempT4_6
-  ['SrF_owcyYSHkIR2JlLsbvvhUZUk7x6BxLtmg2HPYuO8'] = {
+  --LlmGraderJsonTempT4_8
+  ['_jFvojoKQC0sjUMJEz5cPF6BjUAw8YGmGEsE3fPfeAw'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
-  --LlmGraderJsonTempT5_6
-  ['432igm4pd3nTTjOloLp-PlRoBUM0rPYIM0lCSbK4L8U'] = {
+  --LlmGraderJsonTempT5_8
+  ['zBmur17cA7i2SPlU4OcW_4nIfruqUCGFe7mCSkmfxx0'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
-  --LlmGraderJsonTempT6_6
-  ['VnmOU7qipBozrzEgkX2trNQ2aKskP9yV0fpABMoP4W4'] = {
+  --LlmGraderJsonTempT6_8
+  ['Q09N6ejnlf7L213v-7pG8AprUzIG1_kX5djwuIGSwbI'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },

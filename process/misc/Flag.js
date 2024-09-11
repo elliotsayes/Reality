@@ -1,5 +1,5 @@
 import { message, createDataItemSigner } from "@permaweb/aoconnect";
-import { flagged } from "./FlaggedDataBatch4.js";
+import { flagged } from "./FlaggedDataSpammer.js";
 import fs from "fs";
 
 const key = JSON.parse(
@@ -16,7 +16,13 @@ async function main() {
       data: `FlagWallet("${walletId}")`,
       signer,
     });
-    console.log(`${walletId}: ${res}`);
+    const res2 = await message({
+      process: "ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk",
+      tags: [{ name: "Action", value: "Eval" }],
+      data: `UnauthoriseWallet("${walletId}")`,
+      signer,
+    });
+    console.log(`${walletId}: ${res} ${res2}`);
   }
 }
 

@@ -77,6 +77,14 @@ function AuthoriseWallet(walletId, timestamp)
   stmt:finalize()
 end
 
+function UnauthoriseWallet(walletId)
+  print("Unauthorising: " .. walletId)
+  local stmt = BankerDb:prepare("DELETE FROM Authorised WHERE WalletId = ?")
+  stmt:bind_values(walletId)
+  stmt:step()
+  stmt:finalize()
+end
+
 Handlers.add(
   "Authorise",
   Handlers.utils.hasMatchingTag("Action", "Authorise"),
