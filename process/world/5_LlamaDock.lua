@@ -29,18 +29,18 @@ RealityParameters = {
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = 'TsIs1sgyboSx21DT0cOb8RT_LuPeesK-UQv0q9zHGrk', -- TxId of the tilemap in TMJ format
+      TxId = '82rXlqCYl4TrDqk2hQCxpXVpJV_fYZ0G3dJdngy6I6U', -- TxId of the tilemap in TMJ format
       Offset = { -52, -32 },                                -- Offset for the tilemap
     },
   },
-  -- Disable for now
-  -- ['Audio-0'] = {
-  --   Bgm = {
-  --     Type = 'Fixed',
-  --     Format = 'WEBM',
-  --     TxId = 'k-p6enw-P81m-cwikH3HXFtYB762tnx2aiSSrW137d8', -- TxId of BGM
-  --   },
-  -- }
+  ['Audio-0'] = {
+    Bgm = {
+      Type = 'Fixed',
+      Format = 'OPUS',
+      -- Source: https://pixabay.com/sound-effects/waves-hitting-the-rocks-16680/
+      TxId = 'hk_OYr42B5pnbVUOLMVSXmBDXxfo38g802nLJhS2On4', -- TxId of BGM
+    },
+  }
 }
 
 RealityEntitiesStatic = {

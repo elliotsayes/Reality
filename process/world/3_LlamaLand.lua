@@ -123,6 +123,18 @@ RealityEntitiesStatic = {
       SkinNumber = 9,
     },
   },
+  ['vtxDQx59thIrSrfN7Zn8AWDz0Vy496q360eVCCtN4Gs'] = {
+    -- By LHS Boat
+    Position = { -10, 15 },
+    Metadata = {
+      DisplayName = "Llama Dock",
+      Interaction = {
+        Type = 'Warp',
+        Size = { 4, 2 },
+        Position = { -1, -10 }
+      },
+    }
+  },
   ['abyG0zg0RnguuedHwrjpxPkzc2qcXeX7Pfc2dyfypXw'] = {
     Position = { -2, 15.5 },
     Type = 'Avatar',
@@ -169,6 +181,30 @@ RealityEntitiesStatic = {
         Id = 'AskOracleLlama',
       },
     },
+  },
+  ['qT4jFIL_6a9AcFDhalFA3EITtZxfbchqaQQVp9e3PVM'] = {
+    Position = { 4, 5 },
+    Type = 'Avatar',
+    Metadata = {
+      DisplayName = '0rbit Llama',
+      SkinNumber = 3,
+      Interaction = {
+        Type = 'SchemaForm',
+        Id = 'PriceFeedLlama'
+      },
+    },
+  },
+  ['zsU5NxCo8WbpyLCqXrckjmXfP0PWpAGzo1E-W_iegbI'] = {
+    Position = { -5, 5 },
+    Type = 'Avatar',
+    Metadata = {
+      DisplayName = "LLama-Jack",
+      SkinNumber = 9,
+      Interaction = {
+        Type = "SchemaExternalForm",
+        Id = "BlackJack",
+      }
+    }
   }
 }
 

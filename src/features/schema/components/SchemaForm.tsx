@@ -70,7 +70,11 @@ export const SchemaForm = ({
             }),
         },
       }),
-      {},
+      methodSchema.NoSubmit
+        ? {
+            "ui:submitButtonOptions": { norender: true },
+          }
+        : {},
     );
 
     const schema = {
@@ -82,7 +86,7 @@ export const SchemaForm = ({
       schema,
       uiSchema,
     };
-  }, [methodSchema.Schema?.Tags]);
+  }, [methodSchema.Schema?.Tags, methodSchema.NoSubmit]);
 
   if (postProcessed === undefined) {
     return (
@@ -90,7 +94,7 @@ export const SchemaForm = ({
         <p className="text-primary font-Press-Start-2P tracking-tighter text-[0.85rem]">
           {methodSchema.Title}
         </p>
-        <p className="text-22px text-secondary-foreground font-undead-pixel leading-none mt-2">
+        <p className="text-22px text-secondary-foreground font-undead-pixel leading-none mt-2 whitespace-pre-wrap">
           <Linkify
             options={{
               target: "_blank",
@@ -126,7 +130,7 @@ export const SchemaForm = ({
         onSubmit={onSubmitted}
         onError={console.error}
         showErrorList={false}
-        disabled={isDisabled}
+        disabled={isDisabled || methodSchema.NoSubmit}
       />
     </div>
   );
