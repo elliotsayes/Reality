@@ -11,8 +11,11 @@ export default function ProfileAssetsDisplay({ assets }: ProfileAssetsDisplayPro
     return (
         <div className={`grid grid-cols-4 gap-4 ${assets.length === 0 ? 'p-2' : ''}`}>
             {[...Array(totalCells)].map((_, index) => (
-                <div key={index} className="border border-gray-300">
-                    <AssetCard asset={assets[index]} />
+                <div
+                    key={index}
+                    className="border border-gray-300 aspect-square" // Use Tailwind's aspect-square utility
+                >
+                    {assets[index] && <AssetCard asset={assets[index]} />}
                 </div>
             ))}
         </div>
