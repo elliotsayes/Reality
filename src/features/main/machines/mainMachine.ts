@@ -2,6 +2,7 @@ import { AoContractClientForProcess, ReadArgs } from "@/features/ao/lib/aoContra
 import { Asset, DetailedAsset, ProfileAssets, ProfileInfo } from "@/features/profile/contract/model";
 import { ProfileClientForProcess } from "@/features/profile/contract/profileClient";
 import { ProfileRegistryClient } from "@/features/profile/contract/profileRegistryClient";
+import { RealityClient } from "@/features/reality/contract/realityClient";
 import { fromPromise, setup, assign } from "xstate";
 
 type InitialContext = {
@@ -9,6 +10,7 @@ type InitialContext = {
   profileRegistryClient: ProfileRegistryClient;
   profileClientForProcess: ProfileClientForProcess;
   aoContractClientForProcess: AoContractClientForProcess;
+  realityClientBaseWorldId: RealityClient;
 };
 
 export const mainMachine = setup({
@@ -56,11 +58,12 @@ export const mainMachine = setup({
         input: {
           address: string;
           profileRegistryClient: ProfileRegistryClient;
-          client: ProfileClientForProcess;
+          bazarProfileClient: ProfileClientForProcess;
           aoContractClientForProcess: AoContractClientForProcess;
+          realityClient: RealityClient;
         };
       }) => {
-        const { address, profileRegistryClient, client, aoContractClientForProcess } = input;
+        const { address, profileRegistryClient, bazarProfileClient, aoContractClientForProcess, realityClient } = input;
 
         const noProfile = {
           profileId: undefined,
@@ -79,8 +82,7 @@ export const mainMachine = setup({
         ]);
         if (profileInfos.length === 0) return noProfile;
 
-        let profileClient = client(primaryProfileId)
-
+        let profileClient = bazarProfileClient(primaryProfileId)
 
         let responseData = await profileClient.grabProfileAssets()
         // Assuming responseData.Data is a string, we first need to parse it
@@ -92,43 +94,55 @@ export const mainMachine = setup({
         // Info Arguments
         const args: ReadArgs = {
           tags: [{ name: "Action", value: "Info" }],
-        }
+        };
 
-        let detailedAssets: DetailedAsset[] = [];
+        // Fetch parameters
+        let parameters = await realityClient.readParameters();
 
-        for (const asset of assetsData) {
-          let assetFormal: Asset = Asset.parse(asset);
+        console.log(parameters);
 
-          let assetClient = aoContractClientForProcess(asset.Id);
-          let message = await assetClient.dryrunReadReplyOne(args);
+        // Extract the whitelist (or null if it doesn't exist)
+        const whitelist = parameters["asset-whitelist"]?.Whitelist ?? null;
 
-          let logoTag = message.Tags.find(tag => tag.name === "Logo");
-          let denominationTag = message.Tags.find(tag => tag.name === "Denomination")
+        // Filter and process assets (if whitelist exists, filter by it; otherwise, process all assets)
+        let detailedAssets: DetailedAsset[] = await Promise.all(
+          assetsData
+            .filter((asset: any) => {
+              // If whitelist is null, don't filter (show everything); otherwise, filter by whitelist
+              return whitelist === null || whitelist.includes(asset.Id);
+            })
+            .map(async (asset: any) => {
+              let assetFormal: Asset = Asset.parse(asset);
 
-          if (denominationTag !== undefined) {
-            let denominator = 10 ** Number(denominationTag.value);
-            let quantityValue = Number(assetFormal.Quantity);
-            assetFormal.Quantity = (quantityValue / denominator).toString()
-          }
+              let assetClient = aoContractClientForProcess(asset.Id);
+              let message = await assetClient.dryrunReadReplyOne(args);
 
+              let logoTag = message.Tags.find((tag) => tag.name === "Logo");
+              let denominationTag = message.Tags.find((tag) => tag.name === "Denomination");
 
-          let detailedAsset;
+              if (denominationTag !== undefined) {
+                let denominator = 10 ** Number(denominationTag.value);
+                let quantityValue = Number(assetFormal.Quantity);
+                assetFormal.Quantity = (quantityValue / denominator).toString();
+              }
 
-          if (logoTag === undefined) {
-            detailedAsset = DetailedAsset.parse({ asset: assetFormal, icon: assetFormal.Id });
-          } else {
-            detailedAsset = DetailedAsset.parse({ asset: assetFormal, icon: logoTag.value });
-          }
+              let detailedAsset;
 
-          detailedAssets.push(detailedAsset);
-        }
+              if (logoTag === undefined) {
+                detailedAsset = DetailedAsset.parse({ asset: assetFormal, icon: assetFormal.Id });
+              } else {
+                detailedAsset = DetailedAsset.parse({ asset: assetFormal, icon: logoTag.value });
+              }
 
-
+              return detailedAsset;
+            })
+        );
 
         // Parsing and validating the data with the ProfileAssets schema
         const profileAssets = ProfileAssets.parse(detailedAssets);
 
         console.log("Validated Profile Assets:", profileAssets);
+
         return {
           profileId: primaryProfileId,
           profileInfo: profileInfos[0],
@@ -158,8 +172,9 @@ export const mainMachine = setup({
         input: ({ context }) => ({
           address: context.address,
           profileRegistryClient: context.profileRegistryClient,
-          client: context.profileClientForProcess,
-          aoContractClientForProcess: context.aoContractClientForProcess
+          bazarProfileClient: context.profileClientForProcess,
+          aoContractClientForProcess: context.aoContractClientForProcess,
+          realityClient: context.realityClientBaseWorldId
         }),
 
         onDone: [

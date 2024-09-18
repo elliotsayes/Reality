@@ -25,12 +25,21 @@ export const RealityToken = z.object({
 });
 export type RealityToken = z.infer<typeof RealityToken>;
 
-export const RealityParameters = z.object({
-  Token: z.optional(RealityToken),
-  Bounds: z.optional(RealityParameterBounds),
-  "2D-Tile-0": z.optional(_2dTileParams),
-  "Audio-0": z.optional(AudioParams),
+// Defining a constant for whitelist schema
+export const RealityWhitelist = z.object({
+  Whitelist: z.array(ArweaveAddress)  // Array of Arweave addresses
 });
+export type RealityWhitelist = z.infer<typeof RealityWhitelist>;
+
+// RealityParameters defines the full schema for parameters including token, bounds, 2D-Tile, Audio, and Whitelist
+export const RealityParameters = z.object({
+  Token: z.optional(RealityToken),  // Optional token object
+  Bounds: z.optional(RealityParameterBounds),  // Optional bounds object
+  "2D-Tile-0": z.optional(_2dTileParams),  // Optional 2D tile parameters
+  "Audio-0": z.optional(AudioParams),  // Optional audio parameters
+  "asset-whitelist": z.optional(RealityWhitelist),  // Optional whitelist object
+});
+
 export type RealityParameters = z.infer<typeof RealityParameters>;
 
 export const RealityEntityType = z.enum(["Unknown", "Avatar", "Hidden"]);

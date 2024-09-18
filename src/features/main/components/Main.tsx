@@ -34,6 +34,10 @@ export default function Main({ wallet, disconnect, worldId }: MainProps) {
 
   const profileClientForProcess = createProfileClientForProcess(wallet);
 
+  const realityClientForProcess = createRealityClientForProcess(wallet);
+
+  const realityClientBaseWorldId = realityClientForProcess(worldId || "");
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [current, send] = useMachine(mainMachine, {
     input: {
@@ -41,7 +45,8 @@ export default function Main({ wallet, disconnect, worldId }: MainProps) {
         address: wallet.address,
         profileRegistryClient,
         profileClientForProcess,
-        aoContractClientForProcess
+        aoContractClientForProcess,
+        realityClientBaseWorldId
       },
     },
   });
@@ -56,7 +61,7 @@ export default function Main({ wallet, disconnect, worldId }: MainProps) {
       aoContractClientForProcess={aoContractClientForProcess}
       profileRegistryClient={profileRegistryClient}
       trackingClient={trackingClient}
-      realityClientForProcess={createRealityClientForProcess(wallet)}
+      realityClientForProcess={realityClientForProcess}
       chatClientForProcess={createChatClientForProcess(wallet)}
       initialRealityId={worldId}
       profileInfo={profile?.profileInfo}
