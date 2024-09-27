@@ -943,6 +943,8 @@ export class WorldScene extends WarpableScene {
     const isExternal =
       entity.Metadata?.Interaction?.Type === "SchemaExternalForm";
 
+    const resolvedProcessId = entity.Metadata?.Interaction.Target ?? entityId;
+
     const formSize: Size2D = {
       w: 350,
       h: 500,
@@ -956,7 +958,7 @@ export class WorldScene extends WarpableScene {
     root.render(
       <FormOverlay
         aoContractClientForProcess={this.aoContractClientForProcess}
-        schemaProcessId={entityId}
+        schemaProcessId={resolvedProcessId}
         isExternal={isExternal}
         methodName={entity.Metadata?.Interaction.Id}
         close={() => {
