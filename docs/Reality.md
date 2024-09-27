@@ -210,10 +210,12 @@ Indicates that interactions with this Entity (i.e. by click) should show a form 
 {
   Type: 'SchemaForm' | 'SchemaExternalForm',
   Id: String,
+  Target?: String,
 }
 ```
 
 - `Id` Refers to the Action Id of the Schema. Please see the [Schema Protocol](./Schema.md) for more information.
+- `Target` can be used to override `EntityId` to indicate the target process. This is useful if you have multiple ways to interact with a single process.
 
 ### Write Entities Handlers
 
