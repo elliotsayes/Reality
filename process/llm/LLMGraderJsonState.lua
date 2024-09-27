@@ -77,7 +77,13 @@ function ProcessPetition(userPrompt)
     local responseJsonMatch = string.match(responseBuilder, ".*({.*}).*")
     if responseJsonMatch then
       print("responseJsonMatch: " .. responseJsonMatch)
-      responseJson = json.decode(responseJsonMatch)
+      local result = nil
+      result, responseJson = pcall(function() return json.decode(responseJsonMatch) end);
+      if not result then
+        print("Invalid JSON: " .. responseJsonMatch)
+        responseJson = nil
+        Configure()
+      end
       break
     end
   end
