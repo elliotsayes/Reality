@@ -7,7 +7,7 @@ Llama = Llama or nil
 
 InferenceAllowList = {
   -- LlamaKing ProcessId
-  "",
+  ["kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA"] = true,
 }
 
 DefaultMaxResponse = 50
@@ -37,7 +37,7 @@ IMPORTANT: ALWAYS respond in the following json format:
 
 DefaultResponse = {
   Comment = "Your plea confused me immensely. Take these coins as a consolation.",
-  Grade = "1",
+  Grade = 1,
 }
 
 function ProcessPetition(userPrompt)
@@ -51,14 +51,30 @@ function ProcessPetition(userPrompt)
 
     local responseJsonMatch = string.match(responseBuilder, ".*({.*}).*")
     if responseJsonMatch then
-      responseJson = json.decode(responseJsonMatch)
+      local success, result = pcall(function() return json.decode(responseJsonMatch) end)
+      if success then
+        responseJson = result
+        break
+      end
       break
     end
   end
 
+
   if not responseJson or not responseJson.grade or not responseJson.response then
+    print("Unusable response: " .. responseBuilder)
     return DefaultResponse
   end
+
+  -- Parse the grade
+  local gradeNumber = tonumber(responseJson.grade)
+  if not gradeNumber then
+    print("Invalid grade: " .. responseJson.grade)
+    return DefaultResponse
+  end
+
+  -- Clamp the grade
+  gradeNumber = math.min(5, math.max(0, math.floor(gradeNumber)))
 
   return {
     Grade = responseJson.grade,
@@ -85,11 +101,10 @@ Handlers.add(
   function(msg)
     print("Inference")
 
-    -- TODO: Whitelist
-    -- if not InferenceAllowList[msg.From] then
-    --   print("Inference not allowed: " .. msg.From)
-    --   return
-    -- end
+    if not InferenceAllowList[msg.From] then
+      print("Inference not allowed: " .. msg.From)
+      return
+    end
 
     local userPrompt = msg.Data
     local response = ProcessPetition(userPrompt)
@@ -102,7 +117,7 @@ Handlers.add(
       Target = msg.From,
       Tags = {
         Action = "Inference-Response",
-        Grade = grade,
+        Grade = tostring(grade),
         ["Original-Sender"] = msg.Tags["Original-Sender"],
         ["Original-Message"] = msg.Tags["Original-Message"],
       },
