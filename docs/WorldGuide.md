@@ -60,25 +60,52 @@ RealityParameters = {
 }
 ```
 
-Or add a dumb NPC:
+Add a dumb NPC:
 ```lua
 RealityEntitiesStatic = {
-  ['MyNpc'] = {
+  ['MyDumbNPC'] = {
     Type = 'Avatar',
     Position = { 10, 10 },
     Metadata = {
-      DisplayName = 'My NPC',
-      SpriteTxId = '0WFjH89wzK8XAA1aLPzBBEUQ1uKpQe9Oz_pj8x1Wxpc',
+      DisplayName = 'Dummy', -- Dumb NPC name variable
+      SpriteTxId = '0WFjH89wzK8XAA1aLPzBBEUQ1uKpQe9Oz_pj8x1Wxpc', -- ID of the spritesheet TX
     },
   }
 }
 ```
 
-To change the art and layout for the map itself, you'll have to update the assets. Let's get creative!
+or Add a Smart NPC:
+```lua
+RealityEntitiesStatic = {
+  ['MySmartNPC'] = {
+    Position = { 10, 10 },
+    Type = 'Avatar',
+    Metadata = {
+      DisplayName = 'Smarty', -- Smart NPC name variable
+      SpriteTxId = 'iBDHZ8x4HT5j5c31GDMZo4e-51qbJRcnDNRG8M9a4Fc', -- ID of the spritesheet TX
+      Interaction = {
+        Type = 'SchemaExternalForm',
+        Id = 'Enroll', --Exact name of the schema you intend to load
+        Target = 'wTyzABpIyPMbsIQ6uS0MyoATX5ozanppw2Tys0LXqzM', -- Process address that has the schema
+      },
+    },
+  },
+```
+
+### Explanation:
+
+- **Dumb NPCs** do not have an `Interaction` field and cannot be interacted with by players. They simply exist as visual elements within the game, and their primary purpose is to contribute to the atmosphere or story.  They have some basic properties like:
+  - `Position`: Coordinates in the game world.
+  - `SpriteTxId`: Refers to the visual appearance, pointing to a sprite sheet.
+
+- **Smart NPCs** can be interacted with and include an `Interaction` field in their metadata. This interaction works through **SchemaExternalForm**, which allows the NPC to interact with smart contracts or external processes. More details on Schema Forms can be found [here](https://github.com/elliotsayes/Reality/blob/schema-target/docs/Schema.md). Smart NPCs share the same fields as Dumb NPCs, but have an additional `Interaction` field that includes:
+  - `Type`: Specifies the type of interaction (in this case, `SchemaExternalForm`).
+  - `Id`: The identifier for the interaction.
+  - `Target`: The address of the process the NPC interacts with.
 
 ## Customizing your Tilemap
 
-You'll need to download the [Tiled](https://www.mapeditor.org/) editor to create custom tilemaps.
+To change the art and layout for the map itself, you'll have to update the assets. Let's get creative! You'll need to install the [Tiled](https://www.mapeditor.org/) editor for this part.
 
 ### Option A: Starting from the Template Tiled Project
 

@@ -55,14 +55,16 @@ export type Warp = z.infer<typeof Warp>;
 export const SchemaForm = z.object({
   Type: z.literal("SchemaForm"),
   Id: z.string(),
+  Target: z.string().optional(),
 });
 export type SchemaForm = z.infer<typeof SchemaForm>;
 
 export const SchemaExternalForm = z.object({
   Type: z.literal("SchemaExternalForm"),
   Id: z.string(),
+  Target: z.string().optional(),
 });
-export type SchemaExternalForm = z.infer<typeof SchemaForm>;
+export type SchemaExternalForm = z.infer<typeof SchemaExternalForm>;
 
 export const RealityEntityMetadata = z.intersection(
   z.object({

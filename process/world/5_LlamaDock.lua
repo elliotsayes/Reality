@@ -29,7 +29,7 @@ RealityParameters = {
     Tilemap = {
       Type = 'Fixed',
       Format = 'TMJ',
-      TxId = 'TsIs1sgyboSx21DT0cOb8RT_LuPeesK-UQv0q9zHGrk', -- TxId of the tilemap in TMJ format
+      TxId = '82rXlqCYl4TrDqk2hQCxpXVpJV_fYZ0G3dJdngy6I6U', -- TxId of the tilemap in TMJ format
       Offset = { -52, -32 },                                -- Offset for the tilemap
     },
   },
