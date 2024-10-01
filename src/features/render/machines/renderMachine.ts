@@ -392,7 +392,7 @@ export const renderMachine = setup({
         };
       }) => {
         const beforeTimestamp = new Date();
-        const tenSecondsAgo = new Date(Date.now() - 1 * 1000);
+        const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
         const entities = await input.realityClient.readEntitiesDynamic(
           input.lastEntityUpdate ?? tenSecondsAgo,
         );
@@ -462,10 +462,10 @@ export const renderMachine = setup({
           Position: realityParams["2D-Tile-0"]?.Spawn || [0, 0],
           ...(input.profileInfo?.ProfileId
             ? {
-              Metadata: {
-                ProfileId: input.profileInfo.ProfileId,
-              },
-            }
+                Metadata: {
+                  ProfileId: input.profileInfo.ProfileId,
+                },
+              }
             : {}),
         });
         return msgId;
