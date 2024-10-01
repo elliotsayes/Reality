@@ -441,6 +441,23 @@ export class WorldScene extends WarpableScene {
             x: entityUpdate.Position[0] * this.tileSizeScaled[0],
             y: entityUpdate.Position[1] * this.tileSizeScaled[1],
           };
+
+
+          // Check previous position if it exists
+          const previousPosition = entityContainer.lastPosition || { x: entityContainer.x, y: entityContainer.y };
+
+          // Determine if the entity is moving left or right and flip the sprite accordingly
+          if (updatePosition.x < previousPosition.x) {
+            // Moving left, flip the sprite
+            entitySprite.setFlipX(true);
+          } else if (updatePosition.x > previousPosition.x) {
+            // Moving right, don't flip the sprite
+            entitySprite.setFlipX(false);
+          }
+
+          // Save the current position as the last position for the next update
+          entityContainer.lastPosition = { x: updatePosition.x, y: updatePosition.y };
+          
           if (
             !this.withinBox(entityContainer, {
               center: updatePosition,
