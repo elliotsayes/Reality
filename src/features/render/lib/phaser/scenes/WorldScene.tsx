@@ -195,7 +195,7 @@ export class WorldScene extends WarpableScene {
     };
   }
 
-  preload() { }
+  preload() {}
 
   create() {
     this.camera = this.cameras.main;
@@ -401,8 +401,6 @@ export class WorldScene extends WarpableScene {
       : `llama_${entity.Metadata?.SkinNumber ?? (isPlayer ? 0 : 4)}`;
   }
 
-
-
   public mergeEntities(
     entityUpdates: RealityEntityKeyed,
     profiles: Array<ProfileInfo>,
@@ -433,15 +431,17 @@ export class WorldScene extends WarpableScene {
                 entityContainer.destroy();
               },
             });
-            return; // Return early if the entity is being hidden
           }
 
-          const entitySprite = entityContainer.getAt(0) as Phaser.GameObjects.Sprite;
+          const entitySprite = entityContainer.getAt(
+            0,
+          ) as Phaser.GameObjects.Sprite;
 
           const updatePosition: Point2D = {
             x: entityUpdate.Position[0] * this.tileSizeScaled[0],
             y: entityUpdate.Position[1] * this.tileSizeScaled[1],
           };
+
 
           // Check previous position if it exists
           const previousPosition = entityContainer.lastPosition || { x: entityContainer.x, y: entityContainer.y };
@@ -457,7 +457,7 @@ export class WorldScene extends WarpableScene {
 
           // Save the current position as the last position for the next update
           entityContainer.lastPosition = { x: updatePosition.x, y: updatePosition.y };
-
+          
           if (
             !this.withinBox(entityContainer, {
               center: updatePosition,
@@ -477,7 +477,7 @@ export class WorldScene extends WarpableScene {
             this.physics.moveToObject(
               entityContainer,
               this.entityTargets[entityId],
-              120
+              120,
             );
             this.physics.add.overlap(
               entityContainer,
@@ -488,21 +488,22 @@ export class WorldScene extends WarpableScene {
                   entityContainer.body as Phaser.Physics.Arcade.Body;
                 containerBody.setVelocity(0, 0);
                 entitySprite.play(`${spriteKeyBase}_idle`);
+                // entitySprite.setPosition(updatePosition.x, updatePosition.y);
 
                 this.entityTargets[entityId]?.destroy();
                 delete this.entityTargets[entityId];
-              }
+              },
             );
           }
         } else {
           console.log(`Creating entity ${entityId}`);
           const profileMaybe = profiles?.find(
-            (profile) => profile.ProfileId === entityUpdate.Metadata?.ProfileId
+            (profile) => profile.ProfileId === entityUpdate.Metadata?.ProfileId,
           );
           const entityContainer = this.createAvatarEntityContainer(
             entityId,
             entityUpdate,
-            profileMaybe
+            profileMaybe,
           );
           this.avatarEntityContainers[entityId] = entityContainer;
         }
@@ -517,7 +518,10 @@ export class WorldScene extends WarpableScene {
           console.log(`Skipping hidden warp ${entityId}`);
           return;
         }
-        this.warpSprites[entityId] = this.createWarpEntity(entityId, entityUpdate);
+        this.warpSprites[entityId] = this.createWarpEntity(
+          entityId,
+          entityUpdate,
+        );
       }
     });
   }
@@ -685,7 +689,6 @@ export class WorldScene extends WarpableScene {
     sprite.on(
       "pointerover",
       () => {
-        sprite.play(`${spriteKeyBase}_dance`);
         console.log(`Hovered over avatar ${entityId}`);
       },
       this,
@@ -957,6 +960,8 @@ export class WorldScene extends WarpableScene {
     const isExternal =
       entity.Metadata?.Interaction?.Type === "SchemaExternalForm";
 
+    const resolvedProcessId = entity.Metadata?.Interaction.Target ?? entityId;
+
     const formSize: Size2D = {
       w: 350,
       h: 500,
@@ -970,7 +975,7 @@ export class WorldScene extends WarpableScene {
     root.render(
       <FormOverlay
         aoContractClientForProcess={this.aoContractClientForProcess}
-        schemaProcessId={entityId}
+        schemaProcessId={resolvedProcessId}
         isExternal={isExternal}
         methodName={entity.Metadata?.Interaction.Id}
         close={() => {
