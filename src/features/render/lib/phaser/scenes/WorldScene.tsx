@@ -184,14 +184,9 @@ export class WorldScene extends WarpableScene {
   }
 
   topLeftDynamic() {
-    const cameraCenter = {
+    return {
       x: this.camera.worldView.x,
       y: this.camera.worldView.y,
-    };
-
-    return {
-      x: cameraCenter.x,
-      y: cameraCenter.y,
     };
   }
 
@@ -1020,7 +1015,7 @@ export class WorldScene extends WarpableScene {
 
   public onWarpBegin() {
     if (this.isWarping) {
-      const topLeft = this.topLeftInitial();
+      const topLeft = this.topLeftDynamic();
       this.loadText = this.add.text(
         topLeft.x + 10,
         topLeft.y + 70,
