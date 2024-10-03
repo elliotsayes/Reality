@@ -206,13 +206,17 @@ RealityEntitiesStatic = {
       }
     }
   },
-  ['melee-beaver'] = {
+  ['_bXCnR0M2ScWZa8oFr-PqsaV9CELacwkV9Nw9GGYY44'] = {
     Position = { -6, 4 },
     Type = 'Avatar',
     Metadata = {
-      DisplayName = "Melee Beaver",
+      DisplayName = "Cyberbeaver Envoy",
       SpriteTxId = "FHCT2xGXH6JjrBdzi7ZWH6XQLznvK8w_oDcGSMHKXbE",
       SpriteAtlasTxId = "YbVBjea-49kTdspM_EALm-OcxrQjQuBj56Vboujfuek",
+      Interaction = {
+        Type = "SchemaForm",
+        Id = "PlayBeavers",
+      }
     }
   }
 }
