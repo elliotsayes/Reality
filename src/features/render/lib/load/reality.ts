@@ -211,7 +211,6 @@ export function createSpriteAnimsPhaser(
   const aniNames = Object.keys(anis);
 
   const systemAnis = getSystemAniNames();
-  console.log("systemAnis", systemAnis);
   const mappedSystemAnis = systemAnis.map(
     (aniName) => ({
       aniName: aniName,
