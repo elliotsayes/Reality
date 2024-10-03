@@ -164,11 +164,11 @@ export function getSystemAniNames() {
   const systemAnis = ["emote", "dance"];
 
   for (const base of ["idle", "walk"]) {
-    for (const xdir of [undefined, "side"]) {
+    for (const xdir of [undefined, "side", "left", "right"]) {
       const xdirStr = xdir ? `_${xdir}` : "";
-      systemAnis.push(`${base}${xdirStr}`);
-      for (const ydir of ["up", "down"]) {
-        systemAnis.push(`${base}${xdirStr}_${ydir}`);
+      for (const ydir of [undefined, "up", "down"]) {
+        const ydirStr = ydir ? `_${ydir}` : "";
+        systemAnis.push(`${base}${xdirStr}${ydirStr}`);
       }
     }
   }
@@ -180,23 +180,33 @@ export function resolveSystemAniToExistingAni(
   systemAni: string,
   aniNames: string[],
 ) {
-  if (!aniNames.find((x) => x === "idle"))
-    throw new Error(`No idle animation found in ${aniNames}`);
+  if (aniNames.includes(systemAni)) return systemAni;
 
-  if (aniNames.find((x) => x === systemAni)) return systemAni;
+  const components = systemAni.split("_");
 
-  for (const base of ["idle", "walk"]) {
-    if (systemAni.startsWith(`${base}_side_`)) {
-      if (aniNames.find((x) => x === `${base}_side`)) return `${base}_side`;
+  if (components.length === 1) {
+    if (!aniNames.includes("idle")) throw Error("No idle animation found");
+    return "idle";
+  } else {
+    if (["up", "down"].includes(components[1])) {
+      // base_ydir
+      return resolveSystemAniToExistingAni(components[0], aniNames);
     }
 
-    if (systemAni.startsWith(`${base}_`)) {
-      if (aniNames.find((x) => x === systemAni)) return systemAni;
-      if (aniNames.find((x) => x === base)) return base;
+    // base_xdir???
+    if (components[1] != "side") {
+      const withSide = systemAni.replace(components[1], "side");
+      if (aniNames.includes(withSide)) return withSide;
     }
+    if (components.length === 3) {
+      return resolveSystemAniToExistingAni(
+        `${components[0]}_${components[1]}}`,
+        aniNames,
+      );
+    }
+    // base_xdir
+    return resolveSystemAniToExistingAni(components[0], aniNames);
   }
-
-  return "idle";
 }
 
 export function createSpriteAnimsPhaser(
