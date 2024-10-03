@@ -9,6 +9,7 @@ import { X } from "lucide-react";
 import { toast } from "sonner";
 
 interface FormOverlayProps {
+  clickTime: number;
   aoContractClientForProcess: AoContractClientForProcess;
   schemaProcessId: string;
   isExternal: boolean;
@@ -17,6 +18,7 @@ interface FormOverlayProps {
 }
 
 export function FormOverlay({
+  clickTime,
   aoContractClientForProcess,
   schemaProcessId,
   isExternal,
@@ -34,6 +36,7 @@ export function FormOverlay({
         </CardHeader>
         <CardContent>
           <SchemaFormLoader
+            clickTime={clickTime}
             aoContractClientForProcess={aoContractClientForProcess}
             schemaProcessId={schemaProcessId}
             isExternal={isExternal}

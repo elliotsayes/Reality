@@ -979,6 +979,7 @@ export class WorldScene extends WarpableScene {
     const root = ReactDOM.createRoot(memElement);
     root.render(
       <FormOverlay
+        clickTime={Date.now()}
         aoContractClientForProcess={this.aoContractClientForProcess}
         schemaProcessId={resolvedProcessId}
         isExternal={isExternal}
