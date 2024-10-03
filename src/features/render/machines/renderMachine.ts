@@ -365,13 +365,15 @@ export const renderMachine = setup({
         }
 
         for (const sprite of customSprites) {
-          await loadSpritePhaser(input.currentScene.load, sprite);
+          const { atlas } = await loadSpritePhaser(
+            input.currentScene.load,
+            sprite,
+          );
           createSpriteAnimsPhaser(
             input.currentScene.textures,
             input.currentScene.anims,
             `sprite_${sprite.image}`,
-            input.currentScene.cache.json.get(`sprite_${sprite.image}`) ??
-              input.currentScene.cache.json.get("default_atlas"),
+            atlas ?? input.currentScene.cache.json.get("default_atlas"),
           );
         }
 
@@ -407,13 +409,15 @@ export const renderMachine = setup({
           }));
 
         for (const sprite of customSprites) {
-          await loadSpritePhaser(input.currentScene.load, sprite);
+          const { atlas } = await loadSpritePhaser(
+            input.currentScene.load,
+            sprite,
+          );
           createSpriteAnimsPhaser(
             input.currentScene.textures,
             input.currentScene.anims,
             `sprite_${sprite.image}`,
-            input.currentScene.cache.json.get(`sprite_${sprite.image}`) ??
-              input.currentScene.cache.json.get("default_atlas"),
+            atlas ?? input.currentScene.cache.json.get("default_atlas"),
           );
         }
 

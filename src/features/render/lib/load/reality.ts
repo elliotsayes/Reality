@@ -149,11 +149,13 @@ export async function loadSpritePhaser(
   phaserLoader: Phaser.Loader.LoaderPlugin,
   sprite: { image: string; atlas?: string },
 ) {
-  return new Promise<void>((resolve) => {
+  const atlas =
+    sprite.atlas !== undefined
+      ? await fetch(fetchUrl(sprite.atlas!)).then((res) => res.json() as object)
+      : undefined;
+  return new Promise<{ atlas: object | undefined }>((resolve) => {
     phaserLoader.image(`sprite_${sprite.image}`, fetchUrl(sprite.image));
-    sprite.atlas &&
-      phaserLoader.json(`atlas_${sprite.atlas}`, fetchUrl(sprite.atlas));
-    phaserLoader.on("complete", resolve);
+    phaserLoader.on("complete", () => resolve({ atlas }));
     phaserLoader.start();
   });
 }
@@ -206,7 +208,6 @@ export function createSpriteAnimsPhaser(
   const aniNames = Object.keys(anis);
 
   const systemAnis = getSystemAniNames();
-  console.log({ systemAnis });
   const mappedSystemAnis = systemAnis.map(
     (aniName) => ({
       aniName: aniName,
@@ -214,7 +215,6 @@ export function createSpriteAnimsPhaser(
     }),
     anis,
   );
-  console.log({ resolvedSystemAnis: mappedSystemAnis });
 
   const mappedCustomAnis = Object.keys(anis)
     .filter((aniName) => !systemAnis.includes(aniName))
