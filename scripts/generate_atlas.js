@@ -21,6 +21,12 @@ const rows = [
     prefix: "walk",
     count: 4,
   },
+  {
+    offset: 1,
+    prefix: "emote",
+    count: 2,
+    mod: 2,
+  },
 ];
 
 const meta = {
@@ -40,7 +46,7 @@ rows.forEach((row) => {
     const frame = {
       filename: `${row.prefix}_${pad2(i)}.png`,
       frame: {
-        x: i * spriteSizePx.w,
+        x: i * (row.mod || 1) * spriteSizePx.w,
         y: row.offset * spriteSizePx.h,
         w: spriteSizePx.w,
         h: spriteSizePx.h,

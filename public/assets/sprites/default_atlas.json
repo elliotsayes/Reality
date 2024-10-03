@@ -177,6 +177,48 @@
         "w": 24,
         "h": 38
       }
+    },
+    {
+      "filename": "emote_00.png",
+      "frame": {
+        "x": 0,
+        "y": 38,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "emote_01.png",
+      "frame": {
+        "x": 48,
+        "y": 38,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
     }
   ],
   "animations": {
@@ -191,6 +233,10 @@
       "walk_01.png",
       "walk_02.png",
       "walk_03.png"
+    ],
+    "emote": [
+      "emote_00.png",
+      "emote_01.png"
     ]
   }
 }
