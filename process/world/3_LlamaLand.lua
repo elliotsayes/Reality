@@ -205,6 +205,15 @@ RealityEntitiesStatic = {
         Id = "BlackJack",
       }
     }
+  },
+  ['melee-beaver'] = {
+    Position = { -6, 4 },
+    Type = 'Avatar',
+    Metadata = {
+      DisplayName = "Melee Beaver",
+      SpriteTxId = "FHCT2xGXH6JjrBdzi7ZWH6XQLznvK8w_oDcGSMHKXbE",
+      SpriteAtlasTxId = "YbVBjea-49kTdspM_EALm-OcxrQjQuBj56Vboujfuek",
+    }
   }
 }
 
