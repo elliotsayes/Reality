@@ -161,13 +161,15 @@ export async function loadSpritePhaser(
 }
 
 export function getSystemAniNames() {
-  const systemAnis = ["idle", "emote", "dance"];
+  const systemAnis = ["emote", "dance"];
 
-  for (const xdir of [undefined, "side"]) {
-    const xdirStr = xdir ? `_${xdir}` : "";
-    systemAnis.push(`walk${xdirStr}`);
-    for (const ydir of ["up", "down"]) {
-      systemAnis.push(`walk${xdirStr}_${ydir}`);
+  for (const base of ["idle", "walk"]) {
+    for (const xdir of [undefined, "side"]) {
+      const xdirStr = xdir ? `_${xdir}` : "";
+      systemAnis.push(`${base}${xdirStr}`);
+      for (const ydir of ["up", "down"]) {
+        systemAnis.push(`${base}${xdirStr}_${ydir}`);
+      }
     }
   }
 
@@ -181,17 +183,18 @@ export function resolveSystemAniToExistingAni(
   if (!aniNames.find((x) => x === "idle"))
     throw new Error(`No idle animation found in ${aniNames}`);
 
-  if (systemAni.startsWith("walk_side_")) {
-    if (aniNames.find((x) => x === systemAni)) return systemAni;
-    if (aniNames.find((x) => x === "walk_side")) return "walk_side";
-  }
-
-  if (systemAni.startsWith("walk_")) {
-    if (aniNames.find((x) => x === systemAni)) return systemAni;
-    if (aniNames.find((x) => x === "walk")) return "walk";
-  }
-
   if (aniNames.find((x) => x === systemAni)) return systemAni;
+
+  for (const base of ["idle", "walk"]) {
+    if (systemAni.startsWith(`${base}_side_`)) {
+      if (aniNames.find((x) => x === `${base}_side`)) return `${base}_side`;
+    }
+
+    if (systemAni.startsWith(`${base}_`)) {
+      if (aniNames.find((x) => x === systemAni)) return systemAni;
+      if (aniNames.find((x) => x === base)) return base;
+    }
+  }
 
   return "idle";
 }
@@ -208,6 +211,7 @@ export function createSpriteAnimsPhaser(
   const aniNames = Object.keys(anis);
 
   const systemAnis = getSystemAniNames();
+  console.log("systemAnis", systemAnis);
   const mappedSystemAnis = systemAnis.map(
     (aniName) => ({
       aniName: aniName,
