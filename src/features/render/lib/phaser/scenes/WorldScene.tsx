@@ -442,9 +442,11 @@ export class WorldScene extends WarpableScene {
             y: entityUpdate.Position[1] * this.tileSizeScaled[1],
           };
 
-
           // Check previous position if it exists
-          const previousPosition = entityContainer.lastPosition || { x: entityContainer.x, y: entityContainer.y };
+          const previousPosition = entityContainer.lastPosition || {
+            x: entityContainer.x,
+            y: entityContainer.y,
+          };
 
           // Determine if the entity is moving left or right and flip the sprite accordingly
           if (updatePosition.x < previousPosition.x) {
@@ -456,8 +458,11 @@ export class WorldScene extends WarpableScene {
           }
 
           // Save the current position as the last position for the next update
-          entityContainer.lastPosition = { x: updatePosition.x, y: updatePosition.y };
-          
+          entityContainer.lastPosition = {
+            x: updatePosition.x,
+            y: updatePosition.y,
+          };
+
           if (
             !this.withinBox(entityContainer, {
               center: updatePosition,
@@ -866,18 +871,21 @@ export class WorldScene extends WarpableScene {
     }
 
     const isMoving = isLeft || isRight || isUp || isDown;
-    if (isMoving) {
-      if (!this.lastTickMoving)
-        playerSprite.play(`${this.playerSpriteKeyBase}_walk`);
-      this.lastTickMoving = true;
-    } else {
-      if (this.lastTickMoving) {
-        playerSprite.play(`${this.playerSpriteKeyBase}_idle`);
+    const changeAni = isMoving !== this.lastTickMoving;
+    if (changeAni) {
+      let aniStr = isMoving ? "walk" : "idle";
+      if (isLeft || isRight) {
+        aniStr += "_side";
       }
-      this.lastTickMoving = false;
+      if (isUp) {
+        aniStr += "_up";
+      } else if (isDown) {
+        aniStr += "_down";
+      }
+      playerSprite.play(`${this.playerSpriteKeyBase}_${aniStr}`);
     }
 
-    if (this.lastTickMoving) {
+    if (isMoving) {
       // Check if the player is overlapping with any warp entities
       const isOverlappingWithWarp = this.physics.overlap(
         this.player,
@@ -896,6 +904,8 @@ export class WorldScene extends WarpableScene {
         ],
       });
     }
+
+    this.lastTickMoving = isMoving;
 
     if (this.tutorial) {
       const tl = this.topLeftDynamic();
