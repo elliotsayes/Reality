@@ -147,60 +147,96 @@ export async function loadRealityPhaser(
 
 export async function loadSpritePhaser(
   phaserLoader: Phaser.Loader.LoaderPlugin,
-  key: string,
-  url: string,
+  sprite: { image: string; atlas?: string },
 ) {
   return new Promise<void>((resolve) => {
-    phaserLoader.spritesheet(key, url, {
-      frameWidth: 24,
-      frameHeight: 38,
-    });
+    phaserLoader.image(`sprite_${sprite.image}`, fetchUrl(sprite.image));
+    sprite.atlas &&
+      phaserLoader.json(`atlas_${sprite.atlas}`, fetchUrl(sprite.atlas));
     phaserLoader.on("complete", resolve);
     phaserLoader.start();
   });
 }
 
+export function getSystemAniNames() {
+  const systemAnis = ["idle", "emote", "dance"];
+
+  for (const xdir of [undefined, "side"]) {
+    const xdirStr = xdir ? `_${xdir}` : "";
+    systemAnis.push(`walk${xdirStr}`);
+    for (const ydir of ["up", "down"]) {
+      systemAnis.push(`walk${xdirStr}_${ydir}`);
+    }
+  }
+
+  return systemAnis;
+}
+
+export function resolveSystemAniToExistingAni(
+  systemAni: string,
+  aniNames: string[],
+) {
+  if (!aniNames.find((x) => x === "idle"))
+    throw new Error(`No idle animation found in ${aniNames}`);
+
+  if (systemAni.startsWith("walk_side_")) {
+    if (aniNames.find((x) => x === systemAni)) return systemAni;
+    if (aniNames.find((x) => x === "walk_side")) return "walk_side";
+  }
+
+  if (systemAni.startsWith("walk_")) {
+    if (aniNames.find((x) => x === systemAni)) return systemAni;
+    if (aniNames.find((x) => x === "walk")) return "walk";
+  }
+
+  if (aniNames.find((x) => x === systemAni)) return systemAni;
+
+  return "idle";
+}
+
 export function createSpriteAnimsPhaser(
+  phaserTextures: Phaser.Textures.TextureManager,
   phaserAnims: Phaser.Animations.AnimationManager,
   keyBase: string,
+  atlas: object | object[],
 ) {
-  phaserAnims.create({
-    key: `${keyBase}_idle`,
-    frameRate: 6,
-    frames: phaserAnims.generateFrameNumbers(keyBase, {
-      start: 7,
-      end: 10,
-    }),
-    repeat: -1,
-  });
+  const textureImage = phaserTextures.get(keyBase);
+  const textureAtlas = phaserTextures.addAtlas(keyBase, textureImage, atlas)!;
+  const anis: Record<string, string[]> = textureAtlas.customData["animations"];
+  const aniNames = Object.keys(anis);
 
-  phaserAnims.create({
-    key: `${keyBase}_emote`,
-    frameRate: 24,
-    frames: phaserAnims.generateFrameNumbers(keyBase, {
-      start: 7,
-      end: 10,
+  const systemAnis = getSystemAniNames();
+  console.log({ systemAnis });
+  const mappedSystemAnis = systemAnis.map(
+    (aniName) => ({
+      aniName: aniName,
+      resolvedAni: resolveSystemAniToExistingAni(aniName, aniNames),
     }),
-    repeat: -1,
-  });
+    anis,
+  );
+  console.log({ resolvedSystemAnis: mappedSystemAnis });
 
-  phaserAnims.create({
-    key: `${keyBase}_walk`,
-    frameRate: 12,
-    frames: phaserAnims.generateFrameNumbers(keyBase, {
-      start: 14,
-      end: 17,
-    }),
-    repeat: -1,
-  });
+  const mappedCustomAnis = Object.keys(anis)
+    .filter((aniName) => !systemAnis.includes(aniName))
+    .map((aniName) => ({
+      aniName,
+      resolvedAni: aniName,
+    }));
 
-  phaserAnims.create({
-    key: `${keyBase}_dance`,
-    frameRate: 24,
-    frames: phaserAnims.generateFrameNumbers(keyBase, {
-      start: 14,
-      end: 17,
-    }),
-    repeat: 3,
-  });
+  const mappedAnis = [...mappedSystemAnis, ...mappedCustomAnis];
+
+  for (const mappedAni of mappedAnis) {
+    phaserAnims.create({
+      key: `${keyBase}_${mappedAni.aniName}`,
+      frames: phaserAnims.generateFrameNames(keyBase, {
+        start: 0,
+        end: anis[mappedAni.resolvedAni].length - 1,
+        prefix: `${mappedAni.resolvedAni}_`,
+        zeroPad: 2,
+        suffix: ".png",
+      }),
+      repeat: -1,
+      frameRate: 10,
+    });
+  }
 }

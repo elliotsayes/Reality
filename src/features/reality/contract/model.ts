@@ -80,6 +80,7 @@ export const RealityEntityMetadata = z.intersection(
     DisplayName: z.optional(z.string()),
     SkinNumber: z.optional(z.number()),
     SpriteTxId: z.optional(z.string()),
+    SpriteAtlasTxId: z.optional(z.string()),
   }),
   z.record(z.string(), z.any()),
 );
