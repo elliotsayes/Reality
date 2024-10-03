@@ -212,11 +212,14 @@ export function resolveSystemAniToExistingAni(
 export function createSpriteAnimsPhaser(
   phaserTextures: Phaser.Textures.TextureManager,
   phaserAnims: Phaser.Animations.AnimationManager,
-  keyBase: string,
+  spriteKeyBase: string,
   atlas: object | object[],
 ) {
-  const textureImage = phaserTextures.get(keyBase);
-  const textureAtlas = phaserTextures.addAtlas(keyBase, textureImage, atlas)!;
+  const atlasKey = `atlas_${spriteKeyBase}`;
+  if (phaserTextures.exists(atlasKey)) return;
+
+  const textureImage = phaserTextures.get(spriteKeyBase);
+  const textureAtlas = phaserTextures.addAtlas(atlasKey, textureImage, atlas)!;
   const anis: Record<string, string[]> = textureAtlas.customData["animations"];
   const aniNames = Object.keys(anis);
 
@@ -240,8 +243,8 @@ export function createSpriteAnimsPhaser(
 
   for (const mappedAni of mappedAnis) {
     phaserAnims.create({
-      key: `${keyBase}_${mappedAni.aniName}`,
-      frames: phaserAnims.generateFrameNames(keyBase, {
+      key: `${spriteKeyBase}_${mappedAni.aniName}`,
+      frames: phaserAnims.generateFrameNames(spriteKeyBase, {
         start: 0,
         end: anis[mappedAni.resolvedAni].length - 1,
         prefix: `${mappedAni.resolvedAni}_`,
