@@ -195,7 +195,7 @@ RealityEntitiesStatic = {
     },
   },
   ['zsU5NxCo8WbpyLCqXrckjmXfP0PWpAGzo1E-W_iegbI'] = {
-    Position = { -5, 5 },
+    Position = { -4, 6 },
     Type = 'Avatar',
     Metadata = {
       DisplayName = "LLama-Jack",
