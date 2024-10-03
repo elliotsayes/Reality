@@ -4,6 +4,7 @@ import { formatTimestamp } from "../utils/formatting";
 import { fetchUrl } from "@/features/arweave/lib/arweave";
 import { ArweaveTxId } from "@/features/arweave/lib/model";
 import { MiniAddress } from "./MiniAddress";
+import Linkify from "linkify-react";
 
 const kingAddress = "kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA";
 const bankerAddress = "ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk";
@@ -66,7 +67,16 @@ export const ChatBubble = ({ chatMessage, userAddress }: ChatBubbleProps) => {
           className={`chat-message ${isKing ? "king-message" : ""} ${isUser ? "my-message" : isHighlighted ? "highlight-message" : "other-message"}`}
         >
           <div className="chat-bubble-tail-graphic"></div>
-          <div className="chat-inner-text">{chatMessage.Content}</div>
+          <div className="chat-inner-text">
+            <Linkify
+              options={{
+                target: "_blank",
+                className: "text-blue-200 hover:underline break-words",
+              }}
+            >
+              {chatMessage.Content}
+            </Linkify>
+          </div>
           <div className="highlight-message-back"></div>
         </div>
 
