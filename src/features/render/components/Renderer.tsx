@@ -60,7 +60,7 @@ export function Renderer({
         });
       },
     },
-    inspect: (e) => console.debug(e),
+    // inspect: (e) => console.debug(e),
   });
 
   return (

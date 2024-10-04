@@ -183,6 +183,7 @@ export function resolveSystemAniToExistingAni(
   if (aniNames.includes(systemAni)) return systemAni;
 
   const components = systemAni.split("_");
+  console.log({ components });
 
   if (components.length === 1) {
     if (!aniNames.includes("idle")) throw Error("No idle animation found");
@@ -200,7 +201,7 @@ export function resolveSystemAniToExistingAni(
     }
     if (components.length === 3) {
       return resolveSystemAniToExistingAni(
-        `${components[0]}_${components[1]}}`,
+        `${components[0]}_${components[1]}`,
         aniNames,
       );
     }
@@ -231,6 +232,7 @@ export function createSpriteAnimsPhaser(
     }),
     anis,
   );
+  console.log({ mappedSystemAnis });
 
   const mappedCustomAnis = Object.keys(anis)
     .filter((aniName) => !systemAnis.includes(aniName))

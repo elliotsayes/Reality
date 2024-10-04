@@ -71,6 +71,7 @@ export class WorldScene extends WarpableScene {
   wasd?: object;
 
   lastTickMoving: boolean = false;
+  lastTickDirection: string = "down";
 
   isWarping: boolean = false;
 
@@ -848,10 +849,10 @@ export class WorldScene extends WarpableScene {
     const playerSprite = this.player.getAt(0) as Phaser.GameObjects.Sprite;
     const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
     if (isLeft) {
-      playerSprite.flipX = true;
+      // playerSprite.flipX = true;
       playerBody.setVelocityX(-speed);
     } else if (isRight) {
-      playerSprite.flipX = false;
+      // playerSprite.flipX = false;
       playerBody.setVelocityX(speed);
     } else {
       playerBody.setVelocityX(0);
@@ -865,19 +866,17 @@ export class WorldScene extends WarpableScene {
       playerBody.setVelocityY(0);
     }
 
+    const direction = `${isLeft ? "left" : isRight ? "right" : ""}${(isLeft || isRight) && (isUp || isDown) ? "_" : ""}${
+      isUp ? "up" : isDown ? "down" : ""
+    }`;
     const isMoving = isLeft || isRight || isUp || isDown;
-    const changeAni = isMoving !== this.lastTickMoving;
+
+    const changeAni =
+      isMoving !== this.lastTickMoving || direction !== this.lastTickDirection;
     if (changeAni) {
-      let aniStr = isMoving ? "walk" : "idle";
-      if (isLeft || isRight) {
-        aniStr += "_side";
-      }
-      if (isUp) {
-        aniStr += "_up";
-      } else if (isDown) {
-        aniStr += "_down";
-      }
-      playerSprite.play(`${this.playerSpriteKeyBase}_${aniStr}`);
+      playerSprite.play(
+        `${this.playerSpriteKeyBase}_${isMoving ? "walk" : "idle"}${direction ? `_${direction}` : ""}`,
+      );
     }
 
     if (isMoving) {
@@ -901,6 +900,7 @@ export class WorldScene extends WarpableScene {
     }
 
     this.lastTickMoving = isMoving;
+    this.lastTickDirection = direction;
 
     if (this.tutorial) {
       const tl = this.topLeftDynamic();
