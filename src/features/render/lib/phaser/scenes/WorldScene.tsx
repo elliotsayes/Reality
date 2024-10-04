@@ -874,8 +874,9 @@ export class WorldScene extends WarpableScene {
     const changeAni =
       isMoving !== this.lastTickMoving || direction !== this.lastTickDirection;
     if (changeAni) {
+      const aniDirection = direction || this.lastTickDirection;
       playerSprite.play(
-        `${this.playerSpriteKeyBase}_${isMoving ? "walk" : "idle"}${direction ? `_${direction}` : ""}`,
+        `${this.playerSpriteKeyBase}_${isMoving ? "walk" : "idle"}${aniDirection ? `_${aniDirection}` : ""}`,
       );
     }
 
