@@ -49,7 +49,7 @@ Handlers.add(
       Target = TARGET_WORLD_PID,
       Tags = {
         Action = "ChatMessage",
-        ['Author-Name'] = 'Melee Beaver',
+        ['Author-Name'] = 'Cyberbeaver Envoy',
       },
       Data = LinkTexts[seed % #LinkTexts + 1]
     })
