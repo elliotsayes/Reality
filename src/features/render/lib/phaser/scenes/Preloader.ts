@@ -6,6 +6,7 @@ import { createSpriteAnimsPhaser } from "../../load/reality";
 
 export class Preloader extends WarpableScene {
   background!: GameObjects.Image;
+  fontLoadPromise!: Promise<void>;
 
   constructor() {
     super("Preloader");
@@ -61,11 +62,17 @@ export class Preloader extends WarpableScene {
 
     for (let i = 0; i < 10; i++) {
       const llama_name = `llama_${i}`;
-      this.load.spritesheet(llama_name, `sprites/llama/${llama_name}.png`, {
-        frameWidth: 24,
-        frameHeight: 38,
-      });
+      const sprite_url = `sprites/llama/${llama_name}.png`;
+      this.load.image(llama_name, sprite_url);
+      this.load.json("default_atlas", "sprites/default_atlas.json");
+      // this.load.atlas({
+      //   key: llama_name,
+      //   textureURL: sprite_url,
+      //   atlasURL: "sprites/default_atlas.json",
+      // });
     }
+
+    this.fontLoadPromise = new FontFaceObserver("Press Start 2P").load();
   }
 
   create() {
@@ -74,13 +81,19 @@ export class Preloader extends WarpableScene {
 
     //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
     // this.scene.start('MainMenu');
+    const defaultAtlas = this.cache.json.get("default_atlas");
+
     for (let i = 0; i < 10; i++) {
       const llama_name = `llama_${i}`;
-      createSpriteAnimsPhaser(this.anims, llama_name);
+      createSpriteAnimsPhaser(
+        this.textures,
+        this.anims,
+        llama_name,
+        defaultAtlas,
+      );
     }
 
-    const font = new FontFaceObserver("Press Start 2P");
-    font.load().then(() =>
+    this.fontLoadPromise.then(() =>
       ((t) => {
         emitSceneReady(t);
       })(this),

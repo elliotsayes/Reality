@@ -5,6 +5,7 @@ import { createSchemaClient } from "../contract/schemaClient";
 import { SchemaExternalMethod } from "../contract/model";
 
 interface SchemaFormLoaderProps {
+  clickTime: number;
   aoContractClientForProcess: AoContractClientForProcess;
   schemaProcessId: string;
   isExternal: boolean;
@@ -13,6 +14,7 @@ interface SchemaFormLoaderProps {
 }
 
 export function SchemaFormLoader({
+  clickTime,
   aoContractClientForProcess,
   schemaProcessId,
   isExternal,
@@ -21,7 +23,11 @@ export function SchemaFormLoader({
 }: SchemaFormLoaderProps) {
   // TODO: Conditional based on isExternal
   const schema = useQuery({
-    queryKey: [isExternal ? "schemaExternal" : "schema", schemaProcessId],
+    queryKey: [
+      isExternal ? "schemaExternal" : "schema",
+      schemaProcessId,
+      clickTime,
+    ],
     queryFn: async () => {
       const schemaClient = createSchemaClient(
         aoContractClientForProcess(schemaProcessId),
@@ -30,6 +36,11 @@ export function SchemaFormLoader({
         ? await schemaClient.readSchemaExternal()
         : await schemaClient.readSchema();
     },
+    refetchInterval: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+    refetchIntervalInBackground: false,
   });
 
   const maybeMethodSchema = schema.data?.[methodName] as

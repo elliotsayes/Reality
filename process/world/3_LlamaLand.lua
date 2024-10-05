@@ -195,7 +195,7 @@ RealityEntitiesStatic = {
     },
   },
   ['zsU5NxCo8WbpyLCqXrckjmXfP0PWpAGzo1E-W_iegbI'] = {
-    Position = { -5, 5 },
+    Position = { -4, 6 },
     Type = 'Avatar',
     Metadata = {
       DisplayName = "LLama-Jack",
@@ -203,6 +203,19 @@ RealityEntitiesStatic = {
       Interaction = {
         Type = "SchemaExternalForm",
         Id = "BlackJack",
+      }
+    }
+  },
+  ['_bXCnR0M2ScWZa8oFr-PqsaV9CELacwkV9Nw9GGYY44'] = {
+    Position = { -6, 4 },
+    Type = 'Avatar',
+    Metadata = {
+      DisplayName = "Cyberbeaver Envoy",
+      SpriteTxId = "FHCT2xGXH6JjrBdzi7ZWH6XQLznvK8w_oDcGSMHKXbE",
+      SpriteAtlasTxId = "YbVBjea-49kTdspM_EALm-OcxrQjQuBj56Vboujfuek",
+      Interaction = {
+        Type = "SchemaForm",
+        Id = "PlayBeavers",
       }
     }
   }

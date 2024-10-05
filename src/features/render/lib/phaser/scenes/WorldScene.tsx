@@ -1,6 +1,11 @@
 import { WarpableScene } from "./WarpableScene";
 import { WorldState } from "../../load/model";
-import { phaserTilemapKey, phaserTilesetKey } from "../../load/reality";
+import {
+  getDirectionFromDelta,
+  phaserTilemapKey,
+  phaserTilesetKey,
+  resolveSystemAniToExistingAni,
+} from "../../load/reality";
 import { _2dTileParams } from "@/features/reality/contract/_2dTile";
 import { emitSceneReady, emitSceneEvent } from "../../EventBus";
 import {
@@ -71,6 +76,7 @@ export class WorldScene extends WarpableScene {
   wasd?: object;
 
   lastTickMoving: boolean = false;
+  lastTickDirection: string = "down";
 
   isWarping: boolean = false;
 
@@ -184,14 +190,9 @@ export class WorldScene extends WarpableScene {
   }
 
   topLeftDynamic() {
-    const cameraCenter = {
+    return {
       x: this.camera.worldView.x,
       y: this.camera.worldView.y,
-    };
-
-    return {
-      x: cameraCenter.x,
-      y: cameraCenter.y,
     };
   }
 
@@ -401,17 +402,54 @@ export class WorldScene extends WarpableScene {
       : `llama_${entity.Metadata?.SkinNumber ?? (isPlayer ? 0 : 4)}`;
   }
 
+  getDirectionFromPositions(
+    oldPosition: Point2D,
+    newPosition: Point2D,
+  ): string {
+    const dx = newPosition.x - oldPosition.x;
+    const dy = newPosition.y - oldPosition.y;
+
+    return getDirectionFromDelta(dx, dy);
+  }
+
+  playAni(
+    entity: Phaser.GameObjects.Sprite,
+    animBase: string,
+    animEnd: string,
+  ) {
+    const resolvedAnimEnd = resolveSystemAniToExistingAni(animEnd, (testEnd) =>
+      entity.anims.animationManager.exists(`${animBase}_${testEnd}`),
+    );
+    // console.log({ animBase, animEnd, resolvedAnimEnd });
+
+    const resolvedAnim = `${animBase}_${resolvedAnimEnd}`;
+    entity.play(resolvedAnim);
+    if (animEnd.endsWith("_left") || animEnd.endsWith("_right")) {
+      entity.flipX =
+        animEnd.endsWith("_left") && !resolvedAnimEnd.endsWith("_left");
+    }
+  }
+
   public mergeEntities(
     entityUpdates: RealityEntityKeyed,
     profiles: Array<ProfileInfo>,
   ) {
     Object.keys(entityUpdates).forEach((entityId) => {
-      // Ignore player character
-      if (entityId === this.playerAddress) return;
-
       const entityUpdate = entityUpdates[entityId];
       if (entityUpdate.Type === "Avatar") {
         const spriteKeyBase = this.spriteKeyBase(entityId, entityUpdate);
+        if (entityId === this.playerAddress) {
+          // Update the player's sprite key if the skin has changed
+          if (spriteKeyBase !== this.playerSpriteKeyBase) {
+            this.playerSpriteKeyBase = spriteKeyBase;
+            // Update the player's animation with the new skin
+            const playerSprite = this.player.getAt(
+              0,
+            ) as Phaser.GameObjects.Sprite;
+            this.playAni(playerSprite, this.playerSpriteKeyBase, "idle");
+          }
+          return; // Skip further movement logic for the player
+        }
         if (this.avatarEntityContainers[entityId]) {
           console.log(`Updating entity ${entityId}`);
           const entityContainer = this.avatarEntityContainers[entityId];
@@ -441,6 +479,18 @@ export class WorldScene extends WarpableScene {
             x: entityUpdate.Position[0] * this.tileSizeScaled[0],
             y: entityUpdate.Position[1] * this.tileSizeScaled[1],
           };
+
+          // Check previous position if it exists
+          const workingLastPosition = entityContainer.lastPosition || {
+            x: entityContainer.x,
+            y: entityContainer.y,
+          };
+
+          entityContainer.lastPosition = {
+            x: updatePosition.x,
+            y: updatePosition.y,
+          };
+
           if (
             !this.withinBox(entityContainer, {
               center: updatePosition,
@@ -456,7 +506,11 @@ export class WorldScene extends WarpableScene {
               .setOrigin(0.5)
               .setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
 
-            entitySprite.play(`${spriteKeyBase}_walk`);
+            const directionStr = this.getDirectionFromPositions(
+              workingLastPosition,
+              updatePosition,
+            );
+            this.playAni(entitySprite, spriteKeyBase, `walk_${directionStr}`);
             this.physics.moveToObject(
               entityContainer,
               this.entityTargets[entityId],
@@ -470,7 +524,11 @@ export class WorldScene extends WarpableScene {
                 const containerBody =
                   entityContainer.body as Phaser.Physics.Arcade.Body;
                 containerBody.setVelocity(0, 0);
-                entitySprite.play(`${spriteKeyBase}_idle`);
+                this.playAni(
+                  entitySprite,
+                  spriteKeyBase,
+                  `idle_${directionStr}`,
+                );
                 // entitySprite.setPosition(updatePosition.x, updatePosition.y);
 
                 this.entityTargets[entityId]?.destroy();
@@ -617,9 +675,9 @@ export class WorldScene extends WarpableScene {
       .setInteractive();
 
     if (isPlayer) {
-      sprite.play(`${spriteKeyBase}_idle`);
+      this.playAni(sprite, spriteKeyBase, `idle`);
     } else {
-      sprite.play(`${spriteKeyBase}_idle`);
+      this.playAni(sprite, spriteKeyBase, `idle`);
     }
 
     if (
@@ -638,7 +696,7 @@ export class WorldScene extends WarpableScene {
       sprite.on(
         "pointerdown",
         () => {
-          sprite.play(`${spriteKeyBase}_emote`);
+          this.playAni(sprite, spriteKeyBase, `emote`);
           if (entity.Metadata?.Interaction?.Type === "Default") {
             this.aoContractClientForProcess(entityId).message({
               tags: [
@@ -650,7 +708,7 @@ export class WorldScene extends WarpableScene {
             });
           }
           setTimeout(() => {
-            sprite.play(`${spriteKeyBase}_idle`);
+            this.playAni(sprite, spriteKeyBase, `idle`);
             if (isBouncer) {
               this.showEntityChatMessages([
                 {
@@ -831,10 +889,8 @@ export class WorldScene extends WarpableScene {
     const playerSprite = this.player.getAt(0) as Phaser.GameObjects.Sprite;
     const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
     if (isLeft) {
-      playerSprite.flipX = true;
       playerBody.setVelocityX(-speed);
     } else if (isRight) {
-      playerSprite.flipX = false;
       playerBody.setVelocityX(speed);
     } else {
       playerBody.setVelocityX(0);
@@ -848,19 +904,23 @@ export class WorldScene extends WarpableScene {
       playerBody.setVelocityY(0);
     }
 
+    const direction = `${
+      isUp ? "up" : isDown ? "down" : ""
+    }${(isLeft || isRight) && (isUp || isDown) ? "_" : ""}${isLeft ? "left" : isRight ? "right" : ""}`;
     const isMoving = isLeft || isRight || isUp || isDown;
-    if (isMoving) {
-      if (!this.lastTickMoving)
-        playerSprite.play(`${this.playerSpriteKeyBase}_walk`);
-      this.lastTickMoving = true;
-    } else {
-      if (this.lastTickMoving) {
-        playerSprite.play(`${this.playerSpriteKeyBase}_idle`);
-      }
-      this.lastTickMoving = false;
+
+    const changeAni =
+      isMoving !== this.lastTickMoving || direction !== this.lastTickDirection;
+    if (changeAni) {
+      const aniDirection = direction || this.lastTickDirection;
+      this.playAni(
+        playerSprite,
+        this.playerSpriteKeyBase,
+        `${isMoving ? "walk" : "idle"}${aniDirection ? `_${aniDirection}` : ""}`,
+      );
     }
 
-    if (this.lastTickMoving) {
+    if (isMoving) {
       // Check if the player is overlapping with any warp entities
       const isOverlappingWithWarp = this.physics.overlap(
         this.player,
@@ -879,6 +939,9 @@ export class WorldScene extends WarpableScene {
         ],
       });
     }
+
+    this.lastTickMoving = isMoving;
+    this.lastTickDirection = direction;
 
     if (this.tutorial) {
       const tl = this.topLeftDynamic();
@@ -957,6 +1020,7 @@ export class WorldScene extends WarpableScene {
     const root = ReactDOM.createRoot(memElement);
     root.render(
       <FormOverlay
+        clickTime={Date.now()}
         aoContractClientForProcess={this.aoContractClientForProcess}
         schemaProcessId={resolvedProcessId}
         isExternal={isExternal}
@@ -993,7 +1057,7 @@ export class WorldScene extends WarpableScene {
 
   public onWarpBegin() {
     if (this.isWarping) {
-      const topLeft = this.topLeftInitial();
+      const topLeft = this.topLeftDynamic();
       this.loadText = this.add.text(
         topLeft.x + 10,
         topLeft.y + 70,

@@ -23,7 +23,6 @@ import { WorldState } from "../lib/load/model";
 import { ProfileInfo } from "@/features/profile/contract/model";
 import { TrackingClient } from "@/features/tracking/contract/trackingClient";
 import { LoginResult } from "@/features/tracking/contract/model";
-import { fetchUrl } from "@/features/arweave/lib/arweave";
 import { WarpTarget } from "../lib/model";
 
 export const renderMachine = setup({
@@ -348,30 +347,34 @@ export const renderMachine = setup({
           input.profileRegistryClient,
           input.phaserLoader,
         );
+
+        const customSprites = Object.values(reality.entities)
+          .filter((e) => e.Metadata?.SpriteTxId !== undefined)
+          .map((e) => ({
+            image: e.Metadata!.SpriteTxId!,
+            atlas: e.Metadata!.SpriteAtlasTxId,
+          }));
+
         const playerSpriteTxId =
           reality.parameters["2D-Tile-0"]?.PlayerSpriteTxId;
-        if (playerSpriteTxId !== undefined) {
-          const spriteKey = `sprite_${playerSpriteTxId}`;
-          await loadSpritePhaser(
-            input.currentScene.load,
-            spriteKey,
-            fetchUrl(playerSpriteTxId),
-          );
-          createSpriteAnimsPhaser(input.currentScene.anims, spriteKey);
+        if (playerSpriteTxId) {
+          customSprites.push({
+            image: playerSpriteTxId,
+            atlas: reality.parameters["2D-Tile-0"]?.PlayerSpriteAtlasTxId,
+          });
         }
 
-        const customSpriteEntities = Object.entries(reality.entities).filter(
-          ([_, e]) => e.Metadata?.SpriteTxId !== undefined,
-        );
-        for (const [_, entity] of customSpriteEntities) {
-          const spriteTxId = entity.Metadata!.SpriteTxId!;
-          const spriteKey = `sprite_${entity.Metadata?.SpriteTxId}`;
-          await loadSpritePhaser(
+        for (const sprite of customSprites) {
+          const { atlas } = await loadSpritePhaser(
             input.currentScene.load,
-            spriteKey,
-            fetchUrl(spriteTxId),
+            sprite,
           );
-          createSpriteAnimsPhaser(input.currentScene.anims, spriteKey);
+          createSpriteAnimsPhaser(
+            input.currentScene.textures,
+            input.currentScene.anims,
+            `sprite_${sprite.image}`,
+            atlas ?? input.currentScene.cache.json.get("default_atlas"),
+          );
         }
 
         return {
@@ -398,18 +401,24 @@ export const renderMachine = setup({
         );
         console.log("updateEntities", entities);
 
-        const customSpriteEntities = Object.entries(entities).filter(
-          ([_, e]) => e.Metadata?.SpriteTxId !== undefined,
-        );
-        for (const [_, entity] of customSpriteEntities) {
-          const spriteTxId = entity.Metadata!.SpriteTxId!;
-          const spriteKey = `sprite_${spriteTxId}`;
-          await loadSpritePhaser(
+        const customSprites = Object.values(entities)
+          .filter((e) => e.Metadata?.SpriteTxId !== undefined)
+          .map((e) => ({
+            image: e.Metadata!.SpriteTxId!,
+            atlas: e.Metadata!.SpriteAtlasTxId,
+          }));
+
+        for (const sprite of customSprites) {
+          const { atlas } = await loadSpritePhaser(
             input.currentScene.load,
-            spriteKey,
-            fetchUrl(spriteTxId),
+            sprite,
           );
-          createSpriteAnimsPhaser(input.currentScene.anims, spriteKey);
+          createSpriteAnimsPhaser(
+            input.currentScene.textures,
+            input.currentScene.anims,
+            `sprite_${sprite.image}`,
+            atlas ?? input.currentScene.cache.json.get("default_atlas"),
+          );
         }
 
         const profileIds = Object.values(entities)

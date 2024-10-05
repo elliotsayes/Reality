@@ -1,0 +1,242 @@
+{
+  "meta": {
+    "size": {
+      "w": 168,
+      "h": 152
+    },
+    "frameSize": {
+      "w": 24,
+      "h": 38
+    }
+  },
+  "frames": [
+    {
+      "filename": "idle_00.png",
+      "frame": {
+        "x": 0,
+        "y": 38,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "idle_01.png",
+      "frame": {
+        "x": 24,
+        "y": 38,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "idle_02.png",
+      "frame": {
+        "x": 48,
+        "y": 38,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "idle_03.png",
+      "frame": {
+        "x": 72,
+        "y": 38,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "walk_00.png",
+      "frame": {
+        "x": 0,
+        "y": 76,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "walk_01.png",
+      "frame": {
+        "x": 24,
+        "y": 76,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "walk_02.png",
+      "frame": {
+        "x": 48,
+        "y": 76,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "walk_03.png",
+      "frame": {
+        "x": 72,
+        "y": 76,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "emote_00.png",
+      "frame": {
+        "x": 0,
+        "y": 38,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "emote_01.png",
+      "frame": {
+        "x": 48,
+        "y": 38,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    }
+  ],
+  "animations": {
+    "idle": [
+      "idle_00.png",
+      "idle_01.png",
+      "idle_02.png",
+      "idle_03.png"
+    ],
+    "walk": [
+      "walk_00.png",
+      "walk_01.png",
+      "walk_02.png",
+      "walk_03.png"
+    ],
+    "emote": [
+      "emote_00.png",
+      "emote_01.png"
+    ]
+  }
+}
