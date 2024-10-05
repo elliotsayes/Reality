@@ -435,12 +435,21 @@ export class WorldScene extends WarpableScene {
     profiles: Array<ProfileInfo>,
   ) {
     Object.keys(entityUpdates).forEach((entityId) => {
-      // Ignore player character
-      if (entityId === this.playerAddress) return;
-
       const entityUpdate = entityUpdates[entityId];
       if (entityUpdate.Type === "Avatar") {
         const spriteKeyBase = this.spriteKeyBase(entityId, entityUpdate);
+        if (entityId === this.playerAddress) {
+          // Update the player's sprite key if the skin has changed
+          if (spriteKeyBase !== this.playerSpriteKeyBase) {
+            this.playerSpriteKeyBase = spriteKeyBase;
+            // Update the player's animation with the new skin
+            const playerSprite = this.player.getAt(
+              0,
+            ) as Phaser.GameObjects.Sprite;
+            this.playAni(playerSprite, this.playerSpriteKeyBase, "idle");
+          }
+          return; // Skip further movement logic for the player
+        }
         if (this.avatarEntityContainers[entityId]) {
           console.log(`Updating entity ${entityId}`);
           const entityContainer = this.avatarEntityContainers[entityId];
