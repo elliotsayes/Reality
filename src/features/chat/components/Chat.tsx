@@ -30,7 +30,6 @@ export function Chat({
   newMessages,
   onUserMessageSent,
 }: ChatProps) {
-  console.log({ historyIndex });
   const messageHistoryQuery = useInfiniteQuery({
     queryKey: [
       "messageHistory",

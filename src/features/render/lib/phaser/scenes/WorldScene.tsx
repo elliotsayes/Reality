@@ -1,6 +1,11 @@
 import { WarpableScene } from "./WarpableScene";
 import { WorldState } from "../../load/model";
-import { phaserTilemapKey, phaserTilesetKey } from "../../load/reality";
+import {
+  getDirectionFromDelta,
+  phaserTilemapKey,
+  phaserTilesetKey,
+  resolveSystemAniToExistingAni,
+} from "../../load/reality";
 import { _2dTileParams } from "@/features/reality/contract/_2dTile";
 import { emitSceneReady, emitSceneEvent } from "../../EventBus";
 import {
@@ -397,6 +402,34 @@ export class WorldScene extends WarpableScene {
       : `llama_${entity.Metadata?.SkinNumber ?? (isPlayer ? 0 : 4)}`;
   }
 
+  getDirectionFromPositions(
+    oldPosition: Point2D,
+    newPosition: Point2D,
+  ): string {
+    const dx = newPosition.x - oldPosition.x;
+    const dy = newPosition.y - oldPosition.y;
+
+    return getDirectionFromDelta(dx, dy);
+  }
+
+  playAni(
+    entity: Phaser.GameObjects.Sprite,
+    animBase: string,
+    animEnd: string,
+  ) {
+    const resolvedAnimEnd = resolveSystemAniToExistingAni(animEnd, (testEnd) =>
+      entity.anims.animationManager.exists(`${animBase}_${testEnd}`),
+    );
+    // console.log({ animBase, animEnd, resolvedAnimEnd });
+
+    const resolvedAnim = `${animBase}_${resolvedAnimEnd}`;
+    entity.play(resolvedAnim);
+    if (animEnd.endsWith("_left") || animEnd.endsWith("_right")) {
+      entity.flipX =
+        animEnd.endsWith("_left") && !resolvedAnimEnd.endsWith("_left");
+    }
+  }
+
   public mergeEntities(
     entityUpdates: RealityEntityKeyed,
     profiles: Array<ProfileInfo>,
@@ -439,21 +472,11 @@ export class WorldScene extends WarpableScene {
           };
 
           // Check previous position if it exists
-          const previousPosition = entityContainer.lastPosition || {
+          const workingLastPosition = entityContainer.lastPosition || {
             x: entityContainer.x,
             y: entityContainer.y,
           };
 
-          // Determine if the entity is moving left or right and flip the sprite accordingly
-          if (updatePosition.x < previousPosition.x) {
-            // Moving left, flip the sprite
-            entitySprite.setFlipX(true);
-          } else if (updatePosition.x > previousPosition.x) {
-            // Moving right, don't flip the sprite
-            entitySprite.setFlipX(false);
-          }
-
-          // Save the current position as the last position for the next update
           entityContainer.lastPosition = {
             x: updatePosition.x,
             y: updatePosition.y,
@@ -474,7 +497,11 @@ export class WorldScene extends WarpableScene {
               .setOrigin(0.5)
               .setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
 
-            entitySprite.play(`${spriteKeyBase}_walk`);
+            const directionStr = this.getDirectionFromPositions(
+              workingLastPosition,
+              updatePosition,
+            );
+            this.playAni(entitySprite, spriteKeyBase, `walk_${directionStr}`);
             this.physics.moveToObject(
               entityContainer,
               this.entityTargets[entityId],
@@ -488,7 +515,11 @@ export class WorldScene extends WarpableScene {
                 const containerBody =
                   entityContainer.body as Phaser.Physics.Arcade.Body;
                 containerBody.setVelocity(0, 0);
-                entitySprite.play(`${spriteKeyBase}_idle`);
+                this.playAni(
+                  entitySprite,
+                  spriteKeyBase,
+                  `idle_${directionStr}`,
+                );
                 // entitySprite.setPosition(updatePosition.x, updatePosition.y);
 
                 this.entityTargets[entityId]?.destroy();
@@ -635,9 +666,9 @@ export class WorldScene extends WarpableScene {
       .setInteractive();
 
     if (isPlayer) {
-      sprite.play(`${spriteKeyBase}_idle`);
+      this.playAni(sprite, spriteKeyBase, `idle`);
     } else {
-      sprite.play(`${spriteKeyBase}_idle`);
+      this.playAni(sprite, spriteKeyBase, `idle`);
     }
 
     if (
@@ -656,7 +687,7 @@ export class WorldScene extends WarpableScene {
       sprite.on(
         "pointerdown",
         () => {
-          sprite.play(`${spriteKeyBase}_emote`);
+          this.playAni(sprite, spriteKeyBase, `emote`);
           if (entity.Metadata?.Interaction?.Type === "Default") {
             this.aoContractClientForProcess(entityId).message({
               tags: [
@@ -668,7 +699,7 @@ export class WorldScene extends WarpableScene {
             });
           }
           setTimeout(() => {
-            sprite.play(`${spriteKeyBase}_idle`);
+            this.playAni(sprite, spriteKeyBase, `idle`);
             if (isBouncer) {
               this.showEntityChatMessages([
                 {
@@ -849,10 +880,8 @@ export class WorldScene extends WarpableScene {
     const playerSprite = this.player.getAt(0) as Phaser.GameObjects.Sprite;
     const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
     if (isLeft) {
-      // playerSprite.flipX = true;
       playerBody.setVelocityX(-speed);
     } else if (isRight) {
-      // playerSprite.flipX = false;
       playerBody.setVelocityX(speed);
     } else {
       playerBody.setVelocityX(0);
@@ -866,17 +895,19 @@ export class WorldScene extends WarpableScene {
       playerBody.setVelocityY(0);
     }
 
-    const direction = `${isLeft ? "left" : isRight ? "right" : ""}${(isLeft || isRight) && (isUp || isDown) ? "_" : ""}${
+    const direction = `${
       isUp ? "up" : isDown ? "down" : ""
-    }`;
+    }${(isLeft || isRight) && (isUp || isDown) ? "_" : ""}${isLeft ? "left" : isRight ? "right" : ""}`;
     const isMoving = isLeft || isRight || isUp || isDown;
 
     const changeAni =
       isMoving !== this.lastTickMoving || direction !== this.lastTickDirection;
     if (changeAni) {
       const aniDirection = direction || this.lastTickDirection;
-      playerSprite.play(
-        `${this.playerSpriteKeyBase}_${isMoving ? "walk" : "idle"}${aniDirection ? `_${aniDirection}` : ""}`,
+      this.playAni(
+        playerSprite,
+        this.playerSpriteKeyBase,
+        `${isMoving ? "walk" : "idle"}${aniDirection ? `_${aniDirection}` : ""}`,
       );
     }
 

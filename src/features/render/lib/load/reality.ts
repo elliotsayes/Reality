@@ -160,14 +160,45 @@ export async function loadSpritePhaser(
   });
 }
 
+export function getDirectionFromDelta(dx: number, dy: number) {
+  // Calculate the angle in radians
+  const angle = Math.atan2(dy, dx);
+
+  // Convert the angle from radians to degrees
+  let degrees = angle * (180 / Math.PI);
+
+  // Normalize the angle to be within [0, 360)
+  if (degrees < 0) {
+    degrees += 360;
+  }
+
+  // Define the 8 directions
+  const directions = [
+    "right", // 0 degrees
+    "up_right", // 45 degrees
+    "up", // 90 degrees
+    "up_left", // 135 degrees
+    "left", // 180 degrees
+    "down_left", // 225 degrees
+    "down", // 270 degrees
+    "down_right", // 315 degrees
+  ];
+
+  // Determine the index of the closest direction (each direction covers 45 degrees)
+  const index = Math.round(degrees / 45) % 8;
+
+  // Return the corresponding direction
+  return directions[index];
+}
+
 export function getSystemAniNames() {
   const systemAnis = ["emote", "dance"];
 
   for (const base of ["idle", "walk"]) {
-    for (const xdir of [undefined, "side", "left", "right"]) {
-      const xdirStr = xdir ? `_${xdir}` : "";
-      for (const ydir of [undefined, "up", "down"]) {
-        const ydirStr = ydir ? `_${ydir}` : "";
+    for (const ydir of [undefined, "up", "down"]) {
+      const ydirStr = ydir ? `_${ydir}` : "";
+      for (const xdir of [undefined, "left", "right"]) {
+        const xdirStr = xdir ? `_${xdir}` : "";
         systemAnis.push(`${base}${xdirStr}${ydirStr}`);
       }
     }
@@ -178,35 +209,23 @@ export function getSystemAniNames() {
 
 export function resolveSystemAniToExistingAni(
   systemAni: string,
-  aniNames: string[],
-) {
-  if (aniNames.includes(systemAni)) return systemAni;
+  aniExists: (a: string) => boolean,
+): string {
+  if (aniExists(systemAni)) return systemAni;
 
   const components = systemAni.split("_");
   console.log({ components });
 
   if (components.length === 1) {
-    if (!aniNames.includes("idle")) throw Error("No idle animation found");
+    if (!aniExists("idle")) throw Error("No idle animation found");
     return "idle";
-  } else {
-    if (["up", "down"].includes(components[1])) {
-      // base_ydir
-      return resolveSystemAniToExistingAni(components[0], aniNames);
-    }
-
-    // base_xdir???
-    if (components[1] != "side") {
-      const withSide = systemAni.replace(components[1], "side");
-      if (aniNames.includes(withSide)) return withSide;
-    }
-    if (components.length === 3) {
-      return resolveSystemAniToExistingAni(
-        `${components[0]}_${components[1]}`,
-        aniNames,
-      );
-    }
-    // base_xdir
-    return resolveSystemAniToExistingAni(components[0], aniNames);
+  } else if (components.length === 2) {
+    return resolveSystemAniToExistingAni(components[0], aniExists);
+  } /* if (components.length === 3) */ else {
+    return resolveSystemAniToExistingAni(
+      `${components[0]}_${components[1]}`,
+      aniExists,
+    );
   }
 }
 
@@ -224,32 +243,13 @@ export function createSpriteAnimsPhaser(
   const anis: Record<string, string[]> = textureAtlas.customData["animations"];
   const aniNames = Object.keys(anis);
 
-  const systemAnis = getSystemAniNames();
-  const mappedSystemAnis = systemAnis.map(
-    (aniName) => ({
-      aniName: aniName,
-      resolvedAni: resolveSystemAniToExistingAni(aniName, aniNames),
-    }),
-    anis,
-  );
-  console.log({ mappedSystemAnis });
-
-  const mappedCustomAnis = Object.keys(anis)
-    .filter((aniName) => !systemAnis.includes(aniName))
-    .map((aniName) => ({
-      aniName,
-      resolvedAni: aniName,
-    }));
-
-  const mappedAnis = [...mappedSystemAnis, ...mappedCustomAnis];
-
-  for (const mappedAni of mappedAnis) {
+  for (const aniName of aniNames) {
     phaserAnims.create({
-      key: `${spriteKeyBase}_${mappedAni.aniName}`,
+      key: `${spriteKeyBase}_${aniName}`,
       frames: phaserAnims.generateFrameNames(spriteKeyBase, {
         start: 0,
-        end: anis[mappedAni.resolvedAni].length - 1,
-        prefix: `${mappedAni.resolvedAni}_`,
+        end: anis[aniName].length - 1,
+        prefix: `${aniName}_`,
         zeroPad: 2,
         suffix: ".png",
       }),
