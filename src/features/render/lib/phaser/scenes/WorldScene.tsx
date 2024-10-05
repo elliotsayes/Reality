@@ -406,12 +406,23 @@ export class WorldScene extends WarpableScene {
     profiles: Array<ProfileInfo>,
   ) {
     Object.keys(entityUpdates).forEach((entityId) => {
-      // Ignore player character
-      if (entityId === this.playerAddress) return;
-
       const entityUpdate = entityUpdates[entityId];
+
       if (entityUpdate.Type === "Avatar") {
         const spriteKeyBase = this.spriteKeyBase(entityId, entityUpdate);
+
+        if (entityId === this.playerAddress) {
+          // Update the player's sprite key if the skin has changed
+          if (spriteKeyBase !== this.playerSpriteKeyBase) {
+            this.playerSpriteKeyBase = spriteKeyBase;
+
+            // Update the player's animation with the new skin
+            const playerSprite = this.player.getAt(0) as Phaser.GameObjects.Sprite;
+            playerSprite.play(`${this.playerSpriteKeyBase}_idle`);
+          }
+          return; // Skip further movement logic for the player
+        }
+
         if (this.avatarEntityContainers[entityId]) {
           console.log(`Updating entity ${entityId}`);
           const entityContainer = this.avatarEntityContainers[entityId];
@@ -431,20 +442,21 @@ export class WorldScene extends WarpableScene {
                 entityContainer.destroy();
               },
             });
+            return; // Return early if the entity is being hidden
           }
 
-          const entitySprite = entityContainer.getAt(
-            0,
-          ) as Phaser.GameObjects.Sprite;
+          const entitySprite = entityContainer.getAt(0) as Phaser.GameObjects.Sprite;
 
           const updatePosition: Point2D = {
             x: entityUpdate.Position[0] * this.tileSizeScaled[0],
             y: entityUpdate.Position[1] * this.tileSizeScaled[1],
           };
 
-
           // Check previous position if it exists
-          const previousPosition = entityContainer.lastPosition || { x: entityContainer.x, y: entityContainer.y };
+          const previousPosition = entityContainer.lastPosition || {
+            x: entityContainer.x,
+            y: entityContainer.y,
+          };
 
           // Determine if the entity is moving left or right and flip the sprite accordingly
           if (updatePosition.x < previousPosition.x) {
@@ -456,8 +468,11 @@ export class WorldScene extends WarpableScene {
           }
 
           // Save the current position as the last position for the next update
-          entityContainer.lastPosition = { x: updatePosition.x, y: updatePosition.y };
-          
+          entityContainer.lastPosition = {
+            x: updatePosition.x,
+            y: updatePosition.y,
+          };
+
           if (
             !this.withinBox(entityContainer, {
               center: updatePosition,
@@ -477,7 +492,7 @@ export class WorldScene extends WarpableScene {
             this.physics.moveToObject(
               entityContainer,
               this.entityTargets[entityId],
-              120,
+              120
             );
             this.physics.add.overlap(
               entityContainer,
@@ -488,22 +503,21 @@ export class WorldScene extends WarpableScene {
                   entityContainer.body as Phaser.Physics.Arcade.Body;
                 containerBody.setVelocity(0, 0);
                 entitySprite.play(`${spriteKeyBase}_idle`);
-                // entitySprite.setPosition(updatePosition.x, updatePosition.y);
 
                 this.entityTargets[entityId]?.destroy();
                 delete this.entityTargets[entityId];
-              },
+              }
             );
           }
         } else {
           console.log(`Creating entity ${entityId}`);
           const profileMaybe = profiles?.find(
-            (profile) => profile.ProfileId === entityUpdate.Metadata?.ProfileId,
+            (profile) => profile.ProfileId === entityUpdate.Metadata?.ProfileId
           );
           const entityContainer = this.createAvatarEntityContainer(
             entityId,
             entityUpdate,
-            profileMaybe,
+            profileMaybe
           );
           this.avatarEntityContainers[entityId] = entityContainer;
         }
@@ -518,10 +532,7 @@ export class WorldScene extends WarpableScene {
           console.log(`Skipping hidden warp ${entityId}`);
           return;
         }
-        this.warpSprites[entityId] = this.createWarpEntity(
-          entityId,
-          entityUpdate,
-        );
+        this.warpSprites[entityId] = this.createWarpEntity(entityId, entityUpdate);
       }
     });
   }
