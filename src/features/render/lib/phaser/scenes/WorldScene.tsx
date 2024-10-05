@@ -195,7 +195,7 @@ export class WorldScene extends WarpableScene {
     };
   }
 
-  preload() { }
+  preload() {}
 
   create() {
     this.camera = this.cameras.main;
@@ -465,7 +465,7 @@ export class WorldScene extends WarpableScene {
 
           // Save the current position as the last position for the next update
           entityContainer.lastPosition = { x: updatePosition.x, y: updatePosition.y };
-
+          
           if (
             !this.withinBox(entityContainer, {
               center: updatePosition,
