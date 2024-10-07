@@ -74,7 +74,7 @@ Handlers.add(
       Target = LLAMA_FED_CHAT_PROCESS,
       Tags = {
         Action = 'ChatMessage',
-        ['Author-Name'] = 'Llama Immigration',
+        ['Author-Name'] = 'Citizenship Llama',
         -- Recipient = walletId,
       },
       Data = "Hear Ye, citizens of Llama Land! Please welcome our newest subject: " .. walletId,
@@ -154,7 +154,7 @@ Handlers.add(
       Target = LLAMA_FED_CHAT_PROCESS,
       Tags = {
         Action = 'ChatMessage',
-        ['Author-Name'] = 'Llama Immigration',
+        ['Author-Name'] = 'Citizenship Llama',
         Recipient = msg.From,
       },
       Data =
