@@ -29,7 +29,7 @@ const IndexLazyRoute = IndexLazyImport.update({
 const WorldSplatLazyRoute = WorldSplatLazyImport.update({
   path: '/world/$',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/world.$.lazyzy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/world.$.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
