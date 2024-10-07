@@ -157,7 +157,8 @@ Handlers.add(
         ['Author-Name'] = 'Llama Immigration',
         Recipient = msg.From,
       },
-      Data = "Your application for citizenship has been recieved and will be processed post-haste!",
+      Data =
+      "Your application for citizenship has been recieved and will be processed post-haste! You may collect your complimentary 25 $LLAMA coin upon next login 🦙🤝🪙",
     })
   end
 )
@@ -191,7 +192,7 @@ Handlers.add(
             Immigrate = {
               Title = "Hello, Peasant...",
               Description =
-              "Your reputation leaves something to be desired... please visit https://vouch-portal.arweave.net/ to improve your score. You'll need at least 2 vouch points!",
+              "Your reputation leaves something to be desired... please visit https://vouch-portal.arweave.net/ to improve your score. Once you gain at least 2 Vouch Points, you'll be granted Llama Land citizenship and a complimentary 25 $LLAMA coin!",
               Schema = nil,
             },
           })
@@ -204,7 +205,7 @@ Handlers.add(
             Immigrate = {
               Title = "Salutations Sir!",
               Description =
-              "Your reputation precedes you! Welcome to the Llama Kingdom. We would be delighted to offer you citizenship, simply click below to proceed!",
+              "Your reputation precedes you! Welcome to the Llama Kingdom. We would be delighted to offer you citizenship and a complimentary 25 $LLAMA coin. Simply click 'Submit' to proceed.",
               Schema = {
                 Tags = json.decode([[
 {

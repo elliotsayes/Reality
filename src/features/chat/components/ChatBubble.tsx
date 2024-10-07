@@ -30,7 +30,10 @@ export const ChatBubble = ({ chatMessage, userAddress }: ChatBubbleProps) => {
   ).success;
   const resolvedProfileImage = hasProfileImage
     ? fetchUrl(profile.data!.ProfileImage)
-    : "llamaland_profilePic_8bit_user.png";
+    : chatMessage.AuthorId === "o20viT_yWRooVjt7x84mobxADRM5y2XG9WMFr7U3_KQ" ||
+        chatMessage.AuthorId === "ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk"
+      ? "llamaland_profilePic_8bit_admin.png"
+      : "llamaland_profilePic_8bit_user.png";
 
   const isUser = chatMessage.AuthorId === userAddress;
   const isHighlighted =

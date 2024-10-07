@@ -441,7 +441,8 @@ Handlers.add(
                     Petition = {
                         Target = WRAPPED_ARWEAVE_TOKEN_PROCESS,
                         Title = "Beg the King for $LLAMA",
-                        Description = "The Llama King only has time for his loyal citizens!",
+                        Description =
+                        "The Llama King only has time for his loyal citizens! Speak with the Immigration Llama to to learn how.",
                         Schema = nil,
                     },
                 })
