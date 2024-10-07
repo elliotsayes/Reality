@@ -372,7 +372,7 @@ export const renderMachine = setup({
           createSpriteAnimsPhaser(
             input.currentScene.textures,
             input.currentScene.anims,
-            `sprite_${sprite.image}`,
+            `sprite_${sprite.image}_${sprite.atlas ?? "default"}`,
             atlas ?? input.currentScene.cache.json.get("default_atlas"),
           );
         }
@@ -416,7 +416,7 @@ export const renderMachine = setup({
           createSpriteAnimsPhaser(
             input.currentScene.textures,
             input.currentScene.anims,
-            `sprite_${sprite.image}`,
+            `sprite_${sprite.image}_${sprite.atlas ?? "default"}`,
             atlas ?? input.currentScene.cache.json.get("default_atlas"),
           );
         }

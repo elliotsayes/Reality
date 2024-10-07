@@ -154,7 +154,10 @@ export async function loadSpritePhaser(
       ? await fetch(fetchUrl(sprite.atlas!)).then((res) => res.json() as object)
       : undefined;
   return new Promise<{ atlas: object | undefined }>((resolve) => {
-    phaserLoader.image(`sprite_${sprite.image}`, fetchUrl(sprite.image));
+    phaserLoader.image(
+      `sprite_${sprite.image}_${sprite.atlas ?? "default"}`,
+      fetchUrl(sprite.image),
+    );
     phaserLoader.on("complete", () => resolve({ atlas }));
     phaserLoader.start();
   });
@@ -262,15 +265,20 @@ export function createSpriteAnimsPhaser(
   spriteKeyBase: string,
   atlas: object | object[],
 ) {
-  const atlasKey = `atlas_${spriteKeyBase}`;
-  if (phaserTextures.exists(atlasKey)) return;
-
   const textureImage = phaserTextures.get(spriteKeyBase);
+  // console.log({ textureImage });
+  if (textureImage.frameTotal > 1) {
+    // console.log("Animations already exist for", spriteKeyBase);
+    return;
+  }
+
+  const atlasKey = `atlas_${spriteKeyBase}`;
   phaserTextures.addAtlas(atlasKey, textureImage, atlas)!;
 
   const animations = getAtlasAnimations(spriteKeyBase, atlas);
 
   for (const [key, frames] of Object.entries(animations)) {
+    // console.log("Creating animation", key, frames);
     phaserAnims.create({
       key,
       frames,

@@ -6,7 +6,7 @@ import {
   useParams,
 } from "@tanstack/react-router";
 
-const worldPathRegex = /^world\/([a-zA-Z0-9_-]{43})$/;
+const worldPathRegex = /^([a-zA-Z0-9_-]{43})$/;
 
 export const Route = createLazyFileRoute("/world/$")({
   component: WorldId,
@@ -44,6 +44,8 @@ function WorldId() {
     strict: false,
   });
 
+  console.log(_splat);
+
   const navigate = useNavigate();
   if (_splat.startsWith("main")) {
     navigate({
@@ -52,11 +54,9 @@ function WorldId() {
   }
 
   let worldId = undefined;
-  if (_splat.startsWith("world/")) {
-    const match = worldPathRegex.exec(_splat);
-    if (match) {
-      worldId = match[1];
-    }
+  const match = worldPathRegex.exec(_splat);
+  if (match) {
+    worldId = match[1];
   }
 
   if (!worldId) {

@@ -391,14 +391,24 @@ export class WorldScene extends WarpableScene {
 
   public spriteKeyBase(entityId: string, entity: RealityEntity) {
     const isPlayer = entityId === this.playerAddress;
-    const spriteTxId =
-      entity.Metadata?.SpriteTxId ??
-      (isPlayer
-        ? this.worldState.parameters["2D-Tile-0"]?.PlayerSpriteTxId
-        : undefined);
+    const spriteData =
+      entity.Metadata?.SpriteTxId !== undefined
+        ? {
+            sprite: entity.Metadata?.SpriteTxId,
+            atlas: entity.Metadata?.SpriteAtlasTxId,
+          }
+        : isPlayer &&
+            this.worldState.parameters["2D-Tile-0"]?.PlayerSpriteTxId !==
+              undefined
+          ? {
+              sprite: this.worldState.parameters["2D-Tile-0"]?.PlayerSpriteTxId,
+              atlas:
+                this.worldState.parameters["2D-Tile-0"]?.PlayerSpriteAtlasTxId,
+            }
+          : undefined;
 
-    return spriteTxId !== undefined
-      ? `sprite_${spriteTxId}`
+    return spriteData !== undefined
+      ? `sprite_${spriteData.sprite}_${spriteData.atlas ?? "default"}`
       : `llama_${entity.Metadata?.SkinNumber ?? (isPlayer ? 0 : 4)}`;
   }
 
