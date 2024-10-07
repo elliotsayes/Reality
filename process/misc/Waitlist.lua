@@ -5,6 +5,8 @@ local json = require("json")
 local sqlite3 = require('lsqlite3')
 
 LLAMA_BANKER_PROCESS = LLAMA_BANKER_PROCESS or "ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk"
+LLAMA_KING_PROCESS = LLAMA_KING_PROCESS or "kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA"
+LLAMA_CITIZENSHIP_PROCESS = LLAMA_CITIZENSHIP_PROCESS or "o20viT_yWRooVjt7x84mobxADRM5y2XG9WMFr7U3_KQ"
 
 -- 12 Hours
 BUMP_DELAY_MS = 12 * 60 * 60 * 1000
@@ -21,6 +23,9 @@ SQLITE_TABLE_WAITLIST = [[
     TimestampCreated INTEGER,
     TimestampLastBumped INTEGER,
     BumpCount INTEGER
+    -- Flagged INTEGER DEFAULT 0,
+    -- Authorised INTEGER DEFAULT 0,
+    -- Claimed INTEGER DEFAULT 0
   );
 ]]
 
@@ -234,128 +239,171 @@ Handlers.add(
 
 --#endregion
 
---#region Writes
+--#region Old
 
-Handlers.add(
-  "WaitlistRegister",
-  Handlers.utils.hasMatchingTag("Action", "Waitlist-Register"),
-  function(msg)
-    print("WaitlistRegister")
+-- Handlers.add(
+--   "WaitlistRegister",
+--   Handlers.utils.hasMatchingTag("Action", "Waitlist-Register"),
+--   function(msg)
+--     print("WaitlistRegister")
 
-    local userAddress = msg.From
-    local nowMs = msg.Timestamp
+--     local userAddress = msg.From
+--     local nowMs = msg.Timestamp
 
-    local waitlistCount = WaitlistDbAdmin:count('Waitlist')
-    if (waitlistCount >= 22000) then
-      return print("Waitlist is full")
-    end
+--     local waitlistCount = WaitlistDbAdmin:count('Waitlist')
+--     if (waitlistCount >= 22000) then
+--       return print("Waitlist is full")
+--     end
 
-    local stmt = WaitlistDb:prepare([[
-      INSERT INTO Waitlist (WalletId, TimestampCreated, TimestampLastBumped, BumpCount)
-      VALUES (?, ?, ?, ?)
-    ]])
-    stmt:bind_values(
-      userAddress,
-      nowMs,
-      nowMs,
-      0
-    )
-    stmt:step()
-    local result = stmt:finalize()
+--     local stmt = WaitlistDb:prepare([[
+--       INSERT INTO Waitlist (WalletId, TimestampCreated, TimestampLastBumped, BumpCount)
+--       VALUES (?, ?, ?, ?)
+--     ]])
+--     stmt:bind_values(
+--       userAddress,
+--       nowMs,
+--       nowMs,
+--       0
+--     )
+--     stmt:step()
+--     local result = stmt:finalize()
 
-    if (result == 19) then
-      return print("User already in waitlist")
-    end
+--     if (result == 19) then
+--       return print("User already in waitlist")
+--     end
 
-    if (result ~= 0) then
-      return print("Failed to add user to waitlist")
-    end
+--     if (result ~= 0) then
+--       return print("Failed to add user to waitlist")
+--     end
 
-    -- Return the entry back to the user
-    Send({
-      Target = msg.From,
-      Tags = {
-        Action = "Waitlist-Register-Response",
-      },
-      Data = json.encode({
-        WalletId = userAddress,
-        TimestampCreated = nowMs,
-        TimestampLastBumped = nowMs,
-        BumpCount = 0
-      })
-    })
-  end
-)
+--     -- Return the entry back to the user
+--     Send({
+--       Target = msg.From,
+--       Tags = {
+--         Action = "Waitlist-Register-Response",
+--       },
+--       Data = json.encode({
+--         WalletId = userAddress,
+--         TimestampCreated = nowMs,
+--         TimestampLastBumped = nowMs,
+--         BumpCount = 0
+--       })
+--     })
+--   end
+-- )
+Handlers.remove("WaitlistRegister")
 
-Handlers.add(
-  "WaitlistBump",
-  Handlers.utils.hasMatchingTag("Action", "Waitlist-Bump"),
-  function(msg)
-    print("WaitlistBump")
+-- Handlers.add(
+--   "WaitlistBump",
+--   Handlers.utils.hasMatchingTag("Action", "Waitlist-Bump"),
+--   function(msg)
+--     print("WaitlistBump")
 
-    local userAddress = msg.From
-    local nowMs = msg.Timestamp
+--     local userAddress = msg.From
+--     local nowMs = msg.Timestamp
 
-    -- Get the current entry
-    local currentRows = WaitlistDbAdmin:exec(string.format([[
-      SELECT * FROM Waitlist WHERE WalletId = '%s'
-    ]], userAddress))
-    -- Get length of currentRow table
-    if (not currentRows or #currentRows == 0) then
-      return print("User not found in waitlist")
-    end
+--     -- Get the current entry
+--     local currentRows = WaitlistDbAdmin:exec(string.format([[
+--       SELECT * FROM Waitlist WHERE WalletId = '%s'
+--     ]], userAddress))
+--     -- Get length of currentRow table
+--     if (not currentRows or #currentRows == 0) then
+--       return print("User not found in waitlist")
+--     end
 
-    local currentRow = currentRows[1]
-    local lastBumpedMs = currentRow.TimestampLastBumped
+--     local currentRow = currentRows[1]
+--     local lastBumpedMs = currentRow.TimestampLastBumped
 
-    -- Check if the user is allowed to bump
-    if (nowMs - lastBumpedMs < BUMP_DELAY_MS) then
-      return print("User cannot bump yet")
-    end
+--     -- Check if the user is allowed to bump
+--     if (nowMs - lastBumpedMs < BUMP_DELAY_MS) then
+--       return print("User cannot bump yet")
+--     end
 
-    -- Update the entry
-    local newBumpCount = currentRow.BumpCount + 1
-    WaitlistDbAdmin:exec(string.format([[
-      UPDATE Waitlist
-      SET TimestampLastBumped = %d,
-          BumpCount = %d
-      WHERE WalletId = '%s'
-    ]], nowMs, newBumpCount, userAddress))
+--     -- Update the entry
+--     local newBumpCount = currentRow.BumpCount + 1
+--     WaitlistDbAdmin:exec(string.format([[
+--       UPDATE Waitlist
+--       SET TimestampLastBumped = %d,
+--           BumpCount = %d
+--       WHERE WalletId = '%s'
+--     ]], nowMs, newBumpCount, userAddress))
 
-    -- Build updated entry
-    local newEntry = {
-      WalletId = userAddress,
-      TimestampCreated = currentRow.TimestampCreated,
-      TimestampLastBumped = nowMs,
-      BumpCount = newBumpCount
-    }
+--     -- Build updated entry
+--     local newEntry = {
+--       WalletId = userAddress,
+--       TimestampCreated = currentRow.TimestampCreated,
+--       TimestampLastBumped = nowMs,
+--       BumpCount = newBumpCount
+--     }
 
-    -- Return the entry back to the user
-    Send({
-      Target = msg.From,
-      Tags = {
-        Action = "Waitlist-Bump-Response",
-      },
-      Data = json.encode(newEntry)
-    })
-  end
-)
+--     -- Return the entry back to the user
+--     Send({
+--       Target = msg.From,
+--       Tags = {
+--         Action = "Waitlist-Bump-Response",
+--       },
+--       Data = json.encode(newEntry)
+--     })
+--   end
+-- )
+Handlers.remove("WaitlistBump")
 
 --#endregion
 
-local bint = require('.bint')(256)
+Handlers.add("Grant-Citizenship",
+  Handlers.utils.hasMatchingTag("Action", "Grant-Citizenship"),
+  function(msg)
+    if (msg.From ~= LLAMA_CITIZENSHIP_PROCESS) then
+      return print("Grant-Citizenship: Not from " .. LLAMA_CITIZENSHIP_PROCESS)
+    end
 
-function AuthoriseWallet(walletId)
+    local walletId = msg.Tags["WalletId"]
+    AuthoriseWallet(walletId, msg.Timestamp)
+  end
+)
+
+
+function AuthoriseWallet(walletId, timestamp)
   print("Authorising: " .. walletId)
-  WaitlistDbAdmin:exec(string.format([[
-    UPDATE Waitlist
-    SET Flagged = %d,
-        Authorised = %d
-    WHERE WalletId = '%s'
-  ]], 0, 1, walletId))
+
+  local currentRows = WaitlistDbAdmin:exec(string.format([[
+    SELECT * FROM Waitlist WHERE WalletId = '%s'
+  ]], walletId))
+
+  if (not currentRows or #currentRows == 0) then
+    WaitlistDbAdmin:exec(string.format([[
+      INSERT INTO Waitlist (WalletId, TimestampCreated, TimestampLastBumped, BumpCount, Flagged, Authorised, Claimed)
+      VALUES ('%s', %d, %d, %d, %d, %d, %d)
+    ]], walletId, timestamp, timestamp, 0, 0, 1, 0))
+  else
+    WaitlistDbAdmin:exec(string.format([[
+      UPDATE Waitlist
+      SET Authorised = %d
+      WHERE WalletId = '%s'
+    ]], 1, walletId))
+  end
+
   -- Propagate authorisation to Llama Banker
   Send({
     Target = LLAMA_BANKER_PROCESS,
+    Tags = {
+      Action = "Authorise",
+      WalletId = walletId,
+    },
+  })
+
+  -- Propagate authorisation to Llama King
+  Send({
+    Target = LLAMA_KING_PROCESS,
+    Tags = {
+      Action = "Authorise",
+      WalletId = walletId,
+    },
+  })
+
+  -- Propagate authorisation to Llama Citizenship
+  Send({
+    Target = LLAMA_CITIZENSHIP_PROCESS,
     Tags = {
       Action = "Authorise",
       WalletId = walletId,
@@ -380,7 +428,7 @@ function ClaimWallet(walletId)
   ]], 1, walletId))
 end
 
-CanLogin = function(walletId)
+CanClaimLoginReward = function(walletId)
   local currentRows = WaitlistDbAdmin:exec(string.format([[
     SELECT * FROM Waitlist WHERE WalletId = '%s'
   ]], walletId))
@@ -396,20 +444,13 @@ end
 LLAMA_TOKEN_DENOMINATION = LLAMA_TOKEN_DENOMINATION or 12
 LLAMA_TOKEN_MULTIPLIER = 10 ^ LLAMA_TOKEN_DENOMINATION
 
-CalcAndClaimFirstLoginReward = function(walletId)
-  local currentRows = WaitlistDbAdmin:exec(string.format([[
-    SELECT * FROM Waitlist WHERE WalletId = '%s'
-  ]], walletId))
+local bint = require('.bint')(256)
 
-  if (not currentRows or #currentRows == 0) then
-    return "0"
-  end
-
+CalcAndClaimFirstLoginReward = function(walletId, timestamp)
   -- Flag as claimed
   ClaimWallet(walletId)
 
-  local currentRow = currentRows[1]
-  return tostring(bint(math.max(currentRow.BumpCount, 1) * 5 * LLAMA_TOKEN_MULTIPLIER))
+  return tostring(bint(25 * LLAMA_TOKEN_MULTIPLIER))
 end
 
 return "Loaded Waitlist Protocol"

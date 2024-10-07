@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
-    "aos-s": "func() { aos ${1} --wallet ./.secret/deploy_sqlite_jwk.json --module=\"GYrbbe0VbHim_7Hi6zrOpHQXrSQz07XNtwCnfbFo2I0\" ; }; func",
+    "aos-s1": "func() { aos ${1} --wallet ./.secret/deploy_sqlite_jwk.json --module=\"GYrbbe0VbHim_7Hi6zrOpHQXrSQz07XNtwCnfbFo2I0\" ; }; func",
+    "aos-s2": "func() { aos ${1} --wallet ./.secret/deploy_sqlite_jwk.json --module=\"aGVVWHldKA7GBlI_w7Qp_agO6aKjCoOTPA1G2OlluXE\" ; }; func",
     "aos-l1": "func() { aos ${1} --wallet ./.secret/deploy_llama_jwk.json --module=\"BlucTh6AJQvcbhNPa1t1UpNgHTM7UEmR0czYdAdCxXg\" ; }; func",
     "aos-l2": "func() { aos ${1} --wallet ./.secret/deploy_llama_jwk.json --module=\"-jmMbTRSNk_q7yV-Heu2qbCH410RKy0qI_2UEQLG6UE\" ; }; func",
     "aos-l3": "func() { aos ${1} --wallet ./.secret/deploy_llama_jwk.json --module=\"XcWULRSWWv_bmaEyx4PEOFf4vgRSVCP9vM5AucRvI40\" ; }; func"

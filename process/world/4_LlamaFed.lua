@@ -70,12 +70,17 @@ RealityEntitiesStatic = {
       },
     },
   },
-  -- ['SomePlayerProcessId'] = {
-  --   Position = { 0, 0 },
-  --   Type = 'Avatar',
-  -- },
-  -- ['SomeBotProcessId'] = {
-  --   Position = { 0, 0 },
-  --   Type = 'Avatar',
-  -- },
+  -- LlamaBankerDummyProcess
+  ['o20viT_yWRooVjt7x84mobxADRM5y2XG9WMFr7U3_KQ'] = {
+    Position = { 12.875, 2.5 },
+    Type = 'Avatar',
+    Metadata = {
+      DisplayName = 'Llama Immigration',
+      SkinNumber = 8,
+      Interaction = {
+        Type = 'SchemaForm',
+        Id = 'Immigrate',
+      },
+    },
+  },
 }

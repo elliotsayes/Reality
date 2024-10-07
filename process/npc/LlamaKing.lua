@@ -1,5 +1,73 @@
 local ao = require("ao")
 local json = require("json")
+local sqlite3 = require('lsqlite3')
+
+WAITLIST_PROCESS = WAITLIST_PROCESS or "2dFSGGlc5xJb0sWinAnEFHM-62tQEbhDzi1v5ldWX5k"
+
+KingDb = KingDb or sqlite3.open_memory()
+KingDbAdmin = KingDbAdmin or require('DbAdmin').new(KingDb)
+
+SQLITE_TABLE_AUTHORISED = [[
+  CREATE TABLE IF NOT EXISTS Authorised (
+    WalletId TEXT PRIMARY KEY,
+    Timestamp INTEGER
+  );
+]]
+
+function InitDb()
+    KingDb:exec(SQLITE_TABLE_AUTHORISED)
+end
+
+KingInitialized = KingInitialized or false
+if (not KingInitialized) then
+    InitDb()
+    KingInitialized = true
+end
+
+function AuthoriseWallet(walletId, timestamp)
+    print("Authorising: " .. walletId)
+    if timestamp == nil then
+        timestamp = 0
+    end
+    local stmt = KingDb:prepare("INSERT INTO Authorised (WalletId, Timestamp) VALUES (?, ?)")
+    stmt:bind_values(walletId, timestamp)
+    stmt:step()
+    stmt:finalize()
+end
+
+function UnauthoriseWallet(walletId)
+    print("Unauthorising: " .. walletId)
+    local stmt = KingDb:prepare("DELETE FROM Authorised WHERE WalletId = ?")
+    stmt:bind_values(walletId)
+    stmt:step()
+    stmt:finalize()
+end
+
+function IsAuthorised(walletId)
+    local authorised = KingDbAdmin:exec(
+        "SELECT * FROM Authorised WHERE WalletId = '" .. walletId .. "'"
+    )
+    return #authorised > 0
+end
+
+Handlers.add(
+    "Authorise",
+    Handlers.utils.hasMatchingTag("Action", "Authorise"),
+    function(msg)
+        print("Authorise")
+        if msg.From ~= WAITLIST_PROCESS then
+            return print("Authorise not from WaitlistProcessId")
+        end
+
+        local walletId = msg.Tags.WalletId
+
+        if (IsAuthorised(walletId)) then
+            return print("Already Authorised: " .. walletId)
+        end
+
+        AuthoriseWallet(walletId, msg.Timestamp)
+    end
+)
 
 WRAPPED_ARWEAVE_TOKEN_PROCESS = WRAPPED_ARWEAVE_TOKEN_PROCESS or "TODO: WrappedArweaveProcessId"
 WRAPPED_ARWEAVE_DENOMINATION = 12
@@ -357,13 +425,28 @@ Handlers.add(
     Handlers.utils.hasMatchingTag('Action', 'SchemaExternal'),
     function(msg)
         print('SchemaExternal')
-        Send({
-            Target = WRAPPED_ARWEAVE_TOKEN_PROCESS,
-            Tags = {
-                Action = 'Balance',
-                Recipient = msg.From,
-            },
-        })
+        if (IsAuthorised(msg.From)) then
+            Send({
+                Target = WRAPPED_ARWEAVE_TOKEN_PROCESS,
+                Tags = {
+                    Action = 'Balance',
+                    Recipient = msg.From,
+                },
+            })
+        else
+            Send({
+                Target = msg.From,
+                Tags = { Type = 'SchemaExternal' },
+                Data = json.encode({
+                    Petition = {
+                        Target = WRAPPED_ARWEAVE_TOKEN_PROCESS,
+                        Title = "Beg the King for $LLAMA",
+                        Description = "The Llama King only has time for his loyal citizens!",
+                        Schema = nil,
+                    },
+                })
+            })
+        end
     end
 )
 

@@ -42,12 +42,8 @@ end
 
 --#endregion
 
-CanLogin = CanLogin or function(walletId)
+CanClaimLoginReward = CanClaimLoginReward or function(walletId)
   return true
-end
-
-CalcAndClaimFirstLoginReward = CalcAndClaimFirstLoginReward or function(walletId)
-  return tostring(bint(LLAMA_TOKEN_WHOLE_FIRST_LOGIN_REWARD))
 end
 
 --#region Writes
@@ -60,12 +56,12 @@ Handlers.add(
 
     local walletId = msg.From
 
-    if CanLogin(walletId) ~= true then
+    if CanClaimLoginReward(walletId) ~= true then
       Send({
         Target = msg.From,
         Tags = {
-          Action = "Login-Failed",
-          Message = "You are not high enough on the waitlist yet!",
+          Action = "Login-Info",
+          Message = "Become a Llama Land Citizen to be eligable for login rewards!",
         },
       })
       return

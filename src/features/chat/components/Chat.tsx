@@ -164,7 +164,7 @@ function renderMessages(userAddress: string, messages: Array<ChatMessage>) {
       const isRecipient = msg.Recipient === userAddress;
 
       if (hasRecipient && !isRecipient) {
-        console.warn("Skipping message with non-player recipient", msg);
+        // console.warn("Skipping message with non-player recipient", msg);
         return false;
       }
 
