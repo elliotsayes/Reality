@@ -25,7 +25,7 @@ RealityParameters = {
       -- Offset = { -10, -10 },
     },
     PlayerSpriteTxId = 'vtrj6eG-AHmFfGTf1ARP0MoqJD_NqSRSSQGo5XyDvok',
-    PlayerSpriteAtlasTxId = 'citBqUOSiuJfdMeqy6tEUDbOaQX6Mkmgo222Sx2Yur4',
+    PlayerSpriteAtlasTxId = 'C9XASvpYzJcR5OVP91HCMM2WpfyR0vtTmnpMPAuuQm0',
   },
 }
 

@@ -424,10 +424,8 @@ export class WorldScene extends WarpableScene {
 
     const resolvedAnim = `${animBase}_${resolvedAnimEnd}`;
     entity.play(resolvedAnim);
-    if (animEnd.endsWith("_left") || animEnd.endsWith("_right")) {
-      entity.flipX =
-        animEnd.endsWith("_left") && !resolvedAnimEnd.endsWith("_left");
-    }
+    entity.flipX =
+      animEnd.endsWith("_left") && !resolvedAnimEnd.endsWith("_left");
   }
 
   public mergeEntities(
@@ -913,11 +911,19 @@ export class WorldScene extends WarpableScene {
       isMoving !== this.lastTickMoving || direction !== this.lastTickDirection;
     if (changeAni) {
       const aniDirection = direction || this.lastTickDirection;
-      this.playAni(
-        playerSprite,
-        this.playerSpriteKeyBase,
-        `${isMoving ? "walk" : "idle"}${aniDirection ? `_${aniDirection}` : ""}`,
-      );
+      if (isMoving) {
+        this.playAni(
+          playerSprite,
+          this.playerSpriteKeyBase,
+          `walk${aniDirection ? `_${aniDirection}` : ""}`,
+        );
+      } else {
+        this.playAni(
+          playerSprite,
+          this.playerSpriteKeyBase,
+          `idle${this.lastTickDirection ? `_${this.lastTickDirection}` : ""}`,
+        );
+      }
     }
 
     if (isMoving) {

@@ -84,7 +84,7 @@ const frames = [];
 rows.forEach((row) => {
   for (let i = 0; i < row.count; i++) {
     const frame = {
-      filename: `${row.prefix}_${pad2(i)}.png`,
+      filename: `${row.prefix}_${pad2(i)}`,
       frame: {
         x: i * (row.mod || 1) * spriteSizePx.w,
         y: row.offset * spriteSizePx.h,
@@ -108,19 +108,9 @@ rows.forEach((row) => {
   }
 });
 
-const animations = {};
-rows.forEach((row) => {
-  const anim = [];
-  for (let i = 0; i < row.count; i++) {
-    anim.push(`${row.prefix}_${pad2(i)}.png`);
-  }
-  animations[row.prefix] = anim;
-});
-
 const atlas = {
   meta,
   frames,
-  animations,
 };
 
 fs.writeFileSync(
