@@ -106,8 +106,14 @@ function GetVouchScoreUsd(walletId)
     Action = "VouchDAO.Vouches",
   })
 
-  local data = json.decode(resp.Data)
-  if type(data) ~= 'table' or data['Vouchers'] == nil then
+  local success, data = pcall(json.decode, resp.Data)
+  if not success or type(data) ~= 'table' or data['Vouchers'] == nil then
+    print("Invalid data: " .. resp.Data)
+    return 0
+  end
+
+  if data['Vouches-For'] ~= walletId then
+    print("Vouches-For mismatch, expected: " .. walletId .. ", got: " .. tostring(data['Vouches-For']))
     return 0
   end
 

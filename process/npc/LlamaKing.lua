@@ -425,6 +425,8 @@ Handlers.add(
     Handlers.utils.hasMatchingTag('Action', 'SchemaExternal'),
     function(msg)
         print('SchemaExternal')
+        -- Poke the Llama King
+        dispatchHighestPriorityMessage(msg.Timestamp)
         if (IsAuthorised(msg.From)) then
             Send({
                 Target = LLAMA_TOKEN_PROCESS,
