@@ -1,8 +1,8 @@
 import { AoWallet } from "@/features/ao/lib/aoWallet";
-import { WaitlistDetails } from "./WaitlistDetails";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { VolumeX, Volume2 } from "lucide-react";
+import { WaitlistSkip } from "./WaitlistSkip";
 
 interface WaitlistScreenProps {
   wallet: AoWallet;
@@ -64,7 +64,7 @@ export function WaitlistScreen({ wallet, onEnter }: WaitlistScreenProps) {
             </div>
           }
         >
-          <WaitlistDetails wallet={wallet} onEnter={onEnter} />
+          <WaitlistSkip onEnter={onEnter} />
         </Suspense>
         <div className="h-[10%]" />
       </div>
