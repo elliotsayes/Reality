@@ -423,7 +423,6 @@ export class WorldScene extends WarpableScene {
     // console.log({ animBase, animEnd, resolvedAnimEnd });
 
     const resolvedAnim = `${animBase}_${resolvedAnimEnd}`;
-    console.log(resolvedAnim);
     entity.play(resolvedAnim, true);
     entity.flipX =
       animEnd.endsWith("_left") && !resolvedAnimEnd.endsWith("_left");
