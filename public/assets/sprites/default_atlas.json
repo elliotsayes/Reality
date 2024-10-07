@@ -11,7 +11,7 @@
   },
   "frames": [
     {
-      "filename": "idle_00.png",
+      "filename": "idle_00",
       "frame": {
         "x": 0,
         "y": 38,
@@ -32,7 +32,7 @@
       }
     },
     {
-      "filename": "idle_01.png",
+      "filename": "idle_01",
       "frame": {
         "x": 24,
         "y": 38,
@@ -53,7 +53,7 @@
       }
     },
     {
-      "filename": "idle_02.png",
+      "filename": "idle_02",
       "frame": {
         "x": 48,
         "y": 38,
@@ -74,7 +74,7 @@
       }
     },
     {
-      "filename": "idle_03.png",
+      "filename": "idle_03",
       "frame": {
         "x": 72,
         "y": 38,
@@ -95,7 +95,7 @@
       }
     },
     {
-      "filename": "walk_00.png",
+      "filename": "walk_right_00",
       "frame": {
         "x": 0,
         "y": 76,
@@ -116,7 +116,7 @@
       }
     },
     {
-      "filename": "walk_01.png",
+      "filename": "walk_right_01",
       "frame": {
         "x": 24,
         "y": 76,
@@ -137,7 +137,7 @@
       }
     },
     {
-      "filename": "walk_02.png",
+      "filename": "walk_right_02",
       "frame": {
         "x": 48,
         "y": 76,
@@ -158,7 +158,7 @@
       }
     },
     {
-      "filename": "walk_03.png",
+      "filename": "walk_right_03",
       "frame": {
         "x": 72,
         "y": 76,
@@ -179,7 +179,7 @@
       }
     },
     {
-      "filename": "emote_00.png",
+      "filename": "emote_00",
       "frame": {
         "x": 0,
         "y": 38,
@@ -200,7 +200,7 @@
       }
     },
     {
-      "filename": "emote_01.png",
+      "filename": "emote_01",
       "frame": {
         "x": 48,
         "y": 38,
@@ -220,23 +220,5 @@
         "h": 38
       }
     }
-  ],
-  "animations": {
-    "idle": [
-      "idle_00.png",
-      "idle_01.png",
-      "idle_02.png",
-      "idle_03.png"
-    ],
-    "walk": [
-      "walk_00.png",
-      "walk_01.png",
-      "walk_02.png",
-      "walk_03.png"
-    ],
-    "emote": [
-      "emote_00.png",
-      "emote_01.png"
-    ]
-  }
+  ]
 }

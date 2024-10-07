@@ -38,16 +38,6 @@ const rows = [
     count: 4,
   },
   {
-    offset: 1,
-    prefix: "idle_left",
-    count: 4,
-  },
-  {
-    offset: 1,
-    prefix: "walk_left",
-    count: 4,
-  },
-  {
     offset: 2,
     prefix: "idle_up",
     count: 4,
@@ -57,16 +47,20 @@ const rows = [
     prefix: "walk_up",
     count: 4,
   },
-  {
-    offset: 3,
-    prefix: "idle_right",
-    count: 4,
-  },
-  {
-    offset: 3,
-    prefix: "walk_right",
-    count: 4,
-  },
+  ...["idle_right", "walk_right", "walk_up_right", "walk_down_right"].map(
+    (prefix) => ({
+      offset: 3,
+      prefix,
+      count: 4,
+    }),
+  ),
+  ...["idle_left", "walk_left", "walk_up_left", "walk_down_left"].map(
+    (prefix) => ({
+      offset: 1,
+      prefix,
+      count: 4,
+    }),
+  ),
 ];
 
 const meta = {
@@ -84,7 +78,7 @@ const frames = [];
 rows.forEach((row) => {
   for (let i = 0; i < row.count; i++) {
     const frame = {
-      filename: `${row.prefix}_${pad2(i)}.png`,
+      filename: `${row.prefix}_${pad2(i)}`,
       frame: {
         x: i * (row.mod || 1) * spriteSizePx.w,
         y: row.offset * spriteSizePx.h,
@@ -108,19 +102,9 @@ rows.forEach((row) => {
   }
 });
 
-const animations = {};
-rows.forEach((row) => {
-  const anim = [];
-  for (let i = 0; i < row.count; i++) {
-    anim.push(`${row.prefix}_${pad2(i)}.png`);
-  }
-  animations[row.prefix] = anim;
-});
-
 const atlas = {
   meta,
   frames,
-  animations,
 };
 
 fs.writeFileSync(

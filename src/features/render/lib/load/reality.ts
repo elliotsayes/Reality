@@ -209,12 +209,11 @@ export function getSystemAniNames() {
 
 export function resolveSystemAniToExistingAni(
   systemAni: string,
-  aniExists: (a: string) => boolean,
+  aniExists: (ani: string) => boolean,
 ): string {
   if (aniExists(systemAni)) return systemAni;
 
   const components = systemAni.split("_");
-  console.log({ components });
 
   if (components.length === 1) {
     if (!aniExists("idle")) throw Error("No idle animation found");
@@ -229,6 +228,34 @@ export function resolveSystemAniToExistingAni(
   }
 }
 
+type AtlasAnimations = Record<string, Phaser.Types.Animations.AnimationFrame[]>;
+
+function getAtlasAnimations(
+  keyBase: string,
+  atlas: object | object[],
+): AtlasAnimations {
+  const frames = atlas["frames"];
+  const anis: AtlasAnimations = {};
+
+  for (let i = 0; i < frames.length; i++) {
+    const frame = frames[i];
+    const fileName = frame["filename"];
+    const fileNameExtensionless = fileName.split(".")[0];
+    const filenameParts = fileNameExtensionless.split("_");
+    const animationName = filenameParts.slice(0, -1).join("_");
+
+    const globalAnimationName = `${keyBase}_${animationName}`;
+    if (!anis[globalAnimationName]) {
+      anis[globalAnimationName] = [];
+    }
+    anis[globalAnimationName].push({
+      key: keyBase,
+      frame: fileName,
+    });
+  }
+  return anis;
+}
+
 export function createSpriteAnimsPhaser(
   phaserTextures: Phaser.Textures.TextureManager,
   phaserAnims: Phaser.Animations.AnimationManager,
@@ -239,20 +266,14 @@ export function createSpriteAnimsPhaser(
   if (phaserTextures.exists(atlasKey)) return;
 
   const textureImage = phaserTextures.get(spriteKeyBase);
-  const textureAtlas = phaserTextures.addAtlas(atlasKey, textureImage, atlas)!;
-  const anis: Record<string, string[]> = textureAtlas.customData["animations"];
-  const aniNames = Object.keys(anis);
+  phaserTextures.addAtlas(atlasKey, textureImage, atlas)!;
 
-  for (const aniName of aniNames) {
+  const animations = getAtlasAnimations(spriteKeyBase, atlas);
+
+  for (const [key, frames] of Object.entries(animations)) {
     phaserAnims.create({
-      key: `${spriteKeyBase}_${aniName}`,
-      frames: phaserAnims.generateFrameNames(spriteKeyBase, {
-        start: 0,
-        end: anis[aniName].length - 1,
-        prefix: `${aniName}_`,
-        zeroPad: 2,
-        suffix: ".png",
-      }),
+      key,
+      frames,
       repeat: -1,
       frameRate: 10,
     });
