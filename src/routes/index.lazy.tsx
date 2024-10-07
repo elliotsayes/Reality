@@ -22,11 +22,5 @@ function Index() {
     );
   }
 
-  return (
-    <Main
-      wallet={wallet}
-      disconnect={() => setWallet(null)}
-      worldId={import.meta.env.VITE_LLAMA_LAND_PROCESS_ID}
-    />
-  );
+  return <Main wallet={wallet} disconnect={() => setWallet(null)} />;
 }
