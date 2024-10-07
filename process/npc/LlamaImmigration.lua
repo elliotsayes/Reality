@@ -198,7 +198,7 @@ Handlers.add(
             Immigrate = {
               Title = "Hello, Peasant...",
               Description =
-              "Your reputation leaves something to be desired... please visit https://vouch-portal.arweave.net/ to improve your score. Once you gain at least 2 Vouch Points, you'll be granted Llama Land citizenship and a complimentary 25 $LLAMA coin!",
+              "Your reputation leaves something to be desired... please visit https://vouch-portal.arweave.net/ to improve your score. Once you gain at least 2 Vouch Points, you may be granted Llama Land Citizenship and a complimentary 25 $LLAMA coin!",
               Schema = nil,
             },
           })

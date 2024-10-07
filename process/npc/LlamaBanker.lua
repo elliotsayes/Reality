@@ -461,6 +461,21 @@ Handlers.add(
   function(msg)
     print('Schema')
     local sender = msg.From
+    if IsAuthorised(sender) ~= true then
+      Send({
+        Target = sender,
+        Tags = { Type = 'Schema' },
+        Data = json.encode({
+          Balance = {
+            Title = "Check your Llama Land Status!",
+            Description =
+            "Sorry, my services are only available to Llama Land Citizens. Please talk to the Citizenship Llama if that piques your interest...",
+            Schema = nil,
+          }
+        })
+      })
+    end
+
     local lastDayCredits = BankerDbAdmin:exec(
       "SELECT * FROM WarCredit WHERE Sender = '" .. sender
       .. "' AND Timestamp > " .. (msg.Timestamp - PETITION_COOLDOWN_MS)
