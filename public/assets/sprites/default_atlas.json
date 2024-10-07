@@ -95,7 +95,7 @@
       }
     },
     {
-      "filename": "walk_right_00",
+      "filename": "walk_00",
       "frame": {
         "x": 0,
         "y": 76,
@@ -116,7 +116,7 @@
       }
     },
     {
-      "filename": "walk_right_01",
+      "filename": "walk_01",
       "frame": {
         "x": 24,
         "y": 76,
@@ -137,7 +137,7 @@
       }
     },
     {
-      "filename": "walk_right_02",
+      "filename": "walk_02",
       "frame": {
         "x": 48,
         "y": 76,
@@ -158,7 +158,7 @@
       }
     },
     {
-      "filename": "walk_right_03",
+      "filename": "walk_03",
       "frame": {
         "x": 72,
         "y": 76,
