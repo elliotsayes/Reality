@@ -69,12 +69,12 @@ Handlers.add(
     end
 )
 
-WRAPPED_ARWEAVE_TOKEN_PROCESS = WRAPPED_ARWEAVE_TOKEN_PROCESS or "TODO: WrappedArweaveProcessId"
-WRAPPED_ARWEAVE_DENOMINATION = 12
-WRAPPED_ARWEAVE_MULTIPLIER = 10 ^ WRAPPED_ARWEAVE_DENOMINATION
+LLAMA_TOKEN_PROCESS = "pazXumQI-HPH7iFGfTC-4_7biSnqz_U67oFAGry5zUY"
+LLAMA_DENOMINATION = 12
+LLAMA_MULTIPLIER = 10 ^ LLAMA_DENOMINATION
 
-WRAPPED_ARWEAVE_MINIMUM_QUANTITY_WHOLE = 0.025
-WRAPPED_ARWEAVE_MAXIMUM_QUANTITY_WHOLE = 0.025
+LLAMA_MINIMUM_QUANTITY_WHOLE = 1
+LLAMA_MAXIMUM_QUANTITY_WHOLE = 1
 
 LLAMA_BANKER_PROCESS = LLAMA_BANKER_PROCESS or "TODO: BankerProcessId"
 
@@ -346,10 +346,10 @@ function PetitionSchemaTags()
     },
     "Quantity": {
       "type": "number",
-      "default": ]] .. WRAPPED_ARWEAVE_MINIMUM_QUANTITY_WHOLE .. [[,
-      "minimum": ]] .. WRAPPED_ARWEAVE_MINIMUM_QUANTITY_WHOLE .. [[,
-      "maximum": ]] .. WRAPPED_ARWEAVE_MAXIMUM_QUANTITY_WHOLE .. [[,
-      "title": "Wrapped $AR offering (0.025).",
+      "default": ]] .. LLAMA_MINIMUM_QUANTITY_WHOLE .. [[,
+      "minimum": ]] .. LLAMA_MINIMUM_QUANTITY_WHOLE .. [[,
+      "maximum": ]] .. LLAMA_MAXIMUM_QUANTITY_WHOLE .. [[,
+      "title": "$LLAMA offering (1).",
       "$comment": "1000000000000"
     },
     "X-Petition": {
@@ -373,10 +373,10 @@ end
 function SchemaExternalHasWar()
     return {
         Petition = {
-            Target = WRAPPED_ARWEAVE_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
+            Target = LLAMA_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
             Title = "Beg the King for $LLAMA",
             Description =
-            "Offer wrapped $AR tokens for a chance to earn $LLAMA Coin. Check with the Llama Banker to see your daily allowance.",
+            "Offer a $LLAMA coin for a chance to earn even more! Check with the Llama Banker to see your daily allowance.",
             Schema = {
                 Tags = json.decode(PetitionSchemaTags()),
                 -- Data
@@ -389,7 +389,7 @@ end
 Handlers.add(
     'TokenBalanceResponse',
     function(msg)
-        local fromToken = msg.From == WRAPPED_ARWEAVE_TOKEN_PROCESS
+        local fromToken = msg.From == LLAMA_TOKEN_PROCESS
         local hasBalance = msg.Tags.Balance ~= nil
         return fromToken and hasBalance
     end,
@@ -398,7 +398,7 @@ Handlers.add(
         local balance = tonumber(msg.Tags.Balance)
         print('Account: ' .. account .. ', Balance: ' .. balance)
 
-        if (balance >= (WRAPPED_ARWEAVE_MULTIPLIER * 0.001)) then
+        if (balance >= (LLAMA_MULTIPLIER * 0.001)) then
             Send({ Target = account, Tags = { Type = 'SchemaExternal' }, Data = json.encode(SchemaExternalHasWar()) })
         else
             Send({
@@ -406,12 +406,12 @@ Handlers.add(
                 Tags = { Type = 'SchemaExternal' },
                 Data = json.encode({
                     Petition = {
-                        Target = WRAPPED_ARWEAVE_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
+                        Target = LLAMA_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
                         Title = "Beg the King for $LLAMA",
                         Description =
-                            "You don't have enough wrapped AR to offer the Llama King! You need at least " ..
-                            WRAPPED_ARWEAVE_MINIMUM_QUANTITY_WHOLE ..
-                            ". Go to wardepot.g8way.io to swap ETH or USDC for wAR, or go to aox.xyz to bridge AR for wAR.",
+                            "You don't have enough $LLAMA to offer the Llama King! You need at least " ..
+                            LLAMA_MINIMUM_QUANTITY_WHOLE ..
+                            " $LLAMA. Go to bazar.arweave.net or permaswap.network to get some.",
                         Schema = nil,
                     },
                 })
@@ -427,7 +427,7 @@ Handlers.add(
         print('SchemaExternal')
         if (IsAuthorised(msg.From)) then
             Send({
-                Target = WRAPPED_ARWEAVE_TOKEN_PROCESS,
+                Target = LLAMA_TOKEN_PROCESS,
                 Tags = {
                     Action = 'Balance',
                     Recipient = msg.From,
@@ -439,7 +439,7 @@ Handlers.add(
                 Tags = { Type = 'SchemaExternal' },
                 Data = json.encode({
                     Petition = {
-                        Target = WRAPPED_ARWEAVE_TOKEN_PROCESS,
+                        Target = LLAMA_TOKEN_PROCESS,
                         Title = "Beg the King for $LLAMA",
                         Description =
                         "The Llama King only has time for his loyal citizens! Speak with the Immigration Llama to to learn how.",
