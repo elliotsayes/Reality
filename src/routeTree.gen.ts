@@ -16,26 +16,20 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
-const SplatLazyImport = createFileRoute('/$')()
 const IndexLazyImport = createFileRoute('/')()
-const AppSplatLazyImport = createFileRoute('/app/$')()
+const WorldSplatLazyImport = createFileRoute('/world/$')()
 
 // Create/Update Routes
-
-const SplatLazyRoute = SplatLazyImport.update({
-  path: '/$',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/$.lazy').then((d) => d.Route))
 
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
-const AppSplatLazyRoute = AppSplatLazyImport.update({
-  path: '/app/$',
+const WorldSplatLazyRoute = WorldSplatLazyImport.update({
+  path: '/world/$',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/app.$.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/world.$.lazyzy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -48,18 +42,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/$': {
-      id: '/$'
-      path: '/$'
-      fullPath: '/$'
-      preLoaderRoute: typeof SplatLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/app/$': {
-      id: '/app/$'
-      path: '/app/$'
-      fullPath: '/app/$'
-      preLoaderRoute: typeof AppSplatLazyImport
+    '/world/$': {
+      id: '/world/$'
+      path: '/world/$'
+      fullPath: '/world/$'
+      preLoaderRoute: typeof WorldSplatLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -69,8 +56,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
-  SplatLazyRoute,
-  AppSplatLazyRoute,
+  WorldSplatLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -82,18 +68,14 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/$",
-        "/app/$"
+        "/world/$"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
-    "/$": {
-      "filePath": "$.lazy.tsx"
-    },
-    "/app/$": {
-      "filePath": "app.$.lazy.tsx"
+    "/world/$": {
+      "filePath": "world.$.lazy.tsx"
     }
   }
 }

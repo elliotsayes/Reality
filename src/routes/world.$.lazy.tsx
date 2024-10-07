@@ -8,7 +8,7 @@ import {
 
 const worldPathRegex = /^world\/([a-zA-Z0-9_-]{43})$/;
 
-export const Route = createLazyFileRoute("/app/$")({
+export const Route = createLazyFileRoute("/world/$")({
   component: WorldId,
 });
 
