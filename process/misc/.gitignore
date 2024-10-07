@@ -1,4 +1,5 @@
 *.json
 *.csv
 WhitelistData*.js
+WaitlistData*.js
 FlaggedData*.js
