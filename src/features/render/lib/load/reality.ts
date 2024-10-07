@@ -209,7 +209,7 @@ export function getSystemAniNames() {
 
 export function resolveSystemAniToExistingAni(
   systemAni: string,
-  aniExists: (a: string) => boolean,
+  aniExists: (ani: string) => boolean,
 ): string {
   if (aniExists(systemAni)) return systemAni;
 
