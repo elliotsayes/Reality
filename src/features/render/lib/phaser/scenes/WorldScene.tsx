@@ -607,13 +607,26 @@ export class WorldScene extends WarpableScene {
         sprite,
         () => {
           if (entity.Metadata?.Interaction?.Type !== "Warp") return;
-          console.log(`Collided with warp ${entityId}`);
+          const resolvedTarget =
+            entity.Metadata?.Interaction?.Target ?? entityId;
+
+          console.log(`Collided with warp ${entityId} (to ${resolvedTarget})`);
           if (this.isWarping) return;
           this.isWarping = true;
+
+          const resolvedPosition = entity.Metadata?.Interaction?.Position;
+          if (resolvedTarget === this.worldId && resolvedPosition) {
+            this.player.setPosition(
+              resolvedPosition[0] * this.tileSizeScaled[0],
+              resolvedPosition[1] * this.tileSizeScaled[1],
+            );
+            return;
+          }
+
           emitSceneEvent({
             type: "Warp Immediate",
             warpTarget: {
-              worldId: entity.Metadata?.Interaction?.Target ?? entityId,
+              worldId: resolvedTarget,
               position: entity.Metadata?.Interaction?.Position,
             },
           });
