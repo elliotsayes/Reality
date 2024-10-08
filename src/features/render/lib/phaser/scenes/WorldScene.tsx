@@ -620,6 +620,7 @@ export class WorldScene extends WarpableScene {
               resolvedPosition[0] * this.tileSizeScaled[0],
               resolvedPosition[1] * this.tileSizeScaled[1],
             );
+            this.isWarping = false;
             return;
           }
 
