@@ -8,35 +8,44 @@ LLAMA_BANKER_PROCESS = "ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk"
 
 LLAMA_FED_CHAT_PROCESS = "QIFgbqEmk5MyJy01wuINfcRP_erGNNbhqHRkAQjxKgg"
 
+LLM_WORKER_IDS = {
+  'Rby22XFJ-o81bA1fHpazGkwb959B7gieXywvw_J75uI',
+  'YwrPa0g7BSxxRkMy_5itsGImbVujHs9GphfM61F8b4Y',
+  'NIgg3_DsKK71hwUT7enV-RqTPcmVillDnd1R9Dtsoek',
+  'lIcxoojc2kUk-kwFChxTkVDuT1Ij40UMLALMzSg9pHY',
+  'q4i_t4CkmlYYawxjjg0mgYJ2trU4bdqm0tumNiPaONA',
+  '-mgtw93llCxtkSyfM89F65-TG4MXWaD8EHEj92foCj8'
+}
+
 -- LLMGraderJsonState workers
 LLM_WORKERS = {
   --LlmGraderJsonTempT1_14
-  ['f6O7Fr9s8VyW-GjuzFeY9-mF575RbE38ppOvB_Xli28'] = {
+  ['Rby22XFJ-o81bA1fHpazGkwb959B7gieXywvw_J75uI'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
   --LlmGraderJsonTempT2_14
-  ['ul4RTcHL3_oDJQ9QRbmptvXd_DKO_lYXR4YNpk4cy8M'] = {
+  ['YwrPa0g7BSxxRkMy_5itsGImbVujHs9GphfM61F8b4Y'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
   --LlmGraderJsonTempT3_14
-  ['zbnszGl72Kjsmdpr_VBtwf-m8AyMe7Oapbw3PPUoepg'] = {
+  ['NIgg3_DsKK71hwUT7enV-RqTPcmVillDnd1R9Dtsoek'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
   --LlmGraderJsonTempT4_14
-  ['0zcM7wsIo32MAa0WUcxlcQNdCYQjphxd-8kl6dgfk1Q'] = {
+  ['lIcxoojc2kUk-kwFChxTkVDuT1Ij40UMLALMzSg9pHY'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
   --LlmGraderJsonTempT5_14
-  ['LkyoxQ98gfBnP8gNxquV3YYuZKZDyEBS9GXdpr41DXo'] = {
+  ['q4i_t4CkmlYYawxjjg0mgYJ2trU4bdqm0tumNiPaONA'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },
   --LlmGraderJsonTempT6_14
-  ['k1Vi9MDpEXigB5qh7nlDYDvJSfNmVCfuDucufd4Shhk'] = {
+  ['-mgtw93llCxtkSyfM89F65-TG4MXWaD8EHEj92foCj8'] = {
     busyWithMessage = nil,
     submittedTimestamp = nil,
   },

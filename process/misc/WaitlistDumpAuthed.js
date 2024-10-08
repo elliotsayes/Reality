@@ -11,7 +11,7 @@ SELECT
 FROM
   Waitlist
 WHERE
-  Authorised = 1
+  Authorised = 1 AND Flagged = 0
 ]]))`,
 }).then((result) => {
   console.log(result.Output.data.output);

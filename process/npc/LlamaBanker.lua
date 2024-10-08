@@ -299,7 +299,7 @@ Handlers.add(
 
     local gradeMultiplier = 0
     if (grade > 0) then
-      local multiplierLookup = { 2, 10, 50, 100, 200 }
+      local multiplierLookup = { 1, 10, 50, 100, 200 }
       gradeMultiplier = multiplierLookup[grade]
     end
     local baseEmissions = 1 * LLAMA_TOKEN_MULTIPLIER

@@ -99,7 +99,7 @@ MESSAGES_TO_PROCESS = MESSAGES_TO_PROCESS or {
 
 function clearExpiredLlamas(currentTime)
     for llamaId, llama in pairs(LLM_WORKERS) do
-        if llama.busyWithMessage and ((currentTime - llama.submittedTimestamp) >= 600000) then
+        if llama.busyWithMessage and (llama.submittedTimestamp == nil or ((currentTime - llama.submittedTimestamp) >= 600000)) then
             print("Llama " .. llamaId .. " is expired!")
             llama.busyWithMessage = "TIMEOUT"
             llama.submittedTimestamp = nil
