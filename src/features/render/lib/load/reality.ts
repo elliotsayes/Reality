@@ -178,13 +178,13 @@ export function getDirectionFromDelta(dx: number, dy: number) {
   // Define the 8 directions
   const directions = [
     "right", // 0 degrees
-    "up_right", // 45 degrees
-    "up", // 90 degrees
-    "up_left", // 135 degrees
+    "down_right", // 45 degrees
+    "down", // 90 degrees
+    "down_left", // 135 degrees
     "left", // 180 degrees
-    "down_left", // 225 degrees
-    "down", // 270 degrees
-    "down_right", // 315 degrees
+    "up_left", // 225 degrees
+    "up", // 270 degrees
+    "up_right", // 315 degrees
   ];
 
   // Determine the index of the closest direction (each direction covers 45 degrees)
