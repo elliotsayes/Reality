@@ -79,6 +79,7 @@ export class WorldScene extends WarpableScene {
   lastTickDirection: string = "down";
 
   isWarping: boolean = false;
+  warpCooldown: boolean = false;
 
   avatarEntityContainers: Record<string, Phaser.GameObjects.Container> = {};
   warpSprites: Record<string, Phaser.Physics.Arcade.Sprite> = {};
@@ -121,6 +122,7 @@ export class WorldScene extends WarpableScene {
     this.playerProfileInfo = playerProfileInfo;
 
     this.warpTarget = warpTarget;
+    this.warpCooldown = false;
     this.worldId = warpTarget.worldId;
     this.worldState = reality;
     this.aoContractClientForProcess = aoContractClientForProcess;
@@ -628,6 +630,9 @@ export class WorldScene extends WarpableScene {
         this.player,
         sprite,
         () => {
+          // If a warp is currently on cooldown, return early to prevent triggering
+          if (this.warpCooldown) return;
+
           if (entity.Metadata?.Interaction?.Type !== "Warp") return;
           const resolvedTarget =
             entity.Metadata?.Interaction?.Target ?? entityId;
@@ -635,13 +640,49 @@ export class WorldScene extends WarpableScene {
           console.log(`Collided with warp ${entityId} (to ${resolvedTarget})`);
           if (this.isWarping) return;
           this.isWarping = true;
+          this.warpCooldown = true;
+          this.time.delayedCall(1500, () => {
+            this.warpCooldown = false; // Reset the cooldown after 1.5 seconds
+          });
 
           const resolvedPosition = entity.Metadata?.Interaction?.Position;
           if (resolvedTarget === this.worldId && resolvedPosition) {
+            // Calculate the distance between the current player position and the resolved warp position
+            const currentPosition = [
+              this.player.x / this.tileSizeScaled[0],
+              this.player.y / this.tileSizeScaled[1],
+            ];
+            const distanceX = resolvedPosition[0] - currentPosition[0];
+            const distanceY = resolvedPosition[1] - currentPosition[1];
+            const distance = Math.sqrt(
+              distanceX * distanceX + distanceY * distanceY,
+            ); // Calculate Euclidean distance
+
+            if (distance < 10) {
+              // Pan the camera if distance is less than 10 blocks
+              this.camera.pan(
+                resolvedPosition[0] * this.tileSizeScaled[0],
+                resolvedPosition[1] * this.tileSizeScaled[1],
+                500, // Duration for the pan effect
+              );
+            } else {
+              // If the distance is 10 blocks or more, zoom and flash
+              this.camera.flash(500); // Flash the camera
+              this.camera.zoomTo(2, 500); // Zoom the camera (2x zoom) over 500ms
+
+              // After zoom and flash, return the camera to its normal zoom level
+              this.time.delayedCall(1000, () => {
+                this.camera.zoomTo(1, 500); // Zoom back out after 1 second
+              });
+            }
+
+            // Set the player's position to the resolved warp position
             this.player.setPosition(
               resolvedPosition[0] * this.tileSizeScaled[0],
               resolvedPosition[1] * this.tileSizeScaled[1],
             );
+
+            // Reset warping flag
             this.isWarping = false;
             return;
           }
@@ -820,7 +861,7 @@ export class WorldScene extends WarpableScene {
     container.add(nameText);
 
     if (isPlayer) {
-      container.setSize(20 * 2, 18 * 2);
+      container.setSize(20 * 2, 22 * 2);
     } else {
       container.setSize(OBJECT_SIZE_ENTITY, OBJECT_SIZE_ENTITY);
     }
