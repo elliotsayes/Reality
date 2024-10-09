@@ -658,29 +658,33 @@ export class WorldScene extends WarpableScene {
               distanceX * distanceX + distanceY * distanceY,
             ); // Calculate Euclidean distance
 
+            let teleportDelay = 100; // Delay for teleport effect
             if (distance < 10) {
               // Pan the camera if distance is less than 10 blocks
               this.camera.pan(
                 resolvedPosition[0] * this.tileSizeScaled[0],
                 resolvedPosition[1] * this.tileSizeScaled[1],
-                500, // Duration for the pan effect
+                250, // Duration for the pan effect
               );
             } else {
-              // If the distance is 10 blocks or more, zoom and flash
-              this.camera.flash(500); // Flash the camera
-              this.camera.zoomTo(2, 500); // Zoom the camera (2x zoom) over 500ms
-
-              // After zoom and flash, return the camera to its normal zoom level
-              this.time.delayedCall(1000, () => {
-                this.camera.zoomTo(1, 500); // Zoom back out after 1 second
+              // If the distance is 10 blocks or more, zoom & shake
+              this.camera.zoomTo(1.2, 250); // Zoom the camera in
+              this.time.delayedCall(150, () => {
+                this.camera.shake(200, 0.01); // Shake the camera
               });
+              // After zoom and flash, return the camera to its normal zoom level
+              this.time.delayedCall(250, () => {
+                this.camera.zoomTo(1, 250); // Zoom back out
+              });
+              teleportDelay = 250;
             }
-
-            // Set the player's position to the resolved warp position
-            this.player.setPosition(
-              resolvedPosition[0] * this.tileSizeScaled[0],
-              resolvedPosition[1] * this.tileSizeScaled[1],
-            );
+            this.time.delayedCall(teleportDelay, () => {
+              // Set the player's position to the resolved warp position
+              this.player.setPosition(
+                resolvedPosition[0] * this.tileSizeScaled[0],
+                resolvedPosition[1] * this.tileSizeScaled[1],
+              );
+            });
 
             // Reset warping flag
             this.isWarping = false;
