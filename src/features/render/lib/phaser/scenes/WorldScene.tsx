@@ -198,7 +198,7 @@ export class WorldScene extends WarpableScene {
     };
   }
 
-  preload() { }
+  preload() {}
 
   create() {
     this.camera = this.cameras.main;
@@ -963,8 +963,9 @@ export class WorldScene extends WarpableScene {
       playerBody.setVelocityY(0);
     }
 
-    const direction = `${isUp ? "up" : isDown ? "down" : ""
-      }${(isLeft || isRight) && (isUp || isDown) ? "_" : ""}${isLeft ? "left" : isRight ? "right" : ""}`;
+    const direction = `${
+      isUp ? "up" : isDown ? "down" : ""
+    }${(isLeft || isRight) && (isUp || isDown) ? "_" : ""}${isLeft ? "left" : isRight ? "right" : ""}`;
     const isMoving = isLeft || isRight || isUp || isDown;
 
     const changeAni =
