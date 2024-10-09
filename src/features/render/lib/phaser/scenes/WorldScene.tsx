@@ -455,6 +455,14 @@ export class WorldScene extends WarpableScene {
               0,
             ) as Phaser.GameObjects.Sprite;
             this.playAni(playerSprite, this.playerSpriteKeyBase, "idle");
+            // Recreate pointerdown event listener
+            playerSprite.removeListener("pointerdown");
+            this.addDefaultEmote(
+              entityId,
+              entityUpdate,
+              playerSprite,
+              spriteKeyBase,
+            );
           }
           return; // Skip further movement logic for the player
         }
@@ -482,6 +490,20 @@ export class WorldScene extends WarpableScene {
           const entitySprite = entityContainer.getAt(
             0,
           ) as Phaser.GameObjects.Sprite;
+
+          // Recreate pointerdown event listener
+          if (
+            entityUpdate.Metadata?.Interaction?.Type === undefined ||
+            entityUpdate.Metadata?.Interaction?.Type === "Default"
+          ) {
+            entitySprite.removeListener("pointerdown");
+            this.addDefaultEmote(
+              entityId,
+              entityUpdate,
+              entitySprite,
+              spriteKeyBase,
+            );
+          }
 
           const updatePosition: Point2D = {
             x: entityUpdate.Position[0] * this.tileSizeScaled[0],
@@ -673,13 +695,53 @@ export class WorldScene extends WarpableScene {
     return sprite;
   }
 
+  addDefaultEmote(
+    entityId: string,
+    entity: RealityEntity,
+    sprite: Phaser.GameObjects.Sprite,
+    spriteKeyBase: string,
+  ) {
+    const isBouncer = bouncerEntityIds.includes(entityId);
+    sprite.on(
+      "pointerdown",
+      () => {
+        this.playAni(sprite, spriteKeyBase, `emote`);
+        if (entity.Metadata?.Interaction?.Type === "Default") {
+          this.aoContractClientForProcess(entityId).message({
+            tags: [
+              {
+                name: "Action",
+                value: "DefaultInteraction",
+              },
+            ],
+          });
+        }
+        setTimeout(() => {
+          this.playAni(sprite, spriteKeyBase, `idle`);
+          if (isBouncer) {
+            this.showEntityChatMessages([
+              {
+                Id: 0,
+                Timestamp: 0,
+                MessageId: "",
+                AuthorId: entityId,
+                AuthorName: "Bouncer",
+                Content: "Go away!",
+              },
+            ]);
+          }
+        }, 1000);
+      },
+      this,
+    );
+  }
+
   createAvatarEntityContainer(
     entityId: string,
     entity: RealityEntity,
     profile?: ProfileInfo,
   ) {
     const isPlayer = entityId === this.playerAddress;
-    const isBouncer = bouncerEntityIds.includes(entityId);
 
     const container = this.add
       .container(
@@ -715,38 +777,7 @@ export class WorldScene extends WarpableScene {
         this,
       );
     } else {
-      sprite.on(
-        "pointerdown",
-        () => {
-          this.playAni(sprite, spriteKeyBase, `emote`);
-          if (entity.Metadata?.Interaction?.Type === "Default") {
-            this.aoContractClientForProcess(entityId).message({
-              tags: [
-                {
-                  name: "Action",
-                  value: "DefaultInteraction",
-                },
-              ],
-            });
-          }
-          setTimeout(() => {
-            this.playAni(sprite, spriteKeyBase, `idle`);
-            if (isBouncer) {
-              this.showEntityChatMessages([
-                {
-                  Id: 0,
-                  Timestamp: 0,
-                  MessageId: "",
-                  AuthorId: entityId,
-                  AuthorName: "Bouncer",
-                  Content: "Go away!",
-                },
-              ]);
-            }
-          }, 1000);
-        },
-        this,
-      );
+      this.addDefaultEmote(entityId, entity, sprite, spriteKeyBase);
     }
 
     sprite.on(
