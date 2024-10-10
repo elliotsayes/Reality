@@ -9,6 +9,7 @@
     "dump": "node misc/WaitlistDump.js",
     "dump:authed": "node misc/WaitlistDumpAuthed.js",
     "whitelist": "node misc/Whitelist.js",
+    "blacklist": "node misc/Blacklist.js",
     "flag": "node misc/Flag.js",
     "entity-update": "node warp/_EXAMPLE-entity-update.js",
     "warp-deploy": "node warp/_Deploy.js"
