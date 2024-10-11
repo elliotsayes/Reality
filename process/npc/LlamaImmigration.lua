@@ -104,6 +104,7 @@ function GetVouchScoreUsd(walletId)
   local resp = Handlers.receive({
     From = VOUCH_PROCESS,
     Action = "VouchDAO.Vouches",
+    ID = walletId,
   })
 
   local success, data = pcall(json.decode, resp.Data)
