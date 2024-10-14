@@ -1,5 +1,5 @@
 import { message, createDataItemSigner } from "@permaweb/aoconnect";
-import { blacklist } from "./BlacklistData1.js";
+import { blacklist } from "./BlacklistData4.js";
 import fs from "fs";
 
 const key = JSON.parse(
@@ -15,10 +15,7 @@ async function main() {
     blacklistBatches.push(blacklist.slice(i, i + batchSize));
   }
 
-  for (const blacklistBatch of blacklistBatches.slice(
-    1,
-    blacklistBatches.length,
-  )) {
+  for (const blacklistBatch of blacklistBatches) {
     console.log(blacklistBatch);
     const flagScript = blacklistBatch
       .map((walletId) => `FlagWallet("${walletId}")`)

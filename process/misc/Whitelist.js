@@ -1,5 +1,5 @@
 import { message, createDataItemSigner } from "@permaweb/aoconnect";
-import { whitelist } from "./WaitlistDataAuthedList.js";
+import { whitelist } from "./WhitelistDataUnique.js";
 import fs from "fs";
 
 const key = JSON.parse(
@@ -27,6 +27,23 @@ async function main() {
       signer,
     });
     console.log(`${whitelistBatch.length}: ${res}`);
+    for (const authTarget of [
+      "kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA", // King
+      "ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk", // Banker
+      "o20viT_yWRooVjt7x84mobxADRM5y2XG9WMFr7U3_KQ", // Immigration
+    ]) {
+      const authScript = whitelistBatch
+        .map((walletId) => `AuthoriseWallet("${walletId}")`)
+        .join("\n");
+      const res2 = await message({
+        process: authTarget,
+        tags: [{ name: "Action", value: "Eval" }],
+        data: authScript,
+        signer,
+      });
+      console.log(`${authTarget[0]} ${whitelistBatch.length}: ${res2}`);
+    }
+
     await new Promise((resolve) => setTimeout(resolve, 2_000));
   }
 }
