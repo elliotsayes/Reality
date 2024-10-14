@@ -16,20 +16,20 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
+const SplatLazyImport = createFileRoute('/$')()
 const IndexLazyImport = createFileRoute('/')()
-const WorldSplatLazyImport = createFileRoute('/world/$')()
 
 // Create/Update Routes
+
+const SplatLazyRoute = SplatLazyImport.update({
+  path: '/$',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/$.lazy').then((d) => d.Route))
 
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
-
-const WorldSplatLazyRoute = WorldSplatLazyImport.update({
-  path: '/world/$',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/world.$.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -42,11 +42,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/world/$': {
-      id: '/world/$'
-      path: '/world/$'
-      fullPath: '/world/$'
-      preLoaderRoute: typeof WorldSplatLazyImport
+    '/$': {
+      id: '/$'
+      path: '/$'
+      fullPath: '/$'
+      preLoaderRoute: typeof SplatLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -56,7 +56,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
-  WorldSplatLazyRoute,
+  SplatLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -68,14 +68,14 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/world/$"
+        "/$"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
-    "/world/$": {
-      "filePath": "world.$.lazy.tsx"
+    "/$": {
+      "filePath": "$.lazy.tsx"
     }
   }
 }

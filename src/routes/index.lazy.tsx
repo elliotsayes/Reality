@@ -1,26 +1,39 @@
-import { AoWallet } from "@/features/ao/lib/aoWallet";
-import Main from "@/features/main/components/Main";
-import { WaitlistScreen } from "@/features/waitlist/components/WaitlistScreen";
-import { WaitlistSplash } from "@/features/waitlist/components/WaitlistSplash";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
 });
 
 function Index() {
-  const [wallet, setWallet] = useState<AoWallet | null>(null);
+  const navigate = useNavigate();
 
-  if (wallet === null) {
-    return (
-      <WaitlistSplash loginTitle="Sign in" temporaryWalletEnabled={false}>
-        {(wallet) => (
-          <WaitlistScreen onEnter={() => setWallet(wallet)} wallet={wallet} />
-        )}
-      </WaitlistSplash>
-    );
-  }
-
-  return <Main wallet={wallet} disconnect={() => setWallet(null)} />;
+  // Form to enter verse ID
+  return (
+    <div className="flex justify-center items-center h-dvh">
+      <div className="bg-white p-4 rounded-lg shadow-lg max-w-screen-md">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const input = e.target[0] as HTMLInputElement;
+            const verseId = input.value;
+            navigate({
+              to: "/$",
+              params: {
+                _splat: verseId,
+              },
+            });
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Enter world ID"
+            className="border border-gray-300 rounded-lg p-2"
+          />
+          <button className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg">
+            Go
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
