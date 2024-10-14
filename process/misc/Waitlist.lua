@@ -378,9 +378,9 @@ function AuthoriseWallet(walletId, timestamp)
   else
     WaitlistDbAdmin:exec(string.format([[
       UPDATE Waitlist
-      SET Authorised = %d
+      SET Authorised = %d, Flagged = %d
       WHERE WalletId = '%s'
-    ]], 1, walletId))
+    ]], 1, 0, walletId))
   end
 
   -- Propagate authorisation to Llama Banker
