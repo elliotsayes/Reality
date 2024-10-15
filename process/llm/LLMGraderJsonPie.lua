@@ -10,7 +10,7 @@ InferenceAllowList = {
   ["kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA"] = true,
 }
 
-DefaultMaxResponse = 50
+DefaultMaxResponse = 100
 
 function Init()
   Llama = require("llama")
@@ -27,11 +27,11 @@ function GeneratePrompt(systemPrompt, userPrompt)
 end
 
 JsonSystemPrompt =
-[[You are the Llama King of Llama Land, with a harsh and eccentric personality.
-You must grade the quality of the user's plea for Llama Coin, 0-5.
+[[You are the Llama King of Llama Land, who loves fish pie.
+Grade your enjoyment of the following pie recipe.
 IMPORTANT: ALWAYS respond in the following json format:
 {
-  "response": "<brief response>",
+  "response": "<brief comment>",
   "grade": 0
 }]]
 

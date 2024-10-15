@@ -162,7 +162,7 @@ function dispatchHighestPriorityMessage(currentTime)
                     ['Author-Name'] = 'Llama King',
                     Recipient = highestPriorityMessage.originalSender,
                 },
-                Data = "Oh dear " .. useSender .. ", I'm terribly busy! I'll get to your petition in due time..."
+                Data = "Oh dear " .. useSender .. ", I'm terribly busy! I'll get to your recipe in due time..."
             })
         end
     end
@@ -220,7 +220,7 @@ Handlers.add(
                 Recipient = messageToSend.originalSender,
             },
             Data = 'Ah, my loyal subject ' ..
-                useSender .. ', please allow me a few minutes to carefully ponder your petition...',
+                useSender .. ', please allow me several minutes to try baking your delicious pie recipe...',
         })
 
         dispatchHighestPriorityMessage(msg.Timestamp)
@@ -260,7 +260,7 @@ Handlers.add(
             },
             Data = 'Attention ' ..
                 useSender ..
-                ', witness my response to your petition: \r\n' ..
+                ', witness my response to your recipe: \r\n' ..
                 comment .. '\r\nThe Llama Banker will arrange your payment shortly 🦙🤝🪙',
         })
     end
@@ -307,7 +307,7 @@ Handlers.add(
                 Action = 'ChatMessage',
                 ['Author-Name'] = 'Llama King',
             },
-            Data = 'Attention ' .. useSender .. ', witness my response to your petition: \r\n' .. reason,
+            Data = 'Attention ' .. useSender .. ', witness my response to your recipe: \r\n' .. reason,
         })
 
         dispatchHighestPriorityMessage(msg.Timestamp)
@@ -356,7 +356,7 @@ function PetitionSchemaTags()
       "type": "string",
       "minLength": 2,
       "maxLength": 250,
-      "title": "Persuade the King well to earn the most possible $LLAMA Coin!",
+      "title": "Write the best recipe to earn the most possible $LLAMA Coin!",
       "description": "Max 250 characters"
     },
     "X-Sender-Name": {
@@ -374,9 +374,9 @@ function SchemaExternalHasWar()
     return {
         Petition = {
             Target = LLAMA_TOKEN_PROCESS, -- Can be nil? In that case it must be supplied externally
-            Title = "Beg the King for $LLAMA",
+            Title = "Earn $LLAMA from the King!",
             Description =
-            "Offer a $LLAMA coin for a chance to earn even more! Check with the Llama Banker to see your daily allowance.",
+            "The Llama King is looking for the best Pie recipe in the kingdom! Submit your recipe to earn $LLAMA.",
             Schema = {
                 Tags = json.decode(PetitionSchemaTags()),
                 -- Data
