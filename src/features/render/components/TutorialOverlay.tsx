@@ -8,7 +8,11 @@ import { toast } from "sonner";
 
 // Tailwind styles to look like key on the keyboard
 function KeyboardKey({ children }: { children: string }) {
-  return <kbd className="bg-gray-200 p-1 rounded-md shadow-md">{children}</kbd>;
+  return (
+    <kbd className="bg-gray-200 p-1 rounded-md shadow-md w-5 h-5 text-center">
+      {children}
+    </kbd>
+  );
 }
 
 interface FormOverlayProps {
@@ -40,19 +44,38 @@ export default function TutorialOverlay({ close }: FormOverlayProps) {
           <div>
             {page === 0 ? (
               // Show arrow keys for movement
-              <div className="flex flex-row justify-evenly items-end gap-4 pt-4 pb-10 h-32">
+              <div className="flex flex-row justify-evenly items-center gap-4 pt-4 pb-10 h-36">
                 <div>
-                  Arrow keys
+                  WASD or Arrow keys
                   <br />
                   for movement
-                </div>
-                <div className="flex flex-col items-center leading-3">
-                  <div className="flex flex-row items-center">
-                    <KeyboardKey>↑</KeyboardKey>
+                  <br />
+                  <div className="mt-2">
+                    Hold{" "}
+                    <span className="text-xs">
+                      <KeyboardKey>shift</KeyboardKey>
+                    </span>{" "}
+                    to run!
                   </div>
-                  <div className="flex flex-row items-center">
-                    <KeyboardKey>←</KeyboardKey> <KeyboardKey>↓</KeyboardKey>{" "}
-                    <KeyboardKey>→</KeyboardKey>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col items-center leading-3 text-xs">
+                    <div className="flex flex-row items-center">
+                      <KeyboardKey>W</KeyboardKey>
+                    </div>
+                    <div className="flex flex-row items-center">
+                      <KeyboardKey>A</KeyboardKey> <KeyboardKey>S</KeyboardKey>{" "}
+                      <KeyboardKey>D</KeyboardKey>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center leading-3">
+                    <div className="flex flex-row items-center">
+                      <KeyboardKey>↑</KeyboardKey>
+                    </div>
+                    <div className="flex flex-row items-center">
+                      <KeyboardKey>←</KeyboardKey> <KeyboardKey>↓</KeyboardKey>{" "}
+                      <KeyboardKey>→</KeyboardKey>
+                    </div>
                   </div>
                 </div>
               </div>

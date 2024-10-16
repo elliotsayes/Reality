@@ -388,7 +388,7 @@ export class WorldScene extends WarpableScene {
     }
 
     // Only show tutorial if it's not done
-    if (localStorage.getItem("tutorialDone") === null) {
+    if (localStorage.getItem("tutorialDone_2") === null) {
       this.time.delayedCall(500, this.showTutorial, [], this);
     }
 
