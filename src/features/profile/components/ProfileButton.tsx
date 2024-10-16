@@ -3,7 +3,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ProfileInfo } from "../contract/model";
+import { ProfileAssets, ProfileInfo } from "../contract/model";
 import ProfileDetailsDropdown from "./ProfileDetailsDropdown";
 import {
   Card,
@@ -16,9 +16,10 @@ import ProfileImage from "./ProfileImage";
 
 interface ProfileButtonProps {
   profileInfo?: ProfileInfo;
+  assets?: ProfileAssets;
 }
 
-export default function ProfileButton({ profileInfo }: ProfileButtonProps) {
+export default function ProfileButton({ profileInfo, assets }: ProfileButtonProps) {
   return (
     <Popover>
       <PopoverTrigger>
@@ -26,7 +27,7 @@ export default function ProfileButton({ profileInfo }: ProfileButtonProps) {
       </PopoverTrigger>
       <PopoverContent align="end">
         {profileInfo ? (
-          <ProfileDetailsDropdown profileInfo={profileInfo} />
+          <ProfileDetailsDropdown profileInfo={profileInfo} profileAssets={assets} />
         ) : (
           <Card>
             <CardHeader>
