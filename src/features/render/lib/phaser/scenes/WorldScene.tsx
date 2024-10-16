@@ -1034,16 +1034,15 @@ export class WorldScene extends WarpableScene {
       );
       if (isOverlappingWithWarp) {
         console.debug("Player is overlapping with warp, cancelling update");
-        return;
+      } else {
+        emitSceneEvent({
+          type: "Update Position",
+          position: [
+            this.player.x / this.tileSizeScaled[0],
+            this.player.y / this.tileSizeScaled[1],
+          ],
+        });
       }
-
-      emitSceneEvent({
-        type: "Update Position",
-        position: [
-          this.player.x / this.tileSizeScaled[0],
-          this.player.y / this.tileSizeScaled[1],
-        ],
-      });
     }
 
     this.lastTickMoving = isMoving;
