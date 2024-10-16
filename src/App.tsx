@@ -6,6 +6,7 @@ import {
 import { routeTree } from "./routeTree.gen";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/query";
+import { GameStateProvider } from "@/context/GameStateContext"; // Import the GameStateProvider
 
 const hashHistory = createHashHistory();
 
@@ -18,8 +19,10 @@ declare module "@tanstack/react-router" {
 
 export function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <GameStateProvider> {/* Wrap the components inside GameStateProvider */}
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </GameStateProvider>
   );
 }
