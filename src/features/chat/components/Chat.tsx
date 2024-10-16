@@ -6,10 +6,12 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatMessage } from "../contract/model";
 import { ProfileInfo } from "@/features/profile/contract/model";
 import ChatBubble from "./ChatBubble";
+
+import { useGameState } from "@/context/GameStateContext";
 
 const queryPageSize = 10;
 
@@ -100,6 +102,26 @@ export function Chat({
 
   const form = useForm();
 
+
+  const { setChatFocus } = useGameState();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+
+    function handleClickOutside(event: MouseEvent) {
+      if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
+        setChatFocus(false);
+        inputRef.current.blur(); // Explicitly blur the input if clicking outside
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+
   return (
     <>
       <div ref={messagesRef} className="chat-page-messages-container">
@@ -139,6 +161,8 @@ export function Chat({
                     placeholder="Message"
                     autoComplete="off"
                     {...field}
+                    ref={inputRef}
+                    onFocus={() => setChatFocus(true)}
                   />
                 </FormControl>
               </FormItem>

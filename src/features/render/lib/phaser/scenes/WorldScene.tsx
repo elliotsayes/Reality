@@ -23,6 +23,8 @@ import { ChatMessageHistory } from "@/features/chat/contract/model";
 import TutorialOverlay from "@/features/render/components/TutorialOverlay";
 import { AudioParams } from "@/features/reality/contract/audio";
 
+import { gameStateStore } from "@/lib/gameStateStore";
+
 const SCALE_TILES = 3;
 const SCALE_ENTITIES = 2;
 
@@ -148,15 +150,17 @@ export class WorldScene extends WarpableScene {
           right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
           up: Phaser.Input.Keyboard.KeyCodes.UP,
           down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+          shift: Phaser.Input.Keyboard.KeyCodes.SHIFT, // Shift for running
         },
         false,
       );
       this.wasd = keyboard.addKeys(
         {
-          // left: Phaser.Input.Keyboard.KeyCodes.A,
-          // right: Phaser.Input.Keyboard.KeyCodes.D,
-          // up: Phaser.Input.Keyboard.KeyCodes.W,
-          // down: Phaser.Input.Keyboard.KeyCodes.S,
+          left: Phaser.Input.Keyboard.KeyCodes.A,
+          right: Phaser.Input.Keyboard.KeyCodes.D,
+          up: Phaser.Input.Keyboard.KeyCodes.W,
+          down: Phaser.Input.Keyboard.KeyCodes.S,
+          shift: Phaser.Input.Keyboard.KeyCodes.SHIFT, // Shift for running
         },
         false,
       );
@@ -970,7 +974,19 @@ export class WorldScene extends WarpableScene {
     if (!this.player) return;
     if (!this.arrows) return;
 
-    const speed = this.isWarping ? this.slowMs : this.fastMs;
+    // Prevent movement if chat is focused
+    if (gameStateStore.getChatFocus()) return;
+
+    // Speed settings
+    const normalSpeed = this.isWarping ? this.slowMs : this.fastMs;
+    const boostSpeed = normalSpeed * 2; // Double the speed when shift is held
+
+    // Determine the current speed based on whether Shift is held down
+    const isShiftHeld =
+    //@ts-expect-error - Phaser types are wrong
+    (this.arrows?.shift.isDown || this.wasd?.shift?.isDown) ?? false;
+    const speed = isShiftHeld ? boostSpeed : normalSpeed;
+
 
     const isLeft =
       //@ts-expect-error - Phaser types are wrong
