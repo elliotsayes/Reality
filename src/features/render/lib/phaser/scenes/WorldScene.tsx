@@ -95,7 +95,7 @@ export class WorldScene extends WarpableScene {
 
   slowMs: number = 160;
   normalMs: number = 160;
-  fastMs: number = 256;
+  fastMs: number = 280;
 
   constructor() {
     super("WorldScene");
