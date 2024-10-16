@@ -108,25 +108,32 @@ function GetVouchScoreUsd(walletId)
   })
 
   local success, data = pcall(json.decode, resp.Data)
-  if not success or type(data) ~= 'table' or data['Vouchers'] == nil then
+  if not success or type(data) ~= 'table' then
     print("Invalid data: " .. resp.Data)
     return 0
   end
 
-  if data['Vouches-For'] ~= walletId then
-    print("Vouches-For mismatch, expected: " .. walletId .. ", got: " .. tostring(data['Vouches-For']))
+  local vouches = data['Vouchers']
+  if vouches == nil then
+    print("No Vouchers")
     return 0
   end
 
-  local vouches = data['Vouchers']
   local score = 0
-
   for voucher, vouch in pairs(vouches) do
     if VOUCHER_WHITELIST[voucher] then
-      -- 1.34-USD -> 1.34
-      local valueStr = string.match(vouch.Value, "([%d%.]+)-USD")
-      if valueStr ~= nil then
-        score = score + tonumber(valueStr)
+      local vouchFor = vouch['Vouch-For']
+      if vouchFor ~= walletId then
+        print(voucher .. " has Vouch-For mismatch, expected: " .. walletId .. ", got: " .. vouchFor)
+      else
+        -- 1.34-USD -> 1.34
+        local valueStr = string.match(vouch.Value, "([%d%.]+)-USD")
+        local value = tonumber(valueStr)
+        if valueStr == nil or value == nil then
+          print(voucher .. " has invalid value: " .. vouch.Value)
+        else
+          score = score + value
+        end
       end
     end
   end
