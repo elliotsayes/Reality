@@ -1109,7 +1109,7 @@ export class WorldScene extends WarpableScene {
     ReactDOM.createRoot(memElement).render(
       <TutorialOverlay
         close={() => {
-          localStorage.setItem("tutorialDone", "true");
+          localStorage.setItem("tutorialDone_2", "true");
           this.tutorial?.destroy();
         }}
       />,
