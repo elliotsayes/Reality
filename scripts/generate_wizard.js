@@ -10,6 +10,16 @@ const spriteSheetSizePx = {
   h: spriteSizePx.h * 4,
 };
 
+function getCount(aniName) {
+  const prefix = aniName.split("_")[0];
+  switch (prefix) {
+    case "idle":
+      return 1;
+    default:
+      return 4;
+  }
+}
+
 function getFps(aniName) {
   const prefix = aniName.split("_")[0];
   switch (prefix) {
@@ -25,16 +35,16 @@ function getFps(aniName) {
 const rows = [
   ...["idle", "idle_down", "emote", "walk", "walk_down", "run", "run_down"].map(
     (prefix) => ({
-      offset: 0,
       prefix,
-      count: 4,
+      offset: 0,
+      count: getCount(prefix),
       fps: getFps(prefix),
     }),
   ),
   ...["idle_up", "walk_up", "run_up"].map((prefix) => ({
-    offset: 2,
     prefix,
-    count: 4,
+    offset: 2,
+    count: getCount(prefix),
     fps: getFps(prefix),
   })),
   ...[
@@ -46,9 +56,9 @@ const rows = [
     "run_up_right",
     "run_down_right",
   ].map((prefix) => ({
-    offset: 3,
     prefix,
-    count: 4,
+    offset: 3,
+    count: getCount(prefix),
     fps: getFps(prefix),
   })),
   ...[
@@ -60,9 +70,9 @@ const rows = [
     "run_up_left",
     "run_down_left",
   ].map((prefix) => ({
-    offset: 1,
     prefix,
-    count: 4,
+    offset: 1,
+    count: getCount(prefix),
     fps: getFps(prefix),
   })),
 ];
