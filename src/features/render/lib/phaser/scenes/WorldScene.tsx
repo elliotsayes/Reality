@@ -93,9 +93,9 @@ export class WorldScene extends WarpableScene {
   tutorial?: Phaser.GameObjects.DOMElement;
   schemaForm?: Phaser.GameObjects.DOMElement;
 
-  slowMs: number = 144;
-  fastMs: number = 144;
-  // fastMs: number = 192;
+  slowMs: number = 160;
+  normalMs: number = 160;
+  fastMs: number = 256;
 
   constructor() {
     super("WorldScene");
@@ -978,15 +978,14 @@ export class WorldScene extends WarpableScene {
     if (gameStateStore.getChatFocus()) return;
 
     // Speed settings
-    const normalSpeed = this.isWarping ? this.slowMs : this.fastMs;
-    const boostSpeed = normalSpeed * 2; // Double the speed when shift is held
+    const baseSpeed = this.isWarping ? this.slowMs : this.normalMs;
+    const boostSpeed = baseSpeed * (this.fastMs / this.normalMs);
 
     // Determine the current speed based on whether Shift is held down
     const isShiftHeld =
-    //@ts-expect-error - Phaser types are wrong
-    (this.arrows?.shift.isDown || this.wasd?.shift?.isDown) ?? false;
-    const speed = isShiftHeld ? boostSpeed : normalSpeed;
-
+      //@ts-expect-error - Phaser types are wrong
+      (this.arrows?.shift.isDown || this.wasd?.shift?.isDown) ?? false;
+    const speedAbsolute = isShiftHeld ? boostSpeed : baseSpeed;
 
     const isLeft =
       //@ts-expect-error - Phaser types are wrong
@@ -1000,27 +999,30 @@ export class WorldScene extends WarpableScene {
       //@ts-expect-error - Phaser types are wrong
       (this.arrows?.down.isDown || this.wasd?.down?.isDown) ?? false;
 
+    const isDiagonal = (isLeft || isRight) && (isUp || isDown);
+    const speedCardinal = isDiagonal ? speedAbsolute * 0.8 : speedAbsolute;
+
     const playerSprite = this.player.getAt(0) as Phaser.GameObjects.Sprite;
     const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
     if (isLeft) {
-      playerBody.setVelocityX(-speed);
+      playerBody.setVelocityX(-speedCardinal);
     } else if (isRight) {
-      playerBody.setVelocityX(speed);
+      playerBody.setVelocityX(speedCardinal);
     } else {
       playerBody.setVelocityX(0);
     }
 
     if (isUp) {
-      playerBody.setVelocityY(-speed);
+      playerBody.setVelocityY(-speedCardinal);
     } else if (isDown) {
-      playerBody.setVelocityY(speed);
+      playerBody.setVelocityY(speedCardinal);
     } else {
       playerBody.setVelocityY(0);
     }
 
     const direction = `${
       isUp ? "up" : isDown ? "down" : ""
-    }${(isLeft || isRight) && (isUp || isDown) ? "_" : ""}${isLeft ? "left" : isRight ? "right" : ""}`;
+    }${isDiagonal ? "_" : ""}${isLeft ? "left" : isRight ? "right" : ""}`;
     const isMoving = isLeft || isRight || isUp || isDown;
 
     const changeAni =
