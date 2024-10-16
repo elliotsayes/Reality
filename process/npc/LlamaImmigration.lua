@@ -84,9 +84,13 @@ Handlers.add(
 
 VOUCH_PROCESS = "ZTTO02BL2P-lseTLUgiIPD9d0CF1sc4LbMA2AQ7e9jo"
 VOUCHER_WHITELIST = {
+  -- Vouch-X
   ["Ax_uXyLQBPZSQ15movzv9-O1mDo30khslqN64qD27Z8"] = true,
+  -- Vouch-Gitcoin-Passport
   ["k6p1MtqYhQQOuTSfN8gH7sQ78zlHavt8dCDL88btn9s"] = true,
+  -- Vouch-AO-Balance
   ["QeXDjjxcui7W2xU08zOlnFwBlbiID4sACpi0tSS3VgY"] = true,
+  -- Vouch-wAR-Stake
   ["3y0YE11i21hpP8UY0Z1AVhtPoJD4V_AbEBx-g0j9wRc"] = true,
 }
 
