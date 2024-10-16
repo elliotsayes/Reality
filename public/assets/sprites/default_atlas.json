@@ -7,6 +7,16 @@
     "frameSize": {
       "w": 24,
       "h": 38
+    },
+    "animations": {
+      "idle": {},
+      "walk": {},
+      "emote": {
+        "fps": 16
+      },
+      "run": {
+        "fps": 16
+      }
     }
   },
   "frames": [
@@ -202,8 +212,134 @@
     {
       "filename": "emote_01",
       "frame": {
+        "x": 24,
+        "y": 38,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "emote_02",
+      "frame": {
         "x": 48,
         "y": 38,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "emote_03",
+      "frame": {
+        "x": 72,
+        "y": 38,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "run_00",
+      "frame": {
+        "x": 0,
+        "y": 76,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "run_01",
+      "frame": {
+        "x": 24,
+        "y": 76,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "run_02",
+      "frame": {
+        "x": 48,
+        "y": 76,
+        "w": 24,
+        "h": 38
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 24,
+        "h": 38
+      }
+    },
+    {
+      "filename": "run_03",
+      "frame": {
+        "x": 72,
+        "y": 76,
         "w": 24,
         "h": 38
       },

@@ -79,6 +79,7 @@ export class WorldScene extends WarpableScene {
 
   lastTickMoving: boolean = false;
   lastTickDirection: string = "down";
+  lastTickRunning: boolean = false;
 
   isWarping: boolean = false;
   warpCooldown: boolean = false;
@@ -95,7 +96,7 @@ export class WorldScene extends WarpableScene {
 
   slowMs: number = 160;
   normalMs: number = 160;
-  fastMs: number = 280;
+  fastMs: number = 320;
 
   constructor() {
     super("WorldScene");
@@ -982,10 +983,10 @@ export class WorldScene extends WarpableScene {
     const boostSpeed = baseSpeed * (this.fastMs / this.normalMs);
 
     // Determine the current speed based on whether Shift is held down
-    const isShiftHeld =
+    const isRunning =
       //@ts-expect-error - Phaser types are wrong
       (this.arrows?.shift.isDown || this.wasd?.shift?.isDown) ?? false;
-    const speedAbsolute = isShiftHeld ? boostSpeed : baseSpeed;
+    const speedAbsolute = isRunning ? boostSpeed : baseSpeed;
 
     const isLeft =
       //@ts-expect-error - Phaser types are wrong
@@ -1026,14 +1027,16 @@ export class WorldScene extends WarpableScene {
     const isMoving = isLeft || isRight || isUp || isDown;
 
     const changeAni =
-      isMoving !== this.lastTickMoving || direction !== this.lastTickDirection;
+      isMoving !== this.lastTickMoving ||
+      direction !== this.lastTickDirection ||
+      isRunning !== this.lastTickRunning;
     if (changeAni) {
       const aniDirection = direction || this.lastTickDirection;
       if (isMoving) {
         this.playAni(
           playerSprite,
           this.playerSpriteKeyBase,
-          `walk${aniDirection ? `_${aniDirection}` : ""}`,
+          `${isRunning ? "run" : "walk"}${aniDirection ? `_${aniDirection}` : ""}`,
         );
       } else {
         this.playAni(
@@ -1065,6 +1068,7 @@ export class WorldScene extends WarpableScene {
 
     this.lastTickMoving = isMoving;
     this.lastTickDirection = direction;
+    this.lastTickRunning = isRunning;
 
     if (this.tutorial) {
       const tl = this.topLeftDynamic();

@@ -10,57 +10,61 @@ const spriteSheetSizePx = {
   h: spriteSizePx.h * 4,
 };
 
+function getFps(aniName) {
+  const prefix = aniName.split("_")[0];
+  switch (prefix) {
+    case "emote":
+      return 16;
+    case "run":
+      return 16;
+    default:
+      return undefined;
+  }
+}
+
 const rows = [
-  {
-    offset: 0,
-    prefix: "idle",
-    count: 4,
-  },
-  {
-    offset: 0,
-    prefix: "walk",
-    count: 4,
-  },
-  {
-    offset: 0,
-    prefix: "emote",
-    count: 2,
-    mod: 2,
-  },
-  {
-    offset: 0,
-    prefix: "idle_down",
-    count: 4,
-  },
-  {
-    offset: 0,
-    prefix: "walk_down",
-    count: 4,
-  },
-  {
-    offset: 2,
-    prefix: "idle_up",
-    count: 4,
-  },
-  {
-    offset: 2,
-    prefix: "walk_up",
-    count: 4,
-  },
-  ...["idle_right", "walk_right", "walk_up_right", "walk_down_right"].map(
+  ...["idle", "idle_down", "emote", "walk", "walk_down", "run", "run_down"].map(
     (prefix) => ({
-      offset: 3,
+      offset: 0,
       prefix,
       count: 4,
+      fps: getFps(prefix),
     }),
   ),
-  ...["idle_left", "walk_left", "walk_up_left", "walk_down_left"].map(
-    (prefix) => ({
-      offset: 1,
-      prefix,
-      count: 4,
-    }),
-  ),
+  ...["idle_up", "walk_up", "run_up"].map((prefix) => ({
+    offset: 2,
+    prefix,
+    count: 4,
+    fps: getFps(prefix),
+  })),
+  ...[
+    "idle_right",
+    "walk_right",
+    "walk_up_right",
+    "walk_down_right",
+    "run_right",
+    "run_up_right",
+    "run_down_right",
+  ].map((prefix) => ({
+    offset: 3,
+    prefix,
+    count: 4,
+    fps: getFps(prefix),
+  })),
+  ...[
+    "idle_left",
+    "walk_left",
+    "walk_up_left",
+    "walk_down_left",
+    "run_left",
+    "run_up_left",
+    "run_down_left",
+  ].map((prefix) => ({
+    offset: 1,
+    prefix,
+    count: 4,
+    fps: getFps(prefix),
+  })),
 ];
 
 const meta = {
@@ -68,6 +72,13 @@ const meta = {
   size: spriteSheetSizePx,
   frameSize: spriteSizePx,
   // scale: "1",
+  animations: rows
+    .map((row) => ({
+      [row.prefix]: {
+        ...(row.fps && { fps: row.fps }),
+      },
+    }))
+    .reduce((acc, val) => ({ ...acc, ...val }), {}),
 };
 
 function pad2(num) {

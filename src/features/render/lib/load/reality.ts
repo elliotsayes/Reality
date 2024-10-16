@@ -219,6 +219,8 @@ export function resolveSystemAniToExistingAni(
   const components = systemAni.split("_");
 
   if (components.length === 1) {
+    if (components[0] === "run")
+      return resolveSystemAniToExistingAni("walk", aniExists);
     if (!aniExists("idle")) throw Error("No idle animation found");
     return "idle";
   } else if (components.length === 2) {
@@ -231,7 +233,13 @@ export function resolveSystemAniToExistingAni(
   }
 }
 
-type AtlasAnimations = Record<string, Phaser.Types.Animations.AnimationFrame[]>;
+type AtlasAnimations = Record<
+  string,
+  {
+    key: string;
+    frames: Phaser.Types.Animations.AnimationFrame[];
+  }
+>;
 
 function getAtlasAnimations(
   keyBase: string,
@@ -247,11 +255,13 @@ function getAtlasAnimations(
     const filenameParts = fileNameExtensionless.split("_");
     const animationName = filenameParts.slice(0, -1).join("_");
 
-    const globalAnimationName = `${keyBase}_${animationName}`;
-    if (!anis[globalAnimationName]) {
-      anis[globalAnimationName] = [];
+    if (!anis[animationName]) {
+      anis[animationName] = {
+        key: `${keyBase}_${animationName}`,
+        frames: [],
+      };
     }
-    anis[globalAnimationName].push({
+    anis[animationName].frames.push({
       key: keyBase,
       frame: fileName,
     });
@@ -277,13 +287,13 @@ export function createSpriteAnimsPhaser(
 
   const animations = getAtlasAnimations(spriteKeyBase, atlas);
 
-  for (const [key, frames] of Object.entries(animations)) {
-    // console.log("Creating animation", key, frames);
+  for (const [name, animation] of Object.entries(animations)) {
+    const aniMeta = atlas["meta"]?.["animations"]?.[name];
     phaserAnims.create({
-      key,
-      frames,
+      key: animation.key,
+      frames: animation.frames,
       repeat: -1,
-      frameRate: 10,
+      frameRate: aniMeta?.fps ?? 8,
     });
   }
 }

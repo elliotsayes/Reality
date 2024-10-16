@@ -24,8 +24,14 @@ const rows = [
   {
     offset: 1,
     prefix: "emote",
-    count: 2,
-    mod: 2,
+    count: 4,
+    fps: 16,
+  },
+  {
+    offset: 2,
+    prefix: "run",
+    count: 4,
+    fps: 16,
   },
 ];
 
@@ -34,6 +40,13 @@ const meta = {
   size: spriteSheetSizePx,
   frameSize: spriteSizePx,
   // scale: "1",
+  animations: rows
+    .map((row) => ({
+      [row.prefix]: {
+        ...(row.fps && { fps: row.fps }),
+      },
+    }))
+    .reduce((acc, val) => ({ ...acc, ...val }), {}),
 };
 
 function pad2(num) {
