@@ -119,14 +119,14 @@ end
 
 function ValidateSenderName(senderName)
   return senderName ~= nil
-      and string.len(senderName) > 0
-      and string.len(senderName) <= 20
+      and utf8.len(senderName) > 0
+      and utf8.len(senderName) <= 20
 end
 
 function ValidatePetition(petition)
   return petition ~= nil
-      and string.len(petition) > 0
-      and string.len(petition) <= 250
+      and utf8.len(petition) > 0
+      and utf8.len(petition) <= 250
 end
 
 Handlers.add(
@@ -168,7 +168,7 @@ Handlers.add(
 
     local petition = msg.Tags['X-Petition']
     if not ValidatePetition(petition) then
-      return print("Invalid petition")
+      return print("Invalid petition: " .. (petition or '<nil>'))
     end
 
     -- Check last day credits in Db
@@ -185,7 +185,7 @@ Handlers.add(
         Target = LLAMA_TOKEN_PROCESS,
         Tags = {
           Action = 'Transfer',
-          Target = msg.Tags.Sender,
+          Recipient = msg.Tags.Sender,
           Quantity = msg.Tags.Quantity,
         },
       })
