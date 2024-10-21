@@ -30,6 +30,7 @@ Ticker = 'LLAMA'
 Logo = '9FSEgmUsrug7kTdZJABDekwTGJy7YG7KaN5khcbwcX4'
 
 -- Don't overwrite TotalSupply or Balances
+MaxTotalSupply = utils.toBalanceValue(11111111 * 10 ^ Denomination)
 TotalSupply = TotalSupply or utils.toBalanceValue(initialSupply * 10 ^ Denomination)
 Balances = Balances or { [ao.id] = utils.toBalanceValue(initialSupply * 10 ^ Denomination) }
 
@@ -57,9 +58,23 @@ Handlers.add('grant', Handlers.utils.hasMatchingTag('Action', 'Grant'), function
   if not Balances[msg.Recipient] then Balances[msg.Recipient] = "0" end
 
   if GrantWhitelist[msg.From] then
+    local newTotalSupply = utils.add(TotalSupply, msg.Quantity)
+    if bint(newTotalSupply) > bint(MaxTotalSupply) then
+      print("Grant would exceed MaxTotalSupply to: " .. newTotalSupply)
+      ao.send({
+        Target = msg.From,
+        Action = 'Grant-Error',
+        ['Message-Id'] = msg.Id,
+        Data = Colors.gray ..
+            "Unable to Grant " .. Colors.blue .. msg.Quantity .. Colors.reset ..
+            " to " .. msg.Recipient .. ", limited by MaxTotalSupply."
+      })
+      return;
+    end
+
     -- Add tokens to the token pool, according to Quantity
     Balances[msg.Recipient] = utils.add(Balances[msg.Recipient], msg.Quantity)
-    TotalSupply = utils.add(TotalSupply, msg.Quantity)
+    TotalSupply = newTotalSupply
     ao.send({
       Target = msg.From,
       Data = Colors.gray ..
