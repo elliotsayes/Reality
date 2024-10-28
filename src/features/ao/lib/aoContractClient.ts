@@ -159,11 +159,10 @@ export const createAoContractClient = (
       limit: 1,
       sort: "DESC",
     });
-    if (latest.edges.length < 1) {
-      // What if there are no previous results? How can you get the cursor?
-      throw new AoContractError("Could not get cursor");
+    let latestCursor: string | undefined = undefined;
+    if (latest.edges.length > 0) {
+      latestCursor = latest.edges[0].cursor;
     }
-    const latestCursor = latest.edges[0].cursor;
 
     // Send the message
     await aoClient.message({

@@ -130,7 +130,7 @@ export const SchemaForm = ({
         onSubmit={onSubmitted}
         onError={console.error}
         showErrorList={false}
-        disabled={isDisabled || methodSchema.NoSubmit}
+        disabled={isDisabled}
       />
     </div>
   );

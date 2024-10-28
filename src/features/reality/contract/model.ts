@@ -22,6 +22,12 @@ export type RealityParameterBounds = z.infer<typeof RealityParameterBounds>;
 
 export const RealityToken = z.object({
   Primary: z.optional(ArweaveId),
+  SchemaForm: z.optional(
+    z.object({
+      Target: z.string(),
+      Id: z.string(),
+    }),
+  ),
 });
 export type RealityToken = z.infer<typeof RealityToken>;
 

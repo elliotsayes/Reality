@@ -69,10 +69,18 @@ export function Renderer({
         {current.matches({ "In Game": "In Reality Scene" }) &&
           current.context.initialWorldState?.parameters.Token?.Primary && (
             <TokenBalanceOverlay
-              userAddress={userAddress}
               aoContractClientForProcess={aoContractClientForProcess}
+              userAddress={userAddress}
               tokenId={
                 current.context.initialWorldState!.parameters.Token!.Primary!
+              }
+              schemaFormProcessId={
+                current.context.initialWorldState!.parameters.Token.SchemaForm
+                  ?.Target
+              }
+              schemaFormMethod={
+                current.context.initialWorldState!.parameters.Token.SchemaForm
+                  ?.Id
               }
             />
           )}
