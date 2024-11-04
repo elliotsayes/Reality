@@ -1,5 +1,5 @@
 import { message, createDataItemSigner } from "@permaweb/aoconnect";
-import { blacklist } from "./BlacklistData7.js";
+import { blacklist } from "./BlacklistData9.js";
 import fs from "fs";
 
 const key = JSON.parse(

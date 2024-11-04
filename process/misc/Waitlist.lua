@@ -376,6 +376,10 @@ function AuthoriseWallet(walletId, timestamp)
       VALUES ('%s', %d, %d, %d, %d, %d, %d)
     ]], walletId, timestamp, timestamp, 0, 0, 1, 0))
   else
+    if (currentRows[1].Flagged == 1) then
+      print("Already Flagged: " .. walletId)
+    end
+
     WaitlistDbAdmin:exec(string.format([[
       UPDATE Waitlist
       SET Authorised = %d, Flagged = %d

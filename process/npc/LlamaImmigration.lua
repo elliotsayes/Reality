@@ -3,6 +3,8 @@
 
 local sqlite3 = require('lsqlite3')
 
+MIN_VOUCH_SCORE = 5
+
 WAITLIST_PROCESS = WAITLIST_PROCESS or "2dFSGGlc5xJb0sWinAnEFHM-62tQEbhDzi1v5ldWX5k"
 -- Same as LlamaFed
 LLAMA_FED_CHAT_PROCESS = "QIFgbqEmk5MyJy01wuINfcRP_erGNNbhqHRkAQjxKgg"
@@ -156,7 +158,7 @@ Handlers.add(
     local score = GetVouchScoreUsd(msg.From)
     print(msg.From .. "'s score: " .. score)
 
-    if not (score >= 2) then
+    if score < MIN_VOUCH_SCORE then
       return print("Score too low: " .. score)
     end
 
@@ -194,7 +196,7 @@ Handlers.add(
           Immigrate = {
             Title = "Greetings Citizen!",
             Description =
-            "Always happy to see another subject of the glorious Llama King. If you have any distinguished llama friends who wish to join or ranks, send them my way!",
+            "Always happy to see another subject of the glorious Llama King. If you have any distinguished llama friends who wish to join our ranks, send them my way!",
             Schema = nil,
           },
         })
@@ -202,7 +204,7 @@ Handlers.add(
     else
       local score = GetVouchScoreUsd(msg.From)
       print("Score: " .. score)
-      if score < 2 then
+      if score < MIN_VOUCH_SCORE then
         Send({
           Target = msg.From,
           Tags = { Type = 'Schema' },
@@ -210,7 +212,9 @@ Handlers.add(
             Immigrate = {
               Title = "Hello, Peasant...",
               Description =
-              "Your reputation leaves something to be desired... please visit https://vouch-portal.arweave.net/ to improve your score. Once you gain at least 2 Vouch Points, you may be granted Llama Land Citizenship and a complimentary 25 $LLAMA coin!",
+                  "Your reputation leaves something to be desired... please visit https://vouch-portal.arweave.net/ to improve your score. Once you gain at least " ..
+                  MIN_VOUCH_SCORE ..
+                  " Vouch Points, you may be granted Llama Land Citizenship and a complimentary 25 $LLAMA coin!",
               Schema = nil,
             },
           })

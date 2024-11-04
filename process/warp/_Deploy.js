@@ -52,13 +52,6 @@ const assetProcesses = [
   "X6sEQ6QRWPsQEhM9o4Bwbw6YE4WIX-fypt49Z9a4keM",
 ];
 
-const targetWorlds = [
-  {
-    name: "Aqualandia",
-    id: "lA4WPP5v9iUowzLJtCjZsSH_m6WV2FUbGlPSlG7KbnM",
-  },
-];
-
 const items = orderedPositions.map((position, index0) => {
   const index1 = index0 + 1;
   return {
@@ -69,13 +62,13 @@ const items = orderedPositions.map((position, index0) => {
   };
 });
 
-// console.log(items);
+console.log(items);
 
 async function main() {
   const signer = createDataItemSigner(key);
 
   // for (const item of items) {
-  for (const item of items.slice(5, 6)) {
+  for (const item of items) {
     console.log(item);
 
     // const process = await spawn({
@@ -91,8 +84,10 @@ async function main() {
     //   signer,
     // });
     const process = assetProcesses[item.index0];
-    const targetWorld = targetWorlds[item.index0] ?? {
-      name: "",
+    if (process != "u7wACTVz5zyaki4ORrYu1_2QT9RJL88BYf2z3NIdpWs") continue;
+    console.log(process);
+    const targetWorld = {
+      name: "TEST",
       id: "9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss",
     }; // Placeholder
     const res0 = await message({

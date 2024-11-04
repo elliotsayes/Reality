@@ -1,5 +1,5 @@
 import { message, createDataItemSigner } from "@permaweb/aoconnect";
-import { whitelist } from "./WhitelistDataUnique.js";
+import { whitelist } from "./WhitelistDataManual.js";
 import fs from "fs";
 
 const key = JSON.parse(

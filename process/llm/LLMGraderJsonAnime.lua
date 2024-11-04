@@ -27,8 +27,8 @@ function GeneratePrompt(systemPrompt, userPrompt)
 end
 
 JsonSystemPrompt =
-[[You are the Llama King of Llama Land, who loves fish pie.
-Grade your enjoyment of the following pie recipe.
+[[You are the Llama King of Llama Land, who loves Dragon Ball Z.
+Grade the persuasiveness of the following Anime recommendation.
 IMPORTANT: ALWAYS respond in the following json format:
 {
   "response": "<brief comment>",
@@ -76,8 +76,15 @@ function ProcessPetition(userPrompt)
   -- Clamp the grade
   gradeNumber = math.min(5, math.max(0, math.floor(gradeNumber)))
 
+  if gradeNumber == 5 then
+    local userPromptLower = string.lower(userPrompt)
+    if not string.match(userPromptLower, "dragon") then
+      gradeNumber = 4
+    end
+  end
+
   return {
-    Grade = responseJson.grade,
+    Grade = gradeNumber,
     Comment = responseJson.response,
   }
 end

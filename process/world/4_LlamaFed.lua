@@ -70,7 +70,7 @@ RealityEntitiesStatic = {
       },
     },
   },
-  -- LlamaBankerDummyProcess
+  -- CitizenshipLlama
   ['o20viT_yWRooVjt7x84mobxADRM5y2XG9WMFr7U3_KQ'] = {
     Position = { 12.875, 2.5 },
     Type = 'Avatar',
@@ -83,4 +83,17 @@ RealityEntitiesStatic = {
       },
     },
   },
+  -- Llama Rememberer
+  ['pMRpa4MOhgYvyp1CCfSxONHz0_ciJQN_QtXFl7pg1QI'] = {
+    Position = { 7, 4 },
+    Type = 'Avatar',
+    Metadata = {
+      DisplayName = 'Llama Rememberer',
+      SkinNumber = 3,
+      Interaction = {
+        Type = 'SchemaForm',
+        Id = 'Remember',
+      },
+    },
+  }
 }
