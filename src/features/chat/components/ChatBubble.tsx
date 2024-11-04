@@ -7,9 +7,10 @@ import { MiniAddress } from "./MiniAddress";
 import Linkify from "linkify-react";
 
 const kingAddress = "kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA";
+const king2Address = "vkMZYPIUQAktEy6etxg3ALoLfqxHbq1tkUsp95Lb3wE";
 const bankerAddress = "ptvbacSmqJPfgCXxPc9bcobs5Th2B_SxTf81vRNkRzk";
 
-const highlightedAuthorIds = [kingAddress, bankerAddress];
+const highlightedAuthorIds = [kingAddress, king2Address, bankerAddress];
 
 type ChatBubbleProps = {
   chatMessage: ChatMessage;
@@ -40,7 +41,9 @@ export const ChatBubble = ({ chatMessage, userAddress }: ChatBubbleProps) => {
     highlightedAuthorIds.includes(chatMessage.AuthorId) ||
     (chatMessage.Recipient !== undefined &&
       chatMessage.Recipient === userAddress);
-  const isKing = chatMessage.AuthorId === kingAddress;
+  const isKing =
+    chatMessage.AuthorId === kingAddress ||
+    chatMessage.AuthorId === king2Address;
 
   return (
     <div
