@@ -1,5 +1,6 @@
 local json = require("json")
 local sqlite3 = require('lsqlite3')
+local bint = require('.bint')(256)
 
 BankerDb = BankerDb or sqlite3.open_memory()
 BankerDbAdmin = BankerDbAdmin or require('DbAdmin').new(BankerDb)
@@ -219,7 +220,7 @@ Handlers.add(
     Send({
       Target = LLAMA_KING_PROCESS,
       Tags = {
-        Action = 'Petition',
+        Action = 'Llama-King.Petition',
         ['Original-Sender'] = sender,
         ['Original-Sender-Name'] = senderName,
         ['Original-Message'] = messageId,
@@ -264,7 +265,7 @@ function RecordEmissionsAndSendLlamaToken(amount, recipient, currentTime)
     Target = LLAMA_TOKEN_PROCESS,
     Action = "Grant",
     Recipient = recipient,
-    Quantity = tostring(amount)
+    Quantity = tostring(bint(amount))
   })
 end
 
@@ -288,25 +289,32 @@ Handlers.add(
       return print("Credit not found")
     end
 
-    local originalQuantity = creditEntries[1].Quantity
+    -- local originalQuantity = creditEntries[1].Quantity
     -- local quantityMultiplier = originalQuantity / LLAMA_TOKEN_MAX_QUANTITY
 
-    local grade = tonumber(msg.Tags.Grade) -- 0 to 5
-    -- local gradeMultiplier = grade / 10
+    local grade = tonumber(msg.Tags.Grade) or 1           -- 0 to 9
+    local uniqueness = tonumber(msg.Tags.Uniqueness) or 1 -- 0 to 5
+    local mood = math.random(4, 9)                        -- 4 to 10
 
-    -- local baseEmissions = CalculateBaseEmissions(msg.Timestamp)
-    -- local weightedEmissions = math.floor(baseEmissions * gradeMultiplier * quantityMultiplier)
-
-    local gradeMultiplier = 0
+    -- 0, 2-10
+    local gradeMultiplier = grade
     if (grade > 0) then
-      local multiplierLookup = { 1, 10, 50, 100, 200 }
-      gradeMultiplier = multiplierLookup[grade]
+      gradeMultiplier = gradeMultiplier + 1
     end
-    local baseEmissions = 1 * LLAMA_TOKEN_MULTIPLIER
-    -- Ignoring quantityMultiplier for now
-    local weightedEmissions = math.floor(baseEmissions * gradeMultiplier)
 
-    print("Quantity: " .. originalQuantity .. ", Grade: " .. grade .. ", Weighted Emissions: " .. weightedEmissions)
+    -- 1-5
+    local uniquenessMultiplier = math.max(1, math.ceil(uniqueness))
+
+    -- 1, 5-8, 10
+    local moodMultiplier = mood
+    if (mood == 9) then
+      moodMultiplier = 10
+    elseif (mood == 4) then
+      moodMultiplier = 1
+    end
+
+    local petitionMultiplier = gradeMultiplier * uniquenessMultiplier * moodMultiplier
+    local calculatedEmissions = 1 * petitionMultiplier * LLAMA_TOKEN_MULTIPLIER
 
     -- TODO: Message chat / DM
 
@@ -314,15 +322,25 @@ Handlers.add(
     local originalSenderName = msg.Tags['Original-Sender-Name']
     local useSenderName = originalSenderName or originalSender
 
-    RecordEmissionsAndSendLlamaToken(weightedEmissions, originalSender, msg.Timestamp)
+    RecordEmissionsAndSendLlamaToken(calculatedEmissions, originalSender, msg.Timestamp)
 
     local chatMessage = 'Sorry ' ..
         useSenderName ..
         ', the king specifically requested that you receive no $LLAMA coin... maybe you could try again?'
     if (grade > 0) then
-      if (weightedEmissions > 0) then
+      if (calculatedEmissions > 0) then
+        local moodtext = 'a foul'
+        if moodMultiplier == 10 then
+          moodtext = 'an extraordinary'
+        elseif moodMultiplier >= 7 then
+          moodtext = 'a good'
+        elseif moodMultiplier >= 5 then
+          moodtext = 'an average'
+        end
         chatMessage = 'Congratulations ' ..
-            useSenderName .. ', you have been granted ' .. FormatLlamaTokenAmount(weightedEmissions) .. ' $LLAMA coins!'
+            useSenderName .. ', I am in ' .. moodtext ..
+            ' mood right now, so you have been granted ' ..
+            FormatLlamaTokenAmount(calculatedEmissions) .. ' $LLAMA coins!'
       else
         chatMessage = 'I\'m sorry ' ..
             useSenderName ..
