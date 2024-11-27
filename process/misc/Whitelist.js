@@ -17,8 +17,9 @@ async function main() {
 
   for (const whitelistBatch of whitelistBatches) {
     console.log(whitelistBatch);
+    const now = Date.now();
     const script = whitelistBatch
-      .map((walletId) => `AuthoriseWallet("${walletId}")`)
+      .map((walletId) => `AuthoriseWallet("${walletId}", ${now})`)
       .join("\n");
     const res = await message({
       process: "2dFSGGlc5xJb0sWinAnEFHM-62tQEbhDzi1v5ldWX5k",

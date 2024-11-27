@@ -3,6 +3,7 @@ local json = require("json")
 local sqlite3 = require('lsqlite3')
 
 WAITLIST_PROCESS = WAITLIST_PROCESS or "2dFSGGlc5xJb0sWinAnEFHM-62tQEbhDzi1v5ldWX5k"
+IS_DISABLED = IS_DISABLED or false
 
 KingDb = KingDb or sqlite3.open_memory()
 KingDbAdmin = KingDbAdmin or require('DbAdmin').new(KingDb)
@@ -356,7 +357,7 @@ function PetitionSchemaTags()
       "type": "string",
       "minLength": 2,
       "maxLength": 250,
-      "title": "Give a unique, persuasive reason to earn the most possible $LLAMA Coin!",
+      "title": "Give a persuasive and original argument to earn maximum $LLAMA Coin!",
       "description": "Max 250 characters"
     },
     "X-Sender-Name": {
@@ -426,7 +427,24 @@ Handlers.add(
     function(msg)
         print('SchemaExternal')
         -- Poke the Llama King
-        dispatchHighestPriorityMessage(msg.Timestamp)
+        -- dispatchHighestPriorityMessage(msg.Timestamp)
+
+        if (IS_DISABLED) then
+            return Send({
+                Target = msg.From,
+                Tags = { Type = 'SchemaExternal' },
+                Data = json.encode({
+                    Petition = {
+                        Target = LLAMA_TOKEN_PROCESS,
+                        Title = "Beg the King for $LLAMA",
+                        Description =
+                        "The Llama King is attending to some royal matters right now... please come back again later.",
+                        Schema = nil,
+                    },
+                })
+            })
+        end
+
         if (IsAuthorised(msg.From)) then
             Send({
                 Target = LLAMA_TOKEN_PROCESS,

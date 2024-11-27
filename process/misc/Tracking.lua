@@ -61,7 +61,7 @@ Handlers.add(
         Target = msg.From,
         Tags = {
           Action = "Login-Info",
-          Message = "Become a Llama Land Citizen to be eligable for login rewards!",
+          Message = "Become a Llama Land Citizen to be eligible for login rewards!",
         },
       })
       return

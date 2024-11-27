@@ -1,6 +1,8 @@
 -- Name: LlamaKingDummy
 -- ProcessId: kPjfXLFyjJogxGRRRe2ErdYNiexolpHpK6wGkz-UPVA
 
+IS_DISABLED = false
+
 -- LIVE
 LLAMA_TOKEN_PROCESS = "pazXumQI-HPH7iFGfTC-4_7biSnqz_U67oFAGry5zUY"
 
