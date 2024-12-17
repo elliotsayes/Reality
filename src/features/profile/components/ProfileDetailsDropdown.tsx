@@ -1,13 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ProfileInfo } from "../contract/model";
+import { ProfileAssets, ProfileInfo } from "../contract/model";
 import ProfileImage from "./ProfileImage";
+import ProfileAssetsDisplay from './ProfileAssetsDisplay'; // Import your new component
 
 interface ProfileDetailsDropdownProps {
   profileInfo: ProfileInfo;
+  profileAssets?: ProfileAssets;
 }
 
 export default function ProfileDetailsDropdown({
   profileInfo,
+  profileAssets
 }: ProfileDetailsDropdownProps) {
   const hasDescription =
     profileInfo.Description && profileInfo.Description != "";
@@ -32,8 +35,12 @@ export default function ProfileDetailsDropdown({
           ) : (
             <p className="text-center text-gray-500 italic">No bio</p>
           )}
+          <div className="mt-4">
+            <h3 className="text-center">Assets</h3>
+            <ProfileAssetsDisplay assets={profileAssets || []} />
+          </div>
           <p className="mt-4 text-sm text-gray-400 italic">
-            Edit your profile on{" "}
+            Edit your profile and view all your assets not just World specific ones on:{" "}
             <a
               href="https://ao-bazar.arweave.dev/#/"
               target="_blank"
