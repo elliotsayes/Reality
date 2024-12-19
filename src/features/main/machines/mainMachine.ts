@@ -57,20 +57,31 @@ export const mainMachine = setup({
           profileInfo: undefined,
         };
 
-        const profiles =
-          await profileRegistryClient.getProfilesByAddress(address);
-        if (profiles.length === 0) return noProfile;
+        const timeout = new Promise((resolve) => {
+          setTimeout(() => resolve(noProfile), 5000);
+        });
 
-        const primaryProfileId = profiles[0].ProfileId;
+        const profilePromise = (async () => {
+          const profiles =
+            await profileRegistryClient.getProfilesByAddress(address);
+          if (profiles.length === 0) return noProfile;
 
-        const profileInfos = await profileRegistryClient.readProfiles([
-          primaryProfileId,
-        ]);
-        if (profileInfos.length === 0) return noProfile;
+          const primaryProfileId = profiles[0].ProfileId;
 
-        return {
-          profileId: primaryProfileId,
-          profileInfo: profileInfos[0],
+          const profileInfos = await profileRegistryClient.readProfiles([
+            primaryProfileId,
+          ]);
+          if (profileInfos.length === 0) return noProfile;
+
+          return {
+            profileId: primaryProfileId,
+            profileInfo: profileInfos[0],
+          };
+        })();
+
+        return (await Promise.race([profilePromise, timeout])) as {
+          profileId: string | undefined;
+          profileInfo: ProfileInfo | undefined;
         };
       },
     ),
