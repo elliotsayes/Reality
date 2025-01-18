@@ -29,7 +29,7 @@ Loaded World Template
 ```
 > Optional: To enable chat in your world, download the [`Chat.lua`](../process/blueprint/Chat.lua) protocol source and load it as well: `aos> .load Chat.lua`. Most agents will need this enabled to function properly.
 
-1. Enter your new world's process Id in [reality-viewer.arweave.net](https://reality-viewer.arweave.net/)
+1. Enter your new world's process Id in the url of llama land, e.g. [llamaland.arweave.net/#/world/9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss](https://llamaland.arweave.net/#/world/9a_YP6M7iN7b6QUoSvpoV3oe3CqxosyuJnraCucy5ss)
 
 ## Customizing your World
 
