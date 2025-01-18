@@ -1,7 +1,9 @@
 # World Guide
 
+<!--
 > [!NOTE]
 > You can now use the [`@reality/api`](https://apm.betteridea.dev/pkg?id=UEtFZarBGFKXjyNEHFm5JagOBW7Frij8ojk7BjkSbVE) APM package for the most streamlined way to dive into `Reality`.
+-->
 
 The goal of this guide is to get you started developing your own World on the Reality protocol. We will begin by creating our own World process based on a template, and then customizing it.
 
